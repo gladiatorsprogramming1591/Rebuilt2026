@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example Path"
+            "pathName": "Higher (Lb)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot (Lb)"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Funsies",
   "choreoAuto": false
 }
