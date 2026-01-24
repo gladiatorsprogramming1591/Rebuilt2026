@@ -1,16 +1,15 @@
 package frc.robot.subsystems.intake;
 
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.generated.TunerConstants;
 
 public class IntakeIOKraken implements IntakeIO {
-  private final SparkBase intakeMotor;
+  private final TalonFX intakeMotor;
   private double speed = 0.0;
 
   public IntakeIOKraken() {
-    intakeMotor = new SparkFlex(IntakeConstants.INTAKE_CAN_ID, MotorType.kBrushless);
+    intakeMotor = new TalonFX(IntakeConstants.INTAKE_CAN_ID, TunerConstants.kCANBus);
   }
 
   public void setSpeed(double speed) {
