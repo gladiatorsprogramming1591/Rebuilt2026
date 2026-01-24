@@ -1,23 +1,25 @@
 package frc.robot.subsystems.intake;
 
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkFlex;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
-    private final SparkBase intakeMotor; 
+  private final IntakeIO io;
+  private final IntakeIOInputs inputs = new IntakeIOInputs();
 
-    public Intake() {
-        intakeMotor = new SparkFlex(IntakeConstants.INTAKE_CAN_ID, MotorType.kBrushless); 
-    }
+  public Intake(IntakeIO io) {
+    this.io = io;
+  }
 
-    public void setSpeed(CommandXboxController controller) {
-        double speed = controller.getRightTriggerAxis() - controller.getLeftTriggerAxis();
-        intakeMotor.set(speed);
-        SmartDashboard.putNumber("Intake Speed", speed);
-    }
+  public void setSpeed(CommandXboxController controller) {
+    double speed = controller.getRightTriggerAxis() - controller.getLeftTriggerAxis();
+    io.setSpeed(speed);
+  }
+
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.recordOutput("Intake speed", inputs.speed);
+  }
 }
