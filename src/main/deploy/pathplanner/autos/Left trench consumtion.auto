@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L Start "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to Consumtion Lt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CONSUME BL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "no Sho, Lt "
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Blue Ally",
+  "choreoAuto": false
+}
