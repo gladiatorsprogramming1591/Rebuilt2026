@@ -24,7 +24,7 @@
         "y": 3.755923076923077
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
@@ -52,7 +52,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

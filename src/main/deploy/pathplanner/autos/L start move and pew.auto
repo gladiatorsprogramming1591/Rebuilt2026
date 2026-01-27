@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Straight ln"
+            "pathName": "Left Start pew"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": "Red ally",
   "choreoAuto": false
 }

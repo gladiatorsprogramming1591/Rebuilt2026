@@ -7,25 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L Start "
+            "pathName": "Right start pew "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to Consumtion Lt"
+            "pathName": "Move to consume rt "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CONSUME BL"
+            "pathName": "Consume  "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to pew rt"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "Red ally",
   "choreoAuto": false
 }

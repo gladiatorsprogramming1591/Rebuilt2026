@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.875,
-        "y": 0.616
+        "x": 8.758,
+        "y": 2.326
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.897871794871796,
-        "y": 0.08141025641025745
+        "x": 9.944461538461539,
+        "y": 1.1744615384615384
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3280128205128223,
-        "y": 3.209397435897437
+        "x": 11.886371794871796,
+        "y": 0.558166666666666
       },
       "prevControl": {
-        "x": 1.0256282051282066,
-        "y": 0.2790897435897426
+        "x": 11.397295514198838,
+        "y": 0.5581666666666661
+      },
+      "nextControl": {
+        "x": 12.136371794871796,
+        "y": 0.558166666666666
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 13.479435897435897,
+        "y": 3.6628974358974364
+      },
+      "prevControl": {
+        "x": 13.921307692307694,
+        "y": 0.9651538461538465
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +50,7 @@
   "eventMarkers": [
     {
       "name": "shoot",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 2.0,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -49,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.94211187138235
+    "rotation": 160.14478563067902
   },
   "reversed": false,
-  "folder": "Actally used B Ally",
+  "folder": "R ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 112.1663458220822
+    "rotation": 125.53800000000001
   },
   "useDefaultConstraints": true
 }

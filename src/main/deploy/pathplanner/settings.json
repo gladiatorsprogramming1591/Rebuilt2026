@@ -3,14 +3,13 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Actally used B Ally",
-    "Actually used R ally",
-    "Funsies",
-    "bokem"
+    "Testing",
+    "R ally",
+    " B Ally"
   ],
   "autoFolders": [
     "Blue Ally",
-    "Funsies",
+    "Testing",
     "Red ally"
   ],
   "defaultMaxVel": 3.0,

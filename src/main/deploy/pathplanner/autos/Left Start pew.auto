@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Lower (Rt)"
+            "pathName": "Left Start pew"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot (Rt)"
+            "pathName": "Move to consume lt"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Funsies",
+  "folder": "Red ally",
   "choreoAuto": false
 }

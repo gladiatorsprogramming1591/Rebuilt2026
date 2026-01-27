@@ -7,25 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L Start "
+            "pathName": "Box pt1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to Consumtion Lt"
+            "pathName": "Box pt2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CONSUME BL"
+            "pathName": "Box pt3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Box pt4"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "Testing",
   "choreoAuto": false
 }

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.921,
-        "y": 5.477
+        "x": 3.316,
+        "y": 3.012
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.537397435897436,
-        "y": 7.907192307692307
+        "x": 3.3311427944355043,
+        "y": 2.762459029863463
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.4326666666666683,
-        "y": 4.628038461538462
+        "x": 0.467,
+        "y": 0.663
       },
       "prevControl": {
-        "x": 2.374500000000002,
-        "y": 8.767679487179485
+        "x": 0.6688911562783153,
+        "y": 0.8104447727679924
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,14 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shoot",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -49,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -38.65980825409009
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 33.369
   },
   "useDefaultConstraints": true
 }

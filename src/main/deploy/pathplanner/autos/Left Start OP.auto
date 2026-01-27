@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Higher (Lb)"
+            "pathName": "L start Sh"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot (Lb)"
+            "pathName": "Move to OP l"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sh from OP"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Funsies",
+  "folder": "Blue Ally",
   "choreoAuto": false
 }

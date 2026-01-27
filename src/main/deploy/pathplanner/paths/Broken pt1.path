@@ -28,7 +28,12 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,7 +50,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "bokem",
+  "folder": "Testing",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

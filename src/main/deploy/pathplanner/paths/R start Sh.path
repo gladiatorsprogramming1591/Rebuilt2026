@@ -8,23 +8,23 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3512435897435915,
-        "y": 1.1512051282051277
+        "x": 1.6011143851797962,
+        "y": 0.9129287926378044
       },
-      "isLocked": true,
+      "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3628974358974375,
-        "y": 4.000115384615385
+        "x": 3.316,
+        "y": 3.012
       },
       "prevControl": {
-        "x": 2.3396153846153855,
-        "y": 2.1512307692307697
+        "x": 3.1735550945573507,
+        "y": 2.806550617150027
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
@@ -49,10 +49,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 32.369
   },
   "reversed": false,
-  "folder": "Actally used B Ally",
+  "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

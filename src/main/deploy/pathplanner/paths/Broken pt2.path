@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.72344871794872,
-        "y": 5.116423076923077
+        "x": 6.595538461538463,
+        "y": 4.988512820512821
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 2.64
       },
       "prevControl": {
-        "x": 7.316487179487182,
-        "y": 3.360564102564102
+        "x": 6.990897435897437,
+        "y": 3.3721923076923077
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "bokem",
+  "folder": "Testing",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

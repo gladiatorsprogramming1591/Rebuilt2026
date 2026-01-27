@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.793,
-        "y": 3.93
+        "x": 9.375,
+        "y": 6.535
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.316435897435899,
-        "y": 5.953653846153847
+        "x": 9.521437521963831,
+        "y": 6.756760391460043
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9442820512820527,
-        "y": 4.976884615384615
+        "x": 8.572,
+        "y": 5.37224358974359
       },
       "prevControl": {
-        "x": 2.4791538461538476,
-        "y": 5.116423076923077
+        "x": 8.726703714312135,
+        "y": 5.596463446983428
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,9 +33,9 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "shoot",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
+      "name": "CONSUME",
+      "waypointRelativePos": 0.2591362126245849,
+      "endWaypointRelativePos": 1.0,
       "command": null
     }
   ],
@@ -49,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -37.87498365109828
+    "rotation": -130.0
   },
   "reversed": false,
-  "folder": "Actally used B Ally",
+  "folder": "R ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -130.0
   },
   "useDefaultConstraints": true
 }
