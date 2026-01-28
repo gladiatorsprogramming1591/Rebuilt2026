@@ -14,6 +14,7 @@ public class IntakeIOKraken implements IntakeIO {
 
   public void setSpeed(double speed) {
     intakeMotor.set(speed);
+    this.speed = speed;
     SmartDashboard.putNumber("Intake Speed", speed);
   }
 

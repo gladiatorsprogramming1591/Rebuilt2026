@@ -1,25 +1,28 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.spindexer;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import frc.robot.subsystems.spindexer.SpindexerIO.SpindexerIOInputs;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase {
-  private final IntakeIO io;
-  private final IntakeIOInputs inputs = new IntakeIOInputs();
+public class Spindexer extends SubsystemBase {
+  private final SpindexerIO io;
+  private final SpindexerIOInputs inputs = new SpindexerIOInputs();
 
-  public Intake(IntakeIO io) {
+  public Spindexer(SpindexerIO io) {
     this.io = io;
   }
 
-  public void setSpeed(CommandXboxController controller) {
-    double speed = controller.getRightTriggerAxis() - controller.getLeftTriggerAxis();
+  public void setSpeed(CommandXboxController operator_controller) {
+    double speed =
+        SpindexerConstants.SPINDEXER_MAX_SPEED
+            * (operator_controller.getRightTriggerAxis()
+                - operator_controller.getLeftTriggerAxis());
     io.setSpeed(speed);
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.recordOutput("Intake speed", inputs.speed);
+    Logger.recordOutput("Spindexer speed", inputs.speed);
   }
 }

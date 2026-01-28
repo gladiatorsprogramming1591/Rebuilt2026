@@ -1,7 +1,7 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.spindexer;
 
-public final class IntakeConstants {
-  public static final int INTAKE_CAN_ID = 29;
+public final class SpindexerConstants {
+  public static final int SPINDEXER_CAN_ID = 50; // placeholder
 
-  public static final double INTAKE_MAX_SPEED = 0.66;
+  public static final double SPINDEXER_MAX_SPEED = 1.0;
 }

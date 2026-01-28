@@ -13,10 +13,10 @@ public class Intake extends SubsystemBase {
     this.io = io;
   }
 
-  public void setSpeed(CommandXboxController controller) {
+  public void setSpeed(CommandXboxController driver_controller) {
     double speed =
         IntakeConstants.INTAKE_MAX_SPEED
-            * (controller.getRightTriggerAxis() - controller.getLeftTriggerAxis());
+            * (driver_controller.getRightTriggerAxis() - driver_controller.getLeftTriggerAxis());
     io.setSpeed(speed);
   }
 

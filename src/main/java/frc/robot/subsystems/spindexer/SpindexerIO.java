@@ -1,27 +1,27 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.spindexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface SpindexerIO {
   @AutoLog
-  public static class IntakeIOInputs {
+  public static class SpindexerIOInputs {
     double speed = 0.0;
   }
 
   /**
-   * Refreshes the {@link IntakeIOInputs} object with the latest sensor readings and derived values.
+   * Refreshes the {@link SpindexerIOInputs} object with the latest sensor readings and derived
+   * values.
    *
    * @param inputs container to populate
    */
-  public default void updateInputs(IntakeIOInputs inputs) {}
-
+  public default void updateInputs(SpindexerIOInputs inputs) {}
   /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.
    *
    * @param inputs latest inputs
    * @return true if connected
    */
-  public default boolean getIsConnected(IntakeIOInputs inputs) {
+  public default boolean getIsConnected(SpindexerIOInputs inputs) {
     return false;
   }
 

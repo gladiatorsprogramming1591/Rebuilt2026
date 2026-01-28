@@ -31,6 +31,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerIO;
+import frc.robot.subsystems.spindexer.SpindexerIOKraken;
+import frc.robot.subsystems.spindexer.SpindexerIOSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -43,9 +47,11 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
+  private final Spindexer spindexer;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driver_controller = new CommandXboxController(0);
+  private final CommandXboxController operator_controller = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -70,6 +76,8 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOKraken());
+
+        spindexer = new Spindexer(new SpindexerIOKraken());
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -102,6 +110,8 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSim());
 
+        spindexer = new Spindexer(new SpindexerIOSim());
+
         break;
 
       default:
@@ -115,6 +125,8 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         intake = new Intake(new IntakeIO() {});
+
+        spindexer = new Spindexer(new SpindexerIO() {});
 
         break;
     }
@@ -153,25 +165,25 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driver_controller.getLeftY(),
+            () -> -driver_controller.getLeftX(),
+            () -> -driver_controller.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driver_controller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driver_controller.getLeftY(),
+                () -> -driver_controller.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driver_controller
         .b()
         .onTrue(
             Commands.runOnce(
@@ -181,7 +193,10 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    intake.setDefaultCommand(new RunCommand(() -> intake.setSpeed(controller), intake));
+    intake.setDefaultCommand(new RunCommand(() -> intake.setSpeed(driver_controller), intake));
+
+    spindexer.setDefaultCommand(
+        new RunCommand(() -> spindexer.setSpeed(operator_controller), spindexer));
   }
 
   /**
