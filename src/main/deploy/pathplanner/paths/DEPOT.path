@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1761410256410265,
-        "y": 3.686435897435898
+        "x": 3.23498717948718,
+        "y": 4.3373333333333335
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.4674743589743602,
-        "y": 4.744320512820513
+        "x": 0.467,
+        "y": 4.953628205128206
       },
       "prevControl": {
-        "x": 0.6070128205128216,
-        "y": 4.05825641025641
+        "x": 0.5037158661284359,
+        "y": 4.653785408698329
       },
       "nextControl": {
-        "x": 0.3770876587027087,
-        "y": 5.1887217891561335
+        "x": 0.43661435857450986,
+        "y": 5.201774760202343
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 6.732743589743589
       },
       "prevControl": {
-        "x": 0.40885897435897456,
-        "y": 6.035051282051281
+        "x": 0.45414866390890674,
+        "y": 6.483074121925288
       },
       "nextControl": null,
       "isLocked": true,
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "CONSUME",
-      "waypointRelativePos": 1.0232558139534884,
+      "waypointRelativePos": 1.1827242524916959,
       "endWaypointRelativePos": 2.0,
       "command": null
     }

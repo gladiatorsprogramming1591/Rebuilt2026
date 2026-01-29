@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "M start pew "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Sh after Depot"
+            "pathName": "Copy of Copy of Depo "
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "Red ally",
   "choreoAuto": false
 }

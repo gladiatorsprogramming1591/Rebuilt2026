@@ -7,25 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "Right start pew "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot"
+            "pathName": "Move to consume rt "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Sh after Depot"
+            "pathName": "Consume  "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pass fuel over lt"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "Red ally",
   "choreoAuto": false
 }

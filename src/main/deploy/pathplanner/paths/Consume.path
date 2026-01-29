@@ -34,8 +34,8 @@
   "eventMarkers": [
     {
       "name": "CONSUME",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": 1.0,
+      "waypointRelativePos": 0.06866002214839542,
+      "endWaypointRelativePos": 0.9235880398671097,
       "command": null
     }
   ],

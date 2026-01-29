@@ -3,9 +3,9 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Testing",
+    " B Ally",
     "R ally",
-    " B Ally"
+    "Testing"
   ],
   "autoFolders": [
     "Blue Ally",

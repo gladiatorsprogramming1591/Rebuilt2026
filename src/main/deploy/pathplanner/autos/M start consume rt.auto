@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "M start "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot"
+            "pathName": "move to consume rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Sh after Depot"
+            "pathName": "Consume"
           }
         }
       ]

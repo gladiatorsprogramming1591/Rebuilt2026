@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L start Sh"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot "
+            "pathName": "Left Start pew"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "Red ally",
   "choreoAuto": false
 }
