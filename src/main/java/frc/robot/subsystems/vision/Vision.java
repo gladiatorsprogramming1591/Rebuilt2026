@@ -5,16 +5,11 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.Module;
-import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LoggedTracer;
@@ -24,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
-import lombok.Getter; 
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -108,7 +102,8 @@ public class Vision extends SubsystemBase {
 
     for (Camera cam : cameras) {
       cam.periodic();
-      boolean okToSeedYaw = DriverStation.isDisabled(); //TODO: is this a good enough marker of when to seed yaw?
+      boolean okToSeedYaw =
+          DriverStation.isDisabled(); // TODO: is this a good enough marker of when to seed yaw?
 
       if (yawNow != null && cam.getIo() != null) {
         // Limelight robot_orientation_set (required for MT2)

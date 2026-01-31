@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.RobotState;
+// import frc.robot.RobotState;
 import java.util.List;
 
 /**
@@ -86,7 +86,7 @@ public class CameraConstants {
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
                 0.116386, 0.266855, 0.321318, new Rotation3d(0, 0, Units.degreesToRadians(14))));
-
+/*
     private static final Camera LEFT_SIM =
         new Camera(
             new CameraIOSim(
@@ -113,9 +113,9 @@ public class CameraConstants {
                 -0.266855,
                 0.321318,
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(14))));
-
+*/
     /** Right-side Sim camera (PhotonVision-backed) mirroring the physical right LL. */
-    private static final Camera RIGHT_SIM =
+/*    private static final Camera RIGHT_SIM =
         new Camera(
             new CameraIOSim(
                 "right",
@@ -141,11 +141,11 @@ public class CameraConstants {
                 0.266855,
                 0.321318,
                 new Rotation3d(0.0, 0.0, Units.degreesToRadians(-14))));
-
+*/
     /** Cameras used by the robot. Order is not significant. */
     public static final Camera[] CAMERAS = {LEFT, RIGHT};
 
-    public static final Camera[] SIM_CAMERAS = {LEFT_SIM, RIGHT_SIM};
+    // public static final Camera[] SIM_CAMERAS = {LEFT_SIM, RIGHT_SIM};
   }
 
   /** Placeholder for replay/sim configurations if needed. */
