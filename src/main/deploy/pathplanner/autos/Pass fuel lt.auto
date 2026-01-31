@@ -7,13 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M start and shoto"
+            "pathName": "L start Sh"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume lt "
+            "pathName": "Move to Consumtion Lt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Consumes"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left pass fuel"
           }
         }
       ]

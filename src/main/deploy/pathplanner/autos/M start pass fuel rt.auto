@@ -13,7 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume lt "
+            "pathName": "Move to consume rt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Consume"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right pass fuel"
           }
         }
       ]

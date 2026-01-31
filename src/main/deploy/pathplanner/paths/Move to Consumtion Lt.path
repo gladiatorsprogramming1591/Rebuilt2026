@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.072,
+        "x": 3.037,
         "y": 4.035
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8396025641025655,
+        "x": 1.8046025641025654,
         "y": 8.52348717948718
       },
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.905941941082894
+    "rotation": -48.43
   },
   "reversed": false,
   "folder": " B Ally",

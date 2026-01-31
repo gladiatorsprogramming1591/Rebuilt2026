@@ -15,6 +15,18 @@
           "data": {
             "pathName": "Move to consume lt "
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Consumes"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left pass fuel"
+          }
         }
       ]
     }

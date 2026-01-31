@@ -7,25 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right start pew "
+            "pathName": "Left Start pew"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume rt "
+            "pathName": "Move to consume lt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consume  "
+            "pathName": "Consume "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "pass fuel over lt"
+            "pathName": "pass fuel over rt"
           }
         }
       ]
@@ -34,4 +34,5 @@
   "resetOdom": true,
   "folder": "Red ally",
   "choreoAuto": false
+}se
 }

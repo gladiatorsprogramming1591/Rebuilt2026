@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 6.886243589743589,
-        "y": 6.639717948717948
+        "x": 7.456,
+        "y": 6.326
       },
       "prevControl": {
-        "x": 6.165294871794873,
-        "y": 7.035076923076923
+        "x": 6.735051282051284,
+        "y": 6.721358974358974
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,7 +58,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -62.59242456218128
+    "rotation": -42.43
   },
   "reversed": false,
   "folder": " B Ally",

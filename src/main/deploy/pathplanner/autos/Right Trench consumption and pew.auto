@@ -7,25 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L start Sh"
+            "pathName": "R start Sh"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to Consumtion Lt"
+            "pathName": "Move to consumes rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consumes"
+            "pathName": "Consume"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass fuel over lt"
+            "pathName": "ew Path"
           }
         }
       ]

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
-        "y": 4.0
+        "x": 3.316,
+        "y": 3.012
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.769858974358976,
-        "y": 2.8024102564102567
+        "x": 3.106692307692307,
+        "y": 1.0817179487179491
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 0.5465384615384619
       },
       "prevControl": {
-        "x": 3.2931538461538477,
-        "y": 0.5465384615384619
+        "x": 3.537223945019123,
+        "y": 0.6704613961507114
       },
       "nextControl": {
-        "x": 5.293153846153848,
-        "y": 0.5465384615384619
+        "x": 5.002474358974361,
+        "y": 0.43025641025641104
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 1.3721410256410262
       },
       "prevControl": {
-        "x": 6.6555256410256405,
-        "y": 0.7209615384615393
+        "x": 6.138482803131582,
+        "y": 1.1569378816871159
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,7 +64,7 @@
   "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 32.37
   },
   "useDefaultConstraints": true
 }
