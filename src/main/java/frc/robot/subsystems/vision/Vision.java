@@ -10,6 +10,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LoggedTracer;
@@ -159,16 +160,18 @@ public class Vision extends SubsystemBase {
       if (injectVision) {
         // Optional: send to reef-localizer, separate from full-field estimator (your
         // dual-estimators).
-        if (cam.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
-          cand.filter(c -> FieldConstants.Reef.isReefOnly(c.tagIds()))
-              .ifPresent(
-                  c ->
-                      RobotState.getInstance()
-                          .addReefVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev()));
-        }
+        // JT: Remvoed since no reef this year
+        // if (cam.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
+        //   cand.filter(c -> FieldConstants.Reef.isReefOnly(c.tagIds()))
+        //       .ifPresent(
+        //           c ->
+        //               RobotState.getInstance()
+        //                   .addReefVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev()));
+        // }
       }
     }
-    RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
+    // JT: Removed since yaw is updated in Drive::periodic
+    // RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
 
     // Cross-camera fuse (254-style inverse-variance weighting), then feed field estimator.
     boolean injectVision =

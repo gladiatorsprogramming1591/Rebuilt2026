@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import frc.robot.util.LoggedTracer;
+import lombok.Getter;
+
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
@@ -17,16 +19,16 @@ public class Camera {
   private final CameraIOInputsAutoLogged inputs;
 
   private final CameraIO io;
-  private final Pose3d cameraOffset;
-  private final String name;
-  private final CameraType cameraType;
-  private final double horizontalFOV;
-  private final double verticalFOV;
-  private final double primaryXYStandardDeviationCoefficient;
-  private final double secondaryXYStandardDeviationCoefficient;
-  private final DoubleArrayPublisher robotHeadingPublisher;
-  private final List<CameraDuty> cameraDuties;
-  private Vision.VisionEstimationMode visionMode = Vision.VisionEstimationMode.MT2;
+  @Getter private final Pose3d cameraOffset;
+  @Getter private final String name;
+  @Getter private final CameraType cameraType;
+  @Getter private final double horizontalFOV;
+  @Getter private final double verticalFOV;
+  @Getter private final double primaryXYStandardDeviationCoefficient;
+  @Getter private final double secondaryXYStandardDeviationCoefficient;
+  @Getter private final DoubleArrayPublisher robotHeadingPublisher;
+  @Getter private final List<CameraDuty> cameraDuties;
+  @Getter private Vision.VisionEstimationMode visionMode = Vision.VisionEstimationMode.MT2;
 
   /**
    * Constructs a camera with a fixed transform and duties.
