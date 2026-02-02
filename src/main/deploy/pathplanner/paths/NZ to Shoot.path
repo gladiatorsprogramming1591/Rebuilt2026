@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.697398989898989,
+        "y": 5.3863383838383845
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.418845959595959,
+        "y": 7.493510101010101
+      },
+      "isLocked": false,
+      "linkedName": "NZ Top"
+    },
+    {
+      "anchor": {
+        "x": 3.178834584724383,
+        "y": 6.823298181259592
+      },
+      "prevControl": {
+        "x": 4.548093434343434,
+        "y": 7.951590909090909
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Top Start Shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2927927927927957,
+      "rotationDegrees": -53.366
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -53.366
+  },
+  "reversed": false,
+  "folder": "Top Two Cycle ",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}
