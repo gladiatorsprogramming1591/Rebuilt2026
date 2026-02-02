@@ -356,4 +356,8 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
   }
+  /** Returns the raw gyro rotation read by the IMU */
+  public Rotation2d getGyroRotation() {
+    return gyroInputs.yawPosition;
+  }
 }

@@ -170,7 +170,7 @@ public class Vision extends SubsystemBase {
         // }
       }
     }
-    // JT: Removed since yaw is updated in Drive::periodic
+    // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
     // RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
 
     // Cross-camera fuse (254-style inverse-variance weighting), then feed field estimator.
