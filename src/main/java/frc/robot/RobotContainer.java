@@ -37,7 +37,6 @@ import frc.robot.subsystems.spindexer.SpindexerIOKraken;
 import frc.robot.subsystems.spindexer.SpindexerIOSim;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**

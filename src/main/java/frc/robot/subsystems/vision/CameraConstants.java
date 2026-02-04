@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
@@ -55,93 +53,90 @@ public class CameraConstants {
     /** Left-side Limelight configuration including physical transform and duties. */
     private static final Camera LEFT =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_4),
+            new CameraIOLimelight("one", CameraType.LIMELIGHT_4),
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
             NetworkTableInstance.getDefault()
-                .getTable("limelight-left")
+                .getTable("limelight-one")
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
-                0.116386,
-                -0.266855,
-                0.321318,
-                new Rotation3d(0.0, 0, Units.degreesToRadians(-14))));
+                0.041275, -0.3429, 0.1905, new Rotation3d(0.0, 0, Units.degreesToRadians(-37.4))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
     private static final Camera RIGHT =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_4),
+            new CameraIOLimelight("two", CameraType.LIMELIGHT_4),
             Limelight4Constants.HORIZONTAL_FOV,
             Limelight4Constants.VERTICAL_FOV,
             Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
             NetworkTableInstance.getDefault()
-                .getTable("limelight-right")
+                .getTable("limelight-two")
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
                 0.116386, 0.266855, 0.321318, new Rotation3d(0, 0, Units.degreesToRadians(14))));
-/*
-    private static final Camera LEFT_SIM =
-        new Camera(
-            new CameraIOSim(
-                "left",
-                CameraType.LIMELIGHT_4,
+    /*
+        private static final Camera LEFT_SIM =
+            new Camera(
+                new CameraIOSim(
+                    "left",
+                    CameraType.LIMELIGHT_4,
+                    new Transform3d(
+                        0.116386,
+                        -0.266855,
+                        0.321318,
+                        new Rotation3d(0.0, 0.0, Units.degreesToRadians(14))),
+                    AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded),
+                    RobotState.getInstance()::getRobotPoseOdometry),
+                Limelight3GConstants.HORIZONTAL_FOV,
+                Limelight3GConstants.VERTICAL_FOV,
+                Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+                Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+                NetworkTableInstance.getDefault()
+                    .getTable("limelight-left")
+                    .getDoubleArrayTopic("robot_orientation_set")
+                    .publish(),
+                List.of(CameraDuty.FIELD_LOCALIZATION),
                 new Transform3d(
                     0.116386,
                     -0.266855,
                     0.321318,
-                    new Rotation3d(0.0, 0.0, Units.degreesToRadians(14))),
-                AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded),
-                RobotState.getInstance()::getRobotPoseOdometry),
-            Limelight3GConstants.HORIZONTAL_FOV,
-            Limelight3GConstants.VERTICAL_FOV,
-            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
-            NetworkTableInstance.getDefault()
-                .getTable("limelight-left")
-                .getDoubleArrayTopic("robot_orientation_set")
-                .publish(),
-            List.of(CameraDuty.FIELD_LOCALIZATION),
-            new Transform3d(
-                0.116386,
-                -0.266855,
-                0.321318,
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(14))));
-*/
+                    new Rotation3d(0.0, 0.0, Units.degreesToRadians(14))));
+    */
     /** Right-side Sim camera (PhotonVision-backed) mirroring the physical right LL. */
-/*    private static final Camera RIGHT_SIM =
-        new Camera(
-            new CameraIOSim(
-                "right",
-                CameraType.LIMELIGHT_4,
+    /*    private static final Camera RIGHT_SIM =
+            new Camera(
+                new CameraIOSim(
+                    "right",
+                    CameraType.LIMELIGHT_4,
+                    new Transform3d(
+                        0.116386,
+                        0.266855,
+                        0.321318,
+                        new Rotation3d(0.0, 0.0, Units.degreesToRadians(-14))),
+                    AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded),
+                    RobotState.getInstance()::getRobotPoseOdometry),
+                Limelight4Constants.HORIZONTAL_FOV,
+                Limelight4Constants.VERTICAL_FOV,
+                Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+                Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+                NetworkTableInstance.getDefault()
+                    .getTable("limelight-right")
+                    .getDoubleArrayTopic("robot_orientation_set")
+                    .publish(),
+                List.of(CameraDuty.FIELD_LOCALIZATION),
                 new Transform3d(
                     0.116386,
                     0.266855,
                     0.321318,
-                    new Rotation3d(0.0, 0.0, Units.degreesToRadians(-14))),
-                AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded),
-                RobotState.getInstance()::getRobotPoseOdometry),
-            Limelight4Constants.HORIZONTAL_FOV,
-            Limelight4Constants.VERTICAL_FOV,
-            Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
-            NetworkTableInstance.getDefault()
-                .getTable("limelight-right")
-                .getDoubleArrayTopic("robot_orientation_set")
-                .publish(),
-            List.of(CameraDuty.FIELD_LOCALIZATION),
-            new Transform3d(
-                0.116386,
-                0.266855,
-                0.321318,
-                new Rotation3d(0.0, 0.0, Units.degreesToRadians(-14))));
-*/
+                    new Rotation3d(0.0, 0.0, Units.degreesToRadians(-14))));
+    */
     /** Cameras used by the robot. Order is not significant. */
     public static final Camera[] CAMERAS = {LEFT, RIGHT};
 

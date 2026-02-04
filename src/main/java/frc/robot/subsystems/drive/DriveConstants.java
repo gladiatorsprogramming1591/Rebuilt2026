@@ -10,17 +10,13 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
-import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.Builder;
 
 public class DriveConstants {
   public static final double odometryFrequency = 250;
-  public static final double trackWidthX =
-       Units.inchesToMeters(21.75);
-  public static final double trackWidthY =
-       Units.inchesToMeters(21.75);
+  public static final double trackWidthX = Units.inchesToMeters(21.75);
+  public static final double trackWidthY = Units.inchesToMeters(21.75);
   public static final double driveBaseRadius = Math.hypot(trackWidthX / 2, trackWidthY / 2);
   public static final double maxLinearSpeed = 4.69;
   public static final double maxAngularSpeed = 4.69 / driveBaseRadius;

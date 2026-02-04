@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.Constants;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
@@ -335,7 +334,7 @@ public class FieldConstants {
           if (layout == null) {
             try {
               Path p =
-                  Constants.simMode == Constants.Mode.SIM
+                  Constants.currentMode == Constants.Mode.SIM
                       ? Path.of(
                           "src",
                           "main",

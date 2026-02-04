@@ -7,7 +7,6 @@
 
 package frc.robot.util;
 
-import frc.robot.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +73,8 @@ public class LoggedTunableNumber implements DoubleSupplier {
       return 0.0;
     } else {
       return 0.0;
-      // return Constants.tuningMode && !Constants.disableHAL ? dashboardNumber.get() : defaultValue;
+      // return Constants.tuningMode && !Constants.disableHAL ? dashboardNumber.get() :
+      // defaultValue;
     }
   }
 

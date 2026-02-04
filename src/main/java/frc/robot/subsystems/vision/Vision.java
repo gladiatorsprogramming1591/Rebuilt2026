@@ -9,6 +9,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.util.FieldConstants;
@@ -113,15 +114,19 @@ public class Vision extends SubsystemBase {
       }
 
       Optional<LimelightHelpers.PoseEstimate> mt1Opt = cam.getIo().readMT1();
+      SmartDashboard.putBoolean("mt1Opt", mt1Opt.isPresent());
       if (mt1Opt.isPresent()) {
         var pe = mt1Opt.get();
         if (pe.pose != null && isPoseWithinField(pe.pose)) {
+          SmartDashboard.putBoolean("PoseInField", true);
           if (pe.tagCount == 1
               && pe.rawFiducials != null
               && pe.rawFiducials.length >= 1
               && pe.rawFiducials[0].ambiguity < 0.2) {
             mt1Yaws.add(pe.pose.getRotation());
           }
+        } else {
+          SmartDashboard.putBoolean("PoseInField", false);
         }
       }
     }
@@ -154,6 +159,7 @@ public class Vision extends SubsystemBase {
             }
           };
       cand.ifPresent(candidates::add);
+      SmartDashboard.putString("VisionMode", cam.getVisionMode().toString());
       boolean injectVision =
           Math.abs(RobotState.getInstance().getRobotPoseReef().getX())
               < Integer.MAX_VALUE; // flip this false -> true to test
@@ -185,6 +191,7 @@ public class Vision extends SubsystemBase {
         feedFieldEstimate(candidates.get(0));
       }
     }
+
     LoggedTracer.record("Vision");
   }
 
