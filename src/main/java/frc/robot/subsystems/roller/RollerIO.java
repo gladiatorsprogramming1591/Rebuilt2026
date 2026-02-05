@@ -2,26 +2,26 @@ package frc.robot.subsystems.spindexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface SpindexerIO {
+public interface RollerIO {
   @AutoLog
-  public static class SpindexerIOInputs {
+  public static class RollerIOInputs {
     double speed = 0.0;
   }
 
   /**
-   * Refreshes the {@link SpindexerIOInputs} object with the latest sensor readings and derived
+   * Refreshes the {@link RollerIOInputs} object with the latest sensor readings and derived
    * values.
    *
    * @param inputs container to populate
    */
-  public default void updateInputs(SpindexerIOInputs inputs) {}
+  public default void updateInputs(RollerIOInputs inputs) {}
   /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.
    *
    * @param inputs latest inputs
    * @return true if connected
    */
-  public default boolean getIsConnected(SpindexerIOInputs inputs) {
+  public default boolean getIsConnected(RollerIOInputs inputs) {
     return false;
   }
 

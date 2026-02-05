@@ -2,20 +2,20 @@ package frc.robot.subsystems.spindexer;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.spindexer.SpindexerIO.SpindexerIOInputs;
+import frc.robot.subsystems.spindexer.RollerIO.RollerIOInputs;
 import org.littletonrobotics.junction.Logger;
 
-public class Spindexer extends SubsystemBase {
-  private final SpindexerIO io;
-  private final SpindexerIOInputs inputs = new SpindexerIOInputs();
+public class Roller extends SubsystemBase {
+  private final RollerIO io;
+  private final RollerIOInputs inputs = new RollerIOInputs();
 
-  public Spindexer(SpindexerIO io) {
+  public Roller(RollerIO io) {
     this.io = io;
   }
 
   public void setSpeed(CommandXboxController operator_controller) {
     double speed =
-        SpindexerConstants.SPINDEXER_MAX_SPEED
+        RollerConstants.ROLLER_MAX_SPEED
             * (operator_controller.getRightTriggerAxis()
                 - operator_controller.getLeftTriggerAxis());
     io.setSpeed(speed);
@@ -23,6 +23,6 @@ public class Spindexer extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.recordOutput("Spindexer speed", inputs.speed);
+    Logger.recordOutput("Roller speed", inputs.speed);
   }
 }
