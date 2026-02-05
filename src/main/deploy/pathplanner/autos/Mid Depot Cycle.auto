@@ -7,25 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "Mid Start to Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Mid Shoot to Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Sh after Depot"
+            "pathName": "Depot to Mid Shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": null,
   "choreoAuto": false
 }

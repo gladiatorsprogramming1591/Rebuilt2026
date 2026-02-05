@@ -6,13 +6,14 @@
     "Actally used B Ally",
     "Actually used R ally",
     "Funsies",
+    "Depot",
     "Top Two Cycle ",
     "bokem"
   ],
   "autoFolders": [
     "Blue Ally",
-    "Testing",
-    "Red ally"
+    "Red ally",
+    "Testing"
   ],
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.0,
