@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "Move to outpost"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "DEPOT"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Sh after Depot"
+            "pathName": "Depo shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": null,
   "choreoAuto": false
 }

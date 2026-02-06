@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.165,
-        "y": 2.64
+        "x": 0.362820512820514,
+        "y": 0.6395641025641032
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7545758280091976,
-        "y": 3.76763114494309
+        "x": 0.56386283384733,
+        "y": 0.9072997643323475
       },
       "isLocked": false,
-      "linkedName": "broken pt4"
+      "linkedName": "outpost"
     },
     {
       "anchor": {
-        "x": 3.165,
-        "y": 5.268
+        "x": 1.0023717948717965,
+        "y": 2.139602564102564
       },
       "prevControl": {
-        "x": 2.7545758280091976,
-        "y": 4.14036885505691
+        "x": 0.8628333333333347,
+        "y": 1.8140128205128212
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "broken pt1"
+      "linkedName": "shoot from outpost"
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 26.565051177077954
   },
   "reversed": false,
-  "folder": "Testing",
+  "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

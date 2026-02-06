@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.632,
-        "y": 0.636
+        "x": 0.36,
+        "y": 7.4653205128205125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.287623989052573,
-        "y": 0.8799040038292474
+        "x": 1.141910256410258,
+        "y": 7.18624358974359
       },
       "isLocked": false,
-      "linkedName": "bottom start"
+      "linkedName": "Depo"
     },
     {
       "anchor": {
-        "x": 3.179,
-        "y": 1.323
+        "x": 1.5140128205128214,
+        "y": 6.779256410256411
       },
       "prevControl": {
-        "x": 3.300130770924145,
-        "y": 0.9386351520555993
+        "x": 1.1535384615384627,
+        "y": 6.942051282051283
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "bottom start shoot"
+      "linkedName": "Shoot from depo"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.37
+    "rotation": -47.815556684211174
   },
   "reversed": false,
   "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 48.39
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

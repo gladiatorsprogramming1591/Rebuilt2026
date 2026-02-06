@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.165,
-        "y": 2.64
+        "x": 3.5838333333333345,
+        "y": 4.035
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7545758280091976,
-        "y": 3.76763114494309
+        "x": 3.8338333333333345,
+        "y": 4.035
       },
       "isLocked": false,
-      "linkedName": "broken pt4"
+      "linkedName": "middle start"
     },
     {
       "anchor": {
-        "x": 3.165,
-        "y": 5.268
+        "x": 3.5838333333333345,
+        "y": 4.035
       },
       "prevControl": {
-        "x": 2.7545758280091976,
-        "y": 4.14036885505691
+        "x": 3.3338333333333345,
+        "y": 4.035
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "broken pt1"
+      "linkedName": "middle start shoot"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Testing",
+  "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
