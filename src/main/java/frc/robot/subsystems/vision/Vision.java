@@ -111,6 +111,7 @@ public class Vision extends SubsystemBase {
         // Limelight robot_orientation_set (required for MT2)
         // 254 VisionIOHardwareLimelight.setLLSettings()/orientation path; 6328 VisionIOLimelight
         cam.getIo().setRobotYawDegrees(yawNow.getDegrees());
+        SmartDashboard.putNumber("Camera Angle", yawNow.getDegrees());
       }
 
       Optional<LimelightHelpers.PoseEstimate> mt1Opt = cam.getIo().readMT1();
@@ -249,10 +250,14 @@ public class Vision extends SubsystemBase {
       double ambiguity = pe.rawFiducials[0].ambiguity;
       if (ambiguity > 0.2) { // conservative default; tune per camera
         Logger.recordOutput("Vision/Rejected/HighAmbiguity", ambiguity);
+        SmartDashboard.putBoolean("High Ambiguity", true);
         return Optional.empty();
+      } else {
+        SmartDashboard.putBoolean("High Ambiguity", false);
       }
 
-      if (pe.avgTagArea < 1.0) {
+      SmartDashboard.putNumber("Avg Tag Area", pe.avgTagArea);
+      if (pe.avgTagArea < 0.6) {
         return Optional.empty();
       }
 
@@ -263,6 +268,7 @@ public class Vision extends SubsystemBase {
                 MathUtil.angleModulus(
                     priorPose.getRotation().getRadians() - pose.getRotation().getRadians()));
 
+        SmartDashboard.putBoolean("YawDiff Too Big", yawDiff > Units.degreesToRadians(5.0));
         if (yawDiff > Units.degreesToRadians(5.0)) {
           return Optional.empty();
         }
