@@ -257,7 +257,7 @@ public class Vision extends SubsystemBase {
       }
 
       SmartDashboard.putNumber("Avg Tag Area", pe.avgTagArea);
-      SmartDashboard.putBoolean("Tag Area Ok", (pe.avgTagArea < 0.4));
+      SmartDashboard.putBoolean("Tag Area Ok", (pe.avgTagArea >= 0.4));
       if (pe.avgTagArea < 0.4) {
         return Optional.empty();
       }
