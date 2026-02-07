@@ -248,16 +248,17 @@ public class Vision extends SubsystemBase {
     // 6328 single-tag ambiguity gating
     if (pe.tagCount == 1 && pe.rawFiducials != null && pe.rawFiducials.length >= 1) {
       double ambiguity = pe.rawFiducials[0].ambiguity;
-      if (ambiguity > 0.2) { // conservative default; tune per camera
+      if (ambiguity > 0.5) { // conservative default; tune per camera
         Logger.recordOutput("Vision/Rejected/HighAmbiguity", ambiguity);
-        SmartDashboard.putBoolean("High Ambiguity", true);
+        SmartDashboard.putBoolean("Ambiguity OK", false);
         return Optional.empty();
       } else {
-        SmartDashboard.putBoolean("High Ambiguity", false);
+        SmartDashboard.putBoolean("Ambiguity OK", true);
       }
 
       SmartDashboard.putNumber("Avg Tag Area", pe.avgTagArea);
-      if (pe.avgTagArea < 0.6) {
+      SmartDashboard.putBoolean("Tag Area Ok", (pe.avgTagArea < 0.4));
+      if (pe.avgTagArea < 0.4) {
         return Optional.empty();
       }
 
@@ -268,7 +269,7 @@ public class Vision extends SubsystemBase {
                 MathUtil.angleModulus(
                     priorPose.getRotation().getRadians() - pose.getRotation().getRadians()));
 
-        SmartDashboard.putBoolean("YawDiff Too Big", yawDiff > Units.degreesToRadians(5.0));
+        SmartDashboard.putBoolean("YawDiff OK", yawDiff <= Units.degreesToRadians(5.0));
         if (yawDiff > Units.degreesToRadians(5.0)) {
           return Optional.empty();
         }
