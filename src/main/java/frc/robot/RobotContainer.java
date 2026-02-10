@@ -11,10 +11,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -25,6 +28,16 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOKraken;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerIO;
+import frc.robot.subsystems.spindexer.SpindexerIOKraken;
+import frc.robot.subsystems.spindexer.SpindexerIOSim;
+import frc.robot.subsystems.vision.CameraConstants;
+import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -36,15 +49,23 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Intake intake;
+  private final Spindexer spindexer;
+  private final Vision vision;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driver_controller = new CommandXboxController(0);
+  private final CommandXboxController operator_controller = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Start logging
+    DataLogManager.start();
+    // Record DS control and joystick data
+    DriverStation.startDataLog(DataLogManager.getLog());
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -57,6 +78,11 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+        vision = new Vision(CameraConstants.RobotCameras.CAMERAS);
+
+        intake = new Intake(new IntakeIOKraken());
+
+        spindexer = new Spindexer(new SpindexerIOKraken());
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -86,6 +112,12 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+
+        intake = new Intake(new IntakeIOSim());
+
+        spindexer = new Spindexer(new SpindexerIOSim());
+
+        vision = new Vision();
         break;
 
       default:
@@ -97,8 +129,17 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        intake = new Intake(new IntakeIO() {});
+
+        spindexer = new Spindexer(new SpindexerIO() {});
+
+        vision = new Vision();
         break;
     }
+
+    // Connect the gyro as the default vision yaw supplier
+    vision.setYawSupplier(drive::getGyroRotation);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -136,25 +177,25 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driver_controller.getLeftY(),
+            () -> -driver_controller.getLeftX(),
+            () -> -driver_controller.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driver_controller
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driver_controller.getLeftY(),
+                () -> -driver_controller.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driver_controller
         .b()
         .onTrue(
             Commands.runOnce(
@@ -163,6 +204,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    intake.setDefaultCommand(new RunCommand(() -> intake.setSpeed(driver_controller), intake));
+
+    spindexer.setDefaultCommand(
+        new RunCommand(() -> spindexer.setSpeed(operator_controller), spindexer));
   }
 
   /**

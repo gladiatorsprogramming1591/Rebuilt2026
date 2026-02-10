@@ -138,4 +138,9 @@ public class Module {
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
   }
+
+  /** Returns whether the module is effectively still (velocity < 0.01 m/s) for seeding yaw. */
+  public Boolean isEffectivelyStill() {
+    return getVelocityMetersPerSec() < 0.01;
+  }
 }
