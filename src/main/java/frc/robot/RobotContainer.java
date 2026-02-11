@@ -145,8 +145,7 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Straight Line", new PathPlannerAuto("Straight ln auto"));
+    autoChooser.addOption("Straight Line", new PathPlannerAuto("Straight ln auto"));
     autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
