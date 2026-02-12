@@ -144,7 +144,8 @@ public class TunerConstants {
               .withSteerFrictionVoltage(kSteerFrictionVoltage)
               .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
-  private static final double kModuleOffset = 10.84375; // TODO: Match this with what's in PathPlanner Robot Config (test this after).
+  private static final double kModuleOffset =
+      10.84375; // TODO: Match this with what's in PathPlanner Robot Config (test this after).
   // Front Left
   private static final int kFrontLeftDriveMotorId = 5;
   private static final int kFrontLeftSteerMotorId = 4;
