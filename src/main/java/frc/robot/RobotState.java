@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * RobotState: localization + motion state only. - Field & Reef Pose Estimators (odometry + vision)
+ * RobotState: localization + motion state only. - Field Pose Estimators (odometry + vision)
  * - Odometry-only pose for debugging - Timestamped fused-pose buffer for latency
  * compensation/prediction - Measured & desired chassis speeds (robot & field frames) - Pose reset
  * with gyro offset anchoring
@@ -40,17 +40,6 @@ public final class RobotState {
 
   /** Fused, global field pose. */
   private static final SwerveDrivePoseEstimator fieldLocalizer =
-      new SwerveDrivePoseEstimator(
-          kinematics,
-          Rotation2d.kZero,
-          new SwerveModulePosition[] {
-            new SwerveModulePosition(), new SwerveModulePosition(),
-            new SwerveModulePosition(), new SwerveModulePosition()
-          },
-          new Pose2d());
-
-  /** Second estimator for reef-context vision fusion. */
-  private static final SwerveDrivePoseEstimator reefLocalizer =
       new SwerveDrivePoseEstimator(
           kinematics,
           Rotation2d.kZero,
@@ -146,7 +135,6 @@ public final class RobotState {
     lastWheelPositions = wheelPositions;
 
     fieldLocalizer.updateWithTime(timestampSeconds, yawWithOffset, wheelPositions);
-    reefLocalizer.updateWithTime(timestampSeconds, yawWithOffset, wheelPositions);
     odometry.update(yawWithOffset, wheelPositions);
 
     fusedPoseBuffer.addSample(timestampSeconds, fieldLocalizer.getEstimatedPosition());
@@ -169,18 +157,6 @@ public final class RobotState {
         VecBuilder.fill(xyStdDev, xyStdDev, Double.POSITIVE_INFINITY));
   }
 
-  public synchronized void addReefVisionMeasurement(
-      Pose2d visionPose, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-    reefLocalizer.addVisionMeasurement(visionPose, timestampSeconds, stdDevs);
-  }
-
-  public synchronized void addReefVisionMeasurement(
-      Pose2d visionPose, double timestampSeconds, double xyStdDev) {
-    reefLocalizer.addVisionMeasurement(
-        visionPose,
-        timestampSeconds,
-        VecBuilder.fill(xyStdDev, xyStdDev, Double.POSITIVE_INFINITY));
-  }
 
   // ============================================================
   // Speeds
@@ -236,7 +212,6 @@ public final class RobotState {
     yawWithOffset = robotHeadingRaw.plus(headingOffset);
 
     fieldLocalizer.resetPosition(yawWithOffset, currentWheelPositions, pose);
-    reefLocalizer.resetPosition(yawWithOffset, currentWheelPositions, pose);
     odometry.resetPosition(yawWithOffset, currentWheelPositions, pose);
 
     fusedPoseBuffer.clear();
@@ -245,10 +220,6 @@ public final class RobotState {
 
   public Pose2d getRobotPoseField() {
     return fieldLocalizer.getEstimatedPosition();
-  }
-
-  public Pose2d getRobotPoseReef() {
-    return reefLocalizer.getEstimatedPosition();
   }
 
   public Pose2d getRobotPoseOdometry() {

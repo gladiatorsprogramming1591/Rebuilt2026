@@ -161,23 +161,9 @@ public class Vision extends SubsystemBase {
           };
       cand.ifPresent(candidates::add);
       SmartDashboard.putString("VisionMode", cam.getVisionMode().toString());
-      boolean injectVision =
-          Math.abs(RobotState.getInstance().getRobotPoseReef().getX())
-              < Integer.MAX_VALUE; // flip this false -> true to test
-      if (injectVision) {
-        // Optional: send to reef-localizer, separate from full-field estimator (your
-        // dual-estimators).
-        // JT: Remvoed since no reef this year
-        // if (cam.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
-        //   cand.filter(c -> FieldConstants.Reef.isReefOnly(c.tagIds()))
-        //       .ifPresent(
-        //           c ->
-        //               RobotState.getInstance()
-        //                   .addReefVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev()));
-        // }
-      }
     }
     // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
+    // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't moving or disabled
     // RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
 
     // Cross-camera fuse (254-style inverse-variance weighting), then feed field estimator.
@@ -262,6 +248,7 @@ public class Vision extends SubsystemBase {
         return Optional.empty();
       }
 
+      // Ignore flickering when too close to tags
       var priorPose = RobotState.getInstance().getRobotPoseField();
       if (pe.avgTagArea < 2.0) {
         double yawDiff =
@@ -337,6 +324,7 @@ public class Vision extends SubsystemBase {
     if (!isPoseWithinField(pe.pose)) return Optional.empty();
 
     // 6328-style std-dev model for one tag
+    // TODO: What if selected is an mt2?
     double dist = Math.max(0.01, pe.avgTagDist);
     double modeled = Math.pow(dist, 3.5) / 1.0;
     if (DriverStation.isAutonomous()) modeled *= 2.0;

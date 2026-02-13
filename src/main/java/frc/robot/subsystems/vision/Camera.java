@@ -111,6 +111,7 @@ public class Camera {
    *
    * @param mode mode to use for this camera
    */
+  // TODO: Determine how we want to set this vision mode
   public void setVisionMode(Vision.VisionEstimationMode mode) {
     this.visionMode = mode;
   }
