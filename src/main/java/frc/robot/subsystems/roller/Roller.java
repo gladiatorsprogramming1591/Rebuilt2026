@@ -1,8 +1,8 @@
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.roller;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.spindexer.RollerIO.RollerIOInputs;
+import frc.robot.subsystems.roller.RollerIO.RollerIOInputs;
 import org.littletonrobotics.junction.Logger;
 
 public class Roller extends SubsystemBase {
@@ -13,12 +13,14 @@ public class Roller extends SubsystemBase {
     this.io = io;
   }
 
-  public void setSpeed(CommandXboxController operator_controller) {
-    double speed =
-        RollerConstants.ROLLER_MAX_SPEED
-            * (operator_controller.getRightTriggerAxis()
-                - operator_controller.getLeftTriggerAxis());
-    io.setSpeed(speed);
+  public Command runRollerMotor() {
+    return runEnd(
+        () -> {
+          io.setRollerMotorVoltage(RollerConstants.ROLLER_MOTOR_VOLTAGE);
+        },
+        () -> {
+          io.setRollerMotorVoltage(0);
+        });
   }
 
   public void periodic() {

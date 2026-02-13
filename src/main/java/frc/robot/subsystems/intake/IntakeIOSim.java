@@ -1,32 +1,34 @@
 package frc.robot.subsystems.intake;
 
-// import edu.wpi.first.math.system.plant.DCMotor;
-// import edu.wpi.first.math.system.plant.LinearSystemId;
-// import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class IntakeIOSim implements IntakeIO {
-  private double speed = 0.0;
+  private DCMotorSim intakeSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.INTAKE_MOTOR_REDUCTION),
+          DCMotor.getKrakenX44Foc(1));
 
-  //   private final DCMotorSim intakeSim;
-  //   private static final DCMotor INTAKE_GEARBOX = DCMotor.getKrakenX60Foc(1);
-  //   private static final double inertia = 1.0;
-  //   private static final double gearRatio = 1.0;
+  private DCMotorSim deploySim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(
+              DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.DEPLOY_MOTOR_REDUCTION),
+          DCMotor.getKrakenX44Foc(1));
 
-  public IntakeIOSim() {
-    // intakeSim = new DCMotorSim(
-    //     LinearSystemId.createDCMotorSystem(
-    //         INTAKE_GEARBOX, inertia, gearRatio),
-    //         INTAKE_GEARBOX);
-  }
-
-  public void setSpeed(double speed) {
-    this.speed = speed;
-    SmartDashboard.putNumber("Intake Speed", speed);
-  }
+  private double intakeAppliedVolts = 0.0;
+  private double deployAppliedVolts = 0.0;
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.speed = this.speed;
+    intakeSim.setInputVoltage(intakeAppliedVolts);
+    intakeSim.update(0.02);
+
+    deploySim.setInputVoltage(deployAppliedVolts);
+    deploySim.update(0.02);
+
+    inputs.intakeAppliedVolts = intakeAppliedVolts;
+    inputs.deployAppliedVolts = deployAppliedVolts;
   }
 }

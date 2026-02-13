@@ -1,4 +1,4 @@
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.roller;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -19,9 +19,9 @@ public class RollerIOSim implements RollerIO {
             LinearSystemId.createDCMotorSystem(INTAKE_GEARBOX, inertia, gearRatio), INTAKE_GEARBOX);
   }
 
-  public void setSpeed(double speed) {
+  public void setRollerSpeed(double speed) {
     this.speed = speed;
-    SmartDashboard.putNumber("Intake Speed", speed);
+    SmartDashboard.putNumber("Roller Speed", speed);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.roller;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -6,11 +6,11 @@ public interface RollerIO {
   @AutoLog
   public static class RollerIOInputs {
     double speed = 0.0;
+    double rollerVolts = 0.0;
   }
 
   /**
-   * Refreshes the {@link RollerIOInputs} object with the latest sensor readings and derived
-   * values.
+   * Refreshes the {@link RollerIOInputs} object with the latest sensor readings and derived values.
    *
    * @param inputs container to populate
    */
@@ -30,5 +30,5 @@ public interface RollerIO {
    *
    * @param speed speed to set motor to
    */
-  public default void setSpeed(double speed) {}
+  public default void setRollerMotorVoltage(double volts) {}
 }
