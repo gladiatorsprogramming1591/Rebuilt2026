@@ -21,4 +21,20 @@ public class IntakeIOKraken implements IntakeIO {
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     deployMotor.getConfigurator().apply(deployConfig, 0.25);
   }
+
+  @Override
+  public void setDeployMotorVoltage(double volts) {
+    deployMotor.setVoltage(volts);
+  }
+
+  @Override
+  public void setIntakeMotorVoltage(double volts) {
+    deployMotor.setVoltage(volts);
+  }
+
+  @Override
+  public void updateInputs(IntakeIOInputs inputs) {
+    inputs.intakeAppliedVolts = intakeMotor.getMotorVoltage().getValueAsDouble();
+    inputs.deployAppliedVolts = deployMotor.getMotorVoltage().getValueAsDouble();
+  }
 }

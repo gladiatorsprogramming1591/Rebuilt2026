@@ -1,12 +1,13 @@
 package frc.robot.subsystems.roller;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RollerIOSim implements RollerIO {
-  private double speed = 0.0;
+  private double volts = 0.0;
 
   private final DCMotorSim intakeSim;
   private static final DCMotor INTAKE_GEARBOX = DCMotor.getKrakenX60Foc(1);
@@ -19,13 +20,14 @@ public class RollerIOSim implements RollerIO {
             LinearSystemId.createDCMotorSystem(INTAKE_GEARBOX, inertia, gearRatio), INTAKE_GEARBOX);
   }
 
-  public void setRollerSpeed(double speed) {
-    this.speed = speed;
-    SmartDashboard.putNumber("Roller Speed", speed);
+  @Override
+  public void setRollerMotorVoltage(double volts) {
+    this.volts = MathUtil.clamp(volts, 0, 12.0);
+    SmartDashboard.putNumber("Roller Speed", this.volts);
   }
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    inputs.speed = this.speed;
+    inputs.rollerAppliedVolts = this.volts;
   }
 }

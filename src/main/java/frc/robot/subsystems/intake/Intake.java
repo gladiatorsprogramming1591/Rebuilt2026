@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
   public Command deployIntake() {
     return runEnd(
         () -> {
-          io.setDeployMotorVoltage(-IntakeConstants.DEPLOY_MOTOR_VOLTAGE);
+          io.setDeployMotorVoltage(IntakeConstants.DEPLOY_MOTOR_VOLTAGE);
         },
         () -> {
           io.setDeployMotorVoltage(0.0);
@@ -44,6 +44,6 @@ public class Intake extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Intake speed", inputs);
+    Logger.processInputs("Intake volts", inputs);
   }
 }

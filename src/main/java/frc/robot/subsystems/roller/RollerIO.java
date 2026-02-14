@@ -6,7 +6,7 @@ public interface RollerIO {
   @AutoLog
   public static class RollerIOInputs {
     double speed = 0.0;
-    double rollerVolts = 0.0;
+    double rollerAppliedVolts = 0.0;
   }
 
   /**

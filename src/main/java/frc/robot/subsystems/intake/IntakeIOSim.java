@@ -20,14 +20,23 @@ public class IntakeIOSim implements IntakeIO {
   private double intakeAppliedVolts = 0.0;
   private double deployAppliedVolts = 0.0;
 
+  public IntakeIOSim() {
+    intakeAppliedVolts = 0.5;
+    deployAppliedVolts = 0.5;
+  }
+
+  @Override
+  public void setDeployMotorVoltage(double volts) {
+    deployAppliedVolts = volts;
+  }
+
+  @Override
+  public void setIntakeMotorVoltage(double volts) {
+    intakeAppliedVolts = volts;
+  }
+
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    intakeSim.setInputVoltage(intakeAppliedVolts);
-    intakeSim.update(0.02);
-
-    deploySim.setInputVoltage(deployAppliedVolts);
-    deploySim.update(0.02);
-
     inputs.intakeAppliedVolts = intakeAppliedVolts;
     inputs.deployAppliedVolts = deployAppliedVolts;
   }
