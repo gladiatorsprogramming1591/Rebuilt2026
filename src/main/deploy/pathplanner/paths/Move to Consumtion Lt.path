@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.037,
-        "y": 4.035
+        "x": 3.177,
+        "y": 5.2
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8046025641025654,
-        "y": 8.52348717948718
+        "x": 2.3826910048263934,
+        "y": 8.092935052880776
       },
       "isLocked": false,
       "linkedName": null
@@ -48,7 +48,7 @@
   "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -45.0
   },
   "useDefaultConstraints": true
 }

@@ -7,12 +7,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M start and shoto"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Move to consume rt"
           }
         }

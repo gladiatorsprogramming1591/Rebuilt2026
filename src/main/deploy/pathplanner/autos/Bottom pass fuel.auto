@@ -7,25 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume lt "
+            "pathName": "R start Sh"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consumes"
+            "pathName": "Move and consume rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "move to shoot Lt "
+            "pathName": "ew Path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move to consume and pass"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Right pass fuel"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": null,
   "choreoAuto": false
 }

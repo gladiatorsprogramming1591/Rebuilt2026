@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "to NZ"
+            "pathName": "Copy of Copy of Copy of New New New Path"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "from NZ"
+            "pathName": "Copy of Copy of Copy of Copy of New New New Path"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "to NZ extended"
+            "pathName": "Copy of Copy of Copy of Copy of Copy of New New New Path"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "from NZ extended"
+            "pathName": "Copy of Copy of Copy of Copy of Copy of Copy of New New New Path"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Testing",
   "choreoAuto": false
 }

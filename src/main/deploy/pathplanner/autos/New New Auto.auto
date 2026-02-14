@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume rt"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Consume"
+            "pathName": "New New New Path"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "Testing",
   "choreoAuto": false
 }

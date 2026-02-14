@@ -13,19 +13,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to OP l"
+            "pathName": "Move and consume lt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Sh from OP"
+            "pathName": "Move and shoot lt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to consume and pass lt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top pass fuel"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": null,
   "choreoAuto": false
 }

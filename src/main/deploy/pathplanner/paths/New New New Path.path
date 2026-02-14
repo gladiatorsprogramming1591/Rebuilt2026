@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.016,
-        "y": 1.372
+        "x": 13.0,
+        "y": 3.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.642076923076923,
-        "y": 1.9535512820512828
+        "x": 12.75,
+        "y": 3.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.828,
-        "y": 2.337
+        "x": 9.0,
+        "y": 3.0
       },
       "prevControl": {
-        "x": 7.351243589743591,
-        "y": 1.6625641025641027
+        "x": 8.75,
+        "y": 3.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": " B Ally",
+  "folder": "Testing",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 42.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

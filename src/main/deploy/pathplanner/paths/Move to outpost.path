@@ -32,7 +32,7 @@
   "constraintZones": [
     {
       "name": "slow down at outspost",
-      "minWaypointRelativePos": 0.5802879291251368,
+      "minWaypointRelativePos": 0.6002214839424093,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 2.0,
