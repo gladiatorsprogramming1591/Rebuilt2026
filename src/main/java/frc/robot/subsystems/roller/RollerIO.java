@@ -5,8 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface RollerIO {
   @AutoLog
   public static class RollerIOInputs {
-    double speed = 0.0;
-    double rollerAppliedVolts = 0.0;
+    double rollerSpeed = 0.0;
   }
 
   /**
@@ -30,5 +29,5 @@ public interface RollerIO {
    *
    * @param speed speed to set motor to
    */
-  public default void setRollerMotorVoltage(double volts) {}
+  public default void setRollerSpeed(double speed) {}
 }

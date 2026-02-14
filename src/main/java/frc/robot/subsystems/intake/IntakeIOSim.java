@@ -26,18 +26,18 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public void setDeployMotorVoltage(double volts) {
+  public void setDeploySpeed(double volts) {
     deployAppliedVolts = volts;
   }
 
   @Override
-  public void setIntakeMotorVoltage(double volts) {
+  public void setIntakeSpeed(double volts) {
     intakeAppliedVolts = volts;
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.intakeAppliedVolts = intakeAppliedVolts;
-    inputs.deployAppliedVolts = deployAppliedVolts;
+    inputs.intakeSpeed = intakeAppliedVolts;
+    inputs.deploySpeed = deployAppliedVolts;
   }
 }

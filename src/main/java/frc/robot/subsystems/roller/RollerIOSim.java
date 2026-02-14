@@ -21,13 +21,13 @@ public class RollerIOSim implements RollerIO {
   }
 
   @Override
-  public void setRollerMotorVoltage(double volts) {
+  public void setRollerSpeed(double volts) {
     this.volts = MathUtil.clamp(volts, 0, 12.0);
     SmartDashboard.putNumber("Roller Speed", this.volts);
   }
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    inputs.rollerAppliedVolts = this.volts;
+    inputs.rollerSpeed = this.volts;
   }
 }

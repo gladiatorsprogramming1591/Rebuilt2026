@@ -15,35 +15,35 @@ public class Intake extends SubsystemBase {
   public Command runIntakeMotor() {
     return runEnd(
         () -> {
-          io.setIntakeMotorVoltage(IntakeConstants.INTAKE_MOTOR_VOLTAGE);
+          io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED);
         },
         () -> {
-          io.setIntakeMotorVoltage(0.0);
+          io.setIntakeSpeed(0.0);
         });
   }
 
   public Command deployIntake() {
     return runEnd(
         () -> {
-          io.setDeployMotorVoltage(IntakeConstants.DEPLOY_MOTOR_VOLTAGE);
+          io.setDeploySpeed(IntakeConstants.DEPLOY_MOTOR_SPEED);
         },
         () -> {
-          io.setDeployMotorVoltage(0.0);
+          io.setDeploySpeed(0.0);
         });
   }
 
   public Command stow() {
     return runEnd(
         () -> {
-          io.setDeployMotorVoltage(IntakeConstants.DEPLOY_MOTOR_VOLTAGE);
+          io.setDeploySpeed(IntakeConstants.DEPLOY_MOTOR_SPEED);
         },
         () -> {
-          io.setDeployMotorVoltage(0.0);
+          io.setDeploySpeed(0.0);
         });
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Intake volts", inputs);
+    Logger.processInputs("Intake speed", inputs);
   }
 }

@@ -15,10 +15,10 @@ public class Roller extends SubsystemBase {
   public Command runRollerMotor() {
     return runEnd(
         () -> {
-          io.setRollerMotorVoltage(RollerConstants.ROLLER_MOTOR_VOLTAGE);
+          io.setRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED);
         },
         () -> {
-          io.setRollerMotorVoltage(0);
+          io.setRollerSpeed(0);
         });
   }
 

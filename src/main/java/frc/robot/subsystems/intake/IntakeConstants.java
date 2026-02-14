@@ -13,9 +13,9 @@ public final class IntakeConstants {
   public static final double INTAKE_MOTOR_REDUCTION = 1.0; // placeholder until tested
   public static final double DEPLOY_MOTOR_REDUCTION = 1.0; // placeholder until tested
 
-  public static final double INTAKE_CURRENT_LIMIT = 1.0; // placeholder until tested
-  public static final double DEPLOY_CURRENT_LIMIT = 1.0; // placeholder until tested
+  public static final double INTAKE_CURRENT_LIMIT = 50.0; // placeholder until tested
+  public static final double DEPLOY_CURRENT_LIMIT = 15.0; // placeholder until tested
 
-  public static final double INTAKE_MOTOR_VOLTAGE = 1.0;
-  public static final double DEPLOY_MOTOR_VOLTAGE = 1.0;
+  public static final double INTAKE_MOTOR_SPEED = 1.0;
+  public static final double DEPLOY_MOTOR_SPEED = 1.0;
 }

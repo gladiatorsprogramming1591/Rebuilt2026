@@ -4,6 +4,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class IntakeIOKraken implements IntakeIO {
   private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_CAN_ID);
   private final TalonFX deployMotor = new TalonFX(IntakeConstants.DEPLOY_CAN_ID);
@@ -23,18 +25,17 @@ public class IntakeIOKraken implements IntakeIO {
   }
 
   @Override
-  public void setDeployMotorVoltage(double volts) {
-    deployMotor.setVoltage(volts);
+  public void setDeploySpeed(double speed) {
+    deployMotor.set(speed);
   }
 
   @Override
-  public void setIntakeMotorVoltage(double volts) {
-    deployMotor.setVoltage(volts);
+  public void setIntakeSpeed(double speed) {
+    deployMotor.set(speed);
+    SmartDashboard.putNumber("Intake Speed", speed);
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.intakeAppliedVolts = intakeMotor.getMotorVoltage().getValueAsDouble();
-    inputs.deployAppliedVolts = deployMotor.getMotorVoltage().getValueAsDouble();
   }
 }
