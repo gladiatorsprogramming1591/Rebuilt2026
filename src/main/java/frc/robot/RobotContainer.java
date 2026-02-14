@@ -32,7 +32,7 @@ import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.roller.Roller;
 import frc.robot.subsystems.roller.RollerIO;
-import frc.robot.subsystems.roller.RollerIOKraken;
+import frc.robot.subsystems.roller.KickerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
@@ -80,7 +80,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOKraken());
 
-        roller = new Roller(new RollerIOKraken());
+        roller = new Roller(new KickerIOKraken());
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
