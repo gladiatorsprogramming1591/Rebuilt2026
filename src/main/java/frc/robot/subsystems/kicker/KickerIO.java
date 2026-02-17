@@ -31,4 +31,3 @@ public interface KickerIO {
    */
   public default void setKickerSpeed(double speed) {}
 }
-

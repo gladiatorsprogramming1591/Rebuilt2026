@@ -12,13 +12,23 @@ public class Roller extends SubsystemBase {
     this.io = io;
   }
 
-  public Command runRollerMotor() {
+  public Command runTopRollerMotor() {
     return runEnd(
         () -> {
-          io.setRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED);
+          io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED);
         },
         () -> {
-          io.setRollerSpeed(0);
+          io.setTopRollerSpeed(0);
+        });
+  }
+
+  public Command runBottomRollerMotor() {
+    return runEnd(
+        () -> {
+          io.setBottomRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED);
+        },
+        () -> {
+          io.setBottomRollerSpeed(0);
         });
   }
 

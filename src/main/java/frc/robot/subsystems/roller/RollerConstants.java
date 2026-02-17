@@ -7,4 +7,8 @@ public final class RollerConstants {
   public static final double ROLLER_CURRENT_LIMIT = 20.0; // placeholder until tested
 
   public static final double ROLLER_MOTOR_SPEED = 0.2;
+
+  public static final int ROLLER_TOP_CAN_ID = 0;
+
+  public static final int ROLLER_BOTTOM_CAN_ID = 0;
 }

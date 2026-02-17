@@ -208,7 +208,7 @@ public class RobotContainer {
             intake
                 .deployIntake()); // TODO: needs to be a toggle eventually that runs until a certain
     // encoder value
-    driver_controller.x().whileTrue(roller.runRollerMotor());
+    driver_controller.x().whileTrue(roller.runTopRollerMotor());
   }
 
   /**

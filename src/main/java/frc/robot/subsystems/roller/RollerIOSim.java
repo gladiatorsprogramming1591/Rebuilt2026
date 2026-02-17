@@ -21,9 +21,15 @@ public class RollerIOSim implements RollerIO {
   }
 
   @Override
-  public void setRollerSpeed(double speed) {
+  public void setTopRollerSpeed(double speed) {
     this.speed = MathUtil.clamp(speed, 0, 1.0);
-    SmartDashboard.putNumber("Roller Speed", this.speed);
+    SmartDashboard.putNumber("Top Roller Speed", this.speed);
+  }
+
+  @Override
+  public void setBottomRollerSpeed(double speed) {
+    this.speed = MathUtil.clamp(speed, 0, 1.0);
+    SmartDashboard.putNumber("Bottom Roller Speed", this.speed);
   }
 
   @Override
