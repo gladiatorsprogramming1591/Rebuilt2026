@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -27,5 +28,10 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public class robotInitConstants {
+    public static final DigitalInput dIO_port = new DigitalInput(9);
+    public static final boolean isCompBot = dIO_port.get();
   }
 }
