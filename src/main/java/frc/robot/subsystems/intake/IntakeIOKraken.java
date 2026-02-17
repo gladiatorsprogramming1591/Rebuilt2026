@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeIOKraken implements IntakeIO {
@@ -36,6 +35,5 @@ public class IntakeIOKraken implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
-  }
+  public void updateInputs(IntakeIOInputs inputs) {}
 }

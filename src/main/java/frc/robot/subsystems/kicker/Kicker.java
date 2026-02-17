@@ -20,7 +20,7 @@ public class Kicker extends SubsystemBase {
         () -> {
           io.setKickerSpeed(0.0);
         });
-    }
+  }
 
   public void periodic() {
     io.updateInputs(inputs);

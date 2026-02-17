@@ -25,9 +25,16 @@ public interface RollerIO {
   }
 
   /**
-   * Set the motor speed to {@code speed}.
+   * Set the top motor speed to {@code speed}.
    *
    * @param speed speed to set motor to
    */
-  public default void setRollerSpeed(double speed) {}
+  public default void setTopRollerSpeed(double speed) {}
+
+  /**
+   * Set the bottom motor speed to {@code speed}.
+   *
+   * @param speed speed to set motor to
+   */
+  public default void setBottomRollerSpeed(double speed) {}
 }
