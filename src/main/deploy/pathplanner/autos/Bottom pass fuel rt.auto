@@ -13,25 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move and consume rt"
+            "pathName": "Move to NZ rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "ew Path"
+            "pathName": "Move from NZ to shoot rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "move to consume and pass"
+            "pathName": "Move to NZ extended rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Right pass fuel"
+            "pathName": "bottom pass fuel"
           }
         }
       ]
