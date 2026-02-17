@@ -7,11 +7,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class KickerIOKraken implements RollerIO {
+public class RollerIOKraken implements RollerIO {
   private final TalonFX rollerMotor = new TalonFX(RollerConstants.ROLLER_CAN_ID);
   private double speed = 0.0;
 
-  public KickerIOKraken() {
+  public RollerIOKraken() {
     var rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.SupplyCurrentLimit = RollerConstants.ROLLER_CURRENT_LIMIT;
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
