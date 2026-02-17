@@ -6,5 +6,5 @@ public final class RollerConstants {
   // public static final double ROLLER_MAX_SPEED = 1.0;
   public static final double ROLLER_CURRENT_LIMIT = 20.0; // placeholder until tested
 
-  public static final double ROLLER_MOTOR_SPEED = 2.0;
+  public static final double ROLLER_MOTOR_SPEED = 0.2;
 }

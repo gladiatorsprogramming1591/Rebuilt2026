@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RollerIOSim implements RollerIO {
-  private double volts = 0.0;
+  private double speed = 0.0;
 
   private final DCMotorSim intakeSim;
   private static final DCMotor INTAKE_GEARBOX = DCMotor.getKrakenX60Foc(1);
@@ -21,13 +21,13 @@ public class RollerIOSim implements RollerIO {
   }
 
   @Override
-  public void setRollerSpeed(double volts) {
-    this.volts = MathUtil.clamp(volts, 0, 12.0);
-    SmartDashboard.putNumber("Roller Speed", this.volts);
+  public void setRollerSpeed(double speed) {
+    this.speed = MathUtil.clamp(speed, 0, 1.0);
+    SmartDashboard.putNumber("Roller Speed", this.speed);
   }
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    inputs.rollerSpeed = this.volts;
+    inputs.rollerSpeed = this.speed;
   }
 }
