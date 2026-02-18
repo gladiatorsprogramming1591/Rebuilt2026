@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.179,
+        "y": 1.323
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.895447163575229,
+        "y": 0.2634980123638233
+      },
+      "isLocked": false,
+      "linkedName": "bottom start shoot"
+    },
+    {
+      "anchor": {
+        "x": 7.723474358974359,
+        "y": 3.035
+      },
+      "prevControl": {
+        "x": 7.79219965166515,
+        "y": -0.48032826833349507
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "bottom NZ extend"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Competion",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 53.37
+  },
+  "useDefaultConstraints": true
+}

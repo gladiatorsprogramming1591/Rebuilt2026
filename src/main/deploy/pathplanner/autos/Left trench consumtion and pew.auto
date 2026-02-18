@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L Start "
+            "pathName": "L start Sh"
           }
         },
         {
@@ -19,13 +19,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CONSUME BL"
+            "pathName": "Consumes"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Sho Lt"
+            "pathName": "move to shoot Lt "
           }
         }
       ]

@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R start Sh"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to NZ rt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move from NZ to shoot rt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to NZ extended rt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bottom pass fuel"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Competion",
+  "choreoAuto": false
+}
