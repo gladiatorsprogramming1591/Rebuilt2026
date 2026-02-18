@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 7.528768332069997,
-        "y": -0.5497161063447038
+        "y": -0.5497161063447042
       },
       "isLocked": false,
       "linkedName": "bottom NZ extend"
@@ -45,7 +45,7 @@
     "rotation": 53.37
   },
   "reversed": false,
-  "folder": " B Ally",
+  "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

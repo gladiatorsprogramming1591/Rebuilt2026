@@ -4,13 +4,15 @@
   "holonomicMode": true,
   "pathFolders": [
     " B Ally",
+    "Competion",
     "R ally",
     "Testing"
   ],
   "autoFolders": [
     "Blue Ally",
-    "Testing",
-    "Red ally"
+    "Competion",
+    "Red ally",
+    "Testing"
   ],
   "defaultMaxVel": 2.25,
   "defaultMaxAccel": 2.0,

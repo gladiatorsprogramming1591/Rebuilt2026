@@ -7,31 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "depo"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to NZ rt"
+            "pathName": "shoot from depo"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move from NZ to shoot rt"
+            "pathName": "Depo to NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to NZ extended rt"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "bottom pass fuel"
+            "pathName": "Shoot after NZ lt"
           }
         }
       ]

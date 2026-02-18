@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 0.36,
-        "y": 4.907115384615384
+        "x": 0.537243589743591,
+        "y": 5.0233974358974365
       },
       "prevControl": {
-        "x": 1.0023717948717965,
-        "y": 4.872230769230769
+        "x": 1.1796153846153876,
+        "y": 4.988512820512821
       },
       "nextControl": {
-        "x": 0.09743603123088701,
-        "y": 4.921374172341574
+        "x": 0.274679620974478,
+        "y": 5.037656223623626
       },
       "isLocked": false,
       "linkedName": null
@@ -48,7 +48,7 @@
   "constraintZones": [
     {
       "name": "Slow down at depo",
-      "minWaypointRelativePos": 0.6777408637873767,
+      "minWaypointRelativePos": 0.7397563676633419,
       "maxWaypointRelativePos": 1.2757475083056495,
       "constraints": {
         "maxVelocity": 2.0,
@@ -75,7 +75,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": " B Ally",
+  "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

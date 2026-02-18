@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depo shoot"
+            "pathName": "outpost shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Blue Ally",
   "choreoAuto": false
 }

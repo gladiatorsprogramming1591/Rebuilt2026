@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.711846153846155,
-        "y": 2.6396153846153845
+        "x": 1.5140128205128214,
+        "y": 6.779256410256411
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.432950423073453,
-        "y": 0.5321405334567868
+        "x": 2.6552770653015214,
+        "y": 7.401764180141156
       },
       "isLocked": false,
-      "linkedName": "NZ bottom"
+      "linkedName": "Shoot from depo"
     },
     {
       "anchor": {
-        "x": 3.179,
-        "y": 1.323
+        "x": 7.816500000000001,
+        "y": 5.233
       },
       "prevControl": {
-        "x": 4.54807862347973,
-        "y": 0.19486006066142392
+        "x": 6.828102564102566,
+        "y": 8.244705128205126
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "bottom start shoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.37
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -47.81555668421118
   },
   "useDefaultConstraints": true
 }

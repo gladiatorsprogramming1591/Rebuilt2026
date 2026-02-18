@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 3.616755626400633,
-        "y": 7.963538607229299
+        "y": 7.963538607229298
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -48.00000000000001
   },
   "reversed": false,
-  "folder": " B Ally",
+  "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0
