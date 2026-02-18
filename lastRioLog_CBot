@@ -1,0 +1,576 @@
+Ran on 2026-2-17 9:16 PM
+********** Robot program starting **********
+NT: Listening on NT3 port 1735, NT4 port 5810
+NT: Got a NT4 connection from 10.15.91.185 port 56755
+NT: CONNECTED NT4 client 'Elastic@1' (from 10.15.91.185:56755)
+[AdvantageKit] Logging to "/U/logs/akit_921ad7ec11067d44.wpilog"
+NT: Got a NT4 connection from 10.15.91.185 port 56757
+NT: CONNECTED RTT client (from 10.15.91.185:56757)
+DataLog: Logging to '/u/logs/FRC_TBD_4c7dc5eafea83052.wpilog' (5.7 GiB free space)
+[phoenix] CANbus Connected: canivore (can0, 8C1E206046324B532020204A424012FF)
+[phoenix] CANbus Network Up: canivore (can0, 8C1E206046324B532020204A424012FF)
+Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
+Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
+Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
+Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
+[phoenix] Library initialization is complete.
+Could not transmit CAN Frame.
+Could not transmit CAN Frame.
+Could not transmit CAN Frame.
+[phoenix] Signal Logger Started (Network: 8C1E206046324B532020204A424012FF)
+[phoenix] Signal Logger Started (Network: rio)
+[phoenix-diagnostics] Server 2026.1.0 (Jan 7 2026, 19:24:14) running on port: 1250
+
+Failed to parse JSON in file required by auto: right start pass fuel
+Error at org.json.simple.parser.Yylex.yylex(Yylex.java:470): Failed to parse JSON in file required by auto: right start pass fuel
+at org.json.simple.parser.Yylex.yylex(Yylex.java:470)
+at org.json.simple.parser.JSONParser.nextToken(JSONParser.java:226)
+at org.json.simple.parser.JSONParser.parse(JSONParser.java:80)
+at org.json.simple.parser.JSONParser.parse(JSONParser.java:59)
+at org.json.simple.parser.JSONParser.parse(JSONParser.java:53)
+at com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:94)
+at com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:63)
+at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooserWithOptionsModifier(AutoBuilder.java:450)
+at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:409)
+at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:397)
+at frc.robot.RobotContainer.<init>(RobotContainer.java:143)
+at frc.robot.Robot.<init>(Robot.java:71)
+at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:387)
+at edu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)
+at frc.robot.Main.main(Main.java:26)
+********** Robot program startup complete **********
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.399455s
+Roller.periodic(): 0.001614s
+buttons.run(): 0.023800s
+Vision.periodic(): 0.291513s
+Intake.periodic(): 0.001132s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.399455s
+Roller.periodic(): 0.001614s
+buttons.run(): 0.023800s
+Vision.periodic(): 0.291513s
+Intake.periodic(): 0.001132s
+SmartDashboard.updateValues(): 0.012781s
+disabledInit(): 0.008830s
+robotPeriodic(): 1.291321s
+LiveWindow.updateValues(): 0.000112s
+Shuffleboard.update(): 0.000074s
+disabledPeriodic(): 0.001725s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.012781s
+disabledInit(): 0.008830s
+robotPeriodic(): 1.291321s
+LiveWindow.updateValues(): 0.000112s
+Shuffleboard.update(): 0.000074s
+disabledPeriodic(): 0.001725s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.074627s
+Roller.periodic(): 0.000093s
+buttons.run(): 0.000111s
+Vision.periodic(): 0.005658s
+Intake.periodic(): 0.000538s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.074627s
+Roller.periodic(): 0.000093s
+buttons.run(): 0.000111s
+Vision.periodic(): 0.005658s
+Intake.periodic(): 0.000538s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.002615s
+robotPeriodic(): 0.039994s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000334s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002615s
+robotPeriodic(): 0.039994s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000334s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.030106s
+Roller.periodic(): 0.000074s
+buttons.run(): 0.000111s
+Vision.periodic(): 0.068988s
+Intake.periodic(): 0.000111s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.030106s
+Roller.periodic(): 0.000074s
+buttons.run(): 0.000111s
+Vision.periodic(): 0.068988s
+Intake.periodic(): 0.000111s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.002263s
+robotPeriodic(): 0.025729s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000371s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002263s
+robotPeriodic(): 0.025729s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000371s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.019051s
+Roller.periodic(): 0.000055s
+buttons.run(): 0.000093s
+Vision.periodic(): 0.002857s
+Intake.periodic(): 0.000093s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.019051s
+Roller.periodic(): 0.000055s
+buttons.run(): 0.000093s
+Vision.periodic(): 0.002857s
+Intake.periodic(): 0.000093s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.004230s
+robotPeriodic(): 0.036321s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.001558s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.004230s
+robotPeriodic(): 0.036321s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.001558s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.036803s
+Roller.periodic(): 0.000056s
+buttons.run(): 0.001595s
+Vision.periodic(): 0.005565s
+Intake.periodic(): 0.000055s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.036803s
+Roller.periodic(): 0.000056s
+buttons.run(): 0.001595s
+Vision.periodic(): 0.005565s
+Intake.periodic(): 0.000055s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+[AdvantageKit] Renaming log to "/U/logs/akit_26-02-18_02-13-32.wpilog"
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.006845s
+robotPeriodic(): 0.101116s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.002505s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.006845s
+robotPeriodic(): 0.101116s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.002505s
+DataLog: Renamed log file from 'FRC_TBD_4c7dc5eafea83052.wpilog' to 'FRC_20260218_021332.wpilog'
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.017381s
+Roller.periodic(): 0.000056s
+buttons.run(): 0.000130s
+Vision.periodic(): 0.015378s
+Intake.periodic(): 0.000074s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.017381s
+Roller.periodic(): 0.000056s
+buttons.run(): 0.000130s
+Vision.periodic(): 0.015378s
+Intake.periodic(): 0.000074s
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.006549s
+robotPeriodic(): 0.054388s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.010091s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.006549s
+robotPeriodic(): 0.054388s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.010091s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.017140s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000093s
+Vision.periodic(): 0.004323s
+Intake.periodic(): 0.000055s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.017140s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000093s
+Vision.periodic(): 0.004323s
+Intake.periodic(): 0.000055s
+SmartDashboard.updateValues(): 0.003172s
+robotPeriodic(): 0.045336s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.000650s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.003172s
+robotPeriodic(): 0.045336s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.000650s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.003005s
+robotPeriodic(): 0.019255s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.001948s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.003005s
+robotPeriodic(): 0.019255s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.001948s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.032388s
+Roller.periodic(): 0.000038s
+buttons.run(): 0.000742s
+Vision.periodic(): 0.004025s
+Intake.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.032388s
+Roller.periodic(): 0.000038s
+buttons.run(): 0.000742s
+Vision.periodic(): 0.004025s
+Intake.periodic(): 0.000037s
+SmartDashboard.updateValues(): 0.019811s
+robotPeriodic(): 0.017215s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000167s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.019811s
+robotPeriodic(): 0.017215s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000167s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.010500s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000167s
+Vision.periodic(): 0.021703s
+Intake.periodic(): 0.000056s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.010500s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000167s
+Vision.periodic(): 0.021703s
+Intake.periodic(): 0.000056s
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.004656s
+robotPeriodic(): 0.018086s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000853s
+disabledPeriodic(): 0.000149s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.004656s
+robotPeriodic(): 0.018086s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000853s
+disabledPeriodic(): 0.000149s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.008793s
+robotPeriodic(): 0.017400s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000185s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.008793s
+robotPeriodic(): 0.017400s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000185s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.039938s
+Roller.periodic(): 0.000019s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.004193s
+Intake.periodic(): 0.000055s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.039938s
+Roller.periodic(): 0.000019s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.004193s
+Intake.periodic(): 0.000055s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.001298s
+robotPeriodic(): 0.018995s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000204s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001298s
+robotPeriodic(): 0.018995s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000204s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.033946s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.005231s
+Intake.periodic(): 0.000056s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.033946s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.005231s
+Intake.periodic(): 0.000056s
+SmartDashboard.updateValues(): 0.002319s
+robotPeriodic(): 0.070991s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.000705s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002319s
+robotPeriodic(): 0.070991s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.000705s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.032759s
+Roller.periodic(): 0.000019s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.001910s
+Intake.periodic(): 0.000056s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.032759s
+Roller.periodic(): 0.000019s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.001910s
+Intake.periodic(): 0.000056s
+SmartDashboard.updateValues(): 0.001985s
+robotPeriodic(): 0.071752s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000426s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001985s
+robotPeriodic(): 0.071752s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000426s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.001317s
+robotPeriodic(): 0.028140s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000445s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001317s
+robotPeriodic(): 0.028140s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000445s
+CommandScheduler loop overrun
+Drive.periodic(): 0.019254s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000520s
+Vision.periodic(): 0.005547s
+Intake.periodic(): 0.000074s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.019254s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000520s
+Vision.periodic(): 0.005547s
+Intake.periodic(): 0.000074s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.011056s
+robotPeriodic(): 0.009758s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.004081s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.011056s
+robotPeriodic(): 0.009758s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.004081s
+CommandScheduler loop overrun
+Drive.periodic(): 0.044427s
+Roller.periodic(): 0.000130s
+buttons.run(): 0.000204s
+Vision.periodic(): 0.002931s
+Intake.periodic(): 0.000575s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.044427s
+Roller.periodic(): 0.000130s
+buttons.run(): 0.000204s
+Vision.periodic(): 0.002931s
+Intake.periodic(): 0.000575s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.002226s
+robotPeriodic(): 0.013096s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.024820s
+disabledPeriodic(): 0.000111s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002226s
+robotPeriodic(): 0.013096s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.024820s
+disabledPeriodic(): 0.000111s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.001799s
+robotPeriodic(): 0.023095s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000148s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001799s
+robotPeriodic(): 0.023095s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000148s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.004100s
+robotPeriodic(): 0.014450s
+LiveWindow.updateValues(): 0.011334s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.000501s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.004100s
+robotPeriodic(): 0.014450s
+LiveWindow.updateValues(): 0.011334s
+Shuffleboard.update(): 0.000037s
+disabledPeriodic(): 0.000501s
+CommandScheduler loop overrun
+Drive.periodic(): 0.014636s
+Roller.periodic(): 0.000019s
+buttons.run(): 0.000018s
+Vision.periodic(): 0.015897s
+Intake.periodic(): 0.000056s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.014636s
+Roller.periodic(): 0.000019s
+buttons.run(): 0.000018s
+Vision.periodic(): 0.015897s
+Intake.periodic(): 0.000056s
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.002913s
+robotPeriodic(): 0.018939s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.003172s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002913s
+robotPeriodic(): 0.018939s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.003172s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.016602s
+Roller.periodic(): 0.000093s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.018254s
+Intake.periodic(): 0.000055s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.016602s
+Roller.periodic(): 0.000093s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.018254s
+Intake.periodic(): 0.000055s
+SmartDashboard.updateValues(): 0.004879s
+robotPeriodic(): 0.075591s
+LiveWindow.updateValues(): 0.000296s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.002041s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.004879s
+robotPeriodic(): 0.075591s
+LiveWindow.updateValues(): 0.000296s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.002041s
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.007494s
+robotPeriodic(): 0.011816s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.023930s
+disabledPeriodic(): 0.000148s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.007494s
+robotPeriodic(): 0.011816s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.023930s
+disabledPeriodic(): 0.000148s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Drive.periodic(): 0.016232s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000018s
+Vision.periodic(): 0.023948s
+Intake.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.016232s
+Roller.periodic(): 0.000037s
+buttons.run(): 0.000018s
+Vision.periodic(): 0.023948s
+Intake.periodic(): 0.000037s
+SmartDashboard.updateValues(): 0.002671s
+robotPeriodic(): 0.113396s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.000501s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002671s
+robotPeriodic(): 0.113396s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.000501s
