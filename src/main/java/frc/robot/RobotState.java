@@ -19,8 +19,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * RobotState: localization + motion state only. - Field Pose Estimators (odometry + vision)
- * - Odometry-only pose for debugging - Timestamped fused-pose buffer for latency
+ * RobotState: localization + motion state only. - Field Pose Estimators (odometry + vision) -
+ * Odometry-only pose for debugging - Timestamped fused-pose buffer for latency
  * compensation/prediction - Measured & desired chassis speeds (robot & field frames) - Pose reset
  * with gyro offset anchoring
  */
@@ -156,7 +156,6 @@ public final class RobotState {
         timestampSeconds,
         VecBuilder.fill(xyStdDev, xyStdDev, Double.POSITIVE_INFINITY));
   }
-
 
   // ============================================================
   // Speeds

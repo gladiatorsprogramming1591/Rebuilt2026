@@ -1,13 +1,11 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -163,7 +161,8 @@ public class Vision extends SubsystemBase {
       SmartDashboard.putString("VisionMode", cam.getVisionMode().toString());
     }
     // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
-    // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't moving or disabled
+    // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't
+    // moving or disabled
     // RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
 
     // Cross-camera fuse (254-style inverse-variance weighting), then feed field estimator.
@@ -234,6 +233,7 @@ public class Vision extends SubsystemBase {
     // 6328 single-tag ambiguity gating
     if (pe.tagCount == 1 && pe.rawFiducials != null && pe.rawFiducials.length >= 1) {
       double ambiguity = pe.rawFiducials[0].ambiguity;
+      SmartDashboard.putNumber("Ambiguity", ambiguity);
       if (ambiguity > 0.5) { // conservative default; tune per camera
         Logger.recordOutput("Vision/Rejected/HighAmbiguity", ambiguity);
         SmartDashboard.putBoolean("Ambiguity OK", false);
@@ -248,19 +248,21 @@ public class Vision extends SubsystemBase {
         return Optional.empty();
       }
 
-      // Ignore flickering when too close to tags
-      var priorPose = RobotState.getInstance().getRobotPoseField();
-      if (pe.avgTagArea < 2.0) {
-        double yawDiff =
-            Math.abs(
-                MathUtil.angleModulus(
-                    priorPose.getRotation().getRadians() - pose.getRotation().getRadians()));
+      // TODO - had to comment this out after switching to MT1 tags, need to debug
+      // // Ignore flickering when too close to tags
+      // var priorPose = RobotState.getInstance().getRobotPoseField();
+      // SmartDashboard.putBoolean("YawDiff OK", true);
+      // if (pe.avgTagArea < 2.0) {
+      //   double yawDiff =
+      //       Math.abs(
+      //           MathUtil.angleModulus(
+      //               priorPose.getRotation().getRadians() - pose.getRotation().getRadians()));
 
-        SmartDashboard.putBoolean("YawDiff OK", yawDiff <= Units.degreesToRadians(5.0));
-        if (yawDiff > Units.degreesToRadians(5.0)) {
-          return Optional.empty();
-        }
-      }
+      //   if (yawDiff > Units.degreesToRadians(5.0)) {
+      //     SmartDashboard.putBoolean("YawDiff OK", false);
+      //     return Optional.empty();
+      //   }
+      // }
     }
 
     // 6328-style std-dev model: (dist^3.5 / tagCount) * coeff; looser in auto.
@@ -287,6 +289,10 @@ public class Vision extends SubsystemBase {
     // Trust yaw for multi-tag; else replace yaw with fused yaw (254 single-tag + gyro fusion idea).
     boolean trustYaw = pe.tagCount >= 2;
     Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
+
+    SmartDashboard.putNumber("xyStd", xyStd);
+    SmartDashboard.putNumber("out.x", out.getX());
+    SmartDashboard.putNumber("out.y", out.getY());
 
     // Logging (1678/254 style telemetry hygiene)
     Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out);
@@ -331,6 +337,7 @@ public class Vision extends SubsystemBase {
     double xyStd = cam.getPrimaryXYStandardDeviationCoefficient() * modeled;
 
     Pose2d out = (yawNow != null) ? new Pose2d(pe.pose.getTranslation(), yawNow) : pe.pose;
+
     int[] ids =
         (pe.rawFiducials == null)
             ? new int[0]

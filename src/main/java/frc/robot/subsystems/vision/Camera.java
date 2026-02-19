@@ -27,7 +27,7 @@ public class Camera {
   @Getter private final double secondaryXYStandardDeviationCoefficient;
   @Getter private final DoubleArrayPublisher robotHeadingPublisher;
   @Getter private final List<CameraDuty> cameraDuties;
-  @Getter private Vision.VisionEstimationMode visionMode = Vision.VisionEstimationMode.MT2;
+  @Getter private Vision.VisionEstimationMode visionMode = Vision.VisionEstimationMode.MT1;
 
   /**
    * Constructs a camera with a fixed transform and duties.

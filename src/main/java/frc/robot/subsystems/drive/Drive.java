@@ -211,8 +211,11 @@ public class Drive extends SubsystemBase {
               sampleTimestamps[i], modulePositions, Optional.ofNullable(rawGyroRotation));
     }
 
-    // Do this in either robot periodic or subsystem periodic
-    m_field.setRobotPose(RobotState.getInstance().getRobotPoseField());
+    Pose2d robotPose = RobotState.getInstance().getRobotPoseField();
+    SmartDashboard.putNumber("RobotPoseRot", robotPose.getRotation().getDegrees());
+    SmartDashboard.putNumber("RobotPoseX", robotPose.getX());
+    SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
+    m_field.setRobotPose(robotPose);
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);

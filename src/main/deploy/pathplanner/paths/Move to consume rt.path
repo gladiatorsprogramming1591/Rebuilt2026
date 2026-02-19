@@ -63,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 42.0
   },
   "reversed": false,
   "folder": " B Ally",
