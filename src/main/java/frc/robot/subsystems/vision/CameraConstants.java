@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-// import frc.robot.RobotState;
 import java.util.List;
 
 /**
@@ -51,7 +50,7 @@ public class CameraConstants {
   /** Factory for robot cameras. Edit transforms and duties to match your robot configuration. */
   public static class RobotCameras {
     /** Left-side Limelight configuration including physical transform and duties. */
-    private static final Camera LEFT =
+    public static final Camera LEFT =
         new Camera(
             new CameraIOLimelight("one", CameraType.LIMELIGHT_4),
             Limelight3GConstants.HORIZONTAL_FOV,
@@ -70,7 +69,7 @@ public class CameraConstants {
                 new Rotation3d(0, Units.degreesToRadians(35.5), Units.degreesToRadians(180.0))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
-    private static final Camera RIGHT =
+    public static final Camera RIGHT =
         new Camera(
             new CameraIOLimelight("two", CameraType.LIMELIGHT_4),
             Limelight4Constants.HORIZONTAL_FOV,
@@ -83,7 +82,10 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
-                0.116386, 0.266855, 0.321318, new Rotation3d(0, 0, Units.degreesToRadians(14))));
+                -0.08413,
+                0.25955,
+                0.41275,
+                new Rotation3d(0, Units.degreesToRadians(19.654), Units.degreesToRadians(180.0))));
     /*
         private static final Camera LEFT_SIM =
             new Camera(
@@ -141,8 +143,7 @@ public class CameraConstants {
                     new Rotation3d(0.0, 0.0, Units.degreesToRadians(-14))));
     */
     /** Cameras used by the robot. Order is not significant. */
-    public static final Camera[] CAMERAS = {LEFT};
-
+    // public static final Camera[] CAMERAS = {robotInitConstants.isCompBot ? RIGHT : LEFT};
     // public static final Camera[] SIM_CAMERAS = {LEFT_SIM, RIGHT_SIM};
   }
 
