@@ -12,20 +12,20 @@
         "y": 6.510023191776884
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left start"
     },
     {
       "anchor": {
-        "x": 3.1768461538461548,
-        "y": 5.2
+        "x": 3.014,
+        "y": 5.896
       },
       "prevControl": {
-        "x": 3.1418503345842343,
-        "y": 4.952461533021255
+        "x": 2.9790041807380794,
+        "y": 5.648461533021255
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left start shoot"
     }
   ],
   "rotationTargets": [],

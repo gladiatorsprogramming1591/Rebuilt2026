@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5373205128205143,
-        "y": 0.7558461538461541
+        "x": 3.5826528808634586,
+        "y": 0.884675718613779
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start"
     },
     {
       "anchor": {
-        "x": 3.316,
-        "y": 3.012
+        "x": 3.179,
+        "y": 1.323
       },
       "prevControl": {
-        "x": 3.066,
-        "y": 3.012
+        "x": 2.975439468452066,
+        "y": 1.57281646970687
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": null
+      "linkedName": "bottom start shoot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 32.369
+    "rotation": 53.37
   },
   "reversed": false,
   "folder": "Competion",

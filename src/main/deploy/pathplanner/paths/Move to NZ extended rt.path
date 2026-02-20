@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.177,
-        "y": 2.43
+        "x": 3.179,
+        "y": 1.323
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1419358974358986,
-        "y": 0.03489743589743499
+        "x": 3.2466153846153856,
+        "y": 0.000012820512820255203
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start shoot"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 2.1861153846153853
       },
       "prevControl": {
-        "x": 6.73721770864475,
+        "x": 6.737217708644749,
         "y": 0.43758747277603915
       },
       "nextControl": {
         "x": 7.871730769230771,
-        "y": 2.4026217355614947
+        "y": 2.402621735561495
       },
       "isLocked": false,
       "linkedName": null
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "NZ extended bottom "
     }
   ],
   "rotationTargets": [],
@@ -64,7 +64,7 @@
   "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 45.0
+    "rotation": 53.37
   },
   "useDefaultConstraints": true
 }

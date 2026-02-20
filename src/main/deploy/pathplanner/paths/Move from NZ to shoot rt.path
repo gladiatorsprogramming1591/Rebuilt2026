@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.828,
-        "y": 2.337
+        "x": 7.781615384615385,
+        "y": 2.6163589743589752
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.576204819277107,
-        "y": 0.13380722891566288
+        "x": 6.816474358974359,
+        "y": 0.5465384615384616
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom NZ"
     },
     {
       "anchor": {
-        "x": 3.0902650602409643,
-        "y": 2.337
+        "x": 3.179,
+        "y": 1.323
       },
       "prevControl": {
-        "x": 2.412746987951807,
-        "y": -0.24866265060240966
+        "x": 3.665230769230771,
+        "y": -0.03487179487179559
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start shoot"
     }
   ],
   "rotationTargets": [
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 50.0
+    "rotation": 53.37
   },
   "reversed": false,
   "folder": "Competion",

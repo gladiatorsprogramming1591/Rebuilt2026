@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5838333333333345,
-        "y": 4.035
+        "x": 2.0,
+        "y": 4.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8536923076923104,
-        "y": 2.837410256410257
+        "x": 1.2698589743589759,
+        "y": 3.3024102564102567
       },
       "isLocked": false,
       "linkedName": "middle start shoot"
@@ -69,7 +69,7 @@
   "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -11.0
   },
   "useDefaultConstraints": true
 }

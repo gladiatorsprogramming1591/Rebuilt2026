@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2,
-        "y": 5.6
+        "x": 3.014,
+        "y": 5.896
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.383491423985574,
-        "y": 8.22404961538652
+        "x": 2.828000000000001,
+        "y": 8.488602564102564
+      },
+      "isLocked": false,
+      "linkedName": "Left start shoot"
+    },
+    {
+      "anchor": {
+        "x": 7.769987179487181,
+        "y": 5.709461538461539
+      },
+      "prevControl": {
+        "x": 7.374628205128206,
+        "y": 7.628115384615384
+      },
+      "nextControl": {
+        "x": 7.820442280370764,
+        "y": 5.464605901820624
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.7,
-        "y": 4.4
+        "x": 7.769987179487181,
+        "y": 4.51175641025641
       },
       "prevControl": {
-        "x": 5.793239901093903,
-        "y": 8.142227401591146
+        "x": 7.849237387927185,
+        "y": 4.274650095574123
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Top NZ extended"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +64,7 @@
   "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -48.00000000000001
+    "rotation": -45.0
   },
   "useDefaultConstraints": true
 }

@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.5838333333333345,
-        "y": 4.035
+        "x": 2.0,
+        "y": 4.5
       },
       "prevControl": {
-        "x": 3.3338333333333345,
-        "y": 4.035
+        "x": 1.75,
+        "y": 4.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -11.0
   },
   "reversed": false,
-  "folder": " B Ally",
+  "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

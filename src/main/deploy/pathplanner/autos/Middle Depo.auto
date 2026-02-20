@@ -7,6 +7,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Middle start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "depo"
           }
         },
