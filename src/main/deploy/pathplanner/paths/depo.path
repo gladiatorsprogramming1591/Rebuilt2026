@@ -49,7 +49,7 @@
     {
       "name": "Slow down at depo",
       "minWaypointRelativePos": 0.5625692137320021,
-      "maxWaypointRelativePos": 1.2757475083056495,
+      "maxWaypointRelativePos": 1.3244739756367658,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 3.0,
