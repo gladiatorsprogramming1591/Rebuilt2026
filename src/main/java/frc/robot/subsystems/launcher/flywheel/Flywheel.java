@@ -5,25 +5,24 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2026.subsystems.launcher.flywheel;
+package frc.robot.subsystems.launcher.flywheel;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.launcher.LaunchCalculator;
+import frc.robot.subsystems.launcher.flywheel.FlywheelIO.FlywheelIOOutputMode;
+import frc.robot.subsystems.launcher.flywheel.FlywheelIO.FlywheelIOOutputs;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.littletonrobotics.frc2026.Robot;
-import org.littletonrobotics.frc2026.subsystems.launcher.LaunchCalculator;
-import org.littletonrobotics.frc2026.subsystems.launcher.flywheel.FlywheelIO.FlywheelIOOutputMode;
-import org.littletonrobotics.frc2026.subsystems.launcher.flywheel.FlywheelIO.FlywheelIOOutputs;
-import org.littletonrobotics.frc2026.util.FullSubsystem;
-import org.littletonrobotics.frc2026.util.LoggedTracer;
-import org.littletonrobotics.frc2026.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Flywheel extends FullSubsystem {
+public class Flywheel extends SubsystemBase {
   private final String name;
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
@@ -72,6 +71,7 @@ public class Flywheel extends FullSubsystem {
     outputs.kP = kP.get();
     outputs.kD = kD.get();
 
+    /*
     disconnected.set(
         Robot.showHardwareAlerts() && !motorConnectedDebouncer.calculate(inputs.connected));
     follower1Disconnected.set(
@@ -83,17 +83,19 @@ public class Flywheel extends FullSubsystem {
     follower3Disconnected.set(
         Robot.showHardwareAlerts()
             && !motorFollower3ConnectedDebouncer.calculate(inputs.follower3Connected));
+    */
 
     LoggedTracer.record("Flywheel/Periodic");
   }
 
+  /* Depends on FullSubsystem from 6328
   @Override
   public void periodicAfterScheduler() {
     Logger.recordOutput(name + "/Mode", outputs.mode);
     io.applyOutputs(outputs);
 
     LoggedTracer.record("Flywheel/AfterScheduler");
-  }
+  } */
 
   /** Run closed loop at the specified velocity. */
   private void runVelocity(double velocityRadsPerSec) {

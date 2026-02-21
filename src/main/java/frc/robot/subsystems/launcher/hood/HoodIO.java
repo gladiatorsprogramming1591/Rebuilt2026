@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2026.subsystems.launcher.hood;
+package frc.robot.subsystems.launcher.hood;
 
 import org.littletonrobotics.junction.AutoLog;
 

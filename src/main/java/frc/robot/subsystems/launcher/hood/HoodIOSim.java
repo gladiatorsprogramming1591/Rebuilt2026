@@ -5,13 +5,13 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2026.subsystems.launcher.hood;
+package frc.robot.subsystems.launcher.hood;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import org.littletonrobotics.frc2026.Constants;
+import frc.robot.Constants;
 
 public class HoodIOSim implements HoodIO {
   private static final DCMotor motorModel = DCMotor.getKrakenX44(1);

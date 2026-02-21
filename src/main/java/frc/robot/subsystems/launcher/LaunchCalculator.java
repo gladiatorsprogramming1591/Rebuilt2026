@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2026.subsystems.launcher;
+package frc.robot.subsystems.launcher;
 
-import static org.littletonrobotics.frc2026.subsystems.launcher.LauncherConstants.*;
+import static frc.robot.subsystems.launcher.LauncherConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -19,12 +19,12 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.Constants;
+import frc.robot.RobotState;
+import frc.robot.util.FieldConstants;
+import frc.robot.util.geometry.AllianceFlipUtil;
+import frc.robot.util.geometry.GeomUtil;
 import lombok.experimental.ExtensionMethod;
-import org.littletonrobotics.frc2026.Constants;
-import org.littletonrobotics.frc2026.FieldConstants;
-import org.littletonrobotics.frc2026.RobotState;
-import org.littletonrobotics.frc2026.util.geometry.AllianceFlipUtil;
-import org.littletonrobotics.frc2026.util.geometry.GeomUtil;
 import org.littletonrobotics.junction.Logger;
 
 @ExtensionMethod({GeomUtil.class})
@@ -116,8 +116,8 @@ public class LaunchCalculator {
     }
 
     // Calculate estimated pose while accounting for phase delay
-    Pose2d estimatedPose = RobotState.getInstance().getEstimatedPose();
-    ChassisSpeeds robotRelativeVelocity = RobotState.getInstance().getRobotVelocity();
+    Pose2d estimatedPose = RobotState.getInstance().getRobotPoseField();
+    ChassisSpeeds robotRelativeVelocity = RobotState.getInstance().getMeasuredRobotRelativeSpeeds();
     estimatedPose =
         estimatedPose.exp(
             new Twist2d(
@@ -135,8 +135,10 @@ public class LaunchCalculator {
 
     // Calculate field relative launcher velocity
     // This isn't actually the launcherVelocity given it won't account for angular velocity of robot
-    double launcherVelocityX = RobotState.getInstance().getFieldVelocity().vxMetersPerSecond;
-    double launcherVelocityY = RobotState.getInstance().getFieldVelocity().vyMetersPerSecond;
+    double launcherVelocityX =
+        RobotState.getInstance().getMeasuredFieldRelativeSpeeds().vxMetersPerSecond;
+    double launcherVelocityY =
+        RobotState.getInstance().getMeasuredFieldRelativeSpeeds().vyMetersPerSecond;
 
     // Account for imparted velocity by robot (launcher) to offset
     double timeOfFlight = timeOfFlightMap.get(launcherToTargetDistance);

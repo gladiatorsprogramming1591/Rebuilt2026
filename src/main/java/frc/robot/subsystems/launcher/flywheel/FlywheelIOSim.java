@@ -5,14 +5,14 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2026.subsystems.launcher.flywheel;
+package frc.robot.subsystems.launcher.flywheel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import org.littletonrobotics.frc2026.Constants;
+import frc.robot.Constants;
 
 public class FlywheelIOSim implements FlywheelIO {
   private static final DCMotor motorModel = DCMotor.getKrakenX60(1);

@@ -5,30 +5,27 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.littletonrobotics.frc2026.subsystems.launcher.hood;
+package frc.robot.subsystems.launcher.hood;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.launcher.LaunchCalculator;
+import frc.robot.subsystems.launcher.hood.HoodIO.HoodIOOutputMode;
+import frc.robot.subsystems.launcher.hood.HoodIO.HoodIOOutputs;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Setter;
-import org.littletonrobotics.frc2026.CompBotMechanism3d;
-import org.littletonrobotics.frc2026.Robot;
-import org.littletonrobotics.frc2026.subsystems.launcher.LaunchCalculator;
-import org.littletonrobotics.frc2026.subsystems.launcher.hood.HoodIO.HoodIOOutputMode;
-import org.littletonrobotics.frc2026.subsystems.launcher.hood.HoodIO.HoodIOOutputs;
-import org.littletonrobotics.frc2026.util.FullSubsystem;
-import org.littletonrobotics.frc2026.util.LoggedTracer;
-import org.littletonrobotics.frc2026.util.LoggedTunableNumber;
+// import org.littletonrobotics.frc2026.CompBotMechanism3d;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Hood extends FullSubsystem {
+public class Hood extends SubsystemBase {
   private static final double minAngle = Units.degreesToRadians(15);
   private static final double maxAngle = Units.degreesToRadians(45);
 
@@ -69,8 +66,8 @@ public class Hood extends FullSubsystem {
     io.updateInputs(inputs);
     Logger.processInputs("Hood", inputs);
 
-    motorDisconnectedAlert.set(
-        Robot.showHardwareAlerts() && !motorConnectedDebouncer.calculate(inputs.motorConnected));
+    // motorDisconnectedAlert.set(
+    //     Robot.showHardwareAlerts() && !motorConnectedDebouncer.calculate(inputs.motorConnected));
 
     // Stop when disabled
     if (DriverStation.isDisabled() || !hoodZeroed) {
@@ -86,12 +83,13 @@ public class Hood extends FullSubsystem {
     outputs.kD = kD.get();
 
     // Visualize launcher in 3D
-    CompBotMechanism3d.getMeasured().setHoodAngle(new Rotation2d(getMeasuredAngleRad()));
+    // CompBotMechanism3d.getMeasured().setHoodAngle(new Rotation2d(getMeasuredAngleRad()));
 
     // Record cycle time
     LoggedTracer.record("Hood/Periodic");
   }
 
+  /* This depends on FullSubsystem from original 6328 code
   @Override
   public void periodicAfterScheduler() {
     if (DriverStation.isEnabled() && hoodZeroed) {
@@ -106,7 +104,7 @@ public class Hood extends FullSubsystem {
 
     io.applyOutputs(outputs);
     LoggedTracer.record("Hood/AfterScheduler");
-  }
+  } */
 
   private void setGoalParams(double angle, double velocity) {
     goalAngle = angle;
