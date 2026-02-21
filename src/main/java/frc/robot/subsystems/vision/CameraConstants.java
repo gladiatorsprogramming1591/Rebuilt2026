@@ -85,7 +85,7 @@ public class CameraConstants {
                 -0.08413, // forward + /backward -
                 -0.25955, // side right + /left -
                 0.41275, // up + / down -
-                new Rotation3d(0, Units.degreesToRadians(19.654), Units.degreesToRadians(0.0))));
+                new Rotation3d(0, Units.degreesToRadians(8.6), Units.degreesToRadians(0.0))));
     /*
         private static final Camera LEFT_SIM =
             new Camera(
