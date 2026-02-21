@@ -21,6 +21,7 @@ public class HoodIOKraken implements HoodIO {
         .getConfigurator()
         .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(5.0));
   }
+
   @Override
   public void setHoodSpeed(double speed) {
     this.speed = MathUtil.clamp(speed, 0, 1.0);
