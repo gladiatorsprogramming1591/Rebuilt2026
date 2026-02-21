@@ -22,6 +22,14 @@ public class Kicker extends SubsystemBase {
         });
   }
 
+  public Command startKickerMotor() {
+    return new RunCommand(()-> io.setKickerSpeed(KickerConstants.KICKER_MOTOR_SPEED));
+  }
+
+  public Command stopKickerMotor() {
+    return new RunCommand(()-> io.setKickerSpeed(0.0));
+  }
+
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake speed", inputs);

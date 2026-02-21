@@ -217,6 +217,12 @@ public class RobotContainer {
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
   }
 
+  public Command shoot() {
+    return kicker.startKickerMotor()
+        .andThen(roller.startRollerMotors())
+        .andThen(intake.stowIntakeOff());
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
