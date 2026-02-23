@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
  * RobotState: localization + motion state only. - Field & Reef Pose Estimators (odometry + vision)
@@ -28,6 +29,8 @@ public final class RobotState {
 
   // ===== Singleton =====
   private static RobotState instance;
+
+  @Getter @AutoLogOutput private Pose2d estimatedPose = Pose2d.kZero;
 
   public static RobotState getInstance() {
     if (instance == null) instance = new RobotState();
@@ -96,6 +99,8 @@ public final class RobotState {
         new SwerveModulePosition(), new SwerveModulePosition(),
         new SwerveModulePosition(), new SwerveModulePosition()
       };
+
+  @Getter @Setter private ChassisSpeeds robotVelocity = new ChassisSpeeds();
 
   // ===== Timestamped fused field pose buffer =====
   private static final double kPoseBufferSecs = 2.0;
@@ -262,6 +267,10 @@ public final class RobotState {
 
   public Rotation2d getYawForVision() {
     return getRobotPoseField().getRotation();
+  }
+
+  public ChassisSpeeds getFieldVelocity() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(robotVelocity, headingOffset);
   }
 
   /** Constant-velocity lookahead using measured robot-relative speeds. */

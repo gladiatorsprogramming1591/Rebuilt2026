@@ -7,6 +7,8 @@ public interface ShooterIO {
   public static class ShooterIOInputs {
     public double shooterSpeed = 0.0;
     public double shooterVelocity = 0.0;
+    public double kP = 0.0;
+    public double kD = 0.0;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}

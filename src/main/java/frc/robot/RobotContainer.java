@@ -223,7 +223,7 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    driver_controller.a().whileTrue(intake.runIntakeMotor());
+    driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor());
     driver_controller
         .b()
         .whileTrue(
