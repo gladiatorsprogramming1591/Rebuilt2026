@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
@@ -28,7 +29,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command stopIntakeMotor() {
-    return new RunCommand(()-> io.setIntakeSpeed(0.0));
+    return new RunCommand(() -> io.setIntakeSpeed(0.0));
   }
 
   public Command deployIntake() {
@@ -53,12 +54,12 @@ public class Intake extends SubsystemBase {
 
   public Command deployIntakeOn() {
     return deployIntake()
-        .andThen(startIntakeMotor());
+        .alongWith(
+            new WaitCommand(IntakeConstants.INTAKE_DELAY_SECONDS).andThen(startIntakeMotor()));
   }
 
   public Command stowIntakeOff() {
-    return stowIntake()
-      .andThen(stopIntakeMotor());
+    return stopIntakeMotor().andThen(stowIntake());
   }
 
   public void periodic() {

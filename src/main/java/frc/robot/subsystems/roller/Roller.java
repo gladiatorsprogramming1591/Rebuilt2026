@@ -34,13 +34,13 @@ public class Roller extends SubsystemBase {
   }
 
   public Command startRollerMotors() {
-    return new RunCommand(()-> io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED))
-      .andThen(()-> io.setBottomRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED));
+    return new RunCommand(() -> io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED))
+        .andThen(() -> io.setBottomRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED));
   }
 
   public Command stopRollerMotors() {
-    return new RunCommand(()-> io.setTopRollerSpeed(0.0))
-      .andThen(()-> io.setBottomRollerSpeed(0.0));
+    return new RunCommand(() -> io.setTopRollerSpeed(0.0))
+        .andThen(() -> io.setBottomRollerSpeed(0.0));
   }
 
   public void periodic() {

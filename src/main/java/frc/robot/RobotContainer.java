@@ -39,11 +39,11 @@ import frc.robot.subsystems.roller.Roller;
 import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
-import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -237,12 +237,18 @@ public class RobotContainer {
                 .deployIntake()); // TODO: needs to be a toggle eventually that runs until a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
+
+    // TODO: Delete later. only for initial testing.
+    driver_controller.povLeft().onTrue(intake.deployIntakeOn());
+    driver_controller.povUp().onTrue(intake.stowIntakeOff());
+    driver_controller.povRight().onTrue(shoot());
   }
 
   public Command shoot() {
-    return kicker.startKickerMotor()
-        .andThen(roller.startRollerMotors())
-        .andThen(intake.stowIntakeOff());
+    return kicker
+        .startKickerMotor()
+        .alongWith(roller.startRollerMotors())
+        .alongWith(intake.stowIntakeOff());
   }
 
   /**
