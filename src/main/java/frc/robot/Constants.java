@@ -29,5 +29,5 @@ public final class Constants {
     REPLAY
   }
 
-  public static double loopPeriodSecs;
+  public static double loopPeriodSecs = 0.02;
 }

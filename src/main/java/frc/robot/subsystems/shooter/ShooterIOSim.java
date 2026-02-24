@@ -1,10 +1,8 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterIOSim implements ShooterIO {
   private DCMotorSim shooterSim =
@@ -13,24 +11,18 @@ public class ShooterIOSim implements ShooterIO {
               DCMotor.getKrakenX44Foc(2), 0.004, ShooterConstants.SHOOTER_MOTOR_REDUCTION),
           DCMotor.getKrakenX44Foc(2));
 
-  private double shooterSpeed = 0.0;
   private double shooterVelocity = 0.0;
 
+  @Override
+  public void runShooter(double shooterVelocity) {
+    this.shooterVelocity = shooterVelocity;
+  }
+
+  @Override
+  public void runShooterTarget(double shooterVelocity) {}
+
+  @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    shooterSim.setInputVoltage(shooterSpeed);
-    shooterSim.update(0.02);
-
-    inputs.shooterSpeed = shooterSpeed;
-  }
-
-  @Override
-  public void setShooterSpeed(double speed) {
-    shooterSpeed = MathUtil.clamp(speed, -12.0, 12.0);
-  }
-
-  @Override
-  public void setShooterSpeedVelocity(double shooterVelocity) {
-    shooterVelocity = MathUtil.clamp(shooterVelocity, 0, ShooterConstants.SHOOTER_MAX_VELOCITY);
-    SmartDashboard.putNumber("Shooter Velocity", shooterVelocity);
+    inputs.shooterVelocity = shooterVelocity;
   }
 }

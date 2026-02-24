@@ -25,12 +25,16 @@ public class Shooter extends SubsystemBase {
   }
 
   private void runShooter(double shooterSpeed) {
-    io.setShooterSpeedVelocity(shooterSpeed);
+    io.runShooter(shooterSpeed);
   }
 
   public Command runShooterTarget() {
     return runEnd(
-        () -> runShooter(ShooterCalculation.getInstance().getParameters().flywheelSpeed()),
-        () -> runShooter(0));
+        () -> {
+          io.runShooter(ShooterCalculation.getInstance().getParameters().flywheelSpeed());
+        },
+        () -> {
+          io.runShooter(0);
+        });
   }
 }
