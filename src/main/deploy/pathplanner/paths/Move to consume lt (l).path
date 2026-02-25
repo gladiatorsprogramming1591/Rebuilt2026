@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.921,
-        "y": 5.477
+        "x": 3.014,
+        "y": 5.896
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.290162576760546,
-        "y": 5.400275860726495
+        "x": 2.037282051278795,
+        "y": 7.372294871801581
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left start shoot"
     },
     {
       "anchor": {
-        "x": 7.060666666666667,
-        "y": 5.477
+        "x": 7.456,
+        "y": 6.326
       },
       "prevControl": {
-        "x": 6.810672402486066,
-        "y": 5.478693480675971
+        "x": 6.886243589740332,
+        "y": 8.13975641026312
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 154.83212985021845
+    "rotation": -48.43
   },
   "reversed": false,
   "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -57.64908367390105
+    "rotation": -45.0
   },
   "useDefaultConstraints": true
 }

@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Start pew"
+            "pathName": "Left start Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume lt"
+            "pathName": "Move to consume lt (l)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consume "
+            "pathName": "Consume (l)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to pew lt  "
+            "pathName": "move to shoot Lt (m)"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Red ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }
