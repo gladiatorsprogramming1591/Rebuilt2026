@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle start"
+            "pathName": "Right start Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume rt (m)"
+            "pathName": "Move to consumes rt (r)"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Consume (r)"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right pass fuel"
           }
         }
       ]
