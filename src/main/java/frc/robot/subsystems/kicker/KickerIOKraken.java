@@ -32,5 +32,6 @@ public class KickerIOKraken implements KickerIO {
   @Override
   public void updateInputs(KickerIOInputs inputs) {
     inputs.kickerSpeed = this.speed;
+    SmartDashboard.putNumber("Kicker Velocity", kickerMotor.getVelocity().getValueAsDouble());
   }
 }

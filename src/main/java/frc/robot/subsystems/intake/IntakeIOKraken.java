@@ -26,6 +26,7 @@ public class IntakeIOKraken implements IntakeIO {
   @Override
   public void setDeploySpeed(double speed) {
     deployMotor.set(speed);
+    SmartDashboard.putNumber("Deploy Set Speed", speed);
   }
 
   @Override
@@ -35,5 +36,8 @@ public class IntakeIOKraken implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {}
+  public void updateInputs(IntakeIOInputs inputs) {
+    SmartDashboard.putNumber("Deploy Velocity", deployMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
+  }
 }

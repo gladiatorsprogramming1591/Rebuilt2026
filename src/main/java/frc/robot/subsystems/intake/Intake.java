@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.littletonrobotics.junction.Logger;
@@ -25,11 +25,11 @@ public class Intake extends SubsystemBase {
   }
 
   public Command startIntakeMotor() {
-    return new RunCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED));
+    return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED), this);
   }
 
   public Command stopIntakeMotor() {
-    return new RunCommand(() -> io.setIntakeSpeed(0.0));
+    return new InstantCommand(() -> io.setIntakeSpeed(0.0), this);
   }
 
   public Command deployIntake() {

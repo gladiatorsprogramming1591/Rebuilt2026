@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import frc.robot.subsystems.shooter.ShooterConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,8 +19,8 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants;
 import frc.robot.RobotState;
-import frc.robot.util.FieldConstants;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.FieldConstants;
 import frc.robot.util.GeomUtil;
 import lombok.experimental.ExtensionMethod;
 import org.littletonrobotics.junction.Logger;
@@ -129,7 +128,8 @@ public class ShooterCalculation {
         AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
 
     // Calculate distance from launcher to target
-    Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToLauncher.toTransform2d());
+    Pose2d launcherPosition =
+        estimatedPose.transformBy(ShooterConstants.robotToLauncher.toTransform2d());
     double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
 
     // Calculate field relative launcher velocity
@@ -168,7 +168,9 @@ public class ShooterCalculation {
                     -1.0,
                     1.0)));
     Rotation2d driveAngle =
-        fieldToHubAngle.plus(hubAngle).plus(ShooterConstants.robotToLauncher.getRotation().toRotation2d());
+        fieldToHubAngle
+            .plus(hubAngle)
+            .plus(ShooterConstants.robotToLauncher.getRotation().toRotation2d());
 
     double hoodAngle = hoodAngleMap.get(lookaheadLauncherToTargetDistance).getRadians();
 
