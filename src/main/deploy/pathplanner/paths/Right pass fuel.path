@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.828,
-        "y": 2.337
+        "x": 7.781615384615385,
+        "y": 2.6163589743589752
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.288740808279593,
-        "y": 2.560994677432153
+        "x": 8.242356192894977,
+        "y": 2.840353651791128
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom NZ"
     },
     {
       "anchor": {
-        "x": 6.933,
-        "y": 1.895
+        "x": 6.31646153846154,
+        "y": 2.337282051282052
       },
       "prevControl": {
-        "x": 6.67030275476556,
-        "y": 1.7709556521981553
+        "x": 6.0537642932271,
+        "y": 2.2132377034802073
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,10 +45,10 @@
     "rotation": 162.02863529917533
   },
   "reversed": false,
-  "folder": " B Ally",
+  "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 50.93189699846426
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

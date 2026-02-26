@@ -7,25 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume lt "
+            "pathName": "Middle start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consumes"
+            "pathName": "Move to consume lt (m)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "move to shoot Lt "
+            "pathName": "Consume (l)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move to shoot Lt (m)"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }

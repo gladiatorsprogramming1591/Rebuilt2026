@@ -7,25 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Box pt1"
+            "pathName": "Box pt.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Box pt2"
+            "pathName": "Box pt.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Box pt3"
+            "pathName": "Box pt.3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Box pt4"
+            "pathName": "Box pt.4"
           }
         }
       ]
