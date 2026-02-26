@@ -5,8 +5,9 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    public double intakeSpeed = 0.0;
     public double deploySpeed = 0.0;
+    public double deployTorqueCurrentFOC = 0.0;
+    public double intakeSpeed = 0.0;
   }
 
   /**
@@ -26,15 +27,25 @@ public interface IntakeIO {
     return false;
   }
   /**
-   * sets the deployment motor's voltage
+   * sets the deployment motor's duty cycle
    *
-   * @param speed voltage value from -12 to 12
+   * @param speed duty cycle value from -1 to 1
+   */
+  public default void setDeploySpeed(double speed) {}
+  /**
+   * sets the deploy motor's torque current (FOC)
+   *
+   * @param current current value (in Amps)
+   */
+  public default void setDeployTorqueCurrentFOC(double current) {}
+  /**
+   * sets the intake motor's duty cycle
+   *
+   * @param speed duty cycle value from -1 to 1
    */
   public default void setIntakeSpeed(double speed) {}
-  /**
-   * sets the roller motor's voltage
-   *
-   * @param volts voltage value from -12 to 12
-   */
-  public default void setDeploySpeed(double volts) {}
+  /** stops the deploy motor */
+  public default void stopDeployMotor() {}
+  /** stops the intake motor */
+  public default void stopIntakeMotor() {}
 }

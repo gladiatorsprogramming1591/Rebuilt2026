@@ -17,27 +17,45 @@ public class IntakeIOSim implements IntakeIO {
               DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.DEPLOY_MOTOR_REDUCTION),
           DCMotor.getKrakenX44Foc(1));
 
-  private double intakeAppliedVolts = 0.0;
-  private double deployAppliedVolts = 0.0;
+  private double deployAppliedSpeed;
+  private double deployAppliedTorqueCurrentFOC;
+  private double intakeAppliedSpeed;
 
   public IntakeIOSim() {
-    intakeAppliedVolts = 0.5;
-    deployAppliedVolts = 0.5;
+    deployAppliedSpeed = 0.0;
+    deployAppliedTorqueCurrentFOC = 0.0;
+    intakeAppliedSpeed = 0.0;
   }
 
   @Override
-  public void setDeploySpeed(double volts) {
-    deployAppliedVolts = volts;
+  public void setDeploySpeed(double speed) {
+    deployAppliedSpeed = speed;
   }
 
   @Override
-  public void setIntakeSpeed(double volts) {
-    intakeAppliedVolts = volts;
+  public void setDeployTorqueCurrentFOC(double current) {
+    deployAppliedTorqueCurrentFOC = current;
+  }
+
+  @Override
+  public void setIntakeSpeed(double speed) {
+    intakeAppliedSpeed = speed;
+  }
+
+  @Override
+  public void stopDeployMotor() {
+    deployAppliedSpeed = 0;
+  }
+
+  @Override
+  public void stopIntakeMotor() {
+    intakeAppliedSpeed = 0;
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.intakeSpeed = intakeAppliedVolts;
-    inputs.deploySpeed = deployAppliedVolts;
+    inputs.deploySpeed = deployAppliedSpeed;
+    inputs.deployTorqueCurrentFOC = deployAppliedTorqueCurrentFOC;
+    inputs.intakeSpeed = intakeAppliedSpeed;
   }
 }

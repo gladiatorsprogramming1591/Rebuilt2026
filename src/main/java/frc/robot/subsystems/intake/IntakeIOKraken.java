@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,9 +30,25 @@ public class IntakeIOKraken implements IntakeIO {
   }
 
   @Override
+  public void setDeployTorqueCurrentFOC(double current) {
+    TorqueCurrentFOC torqueCurrentRequest = new TorqueCurrentFOC(current);
+    deployMotor.setControl(torqueCurrentRequest);
+  }
+
+  @Override
   public void setIntakeSpeed(double speed) {
     deployMotor.set(speed);
     SmartDashboard.putNumber("Intake Speed", speed);
+  }
+
+  @Override
+  public void stopDeployMotor() {
+    deployMotor.stopMotor();
+  }
+
+  @Override
+  public void stopIntakeMotor() {
+    intakeMotor.stopMotor();
   }
 
   @Override
