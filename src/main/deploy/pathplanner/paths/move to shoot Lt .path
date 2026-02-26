@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.921,
+        "y": 5.477
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.537397435897436,
+        "y": 7.907192307692307
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.3861538461538476,
+        "y": 4.651294871794871
+      },
+      "prevControl": {
+        "x": 2.327987179487182,
+        "y": 8.790935897435894
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -38.66
+  },
+  "reversed": false,
+  "folder": " B Ally",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -44.48
+  },
+  "useDefaultConstraints": true
+}

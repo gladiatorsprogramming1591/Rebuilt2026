@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M start and shoto"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to consume rt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Consume"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right pass fuel"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Blue Ally",
+  "choreoAuto": false
+}

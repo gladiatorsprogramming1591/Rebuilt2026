@@ -5,7 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    double speed = 0.0;
+    public double intakeSpeed = 0.0;
+    public double deploySpeed = 0.0;
   }
 
   /**
@@ -24,11 +25,16 @@ public interface IntakeIO {
   public default boolean getIsConnected(IntakeIOInputs inputs) {
     return false;
   }
-
   /**
-   * Set the motor speed to {@code speed}.
+   * sets the deployment motor's voltage
    *
-   * @param speed speed to set motor to
+   * @param speed voltage value from -12 to 12
    */
-  public default void setSpeed(double speed) {}
+  public default void setIntakeSpeed(double speed) {}
+  /**
+   * sets the roller motor's voltage
+   *
+   * @param volts voltage value from -12 to 12
+   */
+  public default void setDeploySpeed(double volts) {}
 }

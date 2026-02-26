@@ -16,9 +16,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.robotInitConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -31,10 +31,13 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.spindexer.Spindexer;
-import frc.robot.subsystems.spindexer.SpindexerIO;
-import frc.robot.subsystems.spindexer.SpindexerIOKraken;
-import frc.robot.subsystems.spindexer.SpindexerIOSim;
+import frc.robot.subsystems.roller.Roller;
+import frc.robot.subsystems.roller.RollerIO;
+import frc.robot.subsystems.roller.RollerIOKraken;
+import frc.robot.subsystems.roller.RollerIOSim;
+import frc.robot.subsystems.vision.Camera;
+import frc.robot.subsystems.vision.CameraConstants;
+import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -47,7 +50,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
-  private final Spindexer spindexer;
+  private final Roller roller;
+  private final Vision vision;
 
   // Controller
   private final CommandXboxController driver_controller = new CommandXboxController(0);
@@ -74,10 +78,15 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+        Camera cam =
+            robotInitConstants.isCompBot
+                ? CameraConstants.RobotCameras.RIGHT
+                : CameraConstants.RobotCameras.LEFT;
+        vision = new Vision(cam);
 
         intake = new Intake(new IntakeIOKraken());
 
-        spindexer = new Spindexer(new SpindexerIOKraken());
+        roller = new Roller(new RollerIOKraken());
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -110,8 +119,9 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSim());
 
-        spindexer = new Spindexer(new SpindexerIOSim());
+        roller = new Roller(new RollerIOSim());
 
+        vision = new Vision();
         break;
 
       default:
@@ -126,10 +136,14 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIO() {});
 
-        spindexer = new Spindexer(new SpindexerIO() {});
+        roller = new Roller(new RollerIO() {});
 
+        vision = new Vision();
         break;
     }
+
+    // Connect the gyro as the default vision yaw supplier
+    vision.setYawSupplier(drive::getGyroRotation);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -180,7 +194,7 @@ public class RobotContainer {
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     driver_controller
@@ -193,10 +207,14 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    intake.setDefaultCommand(new RunCommand(() -> intake.setSpeed(driver_controller), intake));
-
-    spindexer.setDefaultCommand(
-        new RunCommand(() -> spindexer.setSpeed(operator_controller), spindexer));
+    driver_controller.a().whileTrue(intake.runIntakeMotor());
+    driver_controller
+        .b()
+        .whileTrue(
+            intake
+                .deployIntake()); // TODO: needs to be a toggle eventually that runs until a certain
+    // encoder value
+    driver_controller.x().whileTrue(roller.runTopRollerMotor());
   }
 
   /**

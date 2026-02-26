@@ -1,0 +1,25 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to consume rt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Consume"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Blue Ally",
+  "choreoAuto": false
+}

@@ -8,11 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.153666666666667,
-        "y": -0.1395256410256409
+        "x": 5.360714787100913,
+        "y": -0.028313247258989982
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "broken pt3"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 2.64
       },
       "prevControl": {
-        "x": 3.211512820512821,
-        "y": 0.058538461538462094
+        "x": 3.830285212899086,
+        "y": -0.028313247258989538
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "broken pt4"
     }
   ],
   "rotationTargets": [
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -50,7 +50,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "bokem",
+  "folder": "Testing",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

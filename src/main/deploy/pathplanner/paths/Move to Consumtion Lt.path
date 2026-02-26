@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.072,
-        "y": 4.035
+        "x": 3.177,
+        "y": 5.2
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8396025641025655,
-        "y": 8.52348717948718
+        "x": 2.3826910048263934,
+        "y": 8.092935052880776
       },
       "isLocked": false,
       "linkedName": null
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.905941941082894
+    "rotation": -48.43
   },
   "reversed": false,
-  "folder": "Actally used B Ally",
+  "folder": " B Ally",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -45.0
   },
   "useDefaultConstraints": true
 }
