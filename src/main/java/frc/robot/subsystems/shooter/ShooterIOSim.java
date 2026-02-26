@@ -19,9 +19,6 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public void runShooterTarget(double shooterVelocity) {}
-
-  @Override
   public void updateInputs(ShooterIOInputs inputs) {
     inputs.shooterVelocity = shooterVelocity;
   }

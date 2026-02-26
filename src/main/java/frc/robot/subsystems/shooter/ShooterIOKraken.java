@@ -36,7 +36,6 @@ public class ShooterIOKraken implements ShooterIO {
         new Follower(leftShooterFollower.getDeviceID(), MotorAlignmentValue.Aligned));
   }
 
-  @Override
   public void runShooterTarget(double shooterVelocity) {
     rightShooterLeader.set(shooterVelocity);
     leftShooterLeader.set(shooterVelocity);
