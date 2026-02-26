@@ -197,6 +197,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // ===================================== Driver Controls =====================================
+
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -229,7 +231,8 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    driver_controller.a().whileTrue(intake.runIntakeMotor());
+    driver_controller.rightTrigger().whileTrue(shooter.runShooterTarget());
+    driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor());
     driver_controller
         .b()
         .whileTrue(
