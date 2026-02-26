@@ -51,7 +51,6 @@ public class ShooterIOKraken implements ShooterIO {
     leftShooterLeader.getConfigurator().apply(slot0Configs);
   }
 
-  @Override
   public void runShooterTarget(double shooterVelocity) {
     rightShooterLeader.set(shooterVelocity);
     leftShooterLeader.set(shooterVelocity);
