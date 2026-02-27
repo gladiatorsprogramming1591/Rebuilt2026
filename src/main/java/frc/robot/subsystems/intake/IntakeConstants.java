@@ -16,6 +16,12 @@ public final class IntakeConstants {
   public static final double INTAKE_CURRENT_LIMIT = 50.0; // placeholder until tested
   public static final double DEPLOY_CURRENT_LIMIT = 15.0; // placeholder until tested
 
-  public static final double INTAKE_MOTOR_SPEED = 1.0;
-  public static final double DEPLOY_MOTOR_SPEED = 1.0;
+  // % Duty-Cycle
+  public static final double INTAKE_MOTOR_SPEED = 1.0; // placeholder until tested
+  public static final double DEPLOY_SPEED = 1.0; // placeholder until tested
+  public static final double STOW_SPEED = DEPLOY_SPEED * -1; // placeholder until tested
+  // Amps
+  public static final double DEPLOY_TORQUE_CURRENT = 10.0; // placeholder until tested
+  public static final double STOW_TORQUE_CURRENT =
+      DEPLOY_TORQUE_CURRENT * -1; // placeholder until tested
 }
