@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 7.223461538461539,
-        "y": 6.3025
+        "x": 7.456,
+        "y": 6.326
       },
       "prevControl": {
-        "x": 6.967641025641027,
-        "y": 6.895538461538462
+        "x": 7.200179487179488,
+        "y": 6.919038461538461
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left NZ"
     }
   ],
   "rotationTargets": [

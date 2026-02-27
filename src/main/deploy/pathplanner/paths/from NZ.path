@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.025756410256411,
+        "x": 5.839705128205129,
         "y": 0.3139743589743591
       },
       "isLocked": false,
@@ -20,15 +20,20 @@
         "y": 1.323
       },
       "prevControl": {
-        "x": 4.200128205128206,
-        "y": 0.03489743589743499
+        "x": 3.874538461538463,
+        "y": 0.16280769230769243
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "bottom start shoot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.61929824561404,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,13 +46,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 53.37
   },
   "reversed": false,
   "folder": "Competion",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

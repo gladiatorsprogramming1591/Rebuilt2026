@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 6.737217708644749,
-        "y": 0.43758747277603915
+        "y": 0.43758747277603893
       },
       "nextControl": {
         "x": 7.871730769230771,
@@ -44,7 +44,12 @@
       "linkedName": "NZ extended bottom "
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4105263157894756,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -57,7 +62,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 90.0
   },
   "reversed": false,

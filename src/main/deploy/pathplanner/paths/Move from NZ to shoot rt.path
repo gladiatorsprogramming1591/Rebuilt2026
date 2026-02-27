@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 6.816474358974359,
-        "y": 0.5465384615384616
+        "y": 0.5465384615384612
       },
       "isLocked": false,
       "linkedName": "bottom NZ"
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.5877192982456223,
       "rotationDegrees": 90.0
     }
   ],
@@ -52,7 +52,7 @@
   "reversed": false,
   "folder": "Competion",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

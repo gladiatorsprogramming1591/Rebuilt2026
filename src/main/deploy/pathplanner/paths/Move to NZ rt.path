@@ -21,14 +21,19 @@
       },
       "prevControl": {
         "x": 8.363025641025642,
-        "y": -0.11626923076923079
+        "y": -0.11626923076923124
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "bottom NZ"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.412280701754387,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,7 +46,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 90.0
   },
   "reversed": false,

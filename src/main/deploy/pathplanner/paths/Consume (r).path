@@ -47,7 +47,7 @@
   "reversed": false,
   "folder": "STUFF",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 42.0
   },
   "useDefaultConstraints": true
