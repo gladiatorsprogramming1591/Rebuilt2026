@@ -94,13 +94,23 @@ public class RobotContainer {
                 : CameraConstants.RobotCameras.LEFT;
         vision = new Vision(cam);
 
-        intake = new Intake(new IntakeIOKraken());
+        if (robotInitConstants.isCompBot) {
+          intake = new Intake(new IntakeIOKraken());
 
-        kicker = new Kicker(new KickerIOKraken());
+          kicker = new Kicker(new KickerIOKraken());
 
-        roller = new Roller(new RollerIOKraken());
+          roller = new Roller(new RollerIOKraken());
 
-        shooter = new Shooter(new ShooterIOKraken());
+          shooter = new Shooter(new ShooterIOKraken());
+        } else {
+          intake = new Intake(new IntakeIOSim());
+
+          kicker = new Kicker(new KickerIOSim());
+
+          roller = new Roller(new RollerIOSim());
+
+          shooter = new Shooter(new ShooterIOSim());
+        }
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
