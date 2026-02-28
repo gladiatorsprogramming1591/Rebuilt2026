@@ -1,0 +1,84 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 4.5
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.7498410352845317,
+        "y": 4.59105041699128
+      },
+      "isLocked": false,
+      "linkedName": "middle start shoot"
+    },
+    {
+      "anchor": {
+        "x": 0.537243589743591,
+        "y": 5.0233974358974365
+      },
+      "prevControl": {
+        "x": 1.1796153846153876,
+        "y": 4.988512820512821
+      },
+      "nextControl": {
+        "x": 0.274679620974478,
+        "y": 5.037656223623626
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.537243589743591,
+        "y": 7.430435897435898
+      },
+      "prevControl": {
+        "x": 0.6796025641025666,
+        "y": 6.790884615384616
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depo"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Slow down at depo",
+      "minWaypointRelativePos": 0.5625692137320021,
+      "maxWaypointRelativePos": 1.3244739756367658,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Competion",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -11.0
+  },
+  "useDefaultConstraints": true
+}

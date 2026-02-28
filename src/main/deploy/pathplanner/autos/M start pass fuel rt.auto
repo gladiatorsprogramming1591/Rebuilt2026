@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M start and shoto"
+            "pathName": "Middle start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume rt"
+            "pathName": "Move to consume rt (m)"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consume"
+            "pathName": "Consume (r)"
           }
         },
         {
@@ -32,6 +32,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }

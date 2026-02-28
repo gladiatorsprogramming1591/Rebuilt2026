@@ -31,10 +31,18 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.kicker.KickerIO;
+import frc.robot.subsystems.kicker.KickerIOKraken;
+import frc.robot.subsystems.kicker.KickerIOSim;
 import frc.robot.subsystems.roller.Roller;
 import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOKraken;
+import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
@@ -50,7 +58,9 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
+  private final Kicker kicker;
   private final Roller roller;
+  private final Shooter shooter;
   private final Vision vision;
 
   // Controller
@@ -86,8 +96,11 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOKraken());
 
+        kicker = new Kicker(new KickerIOKraken());
+
         roller = new Roller(new RollerIOKraken());
 
+        shooter = new Shooter(new ShooterIOKraken());
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -119,9 +132,14 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSim());
 
+        kicker = new Kicker(new KickerIOSim());
+
         roller = new Roller(new RollerIOSim());
 
         vision = new Vision();
+
+        shooter = new Shooter(new ShooterIOSim());
+
         break;
 
       default:
@@ -136,7 +154,11 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIO() {});
 
+        kicker = new Kicker(new KickerIO() {});
+
         roller = new Roller(new RollerIO() {});
+
+        shooter = new Shooter(new ShooterIO() {});
 
         vision = new Vision();
         break;
@@ -175,6 +197,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // ===================================== Driver Controls =====================================
+
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -207,7 +231,8 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    driver_controller.a().whileTrue(intake.runIntakeMotor());
+    driver_controller.rightTrigger().whileTrue(shooter.runShooterTarget());
+    driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor());
     driver_controller
         .b()
         .whileTrue(
@@ -215,6 +240,18 @@ public class RobotContainer {
                 .deployIntake()); // TODO: needs to be a toggle eventually that runs until a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
+
+    // TODO: Delete later. only for initial testing.
+    driver_controller.povLeft().onTrue(intake.deployIntakeOn());
+    driver_controller.povUp().onTrue(intake.stowIntakeOff());
+    driver_controller.povRight().onTrue(shoot());
+  }
+
+  public Command shoot() {
+    return kicker
+        .startKickerMotor()
+        .alongWith(roller.startRollerMotors())
+        .alongWith(intake.stowIntakeOff());
   }
 
   /**

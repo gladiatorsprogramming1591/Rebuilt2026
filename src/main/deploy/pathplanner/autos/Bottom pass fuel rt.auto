@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "Right start Shoot"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "bottom pass fuel"
+            "pathName": "Bottom pass fuel"
           }
         }
       ]

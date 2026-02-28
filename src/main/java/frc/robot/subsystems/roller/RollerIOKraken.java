@@ -48,5 +48,7 @@ public class RollerIOKraken implements RollerIO {
   @Override
   public void updateInputs(RollerIOInputs inputs) {
     inputs.rollerSpeed = this.speed;
+    SmartDashboard.putNumber("Top Roller Velocity", rollerTopMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Bottom Roller Velocity", rollerBottomMotor.getVelocity().getValueAsDouble());
   }
 }

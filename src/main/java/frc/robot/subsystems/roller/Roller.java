@@ -1,6 +1,8 @@
 package frc.robot.subsystems.roller;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,6 +32,16 @@ public class Roller extends SubsystemBase {
         () -> {
           io.setBottomRollerSpeed(0);
         });
+  }
+
+  public Command startRollerMotors() {
+    return new InstantCommand(() -> io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED), this)
+        .andThen(() -> io.setBottomRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED));
+  }
+
+  public Command stopRollerMotors() {
+    return new InstantCommand(() -> io.setTopRollerSpeed(0.0), this)
+        .andThen(() -> io.setBottomRollerSpeed(0.0));
   }
 
   public void periodic() {

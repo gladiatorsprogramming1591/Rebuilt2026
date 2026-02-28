@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "Right start Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consumes rt"
+            "pathName": "Move to consumes rt (r)"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }

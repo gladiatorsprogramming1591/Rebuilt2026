@@ -30,6 +30,8 @@ public final class Constants {
     REPLAY
   }
 
+  public static double loopPeriodSecs = 0.02;
+
   public class robotInitConstants {
     public static final DigitalInput dIO_port = new DigitalInput(9);
     public static final boolean isCompBot = dIO_port.get();

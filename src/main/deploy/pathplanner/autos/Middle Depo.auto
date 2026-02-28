@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "depo"
+            "pathName": "Middle start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "shoot from depo"
+            "pathName": "Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depo to NZ"
+            "pathName": "Shoot from depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to NZ"
           }
         },
         {

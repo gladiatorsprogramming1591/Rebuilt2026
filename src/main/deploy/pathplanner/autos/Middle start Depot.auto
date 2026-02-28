@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "depo"
+            "pathName": "Middle start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "shoot from depo"
+            "pathName": "Depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot from depot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }

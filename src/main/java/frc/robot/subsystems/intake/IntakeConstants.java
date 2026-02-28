@@ -24,4 +24,5 @@ public final class IntakeConstants {
   public static final double DEPLOY_TORQUE_CURRENT = 10.0; // placeholder until tested
   public static final double STOW_TORQUE_CURRENT =
       DEPLOY_TORQUE_CURRENT * -1; // placeholder until tested
+  public static final double INTAKE_DELAY_SECONDS = 2.0; // placeholder until tested
 }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.kicker;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -20,6 +21,14 @@ public class Kicker extends SubsystemBase {
         () -> {
           io.setKickerSpeed(0.0);
         });
+  }
+
+  public Command startKickerMotor() {
+    return new InstantCommand(() -> io.setKickerSpeed(KickerConstants.KICKER_MOTOR_SPEED), this);
+  }
+
+  public Command stopKickerMotor() {
+    return new InstantCommand(() -> io.setKickerSpeed(0.0), this);
   }
 
   public void periodic() {

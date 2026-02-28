@@ -3,15 +3,13 @@
   "robotLength": 0.863,
   "holonomicMode": true,
   "pathFolders": [
-    " B Ally",
     "Competion",
-    "R ally",
+    "STUFF",
     "Testing"
   ],
   "autoFolders": [
-    "Blue Ally",
+    "ALSO STUFF",
     "Competion",
-    "Red ally",
     "Testing"
   ],
   "defaultMaxVel": 2.25,
