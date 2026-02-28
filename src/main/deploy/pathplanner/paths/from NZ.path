@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0490128205128215,
-        "y": 0.11629487179487397
+        "x": 6.293205128205128,
+        "y": 0.03489743589743499
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 3.6070897435897447,
-        "y": -0.034871794871795814
+        "y": -0.034871794871796036
       },
       "nextControl": null,
       "isLocked": false,

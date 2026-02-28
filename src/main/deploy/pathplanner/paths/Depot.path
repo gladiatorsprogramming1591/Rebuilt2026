@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.115741399762753,
-        "y": 4.035
+        "x": 2.1651923076923087,
+        "y": 4.8024615384615394
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8655824350472847,
-        "y": 4.12605041699128
+        "x": 1.9150333429768405,
+        "y": 4.893511955452819
       },
       "isLocked": false,
-      "linkedName": "middle start shoot"
+      "linkedName": "middle start shoot a"
     },
     {
       "anchor": {
@@ -44,14 +44,19 @@
       "linkedName": "Depo"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.171929824561404,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Slow down at depo",
-      "minWaypointRelativePos": 0.5625692137320021,
+      "minWaypointRelativePos": 0.25692137320044434,
       "maxWaypointRelativePos": 1.3244739756367658,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -78,7 +83,7 @@
   "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -17.354024636261492
   },
   "useDefaultConstraints": true
 }

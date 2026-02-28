@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.665179487179488,
-        "y": 7.430435897435898
+        "x": 1.5954102564102572,
+        "y": 7.558346153846154
       },
       "isLocked": false,
       "linkedName": "Shoot from depo"
@@ -20,8 +20,8 @@
         "y": 5.233
       },
       "prevControl": {
-        "x": 6.828102564102566,
-        "y": 8.244705128205126
+        "x": 6.735076923082737,
+        "y": 8.41883333332752
       },
       "nextControl": null,
       "isLocked": false,

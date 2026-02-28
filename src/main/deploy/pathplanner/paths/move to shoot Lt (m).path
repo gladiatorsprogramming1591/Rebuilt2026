@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.93273076923077,
-        "y": 7.918820512820513
+        "x": 6.0606410256410275,
+        "y": 8.058358974358974
       },
       "isLocked": false,
       "linkedName": "Left consume"
@@ -20,8 +20,8 @@
         "y": 5.896
       },
       "prevControl": {
-        "x": 3.0373076923076936,
-        "y": 8.1165
+        "x": 2.9210256410256425,
+        "y": 8.244410256410255
       },
       "nextControl": null,
       "isLocked": false,
