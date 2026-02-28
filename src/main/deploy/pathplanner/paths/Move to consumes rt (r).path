@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7466025641025653,
-        "y": 1.7442435897435904
+        "x": 2.4217261055634807,
+        "y": 1.6090014265335242
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.862884615384617,
-        "y": -0.12789743589743496
+        "x": 2.538008156845532,
+        "y": -0.2631395991075012
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 6.211807692307693,
-        "y": 0.48839743589743523
+        "y": 0.4883974358974351
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 90.0
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -53,7 +53,7 @@
   "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 53.37
+    "rotation": 47.878369499734035
   },
   "useDefaultConstraints": true
 }

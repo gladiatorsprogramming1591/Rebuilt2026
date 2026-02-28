@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7466025641025653,
-        "y": 1.7442435897435904
+        "x": 2.4217261055634807,
+        "y": 1.6090014265335242
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3628974358974375,
-        "y": -0.26743589743589613
+        "x": 3.038020977358353,
+        "y": -0.40267806064596234
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -53,7 +53,7 @@
   "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 53.37
+    "rotation": 47.878369499734035
   },
   "useDefaultConstraints": true
 }
