@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.037282051278795,
-        "y": 7.372294871801581
+        "x": 2.6652051282051294,
+        "y": 7.9420769230827375
       },
       "isLocked": false,
       "linkedName": "Left start shoot"
     },
     {
       "anchor": {
-        "x": 7.456,
-        "y": 6.326
+        "x": 6.932756410256412,
+        "y": 6.732743589743589
       },
       "prevControl": {
-        "x": 6.886243589740332,
-        "y": 8.13975641026312
+        "x": 6.4908846153846165,
+        "y": 7.639743589749404
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": -90.0
+    "rotation": -54.09027692082229
   },
   "reversed": false,
   "folder": "STUFF",

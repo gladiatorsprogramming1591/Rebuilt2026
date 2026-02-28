@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 4.5
+        "x": 2.115741399762753,
+        "y": 4.035
       },
       "prevControl": {
-        "x": 1.75,
-        "y": 4.5
+        "x": 1.865741399762753,
+        "y": 4.035
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -11.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Competion",

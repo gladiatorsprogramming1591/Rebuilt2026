@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 4.5
+        "x": 2.115741399762753,
+        "y": 4.035
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3512435897435915,
-        "y": 5.081538461538462
+        "x": 2.4669849895063445,
+        "y": 4.616538461538462
       },
       "isLocked": false,
       "linkedName": "middle start shoot"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 7.456,
-        "y": 6.326
+        "x": 6.932756410256412,
+        "y": 6.732743589743589
       },
       "prevControl": {
-        "x": 7.200179487179488,
-        "y": 6.919038461538461
+        "x": 6.6769358974359,
+        "y": 7.325782051282051
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -54.09027692082229
   },
   "reversed": false,
   "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -11.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 4.5
+        "x": 2.115741399762753,
+        "y": 4.035
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7498410352845317,
-        "y": 4.59105041699128
+        "x": 1.8655824350472847,
+        "y": 4.12605041699128
       },
       "isLocked": false,
       "linkedName": "middle start shoot"
@@ -78,7 +78,7 @@
   "folder": "Competion",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -11.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
