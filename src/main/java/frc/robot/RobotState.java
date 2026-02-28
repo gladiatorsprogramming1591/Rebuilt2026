@@ -12,7 +12,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.AllianceFlipUtil;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
@@ -212,8 +214,14 @@ public final class RobotState {
 
   /** Reset all estimators to a pose; preserves current wheel positions and raw gyro reading. */
   public synchronized void resetRobotPose(Pose2d pose) {
-    headingOffset = pose.getRotation().minus(robotHeadingRaw);
+    SmartDashboard.putNumber("B-headingOffset", headingOffset.getDegrees());
+    SmartDashboard.putNumber("B-robotHeadingRaw", robotHeadingRaw.getDegrees());
+    SmartDashboard.putNumber("B-yawWithOffset", yawWithOffset.getDegrees());
+    headingOffset = AllianceFlipUtil.apply(pose.getRotation().minus(robotHeadingRaw));
     yawWithOffset = robotHeadingRaw.plus(headingOffset);
+    SmartDashboard.putNumber("A-headingOffset", headingOffset.getDegrees());
+    SmartDashboard.putNumber("A-robotHeadingRaw", robotHeadingRaw.getDegrees());
+    SmartDashboard.putNumber("A-yawWithOffset", yawWithOffset.getDegrees());
 
     fieldLocalizer.resetPosition(yawWithOffset, currentWheelPositions, pose);
     odometry.resetPosition(yawWithOffset, currentWheelPositions, pose);
