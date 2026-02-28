@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6552770653015214,
-        "y": 7.401764180141156
+        "x": 1.5954102564102572,
+        "y": 7.558346153846154
       },
       "isLocked": false,
       "linkedName": "Shoot from depo"
@@ -20,15 +20,20 @@
         "y": 5.233
       },
       "prevControl": {
-        "x": 6.828102564102566,
-        "y": 8.244705128205126
+        "x": 6.735076923082737,
+        "y": 8.41883333332752
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "NZ after depo"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.547368421052633,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,7 +46,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": -90.0
   },
   "reversed": false,

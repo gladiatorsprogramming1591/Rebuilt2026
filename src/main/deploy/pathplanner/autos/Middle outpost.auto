@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle start"
+            "pathName": "Middle start bottom"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Move to outpost (m)"
           }
         },
         {

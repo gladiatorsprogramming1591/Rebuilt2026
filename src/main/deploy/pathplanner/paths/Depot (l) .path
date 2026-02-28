@@ -52,11 +52,11 @@
   ],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.4429678848283505,
-      "maxWaypointRelativePos": 1.4573643410852732,
+      "name": "Slow down at depo",
+      "minWaypointRelativePos": 0.39424141749723496,
+      "maxWaypointRelativePos": 1.1472868217054242,
       "constraints": {
-        "maxVelocity": 1.7,
+        "maxVelocity": 1.6,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,

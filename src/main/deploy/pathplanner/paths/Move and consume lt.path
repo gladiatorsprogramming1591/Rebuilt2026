@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.219691004826393,
-        "y": 8.788935052880776
+        "x": 2.1419358974300837,
+        "y": 7.802538461538461
       },
       "isLocked": false,
       "linkedName": "Left start shoot"
@@ -20,12 +20,12 @@
         "y": 6.326
       },
       "prevControl": {
-        "x": 6.681278808227953,
-        "y": 8.047148561800796
+        "x": 6.5025128205070075,
+        "y": 7.883935897435897
       },
       "nextControl": {
-        "x": 7.7177243966904205,
-        "y": 6.105453028985034
+        "x": 7.743975278464881,
+        "y": 6.121620159528979
       },
       "isLocked": false,
       "linkedName": null
@@ -44,7 +44,12 @@
       "linkedName": "Top NZ"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5228070175438573,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -57,7 +62,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": -90.0
   },
   "reversed": false,

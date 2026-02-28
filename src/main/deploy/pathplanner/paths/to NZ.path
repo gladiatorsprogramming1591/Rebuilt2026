@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.179,
-        "y": 1.323
+        "x": 2.7466025641025653,
+        "y": 1.7442435897435904
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.895447163575229,
-        "y": 0.2634980123638233
+        "x": 3.3628974358974375,
+        "y": -0.26743589743589613
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -20,15 +20,20 @@
         "y": 2.6396153846153845
       },
       "prevControl": {
-        "x": 8.171710495202303,
-        "y": 0.578050151607358
+        "x": 8.037435897435897,
+        "y": 0.3953717948717963
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "NZ bottom"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2982456140350883,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,7 +46,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 90.0
   },
   "reversed": false,
