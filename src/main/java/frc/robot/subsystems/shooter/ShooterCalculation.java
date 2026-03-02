@@ -185,8 +185,9 @@ public class ShooterCalculation {
 
     // Calculate target
     Translation2d target =
-        AllianceFlipUtil.apply(
-            passing ? getPassingTarget() : FieldConstants.Hub.topCenterPoint.toTranslation2d());
+        passing
+            ? getPassingTarget()
+            : AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
     Pose2d launcherPosition = estimatedPose.transformBy(robotToLauncher.toTransform2d());
     double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
 
