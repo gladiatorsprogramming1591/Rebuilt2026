@@ -16,4 +16,9 @@ public interface ShooterIO {
    * @param shooterVelocity voltage to set from -12 to 12
    */
   public default void runShooter(double shooterVelocity) {}
+
+
+  /*determines if the shooter is at correct velocity*/
+  public default void shooterAtVelocity(double shooterVelocity){}
+
 }

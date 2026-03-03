@@ -1,16 +1,23 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   private final ShooterIO io;
+  private final ShooterIO leftShooterIO; 
+  private final ShooterIO rightShooterIO;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   public Shooter(ShooterIO io) {
     this.io = io;
+    this.leftShooterIO = leftShooterIO; 
+    this.rightShooterIO = rightShooterIO;
+
   }
 
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Flywheel/kP", 0.6);
@@ -37,4 +44,13 @@ public class Shooter extends SubsystemBase {
           io.runShooter(0);
         });
   }
+
+  public boolean isShooterAtVelocity(double velocity) {
+    return MathUtil.isNear(
+      velocity, 
+      , velocity)
+  }
+    
+
+
 }
