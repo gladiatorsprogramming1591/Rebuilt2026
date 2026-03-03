@@ -17,6 +17,7 @@ public interface ShooterIO {
    */
   public default void runShooter(double shooterVelocity) {}
 
+<<<<<<< HEAD
   public default void runShooterTarget(double shooterVelocity){}
 
 
@@ -26,5 +27,10 @@ public interface ShooterIO {
 
   public default void getShooterVelocity() {
   }
+=======
+
+  /*determines if the shooter is at correct velocity*/
+  public default void shooterAtVelocity(double shooterVelocity){}
+>>>>>>> 9db5344 (WIP for the shooter)
 
 }

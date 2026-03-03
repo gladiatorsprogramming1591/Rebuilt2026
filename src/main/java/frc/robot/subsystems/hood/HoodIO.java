@@ -6,6 +6,7 @@ public interface HoodIO {
   @AutoLog
   public static class HoodIOInputs {
     double hoodSpeed = 0.0;
+    double hoodAngle = 0.0; 
   }
 
   /**
@@ -30,4 +31,6 @@ public interface HoodIO {
    * @param speed speed to set motor to
    */
   public default void setHoodSpeed(double speed) {}
+
+  public default void setHoodPosition(double angle) {}
 }
