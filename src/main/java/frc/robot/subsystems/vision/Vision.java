@@ -274,7 +274,7 @@ public class Vision extends SubsystemBase {
             ? cam.getPrimaryXYStandardDeviationCoefficient()
             : cam.getSecondaryXYStandardDeviationCoefficient();
     double xyStd = coeff * modeled;
-    xyStd = Math.max(xyStd, 0.08); // 3 cm; tune 0.03–0.07
+    xyStd = Math.max(xyStd, 0.04); // 3 cm; tune 0.03–0.07
 
     // Exclusive‑tag filtering USE FOR AUTO ALIGN
     // var exclusiveTag = state.getExclusiveTag();
@@ -293,6 +293,8 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("xyStd", xyStd);
     SmartDashboard.putNumber("out.x", out.getX());
     SmartDashboard.putNumber("out.y", out.getY());
+    SmartDashboard.putNumber("out.rot", out.getRotation().getDegrees());
+    SmartDashboard.putBoolean("trustYaw", trustYaw);
 
     // Logging (1678/254 style telemetry hygiene)
     Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out);
@@ -433,6 +435,9 @@ public class Vision extends SubsystemBase {
     Matrix<N3, N1> fusedStdN3 =
         VecBuilder.fill(fusedStd, fusedStd, a.trustYaw() && b.trustYaw() ? fusedStd : 9999.0);
     Logger.recordOutput("Vision/Fuse/stdN3", fusedStdN3);
+    SmartDashboard.putBoolean("a.trustYaw", a.trustYaw);
+    SmartDashboard.putBoolean("b.trustYaw", b.trustYaw);
+    SmartDashboard.putNumber("fusedStd", fusedStd);
 
     int[] fusedIds =
         IntStream.concat(Arrays.stream(a.tagIds()), Arrays.stream(b.tagIds()))

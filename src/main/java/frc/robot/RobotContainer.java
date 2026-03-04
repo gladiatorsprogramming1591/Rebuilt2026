@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,6 +47,8 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.FieldConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -225,7 +228,7 @@ public class RobotContainer {
                 drive,
                 () -> -driver_controller.getLeftY(),
                 () -> -driver_controller.getLeftX(),
-                () -> Rotation2d.kZero));
+                this::getHubDriveAngle));
 
     // Switch to X pattern when X button is pressed
     // driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -255,6 +258,16 @@ public class RobotContainer {
     driver_controller.povLeft().onTrue(intake.deployIntakeOn());
     driver_controller.povUp().onTrue(intake.stowIntakeOff());
     driver_controller.povRight().onTrue(shoot());
+  }
+
+  // TODO: Add velocity angle, see 6238 DriveCommands.java
+  public Rotation2d getHubDriveAngle() {
+    Rotation2d hubAngle =
+        AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d())
+            .minus(RobotState.getInstance().getRobotPoseField().getTranslation())
+            .getAngle();
+    SmartDashboard.putNumber("Hub Drive Angle", hubAngle.getDegrees());
+    return hubAngle;
   }
 
   public Command shoot() {
