@@ -38,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Competion",
+  "folder": "Competition",
   "choreoAuto": false
 }

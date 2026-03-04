@@ -3,13 +3,13 @@
   "robotLength": 0.863,
   "holonomicMode": true,
   "pathFolders": [
-    "Competion",
+    "Competiton",
     "STUFF",
     "Testing"
   ],
   "autoFolders": [
     "ALSO STUFF",
-    "Competion",
+    "Competition",
     "Testing"
   ],
   "defaultMaxVel": 2.25,

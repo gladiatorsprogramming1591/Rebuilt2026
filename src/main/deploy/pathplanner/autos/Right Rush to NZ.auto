@@ -7,31 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle start top"
+            "pathName": "Start To NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot"
+            "pathName": "Move from NZ to shoot rt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot from depot"
+            "pathName": "to NZ extended"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to NZ"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot after NZ lt"
+            "pathName": "from NZ extended"
           }
         }
       ]
