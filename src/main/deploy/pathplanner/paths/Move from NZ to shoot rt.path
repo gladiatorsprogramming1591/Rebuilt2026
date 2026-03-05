@@ -8,11 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.815628369728225,
-        "y": 0.44190120340904837
+        "x": 7.3513552068473595,
+        "y": 1.0397004279600572
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
+    },
+    {
+      "anchor": {
+        "x": 5.009457917261056,
+        "y": 0.6256633380884444
+      },
+      "prevControl": {
+        "x": 6.019419509068539,
+        "y": 0.6256633380884444
+      },
+      "nextControl": {
+        "x": 3.5473894436519258,
+        "y": 0.6256633380884447
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +36,8 @@
         "y": 1.6090014265335242
       },
       "prevControl": {
-        "x": 3.133352353780314,
-        "y": -0.12477888730385178
+        "x": 3.068659058487874,
+        "y": 0.5609700427960058
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +46,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6769292283086766,
+      "waypointRelativePos": 0.9266547406082268,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.373881932021466,
       "rotationDegrees": 0.0
     }
   ],

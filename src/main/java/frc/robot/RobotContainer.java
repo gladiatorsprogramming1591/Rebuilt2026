@@ -7,14 +7,12 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,8 +45,7 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.AllianceFlipUtil;
-import frc.robot.util.FieldConstants;
+import frc.robot.util.AutoManager;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -72,6 +69,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final AutoManager autoManager;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -181,7 +179,9 @@ public class RobotContainer {
     vision.setYawSupplier(drive::getGyroRotation);
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoManager = new AutoManager(drive);
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -224,11 +224,8 @@ public class RobotContainer {
     driver_controller
         .a()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driver_controller.getLeftY(),
-                () -> -driver_controller.getLeftX(),
-                this::getHubDriveAngle));
+            DriveCommands.rotateToHub(
+                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()));
 
     // Switch to X pattern when X button is pressed
     // driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -260,21 +257,15 @@ public class RobotContainer {
     driver_controller.povRight().onTrue(shoot());
   }
 
-  // TODO: Add velocity angle, see 6238 DriveCommands.java
-  public Rotation2d getHubDriveAngle() {
-    Rotation2d hubAngle =
-        AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d())
-            .minus(RobotState.getInstance().getRobotPoseField().getTranslation())
-            .getAngle();
-    SmartDashboard.putNumber("Hub Drive Angle", hubAngle.getDegrees());
-    return hubAngle;
-  }
-
   public Command shoot() {
     return kicker
         .startKickerMotor()
         .alongWith(roller.startRollerMotors())
         .alongWith(intake.stowIntakeOff());
+  }
+
+  public void registerNamedCommands() {
+    // NamedCommands.registerCommand("Aim to Hub", );
   }
 
   /**

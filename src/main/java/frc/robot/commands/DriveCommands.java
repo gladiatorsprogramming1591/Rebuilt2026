@@ -20,9 +20,13 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.FieldConstants;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -32,7 +36,7 @@ import java.util.function.Supplier;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 20.0;
+  private static final double ANGLE_KP = 30.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
@@ -55,6 +59,21 @@ public class DriveCommands {
     return new Pose2d(Translation2d.kZero, linearDirection)
         .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
         .getTranslation();
+  }
+
+  // TODO: Add velocity angle, see 6238 DriveCommands.java
+  private static Rotation2d getHubDriveAngle() {
+    Rotation2d hubAngle =
+        AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d())
+            .minus(RobotState.getInstance().getRobotPoseField().getTranslation())
+            .getAngle();
+    SmartDashboard.putNumber("Hub Drive Angle", hubAngle.getDegrees());
+    return hubAngle;
+  }
+
+  public static Command rotateToHub(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> getHubDriveAngle());
   }
 
   /**
