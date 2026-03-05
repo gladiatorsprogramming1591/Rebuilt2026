@@ -187,7 +187,12 @@ public class Vision extends SubsystemBase {
    * @param c candidate to feed
    */
   private void feedFieldEstimate(VisionCandidate c) {
-    RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev());
+    // If vision heading not trusted, it is replaced by IMU reading, so we will use the xyStdDev for rotation always
+    Matrix<N3, N1> stdDevs =
+        VecBuilder.fill(c.xyStdDev, c.xyStdDev, c.xyStdDev);
+
+    // RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev());
+    RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), stdDevs);
     Logger.recordOutput("Vision/FusedPose", c.pose());
     Logger.recordOutput("Vision/FusedTimestamp", c.timestampSec());
     Logger.recordOutput("Vision/FusedXYStd", c.xyStdDev());
