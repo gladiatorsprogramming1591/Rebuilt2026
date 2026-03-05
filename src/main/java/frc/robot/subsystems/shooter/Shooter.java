@@ -1,8 +1,14 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
+
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -28,6 +34,10 @@ public class Shooter extends SubsystemBase {
     io.runShooter(shooterSpeed);
   }
 
+  private void getVelocity(double velocity){
+    io.getShooterVelocity();
+  }
+
   public Command runShooterTarget() {
     return runEnd(
         () -> {
@@ -37,4 +47,5 @@ public class Shooter extends SubsystemBase {
           io.runShooter(0);
         });
   }
+
 }
