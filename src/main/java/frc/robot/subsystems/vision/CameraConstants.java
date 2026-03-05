@@ -63,10 +63,10 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
-                -0.3429,
-                0.041275,
+                0.3429,
+                -0.041275,
                 0.22225,
-                new Rotation3d(0, Units.degreesToRadians(35.5), Units.degreesToRadians(180.0))));
+                new Rotation3d(0, Units.degreesToRadians(35.5), Units.degreesToRadians(0.0))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
     public static final Camera RIGHT =

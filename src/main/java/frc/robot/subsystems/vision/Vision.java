@@ -187,9 +187,9 @@ public class Vision extends SubsystemBase {
    * @param c candidate to feed
    */
   private void feedFieldEstimate(VisionCandidate c) {
-    // If vision heading not trusted, it is replaced by IMU reading, so we will use the xyStdDev for rotation always
-    Matrix<N3, N1> stdDevs =
-        VecBuilder.fill(c.xyStdDev, c.xyStdDev, c.xyStdDev);
+    // If vision heading not trusted, it is replaced by IMU reading, so we will use the xyStdDev for
+    // rotation always
+    Matrix<N3, N1> stdDevs = VecBuilder.fill(c.xyStdDev, c.xyStdDev, c.xyStdDev);
 
     // RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev());
     RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), stdDevs);
@@ -292,7 +292,7 @@ public class Vision extends SubsystemBase {
     //   return Optional.empty();
     // }
     // Trust yaw for multi-tag; else replace yaw with fused yaw (254 single-tag + gyro fusion idea).
-    boolean trustYaw = pe.tagCount >= 2;
+    boolean trustYaw = pe.tagCount >= 2 && DriverStation.isDisabled();
     Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
 
     SmartDashboard.putNumber("xyStd", xyStd);
