@@ -17,11 +17,11 @@ public class HoodIOSim implements HoodIO {
             DCMotor.getKrakenX44Foc(1));
   }
 
-  @Override
-  public void setHoodSpeed(double speed) {
-    this.speed = MathUtil.clamp(speed, 0, 1.0);
-    SmartDashboard.putNumber("Hood Speed", this.speed);
-  }
+  // @Override
+  // public void setHoodSpeed(double speed) {
+  //   this.speed = MathUtil.clamp(speed, 0, 1.0);
+  //   SmartDashboard.putNumber("Hood Speed", this.speed);
+  // }
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {

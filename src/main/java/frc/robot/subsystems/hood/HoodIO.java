@@ -9,15 +9,15 @@ public interface HoodIO {
   public static class HoodIOInputs {
     double hoodSpeed = 0.0;
     double hoodAngle = 0.0; 
-<<<<<<< HEAD
     double hoodSupplyCurrent = 0.0;
     double hoodTorqueCurrent = 0.0;
     double hoodTemperature = 0.0;
-=======
->>>>>>> origin/KileyHood
   }
 
   public static class HoodIOOutputs{
+    boolean hasBeenZeroed = false;
+    double positionRad = 0.0;
+    double velocityRadPerSecond = 0.0;
     double kP = 0.0;
     double kD = 0.0;
     double kS = 0.0;
@@ -44,15 +44,9 @@ public interface HoodIO {
    *
    * @param speed speed to set motor to
    */
-<<<<<<< HEAD
   public default void setHoodSpeed(AngularVelocity angularVelocity) {}
 
   public default void setHoodPosition(double angle) {}
 
   public default void zeroHoodEncoder() {}
-=======
-  public default void setHoodSpeed(double speed) {}
-
-  public default void setHoodPosition(double angle) {}
->>>>>>> origin/KileyHood
 }
