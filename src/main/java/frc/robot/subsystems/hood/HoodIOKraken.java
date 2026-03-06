@@ -43,61 +43,56 @@ public class HoodIOKraken implements HoodIO {
   private final StatusSignal<Current> hoodTorqueCurrent = hoodMotor.getTorqueCurrent();
   private final StatusSignal<Temperature> hoodTemperature = hoodMotor.getDeviceTemp();
   
-    public HoodIOKraken() {
-      var hoodConfig = new TalonFXConfiguration();
-      hoodConfig.CurrentLimits.SupplyCurrentLimit = HoodConstants.HOOD_CURRENT_LIMIT;
-      hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-      hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-      PhoenixUtil.tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(hoodConfig, 0.25));
+  public HoodIOKraken() {
+    var hoodConfig = new TalonFXConfiguration();
+    hoodConfig.CurrentLimits.SupplyCurrentLimit = HoodConstants.HOOD_CURRENT_LIMIT;
+    hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    PhoenixUtil.tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(hoodConfig, 0.25));
 
-      hoodSlot0.kP = HoodConstants.kP;
-      hoodSlot0.kD = HoodConstants.kD;
-      hoodSlot0.kS = HoodConstants.kS;
-      hoodSlot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-      hoodMotor.getConfigurator().apply(hoodSlot0);
+    hoodSlot0.kP = HoodConstants.kP;
+    hoodSlot0.kD = HoodConstants.kD;
+    hoodSlot0.kS = HoodConstants.kS;
+    hoodSlot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    hoodMotor.getConfigurator().apply(hoodSlot0);
 
-      BaseStatusSignal.setUpdateFrequencyForAll(
-        50,
-        hoodAppliedVolts,
-        hoodAngle,
-        hoodAngularVelocity,
-        hoodTorqueCurrent,
-        hoodSupplyCurrent,
-        hoodTemperature);
+    BaseStatusSignal.setUpdateFrequencyForAll(
+      50,
+      hoodAppliedVolts,
+      hoodAngle,
+      hoodAngularVelocity,
+      hoodTorqueCurrent,
+      hoodSupplyCurrent,
+      hoodTemperature);
 
-      hoodMotor.optimizeBusUtilization();
+    hoodMotor.optimizeBusUtilization();
 
-      PhoenixUtil.registerSignals(
-          false,
-          hoodAppliedVolts,
-          hoodAngle,
-          hoodAngularVelocity,
-          hoodTorqueCurrent,
-          hoodSupplyCurrent,
-          hoodTemperature);
+    // PhoenixUtil.registerSignals(
+    //     false,
+    //     hoodAppliedVolts,
+    //     hoodAngle,
+    //     hoodAngularVelocity,
+    //     hoodTorqueCurrent,
+    //     hoodSupplyCurrent,
+    //     hoodTemperature);
 
-    }
-  
-    @Override
-    public void setHoodSpeed(AngularVelocity angularVelocity) {
-      this.angularVelocity = MathUtil.clamp(this.angularVelocity, -HoodConstants.HOOD_MAX_SPEED, HoodConstants.HOOD_MAX_SPEED);
-      hoodMotor.set(this.angularVelocity);
-      SmartDashboard.putNumber("Hood Speed", this.angularVelocity);
-    }
-  
-    @Override
-    public void setHoodPosition(double angle) {
-      this.angle = MathUtil.clamp(angle, HoodConstants.HOOD_LOWER_LIMIT, HoodConstants.HOOD_UPPER_LIMIT);
-<<<<<<< HEAD
-      SmartDashboard.putNumber("Hood Angle", hoodAngle.getValueAsDouble());
-=======
-      SmartDashboard.putNumber("Hood Angle", this.angle);
->>>>>>> origin/KileyHood
   }
+  
+    // @Override
+    // public void setHoodSpeed(AngularVelocity angularVelocity) {
+    //   this.angularVelocity = MathUtil.clamp(this.angularVelocity, -HoodConstants.HOOD_MAX_SPEED, HoodConstants.HOOD_MAX_SPEED);
+    //   hoodMotor.set(this.angularVelocity);
+    //   SmartDashboard.putNumber("Hood Speed", this.angularVelocity);
+    // }
+  
+  //   @Override
+  //   public void setHoodPosition(double angle) {
+  //     this.angle = MathUtil.clamp(angle, HoodConstants.HOOD_LOWER_LIMIT, HoodConstants.HOOD_UPPER_LIMIT);
+  //     SmartDashboard.putNumber("Hood Angle", hoodAngle.getValueAsDouble());
+  // }
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
-<<<<<<< HEAD
     inputs.hoodSpeed = hoodAngularVelocity.getValueAsDouble();
     inputs.hoodAngle = hoodAngle.getValueAsDouble();
     inputs.hoodSupplyCurrent = hoodSupplyCurrent.getValueAsDouble();
@@ -105,13 +100,17 @@ public class HoodIOKraken implements HoodIO {
     inputs.hoodTemperature = hoodTemperature.getValueAsDouble();
   }
 
+  public void setHoodPosition(double ticks) {
+    hoodMotor.setControl(positionControl.withPosition(ticks));
+  }
+
+  public void zero() {
+    hoodMotor.setControl(zeroControl);
+  }
+
   @Override 
   public void applyOutputs(HoodIOOutputs outputs) {
-    setHoodSpeed(outputs.hoodSpeed);
-    setHoodPosition(outputs.hoodAngle);
-=======
-    inputs.hoodSpeed = this.speed;
-    inputs.hoodAngle = this.angle; 
->>>>>>> origin/KileyHood
+    hoodMotor.setControl(
+        positionControl.withPosition(outputs.positionRad).withSlot(0).withFeedForward(outputs.kS));
   }
 }
