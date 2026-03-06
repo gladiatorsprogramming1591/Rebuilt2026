@@ -46,6 +46,8 @@ public interface HoodIO {
    */
   public default void setHoodSpeed(AngularVelocity angularVelocity) {}
 
+  public default void setHoodSpeed(double speed) {}
+
   public default void setHoodPosition(double angle) {}
 
   public default void zeroHoodEncoder() {}

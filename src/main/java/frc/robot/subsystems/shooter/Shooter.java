@@ -1,30 +1,17 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.MathUtil;
-<<<<<<< HEAD
-import edu.wpi.first.units.measure.AngularVelocity;
-=======
->>>>>>> 9db5344 (WIP for the shooter)
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
-
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   private final ShooterIO io;
-  private final ShooterIO leftShooterIO; 
-  private final ShooterIO rightShooterIO;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   public Shooter(ShooterIO io) {
     this.io = io;
-    this.leftShooterIO = leftShooterIO; 
-    this.rightShooterIO = rightShooterIO;
-
   }
 
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Flywheel/kP", 0.6);
@@ -39,7 +26,7 @@ public class Shooter extends SubsystemBase {
   }
 
   private void runShooter(double shooterSpeed) {
-    io.runShooter(shooterSpeed);
+    io.runShooterTarget(shooterSpeed);
   }
 
   private void getVelocity(double velocity){
@@ -56,15 +43,22 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-<<<<<<< HEAD
-=======
-  public boolean isShooterAtVelocity(double velocity) {
-    return MathUtil.isNear(
-      velocity, 
-      , velocity)
+  public Command runShooterVelocity(double velocity) {
+    return runEnd(
+        () -> {
+          io.runShooterTarget(velocity);
+        },
+        () -> {
+          io.runShooterTarget(0);
+        });
   }
+
+  // public boolean isShooterAtVelocity(double velocity) {
+  //   return MathUtil.isNear(
+  //     velocity, 
+  //     , velocity)
+  // }
     
 
 
->>>>>>> 9db5344 (WIP for the shooter)
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -26,6 +27,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodIO;
+import frc.robot.subsystems.hood.HoodIOKraken;
+import frc.robot.subsystems.hood.HoodIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
@@ -39,6 +44,8 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterCalculation;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -62,6 +69,7 @@ public class RobotContainer {
   private final Roller roller;
   private final Shooter shooter;
   private final Vision vision;
+  private final Hood hood;
 
   // Controller
   private final CommandXboxController driver_controller = new CommandXboxController(0);
@@ -97,20 +105,16 @@ public class RobotContainer {
 
         if (robotInitConstants.isCompBot) {
           intake = new Intake(new IntakeIOKraken());
-
           kicker = new Kicker(new KickerIOKraken());
-
           roller = new Roller(new RollerIOKraken());
-
           shooter = new Shooter(new ShooterIOKraken());
+          hood = new Hood(new HoodIOKraken());
         } else {
           intake = new Intake(new IntakeIOSim());
-
           kicker = new Kicker(new KickerIOSim());
-
           roller = new Roller(new RollerIOSim());
-
           shooter = new Shooter(new ShooterIOSim());
+          hood = new Hood(new HoodIOSim());
         }
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -142,14 +146,11 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOSim());
-
         kicker = new Kicker(new KickerIOSim());
-
         roller = new Roller(new RollerIOSim());
-
         vision = new Vision();
-
         shooter = new Shooter(new ShooterIOSim());
+        hood = new Hood(new HoodIOSim());
 
         break;
 
@@ -164,14 +165,12 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         intake = new Intake(new IntakeIO() {});
-
         kicker = new Kicker(new KickerIO() {});
-
         roller = new Roller(new RollerIO() {});
-
         shooter = new Shooter(new ShooterIO() {});
-
         vision = new Vision();
+        hood = new Hood(new HoodIO() {});
+
         break;
     }
 
@@ -228,7 +227,7 @@ public class RobotContainer {
                 drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()));
 
     // Switch to X pattern when X button is pressed
-    // driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     driver_controller
@@ -244,24 +243,33 @@ public class RobotContainer {
     driver_controller.rightTrigger().whileTrue(shooter.runShooterTarget());
     driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor());
     driver_controller
-        .b()
+        .leftBumper()
         .whileTrue(
             intake
-                .deployIntake()); // TODO: needs to be a toggle eventually that runs until a certain
+                .deployIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs until a certain
+    driver_controller
+        .rightBumper()
+        .whileTrue(
+            intake
+                .stowIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs until a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
 
     // TODO: Delete later. only for initial testing.
-    driver_controller.povLeft().onTrue(intake.deployIntakeOn());
-    driver_controller.povUp().onTrue(intake.stowIntakeOff());
-    driver_controller.povRight().onTrue(shoot());
+    driver_controller.start().whileTrue(kicker.runKickerMotor());
+    driver_controller.povLeft().whileTrue(roller.runBottomRollerMotor());
+    driver_controller.povRight().whileTrue(roller.runTopRollerMotor());
+    driver_controller.povUp().whileTrue(hood.runHoodUp());
+    driver_controller.povDown().whileTrue(hood.runHoodDown());
+    driver_controller.y().whileTrue(shoot());
   }
 
   public Command shoot() {
-    return kicker
-        .startKickerMotor()
-        .alongWith(roller.startRollerMotors())
-        .alongWith(intake.stowIntakeOff());
+    return shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED);
+        // .andThen(new WaitCommand(2.0))     
+        // .andThen(kicker.startKickerMotor())
+        // .alongWith(roller.startRollerMotors())
+        // .alongWith(intake.stowIntakeUsingCurrent());
   }
 
   public void registerNamedCommands() {

@@ -13,7 +13,7 @@ public class ShooterConstants {
   public static final int RIGHT_SHOOTER_LEADER_MOTOR_ID = 36;
   public static final int RIGHT_SHOOTER_FOLLOWER_MOTOR_ID = 37;
 
-  public static final double SHOOTER_MOTOR_SPEED = 1;
+  public static final double SHOOTER_MOTOR_SPEED = 0.5;
   public static final double SHOOTER_MOTOR_REDUCTION = 1;
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 1;
   public static final int SHOOTER_MAX_VELOCITY = 5200;

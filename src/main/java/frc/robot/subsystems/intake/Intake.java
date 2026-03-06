@@ -42,6 +42,16 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command stowIntakeUsingCurrent() {
+    return runEnd(
+        () -> {
+          io.setDeployTorqueCurrentFOC(-IntakeConstants.DEPLOY_TORQUE_CURRENT);
+        },
+        () -> {
+          io.stopDeployMotor();
+        });
+  }
+
   public Command runIntakeMotor() {
     return runEnd(
         () -> {

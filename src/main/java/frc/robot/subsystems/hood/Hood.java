@@ -28,10 +28,20 @@ public class Hood extends SubsystemBase {
     this.io = io;
   }
 
-  public Command runHoodMotor() {
+  public Command runHoodUp() {
     return runEnd(
         () -> {
-          io.setHoodSpeed(HoodConstants.HOOD_MOTOR_SPEED);
+          io.setHoodSpeed(HoodConstants.HOOD_UP_SPEED);
+        },
+        () -> {
+          io.setHoodSpeed(0.0);
+        });
+  }
+
+  public Command runHoodDown() {
+    return runEnd(
+        () -> {
+          io.setHoodSpeed(HoodConstants.HOOD_DOWN_SPEED);
         },
         () -> {
           io.setHoodSpeed(0.0);
