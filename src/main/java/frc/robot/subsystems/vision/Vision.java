@@ -292,7 +292,7 @@ public class Vision extends SubsystemBase {
     //   return Optional.empty();
     // }
     // Trust yaw for multi-tag; else replace yaw with fused yaw (254 single-tag + gyro fusion idea).
-    boolean trustYaw = pe.tagCount >= 2 && DriverStation.isDisabled();
+    boolean trustYaw = pe.tagCount >= 2;
     Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
 
     SmartDashboard.putNumber("xyStd", xyStd);
@@ -309,6 +309,14 @@ public class Vision extends SubsystemBase {
         (pe.rawFiducials == null)
             ? new int[0]
             : Arrays.stream(pe.rawFiducials).filter(f -> f != null).mapToInt(f -> f.id).toArray();
+
+    // If we got this far and have a valid pose, if we are disabled,
+    // reset the robot pose and skip adding a vision measurement by returning empty candidate
+    if (DriverStation.isDisabled()) {
+      RobotState.getInstance().resetRobotPose(pose);
+      return Optional.empty();
+    }
+
     return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, trustYaw, ids));
   }
 
