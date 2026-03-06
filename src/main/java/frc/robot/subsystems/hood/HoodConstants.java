@@ -10,6 +10,7 @@ public final class HoodConstants {
 
   public static final double HOOD_LOWER_LIMIT = 0;
 
+<<<<<<< HEAD
   public static final double HOOD_UPPER_LIMIT = 0;
 
   public static final double kP = 0;
@@ -17,4 +18,7 @@ public final class HoodConstants {
 public static final double kD = 0;
 
 public static double kS;
+=======
+public static final double HOOD_UPPER_LIMIT = 0;
+>>>>>>> origin/KileyHood
 }
