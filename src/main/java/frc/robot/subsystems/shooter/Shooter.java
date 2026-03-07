@@ -1,49 +1,39 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.MathUtil;
-<<<<<<< HEAD
-import edu.wpi.first.units.measure.AngularVelocity;
-=======
->>>>>>> 9db5344 (WIP for the shooter)
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
-
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   private final ShooterIO io;
-  private final ShooterIO leftShooterIO; 
-  private final ShooterIO rightShooterIO;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
-
-  public Shooter(ShooterIO io) {
-    this.io = io;
-    this.leftShooterIO = leftShooterIO; 
-    this.rightShooterIO = rightShooterIO;
-
-  }
+  private final ShooterIO.ShooterIOOutputs outputs = new ShooterIO.ShooterIOOutputs();
 
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Flywheel/kP", 0.6);
   private static final LoggedTunableNumber kD = new LoggedTunableNumber("Flywheel/kD", 0.0);
   private static final LoggedTunableNumber kS = new LoggedTunableNumber("Flywheel/kS", 0.3);
   private static final LoggedTunableNumber kV = new LoggedTunableNumber("Flywheel/kV", 0.0195);
 
+  public Shooter(ShooterIO io) {
+    this.io = io;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
-  }
 
-  private void runShooter(double shooterSpeed) {
-    io.runShooter(shooterSpeed);
-  }
-
-  private void getVelocity(double velocity){
-    io.getShooterVelocity();
+    switch (RobotState.getShooterMode()) {
+      case ON -> io.setShooterMotorRPM(50);
+      case IDLE -> io.setShooterMotorRPM(25); // NOT REAL, JUST HALF VOLTAGE
+      case OFF -> io.setShooterMotorRPM(0);
+      default -> {
+        System.out.println("Illegal Shooter mode : " + RobotState.getShooterMode());
+        io.setShooterMotorRPM(0);
+      }
+    }
   }
 
   public Command runShooterTarget() {
@@ -55,16 +45,4 @@ public class Shooter extends SubsystemBase {
           io.runShooter(0);
         });
   }
-
-<<<<<<< HEAD
-=======
-  public boolean isShooterAtVelocity(double velocity) {
-    return MathUtil.isNear(
-      velocity, 
-      , velocity)
-  }
-    
-
-
->>>>>>> 9db5344 (WIP for the shooter)
 }

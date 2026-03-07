@@ -5,10 +5,27 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   public static class ShooterIOInputs {
-    public double shooterVelocity = 0.0;
+    public double leftLeaderMotorTemp;
+    public double rightLeaderMotorTemp;
+    public double leftFollowerMotorTemp;
+    public double rightFollowerMotorTemp;
+    public double velocityRadsPerSec;
+    public double supplyCurrentAmps;
+    public double torqueCurrentAmps;
+    public double appliedVoltage;
+  }
+
+  public class ShooterIOOutputs {
+    public double velocityRadsPerSec = 0.0; // so far only used for sim
+    public double kP;
+    public double kI;
+    public double kD;
+    public double feedforward;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
+
+  public default void applyOutputs(ShooterIOOutputs outputs) {}
 
   /**
    * setting the shooter motor voltage
@@ -17,20 +34,11 @@ public interface ShooterIO {
    */
   public default void runShooter(double shooterVelocity) {}
 
-<<<<<<< HEAD
-  public default void runShooterTarget(double shooterVelocity){}
+  public default void runShooterTarget(double shooterVelocity) {}
 
-
-  /*determines if the shooter is at correct velocity*/
-  public default boolean shooterAtVelocity(double shooterVelocity){
-      return false;}
-
-  public default void getShooterVelocity() {
+  public default boolean shooterAtVelocity(double shooterVelocity) {
+    return false;
   }
-=======
 
-  /*determines if the shooter is at correct velocity*/
-  public default void shooterAtVelocity(double shooterVelocity){}
->>>>>>> 9db5344 (WIP for the shooter)
-
+  public default void setShooterMotorRPM(double rps) {}
 }
