@@ -52,6 +52,17 @@ public class Hood extends SubsystemBase {
         });
   }
 
+  public Command runHoodPosition(double angle) {
+    return runEnd(
+        () -> {
+          outputs.mode = HoodMode.POSITION;
+          io.setHoodPosition(angle);
+        },
+        () -> {
+          io.setHoodSpeed(0.0);
+        });
+  }
+
   public Command runHoodTarget() {
     return run(
         () -> {

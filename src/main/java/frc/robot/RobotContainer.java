@@ -258,10 +258,12 @@ public class RobotContainer {
     driver_controller.start().whileTrue(kicker.runKickerMotor());
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povLeft().whileTrue(roller.runBottomRollerMotor());
-    operator_controller.povRight().whileTrue(roller.runTopRollerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
     driver_controller.y().whileTrue(shoot());
+
+    operator_controller.povRight().whileTrue(roller.runTopRollerMotor());
+    operator_controller.rightTrigger().whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis()));
   }
 
   public Command shoot() {
