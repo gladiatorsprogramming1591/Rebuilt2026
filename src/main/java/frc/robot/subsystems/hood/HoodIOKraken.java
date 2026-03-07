@@ -104,6 +104,10 @@ public class HoodIOKraken implements HoodIO {
     hoodMotor.setControl(positionControl.withPosition(ticks));
   }
 
+  public void setHoodSpeed(double speed) {
+    hoodMotor.set(speed);
+  }
+
   public void zero() {
     hoodMotor.setControl(zeroControl);
   }
