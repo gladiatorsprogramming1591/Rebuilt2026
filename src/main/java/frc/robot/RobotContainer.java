@@ -257,6 +257,7 @@ public class RobotContainer {
 
     // TODO: Delete later. only for initial testing.
     driver_controller.start().whileTrue(kicker.runKickerMotor());
+    driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povLeft().whileTrue(roller.runBottomRollerMotor());
     driver_controller.povRight().whileTrue(roller.runTopRollerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());

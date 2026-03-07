@@ -66,42 +66,23 @@ public class HoodIOKraken implements HoodIO {
       hoodTemperature);
 
     hoodMotor.optimizeBusUtilization();
-
-    // PhoenixUtil.registerSignals(
-    //     false,
-    //     hoodAppliedVolts,
-    //     hoodAngle,
-    //     hoodAngularVelocity,
-    //     hoodTorqueCurrent,
-    //     hoodSupplyCurrent,
-    //     hoodTemperature);
-
   }
   
-    // @Override
-    // public void setHoodSpeed(AngularVelocity angularVelocity) {
-    //   this.angularVelocity = MathUtil.clamp(this.angularVelocity, -HoodConstants.HOOD_MAX_SPEED, HoodConstants.HOOD_MAX_SPEED);
-    //   hoodMotor.set(this.angularVelocity);
-    //   SmartDashboard.putNumber("Hood Speed", this.angularVelocity);
-    // }
-  
-  //   @Override
-  //   public void setHoodPosition(double angle) {
-  //     this.angle = MathUtil.clamp(angle, HoodConstants.HOOD_LOWER_LIMIT, HoodConstants.HOOD_UPPER_LIMIT);
-  //     SmartDashboard.putNumber("Hood Angle", hoodAngle.getValueAsDouble());
-  // }
-
   @Override
   public void updateInputs(HoodIOInputs inputs) {
+    BaseStatusSignal.refreshAll(
+        hoodAppliedVolts,
+        hoodAngle,
+        hoodAngularVelocity,
+        hoodTorqueCurrent,
+        hoodSupplyCurrent,
+        hoodTemperature);
+
     inputs.hoodSpeed = hoodAngularVelocity.getValueAsDouble();
     inputs.hoodAngle = hoodAngle.getValueAsDouble();
     inputs.hoodSupplyCurrent = hoodSupplyCurrent.getValueAsDouble();
     inputs.hoodTorqueCurrent = hoodTorqueCurrent.getValueAsDouble();
     inputs.hoodTemperature = hoodTemperature.getValueAsDouble();
-  }
-
-  public void setHoodPosition(double ticks) {
-    hoodMotor.setControl(positionControl.withPosition(ticks));
   }
 
   public void setHoodSpeed(double speed) {
@@ -114,7 +95,9 @@ public class HoodIOKraken implements HoodIO {
 
   @Override 
   public void applyOutputs(HoodIOOutputs outputs) {
-    hoodMotor.setControl(
-        positionControl.withPosition(outputs.positionRad).withSlot(0).withFeedForward(outputs.kS));
+    if (outputs.mode == HoodMode.POSITION) {
+      hoodMotor.setControl(
+        positionControl.withPosition(outputs.desiredHoodAngle).withSlot(0).withFeedForward(outputs.kS));  
+    }
   }
 }
