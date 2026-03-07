@@ -1,26 +1,19 @@
 package frc.robot.subsystems.hood;
 
-import java.io.ObjectInputFilter.Status;
-
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
 
 public class HoodIOKraken implements HoodIO {
@@ -42,7 +35,7 @@ public class HoodIOKraken implements HoodIO {
   private final StatusSignal<Current> hoodSupplyCurrent = hoodMotor.getSupplyCurrent();
   private final StatusSignal<Current> hoodTorqueCurrent = hoodMotor.getTorqueCurrent();
   private final StatusSignal<Temperature> hoodTemperature = hoodMotor.getDeviceTemp();
-  
+
   public HoodIOKraken() {
     var hoodConfig = new TalonFXConfiguration();
     hoodConfig.CurrentLimits.SupplyCurrentLimit = HoodConstants.HOOD_CURRENT_LIMIT;
@@ -57,17 +50,17 @@ public class HoodIOKraken implements HoodIO {
     hoodMotor.getConfigurator().apply(hoodSlot0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-      50,
-      hoodAppliedVolts,
-      hoodAngle,
-      hoodAngularVelocity,
-      hoodTorqueCurrent,
-      hoodSupplyCurrent,
-      hoodTemperature);
+        50,
+        hoodAppliedVolts,
+        hoodAngle,
+        hoodAngularVelocity,
+        hoodTorqueCurrent,
+        hoodSupplyCurrent,
+        hoodTemperature);
 
     hoodMotor.optimizeBusUtilization();
   }
-  
+
   @Override
   public void updateInputs(HoodIOInputs inputs) {
     BaseStatusSignal.refreshAll(
@@ -93,11 +86,14 @@ public class HoodIOKraken implements HoodIO {
     hoodMotor.setControl(zeroControl);
   }
 
-  @Override 
+  @Override
   public void applyOutputs(HoodIOOutputs outputs) {
     if (outputs.mode == HoodMode.POSITION) {
       hoodMotor.setControl(
-        positionControl.withPosition(outputs.desiredHoodAngle).withSlot(0).withFeedForward(outputs.kS));  
+          positionControl
+              .withPosition(outputs.desiredHoodAngle)
+              .withSlot(0)
+              .withFeedForward(outputs.kS));
     }
   }
 }

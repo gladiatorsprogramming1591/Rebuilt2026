@@ -35,7 +35,7 @@ public class Roller extends SubsystemBase {
 
   public Command startRollerMotors() {
     return new InstantCommand(() -> io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED), this)
-        .andThen(() -> io.setBottomRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED));
+        .andThen(() -> io.setBottomRollerSpeed(-RollerConstants.ROLLER_MOTOR_SPEED));
   }
 
   public Command stopRollerMotors() {

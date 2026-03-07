@@ -21,7 +21,7 @@ public class RollerIOKraken implements RollerIO {
     rollerTopMotor.getConfigurator().apply(rollerTopConfig, 0.25);
 
     var rollerBottomConfig = new TalonFXConfiguration();
-    rollerBottomConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    rollerBottomConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     rollerBottomConfig.CurrentLimits.SupplyCurrentLimit = RollerConstants.ROLLER_CURRENT_LIMIT;
     rollerBottomConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerBottomConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;

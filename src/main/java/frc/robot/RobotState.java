@@ -110,6 +110,14 @@ public final class RobotState {
 
   @Getter @Setter private static RobotMode mode = RobotMode.DISABLED;
 
+  public enum ShooterModeState {
+    ON, // Shooter Motor is On - Kicker Motor is On
+    IDLE, // Shooter Motor is On - Kicker Motor is Off
+    OFF // Shooter Motor is Off - Kicker Motor is Off
+  }
+
+  @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
+
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);
   }

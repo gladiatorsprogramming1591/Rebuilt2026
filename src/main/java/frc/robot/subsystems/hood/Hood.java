@@ -1,14 +1,11 @@
 package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.HoodIO.HoodIOOutputs;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.LoggedTunableNumber;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -18,7 +15,7 @@ public class Hood extends SubsystemBase {
 
   private boolean hasBeenZeroed = false;
 
-  private static final LoggedTunableNumber goalPosition = 
+  private static final LoggedTunableNumber goalPosition =
       new LoggedTunableNumber("Hood/GoalPosition", 500.0);
   private static final LoggedTunableNumber kP =
       new LoggedTunableNumber("Hood/kP", HoodConstants.kP);
@@ -56,12 +53,13 @@ public class Hood extends SubsystemBase {
   }
 
   public Command runHoodTarget() {
-    return run (() -> {
-      outputs.mode = HoodMode.POSITION;
-      var params = ShooterCalculation.getInstance().getParameters();
-      outputs.desiredHoodAngle = params.hoodAngle();
-      outputs.velocityRadPerSecond = params.hoodVelocity();
-    });
+    return run(
+        () -> {
+          outputs.mode = HoodMode.POSITION;
+          var params = ShooterCalculation.getInstance().getParameters();
+          outputs.desiredHoodAngle = params.hoodAngle();
+          outputs.velocityRadPerSecond = params.hoodVelocity();
+        });
   }
 
   public void periodic() {

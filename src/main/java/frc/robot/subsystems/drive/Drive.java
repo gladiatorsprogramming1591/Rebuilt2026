@@ -21,8 +21,6 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -55,8 +53,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-private Drive drive; 
-private SwerveRequest.FieldCentric hubCentric; 
+  private Drive drive;
+  private SwerveRequest.FieldCentric hubCentric;
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -261,7 +259,7 @@ private SwerveRequest.FieldCentric hubCentric;
   public void stop() {
     runVelocity(new ChassisSpeeds());
   }
-  
+
   /**
    * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
    * return to their normal orientations the next time a nonzero velocity is requested.
@@ -341,15 +339,10 @@ private SwerveRequest.FieldCentric hubCentric;
     return getPose().getRotation();
   }
 
-
-
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     RobotState.getInstance().resetRobotPose(pose);
   }
-
-
-
 
   /** Adds a new timestamped vision measurement. */
   public void addVisionMeasurement(

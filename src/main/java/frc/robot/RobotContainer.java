@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -44,7 +43,6 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
@@ -245,13 +243,14 @@ public class RobotContainer {
     driver_controller
         .leftBumper()
         .whileTrue(
-            intake
-                .deployIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs until a certain
+            intake.deployIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs
+    // until a certain
     driver_controller
         .rightBumper()
         .whileTrue(
             intake
-                .stowIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs until a certain
+                .stowIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs until
+    // a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
 
@@ -267,10 +266,10 @@ public class RobotContainer {
 
   public Command shoot() {
     return shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED);
-        // .andThen(new WaitCommand(2.0))     
-        // .andThen(kicker.startKickerMotor())
-        // .alongWith(roller.startRollerMotors())
-        // .alongWith(intake.stowIntakeUsingCurrent());
+    // .andThen(new WaitCommand(2.0))
+    // .andThen(kicker.startKickerMotor())
+    // .alongWith(roller.startRollerMotors())
+    // .alongWith(intake.stowIntakeUsingCurrent());
   }
 
   public void registerNamedCommands() {

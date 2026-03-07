@@ -22,7 +22,7 @@ public final class IntakeConstants {
   public static final double DEPLOY_SPEED = 1.0; // placeholder until tested
   public static final double STOW_SPEED = DEPLOY_SPEED * -1; // placeholder until tested
   // Amps
-  public static final double DEPLOY_TORQUE_CURRENT = 5.0; // placeholder until tested
-  public static final double STOW_TORQUE_CURRENT = -7.0; // placeholder until tested
+  public static final double DEPLOY_TORQUE_CURRENT = 10.0; // placeholder until tested
+  public static final double STOW_TORQUE_CURRENT = -14.0; // placeholder until tested
   public static final double INTAKE_DELAY_SECONDS = 2.0; // placeholder until tested
 }
