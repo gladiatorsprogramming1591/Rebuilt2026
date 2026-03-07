@@ -28,6 +28,10 @@ public class Intake extends SubsystemBase {
     return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED));
   }
 
+  public Command idleIntakeMotor() {
+    return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_IDLE_SPEED));
+  }
+
   public Command stopIntakeMotor() {
     return new InstantCommand(() -> io.setIntakeSpeed(0.0));
   }
