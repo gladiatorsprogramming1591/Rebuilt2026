@@ -56,6 +56,26 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command runDeploy() {
+    return runEnd(
+        () -> {
+          io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
+        },
+        () -> {
+          io.stopDeployMotor();
+        });
+  }
+
+  public Command runStow() {
+    return runEnd(
+        () -> {
+          io.setDeploySpeed(IntakeConstants.STOW_SPEED);
+        },
+        () -> {
+          io.stopDeployMotor();
+        });
+  }
+
   public Command runIntakeMotor() {
     return runEnd(
         () -> {

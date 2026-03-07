@@ -26,7 +26,7 @@ public class Roller extends SubsystemBase {
   public Command runBottomRollerMotor() {
     return runEnd(
         () -> {
-          io.setBottomRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED);
+          io.setBottomRollerSpeed(-RollerConstants.ROLLER_MOTOR_SPEED);
         },
         () -> {
           io.setBottomRollerSpeed(0);

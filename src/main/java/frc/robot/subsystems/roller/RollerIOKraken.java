@@ -5,7 +5,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RollerIOKraken implements RollerIO {
@@ -33,14 +32,14 @@ public class RollerIOKraken implements RollerIO {
 
   @Override
   public void setTopRollerSpeed(double speed) {
-    this.speed = MathUtil.clamp(speed, 0, 1.0);
+    this.speed = speed;
     rollerTopMotor.set(this.speed);
     SmartDashboard.putNumber("Top Roller Speed", this.speed);
   }
 
   @Override
   public void setBottomRollerSpeed(double speed) {
-    this.speed = MathUtil.clamp(speed, 0, 1.0);
+    this.speed = speed;
     rollerBottomMotor.set(this.speed);
     SmartDashboard.putNumber("Bottom Roller Speed", this.speed);
   }

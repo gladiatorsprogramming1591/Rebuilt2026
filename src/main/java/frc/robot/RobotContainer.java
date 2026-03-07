@@ -243,13 +243,13 @@ public class RobotContainer {
     driver_controller
         .leftBumper()
         .whileTrue(
-            intake.deployIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs
+            intake.runDeploy()); // TODO: needs to be a toggle eventually that runs
     // until a certain
     driver_controller
         .rightBumper()
         .whileTrue(
             intake
-                .stowIntakeUsingCurrent()); // TODO: needs to be a toggle eventually that runs until
+                .runStow()); // TODO: needs to be a toggle eventually that runs until
     // a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
@@ -258,7 +258,7 @@ public class RobotContainer {
     driver_controller.start().whileTrue(kicker.runKickerMotor());
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povLeft().whileTrue(roller.runBottomRollerMotor());
-    driver_controller.povRight().whileTrue(roller.runTopRollerMotor());
+    operator_controller.povRight().whileTrue(roller.runTopRollerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
     driver_controller.y().whileTrue(shoot());

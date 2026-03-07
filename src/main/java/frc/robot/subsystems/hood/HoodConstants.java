@@ -7,8 +7,8 @@ public final class HoodConstants {
   // public static final double ROLLER_MAX_SPEED = 1.0;
   public static final double HOOD_CURRENT_LIMIT = 10.0; // placeholder until tested
 
-  public static final double HOOD_UP_SPEED = 0.05;
-  public static final double HOOD_DOWN_SPEED = 0.03;
+  public static final double HOOD_UP_SPEED = 0.15;
+  public static final double HOOD_DOWN_SPEED = -0.1;
   public static final double HOOD_MAX_SPEED = 0.5;
 
   public static final double HOOD_LOWER_LIMIT = 0;
