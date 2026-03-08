@@ -2,7 +2,6 @@ package frc.robot.subsystems.hood;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -15,17 +14,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
 
 public class HoodIOKraken implements HoodIO {
   private final TalonFX hoodMotor = new TalonFX(HoodConstants.HOOD_CAN_ID);
   private final DigitalInput hoodLimit = new DigitalInput(HoodConstants.HOOD_DIO_PORT);
-  private final boolean limitTripped =
-      false; // DIO returns true when circuit is open, and false when closed (limit sensor tripped).
-  private double positionOffset = 0;
-  private Timer timer = new Timer();
   private final PositionTorqueCurrentFOC positionControl =
       new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
 
@@ -83,65 +77,15 @@ public class HoodIOKraken implements HoodIO {
     inputs.hoodSupplyCurrent = hoodSupplyCurrent.getValueAsDouble();
     inputs.hoodTorqueCurrent = hoodTorqueCurrent.getValueAsDouble();
     inputs.hoodTemperature = hoodTemperature.getValueAsDouble();
-    inputs.hoodLimitSet = hoodLimit.get();
   }
 
-  @Override
   public void setHoodSpeed(double speed) {
     hoodMotor.set(speed);
+    SmartDashboard.putNumber("Hood Speed", speed);
   }
 
-  @Override
   public void zero() {
-    positionOffset = hoodMotor.getPosition().getValueAsDouble() * -1;
-    SmartDashboard.putNumber("Hood offset rots", positionOffset);
-  }
-
-  @Override
-  public void driveToZero() {
-    hoodMotor
-        .getConfigurator()
-        .apply(
-            new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(HoodConstants.HOOD_ZEROING_CURRENT_LIMIT));
-    hoodMotor.set(HoodConstants.HOOD_ZEROING_SPEED);
-  }
-
-  @Override
-  public boolean isHoodAtTrueZero() {
-    return hoodLimit.get() == limitTripped && isHoodStationary(false) || isHoodStationary(true);
-  }
-
-  @Override
-  public void setHoodCurrentLimit(double currentLimit) {
-    hoodMotor
-        .getConfigurator()
-        .apply(new CurrentLimitsConfigs().withStatorCurrentLimit(currentLimit));
-  }
-
-  @Override
-  public boolean isHoodStationary(boolean withTimer) {
-    if (!withTimer)
-      return (Math.abs(hoodMotor.getVelocity().getValueAsDouble())
-          < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE);
-    timer.start();
-    if (timer.get() <= HoodConstants.HOOD_STATIONARY_DELAY) // In seconds
-    {
-      SmartDashboard.putNumber("isHoodStationary timer", timer.get());
-      if (Math.abs(hoodMotor.getVelocity().getValueAsDouble())
-          > HoodConstants.HOOD_ZEROING_VEL_TOLERANCE) {
-        timer.stop();
-        timer.reset();
-        SmartDashboard.putBoolean("isHoodStationary", false);
-        return false;
-      }
-    } else {
-      timer.stop();
-      timer.reset();
-      SmartDashboard.putBoolean("isHoodStationary", true);
-      return true;
-    }
-    return false;
+    hoodMotor.setControl(zeroControl);
   }
 
   @Override
@@ -149,7 +93,7 @@ public class HoodIOKraken implements HoodIO {
     if (outputs.mode == HoodMode.POSITION) {
       hoodMotor.setControl(
           positionControl
-              .withPosition(outputs.desiredHoodAngle + positionOffset)
+              .withPosition(outputs.desiredHoodAngle)
               .withSlot(0)
               .withFeedForward(outputs.kS));
     }
