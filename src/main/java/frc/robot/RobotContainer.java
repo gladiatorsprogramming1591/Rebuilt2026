@@ -270,13 +270,14 @@ public class RobotContainer {
 
     operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
+    operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     operator_controller
         .rightTrigger()
         .whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis()));
     operator_controller.povUp().whileTrue(intake.runIntakeMotor());
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
-    operator_controller.a().whileTrue(intakePulseCommand());
+    operator_controller.a().onTrue(intakePulseCommand());
 
     HubShiftUtil.setAllianceWinOverride(
         () -> {
@@ -297,21 +298,19 @@ public class RobotContainer {
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
   //   return intake.runIntakeMotor()
-  //   .alongWith(wait(5))
-  //   .andThen(intake.runStow())
+  //   .andThen((5))
+  //   .andThen(intake.runStow());
   // }
 
+  // TODO: Add this to shoot command
   public Command intakePulseCommand() {
-    return intake
-        .runDeploy()
-        .alongWith(
-            Commands.sequence(
-                Commands.waitSeconds(0.3),
-                intake.runStow(),
-                Commands.waitSeconds(0.5),
-                intake.runDeploy(),
-                Commands.waitSeconds(0.3),
-                intake.runStow()));
+    return Commands.sequence(
+        intake.runStow().withTimeout(0.2),
+        intake.runDeploy().withTimeout(0.2),
+        intake.runStow().withTimeout(0.2),
+        intake.runStow().withTimeout(0.2),
+        intake.runDeploy().withTimeout(0.2),
+        intake.runStow().withTimeout(0.2));
   }
 
   public void registerNamedCommands() {

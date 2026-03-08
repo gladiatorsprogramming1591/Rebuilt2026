@@ -82,10 +82,10 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
-                -0.30734, // forward + /backward -
+                -0.15534, // forward + /backward -
                 -0.2794, // side right + /left -
                 0.42926, // up + / down -
-                new Rotation3d(0, Units.degreesToRadians(8.6), Units.degreesToRadians(0.0))));
+                new Rotation3d(0, Units.degreesToRadians(-27.1), Units.degreesToRadians(0.0))));
     /*
         private static final Camera LEFT_SIM =
             new Camera(
