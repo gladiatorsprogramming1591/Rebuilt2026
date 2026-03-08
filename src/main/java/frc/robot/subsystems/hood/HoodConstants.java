@@ -11,9 +11,9 @@ public final class HoodConstants {
   public static final double HOOD_UP_SPEED = 0.15;
   public static final double HOOD_DOWN_SPEED = -0.1;
   public static final double HOOD_MAX_SPEED = 0.5;
-  public static final double HOOD_ZEROING_SPEED = -0.05;
+  public static final double HOOD_ZEROING_SPEED = -0.15;
 
-  public static final double HOOD_ZEROING_VEL_TOLERANCE = 0.05; // in rotations
+  public static final double HOOD_ZEROING_VEL_TOLERANCE = 0.10; // in rotations
   public static final double MIN_STATIONARY_DURATION = 2.0; // in seconds
 
   public static final double HOOD_LOWER_LIMIT = 0;

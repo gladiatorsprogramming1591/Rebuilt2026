@@ -55,11 +55,13 @@ public interface HoodIO {
 
   public default void setHoodPosition(double angle) {}
 
+  public default void stopHood() {}
+
   public default void setHoodCurrentLimit(double currentLimit) {}
 
   public default void zero() {}
 
-  public default void driveHoodToZero() {}
+  public default void runHoodToZero() {}
 
   public default boolean hasHoodStoppedOverTime(double minStationaryDuration) {
     return false;

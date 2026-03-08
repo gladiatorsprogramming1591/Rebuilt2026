@@ -37,7 +37,7 @@ public class Hood extends SubsystemBase {
           io.setHoodSpeed(HoodConstants.HOOD_UP_SPEED);
         },
         () -> {
-          io.setHoodSpeed(0.0);
+          io.stopHood();
         });
   }
 
@@ -48,7 +48,7 @@ public class Hood extends SubsystemBase {
           io.setHoodSpeed(HoodConstants.HOOD_DOWN_SPEED);
         },
         () -> {
-          io.setHoodSpeed(0.0);
+          io.stopHood();
         });
   }
 
@@ -59,7 +59,7 @@ public class Hood extends SubsystemBase {
           io.setHoodPosition(angle * 8);
         },
         () -> {
-          io.setHoodSpeed(0.0);
+          io.stopHood();
         });
   }
 
@@ -73,14 +73,18 @@ public class Hood extends SubsystemBase {
         });
   }
 
+  public Command stopHood() {
+    return runOnce(() -> io.stopHood());
+  }
+
   public Command runHoodToZero() {
     outputs.mode = HoodMode.SPEED;
-    return run(() -> io.driveHoodToZero())
+    return run(() -> io.runHoodToZero())
         .until(() -> io.isHoodAtTrueZero())
         .andThen(() -> io.zero())
         .finallyDo(
             () -> {
-              io.setHoodSpeed(0.0);
+              io.stopHood();
               io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
               io.resetHoodZeroTimer();
             });

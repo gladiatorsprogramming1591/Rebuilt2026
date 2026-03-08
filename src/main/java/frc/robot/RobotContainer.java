@@ -224,6 +224,7 @@ public class RobotContainer {
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
+    hood.setDefaultCommand(hood.runHoodToZero());
 
     // Lock to 0° when A button is held
     driver_controller
@@ -278,6 +279,7 @@ public class RobotContainer {
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
     operator_controller.a().onTrue(intakePulseCommand());
+    operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
 
     HubShiftUtil.setAllianceWinOverride(
         () -> {

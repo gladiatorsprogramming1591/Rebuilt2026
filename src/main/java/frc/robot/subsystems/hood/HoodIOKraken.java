@@ -68,8 +68,9 @@ public class HoodIOKraken implements HoodIO {
     hoodMotor.optimizeBusUtilization();
 
     SmartDashboard.putNumber("Hood offset rots", 0);
-    SmartDashboard.putBoolean("isHoodStationary", true);
-    SmartDashboard.putNumber("isHoodStationary timer", 0);
+    SmartDashboard.putBoolean("hasHoodStopped", true);
+    SmartDashboard.putBoolean("hasHoodStoppedOverTime", true);
+    SmartDashboard.putNumber("hasHoodStoppedOverTime timer", 0);
   }
 
   @Override
@@ -97,13 +98,18 @@ public class HoodIOKraken implements HoodIO {
   }
 
   @Override
+  public void stopHood() {
+    hoodMotor.stopMotor();
+  }
+
+  @Override
   public void zero() {
     positionOffset = hoodMotor.getPosition().getValueAsDouble() * -1;
     SmartDashboard.putNumber("Hood offset rots", positionOffset);
   }
 
   @Override
-  public void driveHoodToZero() {
+  public void runHoodToZero() {
     hoodMotor
         .getConfigurator()
         .apply(
@@ -127,33 +133,36 @@ public class HoodIOKraken implements HoodIO {
 
   @Override
   public boolean hasHoodStoppedOverTime(double minStationaryDuration) {
-    SmartDashboard.putNumber("isHoodStationary timer", timer.get());
+    SmartDashboard.putNumber("hasHoodStoppedOverTime timer", timer.get());
     timer.start();
     if (timer.get() < minStationaryDuration) // In seconds
     {
       if (!hasHoodStopped()) {
         timer.reset();
-        SmartDashboard.putBoolean("isHoodStationary", false);
+        SmartDashboard.putBoolean("hasHoodStoppedOverTime", false);
         return false;
       }
     } else {
       if (hasHoodStopped()) {
         resetHoodZeroTimer();
-        SmartDashboard.putBoolean("isHoodStationary", true);
+        SmartDashboard.putBoolean("hasHoodStoppedOverTime", true);
         return true;
       } else {
         timer.reset();
-        SmartDashboard.putBoolean("isHoodStationary", false);
+        SmartDashboard.putBoolean("hasHoodStoppedOverTime", false);
         return false;
       }
     }
-    SmartDashboard.putBoolean("isHoodStationary", false);
+    SmartDashboard.putBoolean("hasHoodStoppedOverTime", false);
     return false;
   }
 
   private boolean hasHoodStopped() {
-    return Math.abs(hoodMotor.getVelocity().getValueAsDouble())
-        < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE;
+    boolean retVal =
+        Math.abs(hoodMotor.getVelocity().getValueAsDouble())
+            < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE;
+    SmartDashboard.putBoolean("hasHoodStopped", retVal);
+    return retVal;
   }
 
   @Override
