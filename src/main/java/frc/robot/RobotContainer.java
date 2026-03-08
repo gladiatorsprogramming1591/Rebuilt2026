@@ -272,6 +272,7 @@ public class RobotContainer {
     operator_controller.povUp().whileTrue(intake.runIntakeMotor());
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
+    operator_controller.a().whileTrue(intakePulseCommand());
   }
 
   public Command shoot() {
@@ -287,6 +288,19 @@ public class RobotContainer {
   //   .alongWith(wait(5))
   //   .andThen(intake.runStow())
   // }
+
+  public Command intakePulseCommand() {
+    return intake
+        .runDeploy()
+        .alongWith(
+            Commands.sequence(
+                Commands.waitSeconds(0.3),
+                intake.runStow(),
+                Commands.waitSeconds(0.5),
+                intake.runDeploy(),
+                Commands.waitSeconds(0.3),
+                intake.runStow()));
+  }
 
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );

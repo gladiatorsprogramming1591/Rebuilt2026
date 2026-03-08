@@ -5,11 +5,22 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final LoggedTunableNumber deploySpeed =
+      new LoggedTunableNumber("Intake/DeploySpeed", IntakeConstants.DEPLOY_SPEED);
+  private final LoggedTunableNumber intakeSpeed =
+      new LoggedTunableNumber("Intake/IntakeSpeed", IntakeConstants.INTAKE_MOTOR_SPEED);
+  private final LoggedTunableNumber stowSpeed =
+      new LoggedTunableNumber("Intake/StowSpeed", IntakeConstants.STOW_SPEED);
+  private final LoggedTunableNumber deployCurrent =
+      new LoggedTunableNumber("Intake/DeployCurrent", IntakeConstants.DEPLOY_TORQUE_CURRENT);
+  private final LoggedTunableNumber intakeDelaySeconds =
+      new LoggedTunableNumber("Intake/IntakeDelaySeconds", IntakeConstants.INTAKE_DELAY_SECONDS);
 
   public Intake(IntakeIO io) {
     this.io = io;

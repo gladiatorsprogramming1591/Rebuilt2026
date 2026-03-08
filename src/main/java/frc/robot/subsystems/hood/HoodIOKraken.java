@@ -93,6 +93,7 @@ public class HoodIOKraken implements HoodIO {
   @Override
   public void setHoodSpeed(double speed) {
     hoodMotor.set(speed);
+    SmartDashboard.putNumber("Hood Speed", speed);
   }
 
   @Override
