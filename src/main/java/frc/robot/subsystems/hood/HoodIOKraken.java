@@ -122,11 +122,10 @@ public class HoodIOKraken implements HoodIO {
   @Override
   public boolean isHoodStationary(boolean withTimer) {
     if (!withTimer)
-      return (hoodMotor.getVelocity().getValueAsDouble()
+      return (Math.abs(hoodMotor.getVelocity().getValueAsDouble())
           < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE);
-    timer.reset();
     timer.start();
-    while (timer.get() <= HoodConstants.HOOD_STATIONARY_DELAY) // In seconds
+    if (timer.get() <= HoodConstants.HOOD_STATIONARY_DELAY) // In seconds
     {
       SmartDashboard.putNumber("isHoodStationary timer", timer.get());
       if (Math.abs(hoodMotor.getVelocity().getValueAsDouble())
@@ -136,11 +135,13 @@ public class HoodIOKraken implements HoodIO {
         SmartDashboard.putBoolean("isHoodStationary", false);
         return false;
       }
+    } else {
+      timer.stop();
+      timer.reset();
+      SmartDashboard.putBoolean("isHoodStationary", true);
+      return true;
     }
-    timer.stop();
-    timer.reset();
-    SmartDashboard.putBoolean("isHoodStationary", true);
-    return true;
+    return false;
   }
 
   @Override
