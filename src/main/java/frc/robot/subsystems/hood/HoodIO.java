@@ -55,5 +55,17 @@ public interface HoodIO {
 
   public default void setHoodPosition(double angle) {}
 
-  public default void zeroHoodEncoder() {}
+  public default void setHoodCurrentLimit(double currentLimit) {}
+
+  public default void zero() {}
+
+  public default void driveToZero() {}
+
+  public default boolean isHoodStationary(boolean withTimer) {
+    return false;
+  }
+
+  public default boolean isHoodAtTrueZero() {
+    return false;
+  }
 }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.HoodIO.HoodIOOutputs;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
@@ -71,6 +72,18 @@ public class Hood extends SubsystemBase {
           outputs.desiredHoodAngle = params.hoodAngle();
           outputs.velocityRadPerSecond = params.hoodVelocity();
         });
+  }
+
+  public Command runHoodToZero() {
+    outputs.mode = HoodMode.SPEED;
+    return new RunCommand(() -> io.driveToZero())
+        .until(() -> io.isHoodAtTrueZero())
+        .andThen(() -> io.zero())
+        .finallyDo(
+            () -> {
+              io.setHoodSpeed(0.0);
+              io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
+            });
   }
 
   public void periodic() {
