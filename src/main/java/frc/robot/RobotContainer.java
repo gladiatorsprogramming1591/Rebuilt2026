@@ -53,11 +53,8 @@ import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutoManager;
-import frc.robot.util.FieldConstants;
 import frc.robot.util.HubShiftUtil;
-
 import java.util.Optional;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -282,12 +279,12 @@ public class RobotContainer {
     operator_controller.a().whileTrue(intakePulseCommand());
 
     HubShiftUtil.setAllianceWinOverride(
-    () -> {
-      if (operator_controller.back().getAsBoolean()) {
-        return Optional.of(true);
-      }
-      return Optional.empty();
-    });
+        () -> {
+          if (operator_controller.back().getAsBoolean()) {
+            return Optional.of(true);
+          }
+          return Optional.empty();
+        });
   }
 
   public Command shoot() {
