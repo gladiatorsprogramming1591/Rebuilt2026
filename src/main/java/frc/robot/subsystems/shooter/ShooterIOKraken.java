@@ -74,6 +74,7 @@ public class ShooterIOKraken implements ShooterIO {
     leftShooterLeader.getConfigurator().apply(slot0Configs);
   }
 
+  @Override
   public void updateInputs(ShooterIO.ShooterIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         shooterRPS,
@@ -95,6 +96,7 @@ public class ShooterIOKraken implements ShooterIO {
     inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
   }
 
+  @Override
   public void applyOutputs(ShooterIOOutputs outputs) {
     var slot0Configs = new Slot0Configs();
     slot0Configs.kP = outputs.kP;
@@ -107,13 +109,17 @@ public class ShooterIOKraken implements ShooterIO {
 
     rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+
+    System.out.println("ShooterIOKraken applyOutputs called");
   }
 
+  @Override
   public void runShooterVelocity(double shooterVelocity) {
     rightShooterLeader.set(shooterVelocity);
     leftShooterLeader.set(shooterVelocity);
   }
 
+  @Override
   public boolean shooterAtVelocity(double shooterVelocity) {
     return rightShooterLeader.getVelocity().getValueAsDouble()
             > shooterVelocity - ShooterConstants.SHOOTER_TOLERANCE

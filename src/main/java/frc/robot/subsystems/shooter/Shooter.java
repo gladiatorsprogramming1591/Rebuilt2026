@@ -22,6 +22,8 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber coastRPM =
       new LoggedTunableNumber("Shooter/Coast RPM", 750);
 
+  private double loopCounter = 0;
+
   public Shooter(ShooterIO io) {
     this.io = io;
   }
@@ -39,10 +41,12 @@ public class Shooter extends SubsystemBase {
     switch (RobotState.getShooterMode()) {
       case DUTYCYCLE -> doApplyOutputs = false;
       default -> {
-        System.out.println("Illegal Shooter mode : " + RobotState.getShooterMode());
+        if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " + RobotState.getShooterMode());
         io.runShooterVelocity(0);
       }
     }
+    SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
+    SmartDashboard.putBoolean("Shooter DoApplyOutputs", doApplyOutputs);
     if (doApplyOutputs) io.applyOutputs(outputs);
   }
 

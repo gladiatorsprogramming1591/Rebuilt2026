@@ -304,16 +304,13 @@ public class RobotContainer {
   // }
 
   public Command intakePulseCommand() {
-    return intake
-        .runDeploy()
-        .alongWith(
-            Commands.sequence(
-                Commands.waitSeconds(0.3),
-                intake.runStow(),
-                Commands.waitSeconds(0.5),
-                intake.runDeploy(),
-                Commands.waitSeconds(0.3),
-                intake.runStow()));
+    return Commands.sequence(
+        intake.runStow().withTimeout(0.2),
+        intake.runDeploy().withTimeout(0.2),
+        intake.runStow().withTimeout(0.2),
+        intake.runStow().withTimeout(0.2),
+        intake.runDeploy().withTimeout(0.2),
+        intake.runStow().withTimeout(0.2));
   }
 
   public void registerNamedCommands() {
