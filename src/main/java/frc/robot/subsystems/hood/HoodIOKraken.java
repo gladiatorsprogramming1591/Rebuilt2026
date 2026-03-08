@@ -76,6 +76,7 @@ public class HoodIOKraken implements HoodIO {
     inputs.hoodSupplyCurrent = hoodSupplyCurrent.getValueAsDouble();
     inputs.hoodTorqueCurrent = hoodTorqueCurrent.getValueAsDouble();
     inputs.hoodTemperature = hoodTemperature.getValueAsDouble();
+    inputs.hoodLimitSet = hoodLimit.get();
   }
 
   public void setHoodSpeed(double speed) {

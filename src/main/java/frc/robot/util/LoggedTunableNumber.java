@@ -38,7 +38,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
   }
 
   /**
-   * Create a new LoggedTunableNumber with the default value
+   * Create a new Logged][][\ ][\ Number with the default value
    *
    * @param dashboardKey Key on dashboard
    * @param defaultValue Default value

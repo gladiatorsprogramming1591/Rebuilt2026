@@ -6,5 +6,5 @@ public final class KickerConstants {
   // public static final double ROLLER_MAX_SPEED = 1.0;
   public static final double KICKER_CURRENT_LIMIT = 20.0; // placeholder until tested
 
-  public static final double KICKER_MOTOR_SPEED = -0.5;
+  public static final double KICKER_MOTOR_SPEED = -1.00;
 }

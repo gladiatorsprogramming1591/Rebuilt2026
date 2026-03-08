@@ -1,7 +1,7 @@
 package frc.robot.subsystems.roller;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
@@ -16,7 +16,7 @@ public class Roller extends SubsystemBase {
   public Command runTopRollerMotor() {
     return runEnd(
         () -> {
-          io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED);
+          io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
         },
         () -> {
           io.setTopRollerSpeed(0);
@@ -26,7 +26,7 @@ public class Roller extends SubsystemBase {
   public Command runBottomRollerMotor() {
     return runEnd(
         () -> {
-          io.setBottomRollerSpeed(-RollerConstants.ROLLER_MOTOR_SPEED);
+          io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
         },
         () -> {
           io.setBottomRollerSpeed(0);
@@ -34,13 +34,30 @@ public class Roller extends SubsystemBase {
   }
 
   public Command startRollerMotors() {
-    return new InstantCommand(() -> io.setTopRollerSpeed(RollerConstants.ROLLER_MOTOR_SPEED), this)
-        .andThen(() -> io.setBottomRollerSpeed(-RollerConstants.ROLLER_MOTOR_SPEED));
+    return new RunCommand(
+        () -> {
+          io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
+        },
+        this);
+  }
+
+  public Command reverseRollerMotors() {
+    return new RunCommand(
+        () -> {
+          io.setTopRollerSpeed(-RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          io.setBottomRollerSpeed(RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
+        },
+        this);
   }
 
   public Command stopRollerMotors() {
-    return new InstantCommand(() -> io.setTopRollerSpeed(0.0), this)
-        .andThen(() -> io.setBottomRollerSpeed(0.0));
+    return new RunCommand(
+        () -> {
+          io.setTopRollerSpeed(0.0);
+          io.setBottomRollerSpeed(0.0);
+        },
+        this);
   }
 
   public void periodic() {

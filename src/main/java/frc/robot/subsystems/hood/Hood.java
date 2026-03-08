@@ -56,7 +56,7 @@ public class Hood extends SubsystemBase {
     return runEnd(
         () -> {
           outputs.mode = HoodMode.POSITION;
-          io.setHoodPosition(angle);
+          io.setHoodPosition(angle * 8);
         },
         () -> {
           io.setHoodSpeed(0.0);

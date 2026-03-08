@@ -217,6 +217,10 @@ public class RobotContainer {
             () -> -driver_controller.getLeftX(),
             () -> -driver_controller.getRightX()));
 
+    roller.setDefaultCommand(roller.stopRollerMotors());
+    kicker.setDefaultCommand(kicker.stopKickerMotor());
+    intake.setDefaultCommand(intake.stopIntakeMotor());
+
     // Lock to 0° when A button is held
     driver_controller
         .a()
@@ -238,32 +242,36 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    driver_controller.rightTrigger().whileTrue(shooter.runShooterTarget());
-    driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor());
-    driver_controller
-        .leftBumper()
-        .whileTrue(
-            intake.runDeploy()); // TODO: needs to be a toggle eventually that runs
-    // until a certain
+    driver_controller.y().whileTrue(shooter.runShooterTarget());
+    driver_controller.leftTrigger().toggleOnTrue(intake.runIntakeMotor());
     driver_controller
         .rightBumper()
-        .whileTrue(
-            intake
-                .runStow()); // TODO: needs to be a toggle eventually that runs until
+        .whileTrue(intake.runDeploy()); // TODO: needs to be a toggle eventually that runs
+    // until a certain
+    driver_controller
+        .leftBumper()
+        .whileTrue(intake.runStow()); // TODO: needs to be a toggle eventually that runs until
     // a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
 
     // TODO: Delete later. only for initial testing.
-    driver_controller.start().whileTrue(kicker.runKickerMotor());
+    // TODO: add a pulsing button for the intake for when it jams,
+
     driver_controller.back().whileTrue(hood.runHoodTarget());
-    driver_controller.povLeft().whileTrue(roller.runBottomRollerMotor());
+    driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
-    driver_controller.y().whileTrue(shoot());
+    driver_controller.rightTrigger().whileTrue(shoot());
 
-    operator_controller.povRight().whileTrue(roller.runTopRollerMotor());
-    operator_controller.rightTrigger().whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis()));
+    operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
+    operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
+    operator_controller
+        .rightTrigger()
+        .whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis()));
+    operator_controller.povUp().whileTrue(intake.runIntakeMotor());
+    // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
+    //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
   }
 
   public Command shoot() {
@@ -273,6 +281,12 @@ public class RobotContainer {
     // .alongWith(roller.startRollerMotors())
     // .alongWith(intake.stowIntakeUsingCurrent());
   }
+
+  // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
+  //   return intake.runIntakeMotor()
+  //   .alongWith(wait(5))
+  //   .andThen(intake.runStow())
+  // }
 
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );

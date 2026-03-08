@@ -16,6 +16,7 @@ public interface HoodIO {
     double hoodSupplyCurrent = 0.0;
     double hoodTorqueCurrent = 0.0;
     double hoodTemperature = 0.0;
+    boolean hoodLimitSet = false;
   }
 
   public static class HoodIOOutputs {
