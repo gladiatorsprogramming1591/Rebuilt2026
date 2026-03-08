@@ -1,6 +1,8 @@
 package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.HoodIO.HoodIOOutputs;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
@@ -79,15 +81,18 @@ public class Hood extends SubsystemBase {
 
   public Command runHoodToZero() {
     outputs.mode = HoodMode.SPEED;
-    return run(() -> io.runHoodToZero())
-        .until(() -> io.isHoodAtTrueZero())
-        .andThen(() -> io.zero())
-        .finallyDo(
-            () -> {
-              io.stopHood();
-              io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
-              io.resetHoodZeroTimer();
-            });
+    return new ConditionalCommand(
+        new InstantCommand(),
+        run(() -> io.runHoodToZero())
+            .until(() -> io.isHoodAtTrueZero())
+            .andThen(() -> io.zero())
+            .finallyDo(
+                () -> {
+                  io.stopHood();
+                  io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
+                  io.resetHoodZeroTimer();
+                }),
+        () -> io.isHoodAtTrueZero());
   }
 
   public void periodic() {
@@ -95,5 +100,12 @@ public class Hood extends SubsystemBase {
     hasBeenZeroed = hasBeenZeroed || -0.5 < inputs.hoodAngle && inputs.hoodAngle < 0.5;
     Logger.processInputs("Hood", inputs);
     io.applyOutputs(outputs);
+
+    // if (this.hasBeenZeroed) {
+    //   outputs.positionRad = 0;
+    //   io.applyOutputs(outputs);
+    // } else {
+    //   io.runHoodToZero();
+    // }
   }
 }

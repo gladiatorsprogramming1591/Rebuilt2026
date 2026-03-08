@@ -22,10 +22,11 @@ import frc.robot.util.PhoenixUtil;
 public class HoodIOKraken implements HoodIO {
   private final TalonFX hoodMotor = new TalonFX(HoodConstants.HOOD_CAN_ID);
   private final DigitalInput hoodLimit = new DigitalInput(HoodConstants.HOOD_DIO_PORT);
+  // private final Trigger zeroTrigger;
   private final boolean limitTripped =
       false; // DIO returns true when circuit is open, and false when closed (limit sensor tripped).
   private double positionOffset = 0;
-  private Timer timer = new Timer();
+  private final Timer timer = new Timer();
   private final PositionTorqueCurrentFOC positionControl =
       new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
 
@@ -37,7 +38,8 @@ public class HoodIOKraken implements HoodIO {
   // private double angle = 0.0;
 
   private final StatusSignal<Voltage> hoodAppliedVolts = hoodMotor.getMotorVoltage();
-  private final StatusSignal<Angle> hoodAngle = hoodMotor.getPosition();
+  private final StatusSignal<Angle> hoodAngle =
+      hoodMotor.getPosition(); // TODO: Does this need offset?
   private final StatusSignal<AngularVelocity> hoodAngularVelocity = hoodMotor.getVelocity();
   private final StatusSignal<Current> hoodSupplyCurrent = hoodMotor.getSupplyCurrent();
   private final StatusSignal<Current> hoodTorqueCurrent = hoodMotor.getTorqueCurrent();
@@ -66,6 +68,8 @@ public class HoodIOKraken implements HoodIO {
         hoodTemperature);
 
     hoodMotor.optimizeBusUtilization();
+
+    // zeroTrigger = new Trigger(() -> isHoodAtTrueZero());
 
     SmartDashboard.putNumber("Hood offset rots", 0);
     SmartDashboard.putBoolean("hasHoodStopped", true);
