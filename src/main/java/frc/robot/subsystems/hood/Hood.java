@@ -76,13 +76,14 @@ public class Hood extends SubsystemBase {
 
   public Command runHoodToZero() {
     outputs.mode = HoodMode.SPEED;
-    return new RunCommand(() -> io.driveToZero())
+    return new RunCommand(() -> io.driveHoodToZero())
         .until(() -> io.isHoodAtTrueZero())
         .andThen(() -> io.zero())
         .finallyDo(
             () -> {
               io.setHoodSpeed(0.0);
               io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
+              io.resetHoodZeroTimer();
             });
   }
 

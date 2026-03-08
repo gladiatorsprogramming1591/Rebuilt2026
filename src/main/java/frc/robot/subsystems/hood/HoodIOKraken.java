@@ -66,6 +66,10 @@ public class HoodIOKraken implements HoodIO {
         hoodTemperature);
 
     hoodMotor.optimizeBusUtilization();
+
+    SmartDashboard.putNumber("Hood offset rots", 0);
+    SmartDashboard.putBoolean("isHoodStationary", true);
+    SmartDashboard.putNumber("isHoodStationary timer", 0);
   }
 
   @Override
@@ -98,7 +102,7 @@ public class HoodIOKraken implements HoodIO {
   }
 
   @Override
-  public void driveToZero() {
+  public void driveHoodToZero() {
     hoodMotor
         .getConfigurator()
         .apply(
@@ -109,7 +113,8 @@ public class HoodIOKraken implements HoodIO {
 
   @Override
   public boolean isHoodAtTrueZero() {
-    return hoodLimit.get() == limitTripped && isHoodStationary(false) || isHoodStationary(true);
+    return hoodLimit.get() == limitTripped && hasHoodStopped()
+        || hasHoodStoppedOverTime(HoodConstants.MIN_STATIONARY_DURATION);
   }
 
   @Override
@@ -120,28 +125,40 @@ public class HoodIOKraken implements HoodIO {
   }
 
   @Override
-  public boolean isHoodStationary(boolean withTimer) {
-    if (!withTimer)
-      return (Math.abs(hoodMotor.getVelocity().getValueAsDouble())
-          < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE);
+  public boolean hasHoodStoppedOverTime(double minStationaryDuration) {
+    SmartDashboard.putNumber("isHoodStationary timer", timer.get());
     timer.start();
-    if (timer.get() <= HoodConstants.HOOD_STATIONARY_DELAY) // In seconds
+    if (timer.get() < minStationaryDuration) // In seconds
     {
-      SmartDashboard.putNumber("isHoodStationary timer", timer.get());
-      if (Math.abs(hoodMotor.getVelocity().getValueAsDouble())
-          > HoodConstants.HOOD_ZEROING_VEL_TOLERANCE) {
-        timer.stop();
+      if (!hasHoodStopped()) {
         timer.reset();
         SmartDashboard.putBoolean("isHoodStationary", false);
         return false;
       }
     } else {
-      timer.stop();
-      timer.reset();
-      SmartDashboard.putBoolean("isHoodStationary", true);
-      return true;
+      if (hasHoodStopped()) {
+        resetHoodZeroTimer();
+        SmartDashboard.putBoolean("isHoodStationary", true);
+        return true;
+      } else {
+        timer.reset();
+        SmartDashboard.putBoolean("isHoodStationary", false);
+        return false;
+      }
     }
+    SmartDashboard.putBoolean("isHoodStationary", false);
     return false;
+  }
+
+  private boolean hasHoodStopped() {
+    return Math.abs(hoodMotor.getVelocity().getValueAsDouble())
+        < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE;
+  }
+
+  @Override
+  public void resetHoodZeroTimer() {
+    timer.stop();
+    timer.reset();
   }
 
   @Override

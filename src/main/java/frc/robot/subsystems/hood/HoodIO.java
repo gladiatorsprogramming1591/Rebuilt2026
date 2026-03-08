@@ -59,11 +59,13 @@ public interface HoodIO {
 
   public default void zero() {}
 
-  public default void driveToZero() {}
+  public default void driveHoodToZero() {}
 
-  public default boolean isHoodStationary(boolean withTimer) {
+  public default boolean hasHoodStoppedOverTime(double minStationaryDuration) {
     return false;
   }
+
+  public default void resetHoodZeroTimer() {}
 
   public default boolean isHoodAtTrueZero() {
     return false;
