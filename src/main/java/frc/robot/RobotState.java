@@ -111,6 +111,7 @@ public final class RobotState {
   @Getter @Setter private static RobotMode mode = RobotMode.DISABLED;
 
   public enum ShooterModeState {
+    DUTYCYCLE, // Run Shooter in Duty Cycle mode instead of Velocity
     ON, // Shooter Motor is On - Kicker Motor is On
     IDLE, // Shooter Motor is On - Kicker Motor is Off
     OFF // Shooter Motor is Off - Kicker Motor is Off

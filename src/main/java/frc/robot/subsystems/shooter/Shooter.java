@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ShooterModeState;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -12,10 +13,14 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private final ShooterIO.ShooterIOOutputs outputs = new ShooterIO.ShooterIOOutputs();
 
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Flywheel/kP", 0.6);
-  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Flywheel/kD", 0.0);
-  private static final LoggedTunableNumber kS = new LoggedTunableNumber("Flywheel/kS", 0.3);
-  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Flywheel/kV", 0.0195);
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", 0.6);
+  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0.0);
+  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Shooter/kV", 0.3);
+
+  private static final LoggedTunableNumber shootRPM =
+      new LoggedTunableNumber("Shooter/Shoot RPM", 2000);
+  private static final LoggedTunableNumber coastRPM =
+      new LoggedTunableNumber("Shooter/Coast RPM", 750);
 
   public Shooter(ShooterIO io) {
     this.io = io;
@@ -26,39 +31,47 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
 
+    outputs.kP = kP.getAsDouble();
+    outputs.kD = kD.getAsDouble();
+    outputs.kV = kV.getAsDouble();
+
+    boolean doApplyOutputs = true;
     switch (RobotState.getShooterMode()) {
-      case ON -> io.setShooterMotorRPM(50);
-      case IDLE -> io.setShooterMotorRPM(25); // NOT REAL, JUST HALF VOLTAGE
-      case OFF -> io.setShooterMotorRPM(0);
+      case DUTYCYCLE -> doApplyOutputs = false;
       default -> {
         System.out.println("Illegal Shooter mode : " + RobotState.getShooterMode());
-        io.setShooterMotorRPM(0);
+        io.runShooterVelocity(0);
       }
     }
+    if (doApplyOutputs) io.applyOutputs(outputs);
   }
 
-  private void runShooter(double shooterSpeed) {
-    io.runShooterTarget(shooterSpeed);
+  public Command runIdleCommand() {
+    return run(
+        () -> {
+          RobotState.setShooterMode(ShooterModeState.IDLE);
+          outputs.desiredVelocityRPM = coastRPM.getAsDouble();
+        });
   }
 
   public Command runShooterTarget() {
-    return runEnd(
+    return run(
         () -> {
-          io.runShooter(ShooterCalculation.getInstance().getParameters().flywheelSpeed());
-        },
-        () -> {
-          io.runShooter(0);
+          RobotState.setShooterMode(ShooterModeState.ON);
+          // outputs.velocityRPM = shootRPM.getAsDouble();
+          double flywheelSpeedRadPerSec =
+              ShooterCalculation.getInstance().getParameters().flywheelSpeed();
+          outputs.desiredVelocityRPM =
+              flywheelSpeedRadPerSec * (2 * Math.PI) * 60; // Convert to Rotations per minute
         });
   }
 
   public Command runShooterVelocity(double velocity) {
     SmartDashboard.putNumber("Shooter Vel", velocity);
-    return runEnd(
+    return run(
         () -> {
-          io.runShooterTarget(velocity);
-        },
-        () -> {
-          io.runShooterTarget(0);
+          RobotState.setShooterMode(ShooterModeState.DUTYCYCLE);
+          io.runShooterVelocity(velocity);
         });
   }
 

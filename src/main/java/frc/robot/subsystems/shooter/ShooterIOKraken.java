@@ -18,7 +18,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class ShooterIOKraken implements ShooterIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withVelocity(0.0);
 
-  private final StatusSignal<AngularVelocity> shooterRPM;
+  private final StatusSignal<AngularVelocity> shooterRPS;
   private final StatusSignal<Voltage> shooterAppliedVolts;
   private final StatusSignal<Temperature> rightLeaderMotorTemp;
   private final StatusSignal<Temperature> rightFollowerMotorTemp;
@@ -38,7 +38,7 @@ public class ShooterIOKraken implements ShooterIO {
       new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
 
   public ShooterIOKraken() {
-    shooterRPM = rightShooterLeader.getVelocity();
+    shooterRPS = rightShooterLeader.getVelocity();
     shooterAppliedVolts = rightShooterLeader.getMotorVoltage();
     rightLeaderMotorTemp = rightShooterLeader.getDeviceTemp();
     rightFollowerMotorTemp = rightShooterFollower.getDeviceTemp();
@@ -68,6 +68,7 @@ public class ShooterIOKraken implements ShooterIO {
     slot0Configs.kP = ShooterConstants.kP;
     slot0Configs.kI = ShooterConstants.kI;
     slot0Configs.kD = ShooterConstants.kD;
+    slot0Configs.kV = ShooterConstants.kV;
 
     rightShooterLeader.getConfigurator().apply(slot0Configs);
     leftShooterLeader.getConfigurator().apply(slot0Configs);
@@ -75,7 +76,7 @@ public class ShooterIOKraken implements ShooterIO {
 
   public void updateInputs(ShooterIO.ShooterIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        shooterRPM,
+        shooterRPS,
         shooterAppliedVolts,
         rightLeaderMotorTemp,
         rightFollowerMotorTemp,
@@ -88,13 +89,27 @@ public class ShooterIOKraken implements ShooterIO {
     inputs.rightFollowerMotorTemp = rightFollowerMotorTemp.getValueAsDouble();
     inputs.leftLeaderMotorTemp = leftLeaderMotorTemp.getValueAsDouble();
     inputs.leftFollowerMotorTemp = leftFollowerMotorTemp.getValueAsDouble();
-    inputs.velocityRadsPerSec = shooterRPM.getValueAsDouble();
+    inputs.velocityRPM = shooterRPS.getValueAsDouble() * 60;
 
     inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
     inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
   }
 
-  public void runShooterTarget(double shooterVelocity) {
+  public void applyOutputs(ShooterIOOutputs outputs) {
+    var slot0Configs = new Slot0Configs();
+    slot0Configs.kP = outputs.kP;
+    slot0Configs.kI = outputs.kI;
+    slot0Configs.kD = outputs.kD;
+    slot0Configs.kV = outputs.kV;
+
+    rightShooterLeader.getConfigurator().apply(slot0Configs);
+    leftShooterLeader.getConfigurator().apply(slot0Configs);
+
+    rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+    leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+  }
+
+  public void runShooterVelocity(double shooterVelocity) {
     rightShooterLeader.set(shooterVelocity);
     leftShooterLeader.set(shooterVelocity);
   }
@@ -106,9 +121,9 @@ public class ShooterIOKraken implements ShooterIO {
             > shooterVelocity - ShooterConstants.SHOOTER_TOLERANCE;
   }
 
-  @Override
-  public void setShooterMotorRPM(double rps) {
-    rightShooterLeader.setControl(velocityControl.withVelocity(rps));
-    leftShooterLeader.setControl(velocityControl.withVelocity(rps));
-  }
+  // @Override
+  // public void setShooterMotorRPM(double rpm) {
+  //   rightShooterLeader.setControl(velocityControl.withVelocity(rpm));
+  //   leftShooterLeader.setControl(velocityControl.withVelocity(rpm));
+  // }
 }

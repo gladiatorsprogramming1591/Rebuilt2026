@@ -9,18 +9,18 @@ public interface ShooterIO {
     public double rightLeaderMotorTemp;
     public double leftFollowerMotorTemp;
     public double rightFollowerMotorTemp;
-    public double velocityRadsPerSec;
+    public double velocityRPM;
     public double supplyCurrentAmps;
     public double torqueCurrentAmps;
     public double appliedVoltage;
   }
 
   public class ShooterIOOutputs {
-    public double velocityRadsPerSec = 0.0; // so far only used for sim
+    public double desiredVelocityRPM = 0.0; // so far only used for sim
     public double kP;
     public double kI;
     public double kD;
-    public double feedforward;
+    public double kV;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
@@ -34,11 +34,11 @@ public interface ShooterIO {
    */
   public default void runShooter(double shooterVelocity) {}
 
-  public default void runShooterTarget(double shooterVelocity) {}
+  public default void runShooterVelocity(double shooterVelocity) {}
 
   public default boolean shooterAtVelocity(double shooterVelocity) {
     return false;
   }
 
-  public default void setShooterMotorRPM(double rps) {}
+  public default void setShooterMotorRPM(double rpm) {}
 }
