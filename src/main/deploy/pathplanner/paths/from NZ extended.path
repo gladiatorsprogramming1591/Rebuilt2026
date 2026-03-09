@@ -56,7 +56,36 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Idle Intake",
+      "waypointRelativePos": 0.23847019122609836,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Idle Intake"
+        }
+      }
+    },
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 1.1743532058492618,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Warm Up Shooter"
+        }
+      }
+    },
+    {
+      "name": "Shoot Hub",
+      "waypointRelativePos": 1.82227221597302,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,

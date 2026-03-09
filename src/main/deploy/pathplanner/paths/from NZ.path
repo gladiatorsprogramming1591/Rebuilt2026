@@ -34,9 +34,57 @@
       "rotationDegrees": 90.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 0.791901012373453,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Idle Intake",
+      "waypointRelativePos": 0.14173228346456912,
+      "endWaypointRelativePos": 0.8458942632170977,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Idle Intake"
+        }
+      }
+    },
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.31,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Warm Up Shooter"
+        }
+      }
+    },
+    {
+      "name": "Shoot Hub",
+      "waypointRelativePos": 0.8998875140607462,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shoot Hub"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,
