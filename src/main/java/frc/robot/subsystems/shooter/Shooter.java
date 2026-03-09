@@ -58,6 +58,14 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  public Command runFixedSpeedCommand() {
+    return run(
+        () -> {
+          RobotState.setShooterMode(ShooterModeState.ON);
+          outputs.desiredVelocityRPM = shootRPM.getAsDouble();
+        });
+  }
+
   public Command runShooterTarget() {
     return run(
         () -> {

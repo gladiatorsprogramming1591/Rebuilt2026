@@ -278,6 +278,7 @@ public class RobotContainer {
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.b().toggleOnTrue(shooter.runShooterVelocity(0));
+    operator_controller.leftTrigger().toggleOnTrue(shooter.runFixedSpeedCommand());
 
     HubShiftUtil.setAllianceWinOverride(
         () -> {
