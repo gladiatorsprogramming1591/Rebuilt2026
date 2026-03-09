@@ -274,7 +274,7 @@ public class RobotContainer {
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     operator_controller
         .rightTrigger()
-        .whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis()));
+        .whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis() * 8));
     operator_controller.povUp().whileTrue(intake.runIntakeMotor());
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
