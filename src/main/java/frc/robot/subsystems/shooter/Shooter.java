@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
     switch (RobotState.getShooterMode()) {
       case DUTYCYCLE -> doApplyOutputs = false;
       default -> {
-        if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " + RobotState.getShooterMode());
+        // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " + RobotState.getShooterMode());
         io.runShooterVelocity(0);
       }
     }

@@ -109,8 +109,6 @@ public class ShooterIOKraken implements ShooterIO {
 
     rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
-
-    System.out.println("ShooterIOKraken applyOutputs called");
   }
 
   @Override
