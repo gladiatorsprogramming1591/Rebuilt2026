@@ -261,7 +261,6 @@ public class RobotContainer {
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
 
     // TODO: Delete later. only for initial testing.
-    // TODO: add a pulsing button for the intake for when it jams,
 
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());

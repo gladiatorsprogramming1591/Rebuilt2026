@@ -14,7 +14,7 @@ public final class IntakeConstants {
   public static final double DEPLOY_CURRENT_LIMIT = 12.0;
 
   // % Duty-Cycle
-  public static final double INTAKE_MOTOR_SPEED = 1.00;
+  public static final double INTAKE_MOTOR_SPEED = 0.50;
   public static final double INTAKE_IDLE_SPEED = 0.10; // placeholder until tested
   public static final double DEPLOY_SPEED = 0.15;
   public static final double STOW_SPEED = -0.15;
