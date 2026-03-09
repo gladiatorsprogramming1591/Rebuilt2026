@@ -258,7 +258,6 @@ public class RobotContainer {
         .whileTrue(intake.runStow()); // TODO: needs to be a toggle eventually that runs until
     // a certain
     // encoder value
-    driver_controller.x().whileTrue(roller.runTopRollerMotor());
 
     // TODO: Delete later. only for initial testing.
     // TODO: add a pulsing button for the intake for when it jams,
