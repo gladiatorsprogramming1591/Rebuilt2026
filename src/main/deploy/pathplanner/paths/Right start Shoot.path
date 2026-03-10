@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5826528808634586,
-        "y": 0.884675718613779
+        "x": 3.276036144578313,
+        "y": 0.8113253012048198
       },
       "isLocked": false,
       "linkedName": "bottom start"
     },
     {
       "anchor": {
-        "x": 2.422,
-        "y": 1.6090014265335242
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
       },
       "prevControl": {
-        "x": 2.2184394684520665,
-        "y": 1.8588178962403943
+        "x": 2.5260900708617045,
+        "y": 1.5965996022369913
       },
       "nextControl": null,
       "isLocked": true,
@@ -44,19 +44,8 @@
       }
     },
     {
-      "name": "Run Kicker",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Run Kicker"
-        }
-      }
-    },
-    {
-      "name": "ShootHub",
-      "waypointRelativePos": 0.6254218222722145,
+      "name": "Shoot Hub",
+      "waypointRelativePos": 0.7387289516567052,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

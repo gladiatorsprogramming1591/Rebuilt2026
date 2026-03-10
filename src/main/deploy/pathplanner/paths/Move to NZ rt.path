@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4217261055634807,
-        "y": 1.6090014265335242
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7938030286404034,
-        "y": -0.10034472731263122
+        "x": 2.101727525486561,
+        "y": -0.36256302131603424
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -36,7 +36,19 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.48451928299836444,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,

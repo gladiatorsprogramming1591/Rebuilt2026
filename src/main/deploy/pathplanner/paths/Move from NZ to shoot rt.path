@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.8281282051282055,
-        "y": 2.6396153846153845
+        "x": 7.800108433734941,
+        "y": 3.1389277108433737
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.3513552068473595,
-        "y": 1.0397004279600572
+        "x": 7.323335435454095,
+        "y": 1.5390127541880465
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 2.4217261055634807,
-        "y": 1.6090014265335242
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
       },
       "prevControl": {
-        "x": 3.068659058487874,
-        "y": 0.5609700427960058
+        "x": 3.3765835553340313,
+        "y": 0.2987517487926028
       },
       "nextControl": null,
       "isLocked": false,
@@ -56,7 +56,30 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.8097759674134286,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Warm Up Shooter"
+        }
+      }
+    },
+    {
+      "name": "Shoot Hub",
+      "waypointRelativePos": 1.5266802443991834,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shoot Hub"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,
