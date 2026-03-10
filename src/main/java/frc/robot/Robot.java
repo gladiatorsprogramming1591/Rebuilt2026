@@ -109,7 +109,7 @@ public class Robot extends LoggedRobot {
     if (formattedOffset.equals("-0.0")) {
       formattedOffset = "0.0";
     }
-    SmartDashboard.putString("Hood Angle Offset", formattedOffset);
+    SmartDashboard.putString("Launch Hood Angle Offset", formattedOffset);
 
     // Low battery alert
     if (DriverStation.isEnabled()) {

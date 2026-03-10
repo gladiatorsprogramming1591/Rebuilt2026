@@ -19,7 +19,7 @@ public class ShooterConstants {
   public static final int SHOOTER_MAX_VELOCITY = 5200;
   public static final double SHOOTER_TOLERANCE = 0;
 
-  public static double kP = new LoggedTunableNumber("Shooter/kP", 0.1).getAsDouble();
+  public static double kP = new LoggedTunableNumber("Shooter/kP", 0.05).getAsDouble();
   public static double kI = new LoggedTunableNumber("Shooter/kI", 0.0).getAsDouble();
   public static double kD = new LoggedTunableNumber("Shooter/kD", 0.0).getAsDouble();
 

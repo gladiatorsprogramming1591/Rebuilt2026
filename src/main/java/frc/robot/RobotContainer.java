@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -224,7 +225,8 @@ public class RobotContainer {
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
-    hood.setDefaultCommand(hood.runHoodToZero());
+    hood.setDefaultCommand(
+        hood.runHoodPosition(() -> operator_controller.getRightTriggerAxis() * 8));
 
     // Lock to 0° when A button is held
     driver_controller
@@ -259,25 +261,23 @@ public class RobotContainer {
     // a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
-
-    // TODO: Delete later. only for initial testing.
-
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
-    driver_controller.rightTrigger().whileTrue(shoot());
-
+    driver_controller
+        .rightTrigger()
+        .whileTrue(shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED));
     operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
-    operator_controller
-        .rightTrigger()
-        .whileTrue(hood.runHoodPosition(operator_controller.getRightTriggerAxis() * 8));
-    operator_controller.povUp().whileTrue(intake.runIntakeMotor());
+    // operator_controller
+    // .rightTrigger(0.05)
+    // .whileTrue(hood.runHoodPosition(() -> operator_controller.getRightTriggerAxis() * 8));
+    // operator_controller.povUp().whileTrue(intake.runIntakeMotor());
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
-    operator_controller.a().onTrue(intakePulseCommand());
+    operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
 
     HubShiftUtil.setAllianceWinOverride(
@@ -290,11 +290,14 @@ public class RobotContainer {
   }
 
   public Command shoot() {
-    return shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED);
-    // .andThen(new WaitCommand(2.0))
-    // .andThen(kicker.startKickerMotor())
-    // .alongWith(roller.startRollerMotors())
-    // .alongWith(intake.stowIntakeUsingCurrent());
+    return shooter
+        .runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED)
+        .andThen(new WaitCommand(2.0)) // This should wait until at speed
+        .andThen(kicker.startKickerMotor())
+        .alongWith(roller.startRollerMotors())
+        .alongWith(
+            Commands.sequence(
+                intake.runStow().withTimeout(0.5), intake.runDeploy().withTimeout(0.2)));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
@@ -305,13 +308,16 @@ public class RobotContainer {
 
   // TODO: Add this to shoot command
   public Command intakePulseCommand() {
-    return Commands.sequence(
-        intake.runStow().withTimeout(0.2),
-        intake.runDeploy().withTimeout(0.2),
-        intake.runStow().withTimeout(0.2),
-        intake.runStow().withTimeout(0.2),
-        intake.runDeploy().withTimeout(0.2),
-        intake.runStow().withTimeout(0.2));
+    return intake
+        .idleIntakeMotor()
+        .alongWith(
+            Commands.sequence(
+                intake.runStow().withTimeout(0.5),
+                intake.runDeploy().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2),
+                intake.runDeploy().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2)));
   }
 
   public void registerNamedCommands() {

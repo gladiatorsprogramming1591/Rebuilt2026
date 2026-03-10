@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterIOKraken implements ShooterIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withVelocity(0.0);
@@ -95,6 +96,7 @@ public class ShooterIOKraken implements ShooterIO {
   }
 
   public void runShooterTarget(double shooterVelocity) {
+    SmartDashboard.putNumber("Shooter Velocity", shooterVelocity);
     rightShooterLeader.set(shooterVelocity);
     leftShooterLeader.set(shooterVelocity);
   }
@@ -108,6 +110,7 @@ public class ShooterIOKraken implements ShooterIO {
 
   @Override
   public void setShooterMotorRPM(double rps) {
+    SmartDashboard.putNumber("RPS", rps);
     rightShooterLeader.setControl(velocityControl.withVelocity(rps));
     leftShooterLeader.setControl(velocityControl.withVelocity(rps));
   }

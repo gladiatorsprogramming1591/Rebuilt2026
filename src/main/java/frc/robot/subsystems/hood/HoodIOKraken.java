@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 
 public class HoodIOKraken implements HoodIO {
@@ -88,7 +89,7 @@ public class HoodIOKraken implements HoodIO {
         hoodTemperature);
 
     inputs.hoodSpeed = hoodAngularVelocity.getValueAsDouble();
-    inputs.hoodAngle = hoodAngle.getValueAsDouble();
+    inputs.hoodAngle = hoodAngle.getValueAsDouble() + positionOffset;
     inputs.hoodSupplyCurrent = hoodSupplyCurrent.getValueAsDouble();
     inputs.hoodTorqueCurrent = hoodTorqueCurrent.getValueAsDouble();
     inputs.hoodTemperature = hoodTemperature.getValueAsDouble();
@@ -177,7 +178,15 @@ public class HoodIOKraken implements HoodIO {
 
   @Override
   public void applyOutputs(HoodIOOutputs outputs) {
+    SmartDashboard.putNumber("Desired Hood Angle", outputs.desiredHoodAngle);
     if (outputs.mode == HoodMode.POSITION) {
+      if (Constants.tuningMode) {
+        hoodSlot0.kP = outputs.kP;
+        hoodSlot0.kD = outputs.kD;
+        hoodSlot0.kS = outputs.kS;
+        hoodMotor.getConfigurator().apply(hoodSlot0);
+      }
+
       hoodMotor.setControl(
           positionControl
               .withPosition(outputs.desiredHoodAngle + positionOffset)

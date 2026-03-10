@@ -1,13 +1,12 @@
 package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.HoodIO.HoodIOOutputs;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -54,12 +53,12 @@ public class Hood extends SubsystemBase {
         });
   }
 
-  public Command runHoodPosition(double angle) {
+  public Command runHoodPosition(DoubleSupplier angleSupplier) {
     return runEnd(
         () -> {
           outputs.mode = HoodMode.POSITION;
           // io.setHoodPosition(angle);
-          outputs.desiredHoodAngle = angle;
+          outputs.desiredHoodAngle = angleSupplier.getAsDouble();
         },
         () -> {
           io.stopHood();
@@ -82,24 +81,24 @@ public class Hood extends SubsystemBase {
 
   public Command runHoodToZero() {
     outputs.mode = HoodMode.SPEED;
-    return new ConditionalCommand(
-        new InstantCommand(),
-        run(() -> io.runHoodToZero())
-            .until(() -> io.isHoodAtTrueZero())
-            .andThen(() -> io.zero())
-            .finallyDo(
-                () -> {
-                  io.stopHood();
-                  io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
-                  io.resetHoodZeroTimer();
-                }),
-        () -> io.isHoodAtTrueZero());
+    return run(() -> io.runHoodToZero())
+        .until(() -> io.isHoodAtTrueZero())
+        .andThen(() -> io.zero())
+        .finallyDo(
+            () -> {
+              io.stopHood();
+              io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
+              io.resetHoodZeroTimer();
+            });
   }
 
   public void periodic() {
     io.updateInputs(inputs);
     hasBeenZeroed = hasBeenZeroed || -0.5 < inputs.hoodAngle && inputs.hoodAngle < 0.5;
     Logger.processInputs("Hood", inputs);
+    outputs.kP = kP.get();
+    outputs.kD = kD.get();
+    outputs.kS = kS.get();
     io.applyOutputs(outputs);
 
     // if (this.hasBeenZeroed) {
