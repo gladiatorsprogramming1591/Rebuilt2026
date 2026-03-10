@@ -309,7 +309,7 @@ public class RobotContainer {
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
   //   return intake.runIntakeMotor()
-  //   .andThen((5))
+  //   .andThen(Command.WaitCommand(5))
   //   .andThen(intake.runStow());
   // }
 

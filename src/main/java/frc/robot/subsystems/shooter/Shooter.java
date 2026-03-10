@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -41,7 +42,8 @@ public class Shooter extends SubsystemBase {
     switch (RobotState.getShooterMode()) {
       case DUTYCYCLE -> doApplyOutputs = false;
       default -> {
-        // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " + RobotState.getShooterMode());
+        // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " +
+        // RobotState.getShooterMode());
         io.runShooterVelocity(0);
       }
     }
@@ -74,7 +76,10 @@ public class Shooter extends SubsystemBase {
           double flywheelSpeedRadPerSec =
               ShooterCalculation.getInstance().getParameters().flywheelSpeed();
           outputs.desiredVelocityRPM =
-              flywheelSpeedRadPerSec * (2 * Math.PI) * 60; // Convert to Rotations per minute
+              MathUtil.clamp(
+                  flywheelSpeedRadPerSec * (2 * Math.PI) * 60,
+                  0,
+                  3000); // Convert to Rotations per minute
         });
   }
 
