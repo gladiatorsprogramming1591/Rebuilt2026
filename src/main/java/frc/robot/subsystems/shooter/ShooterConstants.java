@@ -19,9 +19,10 @@ public class ShooterConstants {
   public static final int SHOOTER_MAX_VELOCITY = 5200;
   public static final double SHOOTER_TOLERANCE = 0;
 
-  public static double kP = new LoggedTunableNumber("Shooter/kP", 0.05).getAsDouble();
+  public static double kP = new LoggedTunableNumber("Shooter/kP", 0.65).getAsDouble();
   public static double kI = new LoggedTunableNumber("Shooter/kI", 0.0).getAsDouble();
   public static double kD = new LoggedTunableNumber("Shooter/kD", 0.0).getAsDouble();
+  public static double kV = new LoggedTunableNumber("Shooter/kV", 0.125).getAsDouble();
 
   public static Transform3d robotToLauncher =
       new Transform3d(-0.276, 0.09, 0.599, new Rotation3d(0.0, 0.0, Math.PI));

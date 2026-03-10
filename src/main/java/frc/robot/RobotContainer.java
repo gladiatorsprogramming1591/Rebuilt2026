@@ -225,6 +225,7 @@ public class RobotContainer {
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
+    shooter.setDefaultCommand(shooter.runIdleCommand());
     hood.setDefaultCommand(
         hood.runHoodPosition(() -> operator_controller.getRightTriggerAxis() * 8));
 
@@ -261,6 +262,10 @@ public class RobotContainer {
     // a certain
     // encoder value
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
+
+    // TODO: Delete later. only for initial testing.
+    // TODO: add a pulsing button for the intake for when it jams,
+
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
@@ -278,6 +283,8 @@ public class RobotContainer {
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
     operator_controller.a().whileTrue(intakePulseCommand());
+    operator_controller.b().toggleOnTrue(shooter.runShooterVelocity(0));
+    operator_controller.leftTrigger().toggleOnTrue(shooter.runFixedSpeedCommand());
     operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
 
     HubShiftUtil.setAllianceWinOverride(
