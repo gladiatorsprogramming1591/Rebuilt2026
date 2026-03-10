@@ -20,8 +20,8 @@
         "y": 2.6396153846153845
       },
       "prevControl": {
-        "x": 8.037435897435897,
-        "y": 0.3953717948717963
+        "x": 8.323732227488152,
+        "y": 0.3919549763033161
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,19 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.5534308211473518,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,

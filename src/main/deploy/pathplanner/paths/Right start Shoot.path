@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 2.4217261055634807,
+        "x": 2.422,
         "y": 1.6090014265335242
       },
       "prevControl": {
-        "x": 2.218165574015547,
+        "x": 2.2184394684520665,
         "y": 1.8588178962403943
       },
       "nextControl": null,
@@ -31,7 +31,41 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Warm Up Shooter"
+        }
+      }
+    },
+    {
+      "name": "Run Kicker",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Run Kicker"
+        }
+      }
+    },
+    {
+      "name": "ShootHub",
+      "waypointRelativePos": 0.6254218222722145,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shoot Hub"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,

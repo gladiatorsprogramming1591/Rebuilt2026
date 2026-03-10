@@ -34,6 +34,7 @@ import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOKraken;
 import frc.robot.subsystems.hood.HoodIOSim;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -57,6 +58,8 @@ import frc.robot.util.AutoManager;
 import frc.robot.util.HubShiftUtil;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import com.pathplanner.lib.auto.NamedCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -327,8 +330,30 @@ public class RobotContainer {
                 intake.runStow().withTimeout(0.2)));
   }
 
-  public void registerNamedCommands() {
+
+  public Command intakeCommand() { 
+    return Commands.parallel(
+      intake.deployIntake()
+      .andThen(intake.startIntakeMotor()),
+      Commands.waitSeconds(IntakeConstants.INTAKE_DELAY_SECONDS)
+    );
+  }
+
+  public Command idleIntake() {
+    return intake.idleIntakeMotor();
+  }
+
+  public Command warmUpShooterCommand() {
+    return shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_INITIAL_SHOT_SPEED);
+  }
+
+
+        public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );
+    NamedCommands.registerCommand("Shoot Hub", shooter.runShooterTarget()); 
+    NamedCommands.registerCommand("Prepare Intake", intake.deployIntake().alongWith(intake.runIntakeMotor()));
+    NamedCommands.registerCommand("Intake", intakeCommand()); 
+
   }
 
   /** Update dashboard outputs. */
