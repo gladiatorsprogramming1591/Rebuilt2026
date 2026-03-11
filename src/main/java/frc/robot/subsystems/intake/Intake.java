@@ -36,6 +36,18 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command deployAndIntake() {
+    return runEnd(
+        () -> {
+          io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
+          io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED);
+        },
+        () -> {
+          io.stopDeployMotor();
+          io.setIntakeSpeed(IntakeConstants.INTAKE_IDLE_SPEED);
+        });
+  }
+
   public Command startIntakeMotor() {
     return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED));
   }
@@ -62,16 +74,6 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           io.setDeployTorqueCurrentFOC(-IntakeConstants.DEPLOY_TORQUE_CURRENT);
-        },
-        () -> {
-          io.stopDeployMotor();
-        });
-  }
-
-  public Command runDeploy() {
-    return runEnd(
-        () -> {
-          io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
         },
         () -> {
           io.stopDeployMotor();
