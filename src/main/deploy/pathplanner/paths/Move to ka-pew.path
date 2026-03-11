@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.345631313131313,
-        "y": 7.619482323232324
+        "x": 6.666,
+        "y": 4.401464646464647
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.257850452734215,
-        "y": 7.385400028840063
+        "x": 6.678169191919193,
+        "y": 4.916805555555555
       },
       "isLocked": false,
-      "linkedName": "Left start"
+      "linkedName": "Top rush"
+    },
+    {
+      "anchor": {
+        "x": 6.666,
+        "y": 6.806388888888889
+      },
+      "prevControl": {
+        "x": 6.665383765877908,
+        "y": 6.107733452964977
+      },
+      "nextControl": {
+        "x": 6.6667171717171705,
+        "y": 7.619482323232324
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,15 +36,24 @@
         "y": 6.016199494949495
       },
       "prevControl": {
-        "x": 2.7105803801108803,
-        "y": 6.250785274153772
+        "x": 2.2576893939394016,
+        "y": 8.14627525253279
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Left start shoot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.3894736842105262,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.550877192982452,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,10 +70,10 @@
     "rotation": -40.0
   },
   "reversed": false,
-  "folder": "Competiton",
+  "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

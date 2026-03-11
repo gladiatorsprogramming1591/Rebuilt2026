@@ -15,12 +15,6 @@
           "data": {
             "pathName": "Move to consume lt (l)"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Consume (l)"
-          }
         }
       ]
     }

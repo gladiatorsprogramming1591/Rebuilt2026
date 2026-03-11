@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.014,
-        "y": 5.896
+        "x": 2.6241540404040404,
+        "y": 6.016199494949495
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.618692307692309,
-        "y": 8.349064102564103
+        "x": 2.22884634809635,
+        "y": 8.4692635975136
       },
       "isLocked": false,
       "linkedName": "Left start shoot"
@@ -20,12 +20,12 @@
         "y": 5.709461538461539
       },
       "prevControl": {
-        "x": 7.304858974358975,
-        "y": 7.558346153846154
+        "x": 7.697398989898989,
+        "y": 7.734002525252526
       },
       "nextControl": {
-        "x": 7.830979799521674,
-        "y": 5.4670158738244305
+        "x": 7.778944960314808,
+        "y": 5.459622073679359
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 4.51175641025641
       },
       "prevControl": {
-        "x": 7.849237387927185,
-        "y": 4.274650095574123
+        "x": 7.795814426108014,
+        "y": 4.760418738187255
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,7 +69,7 @@
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": -40.0
   },
   "useDefaultConstraints": true
 }

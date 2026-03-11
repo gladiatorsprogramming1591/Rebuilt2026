@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.014,
-        "y": 5.896
+        "x": 2.6241540404040404,
+        "y": 6.016199494949495
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0254487179487186,
-        "y": 5.335666666666667
+        "x": 1.6356027583527588,
+        "y": 5.455866161616162
       },
       "isLocked": false,
       "linkedName": "Left start shoot"
@@ -83,7 +83,7 @@
   "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": -40.0
   },
   "useDefaultConstraints": true
 }
