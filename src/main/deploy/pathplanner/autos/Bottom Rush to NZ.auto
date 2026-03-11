@@ -7,31 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left start Shoot"
+            "pathName": "Right Start To NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move and consume lt"
+            "pathName": "Move from NZ to shoot rt"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to shoot lt"
+            "pathName": "to NZ extended"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move, consume and pass lt"
+            "pathName": "from NZ extended"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Top pass fuel"
+            "name": "Shoot Hub"
           }
         }
       ]

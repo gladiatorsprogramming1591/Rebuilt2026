@@ -8,8 +8,13 @@
       },
       "prevControl": null,
       "nextControl": {
+<<<<<<< HEAD
         "x": 2.8459326536916896,
         "y": -0.5253578931109042
+=======
+        "x": 2.6127020202020206,
+        "y": -0.09917929292929228
+>>>>>>> c2965cc (Fixes to not run into walls)
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
