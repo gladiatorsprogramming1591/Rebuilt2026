@@ -54,15 +54,12 @@ public class Hood extends SubsystemBase {
   }
 
   public Command runHoodPosition(DoubleSupplier angleSupplier) {
-    return runEnd(
+    return run(
         () -> {
           outputs.mode = HoodMode.POSITION;
           // io.setHoodPosition(angle);
           outputs.desiredHoodAngle = angleSupplier.getAsDouble();
-        },
-        () -> {
-          io.stopHood();
-        });
+        }); 
   }
 
   public Command runHoodTarget() {
