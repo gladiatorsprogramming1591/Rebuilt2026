@@ -184,7 +184,7 @@ public class HoodIOKraken implements HoodIO {
         hoodSlot0.kP = outputs.kP;
         hoodSlot0.kD = outputs.kD;
         hoodSlot0.kS = outputs.kS;
-        hoodMotor.getConfigurator().apply(hoodSlot0);
+        // hoodMotor.getConfigurator().apply(hoodSlot0);
       }
 
       hoodMotor.setControl(
