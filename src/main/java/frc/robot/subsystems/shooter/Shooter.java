@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ShooterModeState;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -83,7 +84,7 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command runShooterVelocity(double velocity) {
+  public Command runShooterDutyCycle(double velocity) {
     SmartDashboard.putNumber("Shooter Vel", velocity);
     return run(
         () -> {
@@ -92,10 +93,7 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  // public boolean isShooterAtVelocity(double velocity) {
-  //   return MathUtil.isNear(
-  //     velocity,
-  //     , velocity)
-  // }
-
+  public BooleanSupplier isShooterAtVelocity() {
+    return io.shooterAtVelocity();
+  }
 }

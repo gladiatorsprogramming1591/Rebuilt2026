@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
@@ -36,8 +37,8 @@ public interface ShooterIO {
 
   public default void runShooterVelocity(double shooterVelocity) {}
 
-  public default boolean shooterAtVelocity(double shooterVelocity) {
-    return false;
+  public default BooleanSupplier shooterAtVelocity() {
+    return null;
   }
 
   public default void setShooterMotorRPM(double rpm) {}

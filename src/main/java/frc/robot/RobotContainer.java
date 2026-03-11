@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -280,13 +279,13 @@ public class RobotContainer {
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     // operator_controller
-    // .rightTrigger(0.05)
+    // .rightTrigger(0.05)][\
     // .whileTrue(hood.runHoodPosition(() -> operator_contr]\[oller.getRightTriggerAxis() * 8));
     // operator_controller.povUp().whileTrue(intake.runIntakeMotor());
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
     operator_controller.a().whileTrue(intakePulseCommand());
-    operator_controller.b().toggleOnTrue(shooter.runShooterVelocity(0));
+    operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().toggleOnTrue(shooter.runFixedSpeedCommand());
     operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
 
@@ -301,12 +300,14 @@ public class RobotContainer {
 
   public Command shoot() {
     return shooter
-        .runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED)
+        .runFixedSpeedCommand()
         .alongWith(
-            Commands.sequence(new WaitCommand(2.0)) // This should wait until at speed
-                .andThen(kicker.startKickerMotor())
-                .alongWith(roller.startRollerMotors())
-                .alongWith(intakePulseCommand()));
+            Commands.sequence(
+                Commands.waitUntil(
+                    shooter.isShooterAtVelocity()))) // This should wait until at speed
+        .andThen(kicker.startKickerMotor())
+        .alongWith(roller.startRollerMotors())
+        .alongWith(intakePulseCommand());
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
@@ -350,7 +351,7 @@ public class RobotContainer {
   }
 
   public Command warmUpShooterCommand() {
-    return shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_INITIAL_SHOT_SPEED);
+    return shooter.runShooterDutyCycle(ShooterConstants.SHOOTER_MOTOR_INITIAL_SHOT_SPEED);
   }
 
   public void registerNamedCommands() {

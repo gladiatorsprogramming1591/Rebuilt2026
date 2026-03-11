@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import java.util.function.BooleanSupplier;
 
 public class ShooterIOKraken implements ShooterIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
@@ -29,6 +30,7 @@ public class ShooterIOKraken implements ShooterIO {
   private final StatusSignal<Temperature> leftFollowerMotorTemp;
   private final StatusSignal<Current> supplyCurrentAmps;
   private final StatusSignal<Current> torqueCurrentAmps;
+  private double lastCommandedVelocity = 0.0;
 
   private final TalonFX rightShooterLeader =
       new TalonFX(ShooterConstants.RIGHT_SHOOTER_LEADER_MOTOR_ID);
@@ -131,15 +133,17 @@ public class ShooterIOKraken implements ShooterIO {
   }
 
   @Override
-  public boolean shooterAtVelocity(double shooterVelocity) {
-    return rightShooterLeader.getVelocity().getValueAsDouble()
-            > shooterVelocity - ShooterConstants.SHOOTER_TOLERANCE
-        && leftShooterLeader.getVelocity().getValueAsDouble()
-            > shooterVelocity - ShooterConstants.SHOOTER_TOLERANCE;
+  public BooleanSupplier shooterAtVelocity() {
+    return (() ->
+        rightShooterLeader.getVelocity().getValueAsDouble()
+                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE
+            && leftShooterLeader.getVelocity().getValueAsDouble()
+                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE);
   }
 
   @Override
   public void setShooterMotorRPM(double rps) {
+    lastCommandedVelocity = rps;
     rightShooterLeader.setControl(velocityControl.withVelocity(rps));
     leftShooterLeader.setControl(velocityControl.withVelocity(rps));
   }
