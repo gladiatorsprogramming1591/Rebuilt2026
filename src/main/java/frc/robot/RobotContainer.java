@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -34,7 +35,6 @@ import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOKraken;
 import frc.robot.subsystems.hood.HoodIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -58,8 +58,6 @@ import frc.robot.util.AutoManager;
 import frc.robot.util.HubShiftUtil;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
-import com.pathplanner.lib.auto.NamedCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -96,13 +94,6 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
         Camera cam =
             robotInitConstants.isCompBot
                 ? CameraConstants.RobotCameras.RIGHT
@@ -122,6 +113,15 @@ public class RobotContainer {
           shooter = new Shooter(new ShooterIOSim());
           hood = new Hood(new HoodIOSim());
         }
+        registerNamedCommands();
+        drive =
+            new Drive(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
+
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
         // implementations
@@ -254,10 +254,12 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     driver_controller.y().whileTrue(shooter.runShooterTarget());
-    driver_controller.leftTrigger().toggleOnTrue(intake.runIntakeMotor());
+    driver_controller
+        .leftTrigger()
+        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.startRollerMotors()));
     driver_controller
         .rightBumper()
-        .whileTrue(intake.runDeploy()); // TODO: needs to be a toggle eventually that runs
+        .whileTrue(intake.deployAndIntake()); // TODO: needs to be a toggle eventually that runs
     // until a certain
     driver_controller
         .leftBumper()
@@ -273,15 +275,13 @@ public class RobotContainer {
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
-    driver_controller
-        .rightTrigger()
-        .whileTrue(shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED));
+    driver_controller.rightTrigger().whileTrue(shoot());
     operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     // operator_controller
     // .rightTrigger(0.05)
-    // .whileTrue(hood.runHoodPosition(() -> operator_controller.getRightTriggerAxis() * 8));
+    // .whileTrue(hood.runHoodPosition(() -> operator_contr]\[oller.getRightTriggerAxis() * 8));
     // operator_controller.povUp().whileTrue(intake.runIntakeMotor());
     // driver_controller.leftTrigger().whileTrue(intake.runIntakeMotor()
     //   .alongWith(wait(5).andThen(() -> {intake.runStow())).withTimeout(2)}));
@@ -302,12 +302,11 @@ public class RobotContainer {
   public Command shoot() {
     return shooter
         .runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_SPEED)
-        .andThen(new WaitCommand(2.0)) // This should wait until at speed
-        .andThen(kicker.startKickerMotor())
-        .alongWith(roller.startRollerMotors())
         .alongWith(
-            Commands.sequence(
-                intake.runStow().withTimeout(0.5), intake.runDeploy().withTimeout(0.2)));
+            Commands.sequence(new WaitCommand(2.0)) // This should wait until at speed
+                .andThen(kicker.startKickerMotor())
+                .alongWith(roller.startRollerMotors())
+                .alongWith(intakePulseCommand()));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
@@ -323,20 +322,27 @@ public class RobotContainer {
         .alongWith(
             Commands.sequence(
                 intake.runStow().withTimeout(0.5),
-                intake.runDeploy().withTimeout(0.2),
+                intake.deployIntake().withTimeout(0.2),
                 intake.runStow().withTimeout(0.5),
                 intake.runStow().withTimeout(0.2),
-                intake.runDeploy().withTimeout(0.5),
+                intake.deployIntake().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.deployIntake().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.deployIntake().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
                 intake.runStow().withTimeout(0.2)));
   }
 
+  public Command intakeCommand() {
+    return intake.deployIntake();
+  }
 
-  public Command intakeCommand() { 
-    return Commands.parallel(
-      intake.deployIntake()
-      .andThen(intake.startIntakeMotor()),
-      Commands.waitSeconds(IntakeConstants.INTAKE_DELAY_SECONDS)
-    );
+  public Command intakeIn() {
+    return Commands.parallel(intake.stow());
   }
 
   public Command idleIntake() {
@@ -347,13 +353,12 @@ public class RobotContainer {
     return shooter.runShooterVelocity(ShooterConstants.SHOOTER_MOTOR_INITIAL_SHOT_SPEED);
   }
 
-
-        public void registerNamedCommands() {
+  public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );
-    NamedCommands.registerCommand("Shoot Hub", shooter.runShooterTarget()); 
-    NamedCommands.registerCommand("Prepare Intake", intake.deployIntake().alongWith(intake.runIntakeMotor()));
-    NamedCommands.registerCommand("Intake", intakeCommand()); 
-
+    NamedCommands.registerCommand("Shoot Hub", shoot());
+    NamedCommands.registerCommand("Prepare Intake", intake.deployAndIntake());
+    NamedCommands.registerCommand("Intake", intakeCommand());
+    NamedCommands.registerCommand("Intake In", intakeIn());
   }
 
   /** Update dashboard outputs. */

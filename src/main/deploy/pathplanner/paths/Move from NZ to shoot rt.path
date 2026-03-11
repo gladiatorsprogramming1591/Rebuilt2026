@@ -59,23 +59,12 @@
   "eventMarkers": [
     {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 0.8097759674134286,
+      "waypointRelativePos": 0.7648017381857684,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "Warm Up Shooter"
-        }
-      }
-    },
-    {
-      "name": "Shoot Hub",
-      "waypointRelativePos": 1.5266802443991834,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shoot Hub"
         }
       }
     }

@@ -78,12 +78,6 @@
           "name": "Warm Up Shooter"
         }
       }
-    },
-    {
-      "name": "Shoot Hub",
-      "waypointRelativePos": 1.82227221597302,
-      "endWaypointRelativePos": null,
-      "command": null
     }
   ],
   "globalConstraints": {

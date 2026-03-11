@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "to NZ extended"
@@ -26,6 +32,12 @@
           "type": "path",
           "data": {
             "pathName": "from NZ extended"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
           }
         }
       ]
