@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.PhoenixUtil;
 
 public class KickerIOKraken implements KickerIO {
   private final TalonFX kickerMotor = new TalonFX(KickerConstants.KICKER_CAN_ID);
@@ -17,7 +18,7 @@ public class KickerIOKraken implements KickerIO {
     kickerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     kickerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    kickerMotor.getConfigurator().apply(kickerConfig, 0.25);
+    PhoenixUtil.tryUntilOk(5, () -> kickerMotor.getConfigurator().apply(kickerConfig, 0.25));
     kickerMotor
         .getConfigurator()
         .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(5.0));

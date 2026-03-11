@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -15,21 +14,34 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.util.PhoenixUtil;
 import java.util.function.BooleanSupplier;
 
 public class ShooterIOKraken implements ShooterIO {
-  private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
+  // private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
   final MotionMagicVelocityVoltage magicVelocityControl =
       new MotionMagicVelocityVoltage(0).withSlot(0);
 
-  private final StatusSignal<AngularVelocity> shooterRPS;
-  private final StatusSignal<Voltage> shooterAppliedVolts;
-  private final StatusSignal<Temperature> rightLeaderMotorTemp;
-  private final StatusSignal<Temperature> rightFollowerMotorTemp;
-  private final StatusSignal<Temperature> leftLeaderMotorTemp;
-  private final StatusSignal<Temperature> leftFollowerMotorTemp;
-  private final StatusSignal<Current> supplyCurrentAmps;
-  private final StatusSignal<Current> torqueCurrentAmps;
+  private final StatusSignal<AngularVelocity> RL_RPS;
+  private final StatusSignal<AngularVelocity> RF_RPS;
+  private final StatusSignal<AngularVelocity> LL_RPS;
+  private final StatusSignal<AngularVelocity> LF_RPS;
+  private final StatusSignal<Voltage> RL_appliedVolts;
+  private final StatusSignal<Voltage> RF_appliedVolts;
+  private final StatusSignal<Voltage> LL_appliedVolts;
+  private final StatusSignal<Voltage> LF_appliedVolts;
+  private final StatusSignal<Temperature> RL_motorTemp;
+  private final StatusSignal<Temperature> RF_motorTemp;
+  private final StatusSignal<Temperature> LL_motorTemp;
+  private final StatusSignal<Temperature> LF_motorTemp;
+  private final StatusSignal<Current> RL_supplyCurrent;
+  private final StatusSignal<Current> RF_supplyCurrent;
+  private final StatusSignal<Current> LL_supplyCurrent;
+  private final StatusSignal<Current> LF_supplyCurrent;
+  private final StatusSignal<Current> RL_torqueCurrentAmps;
+  private final StatusSignal<Current> RF_torqueCurrentAmps;
+  private final StatusSignal<Current> LL_torqueCurrentAmps;
+  private final StatusSignal<Current> LF_torqueCurrentAmps;
   private double lastCommandedVelocity = 0.0;
 
   private final TalonFX rightShooterLeader =
@@ -43,14 +55,26 @@ public class ShooterIOKraken implements ShooterIO {
       new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
 
   public ShooterIOKraken() {
-    shooterRPS = rightShooterLeader.getVelocity();
-    shooterAppliedVolts = rightShooterLeader.getMotorVoltage();
-    rightLeaderMotorTemp = rightShooterLeader.getDeviceTemp();
-    rightFollowerMotorTemp = rightShooterFollower.getDeviceTemp();
-    leftLeaderMotorTemp = leftShooterLeader.getDeviceTemp();
-    leftFollowerMotorTemp = leftShooterFollower.getDeviceTemp();
-    supplyCurrentAmps = rightShooterLeader.getSupplyCurrent();
-    torqueCurrentAmps = rightShooterLeader.getTorqueCurrent();
+    RL_RPS = rightShooterLeader.getVelocity();
+    RF_RPS = rightShooterFollower.getVelocity();
+    LL_RPS = leftShooterLeader.getVelocity();
+    LF_RPS = leftShooterFollower.getVelocity();
+    RL_appliedVolts = rightShooterLeader.getMotorVoltage();
+    RF_appliedVolts = rightShooterFollower.getMotorVoltage();
+    LL_appliedVolts = leftShooterLeader.getMotorVoltage();
+    LF_appliedVolts = leftShooterFollower.getMotorVoltage();
+    RL_motorTemp = rightShooterLeader.getDeviceTemp();
+    RF_motorTemp = rightShooterFollower.getDeviceTemp();
+    LL_motorTemp = leftShooterLeader.getDeviceTemp();
+    LF_motorTemp = leftShooterFollower.getDeviceTemp();
+    RL_supplyCurrent = rightShooterLeader.getSupplyCurrent();
+    RF_supplyCurrent = rightShooterFollower.getSupplyCurrent();
+    LL_supplyCurrent = leftShooterLeader.getSupplyCurrent();
+    LF_supplyCurrent = leftShooterFollower.getSupplyCurrent();
+    RL_torqueCurrentAmps = rightShooterLeader.getTorqueCurrent();
+    RF_torqueCurrentAmps = rightShooterFollower.getTorqueCurrent();
+    LL_torqueCurrentAmps = leftShooterLeader.getTorqueCurrent();
+    LF_torqueCurrentAmps = leftShooterFollower.getTorqueCurrent();
 
     var rightConfig = new TalonFXConfiguration();
     rightConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
@@ -77,8 +101,8 @@ public class ShooterIOKraken implements ShooterIO {
     var leftConfig = rightConfig.clone();
 
     leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    rightShooterLeader.getConfigurator().apply(rightConfig, 0.25);
-    leftShooterLeader.getConfigurator().apply(leftConfig, 0.25);
+    PhoenixUtil.tryUntilOk(5, () -> rightShooterLeader.getConfigurator().apply(rightConfig, 0.25));
+    PhoenixUtil.tryUntilOk(5, () -> leftShooterLeader.getConfigurator().apply(leftConfig, 0.25));
     rightShooterFollower.setControl(
         new Follower(rightShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     leftShooterFollower.setControl(
@@ -88,23 +112,35 @@ public class ShooterIOKraken implements ShooterIO {
   @Override
   public void updateInputs(ShooterIO.ShooterIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        shooterRPS,
-        shooterAppliedVolts,
-        rightLeaderMotorTemp,
-        rightFollowerMotorTemp,
-        leftLeaderMotorTemp,
-        leftFollowerMotorTemp,
-        supplyCurrentAmps,
-        torqueCurrentAmps);
-    inputs.appliedVoltage = shooterAppliedVolts.getValueAsDouble();
-    inputs.rightLeaderMotorTemp = rightLeaderMotorTemp.getValueAsDouble();
-    inputs.rightFollowerMotorTemp = rightFollowerMotorTemp.getValueAsDouble();
-    inputs.leftLeaderMotorTemp = leftLeaderMotorTemp.getValueAsDouble();
-    inputs.leftFollowerMotorTemp = leftFollowerMotorTemp.getValueAsDouble();
-    inputs.velocityRPM = shooterRPS.getValueAsDouble() * 60;
+        RL_RPS,
+        RF_RPS,
+        LL_RPS,
+        LF_RPS,
+        RL_appliedVolts,
+        RF_appliedVolts,
+        LL_appliedVolts,
+        LF_appliedVolts,
+        RL_motorTemp,
+        RF_motorTemp,
+        LL_motorTemp,
+        LF_motorTemp,
+        RL_supplyCurrent,
+        RF_supplyCurrent,
+        LL_supplyCurrent,
+        LF_supplyCurrent,
+        RL_torqueCurrentAmps,
+        RF_torqueCurrentAmps,
+        LL_torqueCurrentAmps,
+        LF_torqueCurrentAmps);
+    inputs.appliedVoltage = RL_appliedVolts.getValueAsDouble();
+    inputs.rightLeaderMotorTemp = RL_motorTemp.getValueAsDouble();
+    inputs.rightFollowerMotorTemp = RF_motorTemp.getValueAsDouble();
+    inputs.leftLeaderMotorTemp = LL_motorTemp.getValueAsDouble();
+    inputs.leftFollowerMotorTemp = LF_motorTemp.getValueAsDouble();
+    inputs.velocityRPM = RL_RPS.getValueAsDouble() * 60;
 
-    inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
-    inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
+    inputs.supplyCurrentAmps = RL_supplyCurrent.getValueAsDouble();
+    inputs.torqueCurrentAmps = RL_torqueCurrentAmps.getValueAsDouble();
   }
 
   @Override
@@ -144,7 +180,7 @@ public class ShooterIOKraken implements ShooterIO {
   @Override
   public void setShooterMotorRPM(double rps) {
     lastCommandedVelocity = rps;
-    rightShooterLeader.setControl(velocityControl.withVelocity(rps));
-    leftShooterLeader.setControl(velocityControl.withVelocity(rps));
+    rightShooterLeader.setControl(magicVelocityControl.withVelocity(rps));
+    leftShooterLeader.setControl(magicVelocityControl.withVelocity(rps));
   }
 }

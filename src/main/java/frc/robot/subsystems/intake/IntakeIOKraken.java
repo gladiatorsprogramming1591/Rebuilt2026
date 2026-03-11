@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
   private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_CAN_ID);
@@ -15,7 +16,7 @@ public class IntakeIOKraken implements IntakeIO {
     intakeConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.INTAKE_CURRENT_LIMIT;
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    intakeMotor.getConfigurator().apply(intakeConfig, 0.25);
+    PhoenixUtil.tryUntilOk(5, () -> intakeMotor.getConfigurator().apply(intakeConfig, 0.25));
 
     var deployConfig = new TalonFXConfiguration();
     deployConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.DEPLOY_CURRENT_LIMIT;
