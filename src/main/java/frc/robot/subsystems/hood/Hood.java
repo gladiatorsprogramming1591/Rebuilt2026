@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -18,7 +19,7 @@ public class Hood extends SubsystemBase {
   private boolean hasBeenZeroed = false;
 
   private static final LoggedTunableNumber goalPosition =
-      new LoggedTunableNumber("Hood/GoalPosition", 500.0);
+      new LoggedTunableNumber("Hood/GoalPosition", 1.0);
   private static final LoggedTunableNumber kP =
       new LoggedTunableNumber("Hood/kP", HoodConstants.kP);
   private static final LoggedTunableNumber kD =
@@ -57,9 +58,11 @@ public class Hood extends SubsystemBase {
   public Command runHoodPosition(DoubleSupplier angleSupplier) {
     return run(
         () -> {
-          outputs.mode = HoodMode.POSITION;
-          // io.setHoodPosition(angle);
-          outputs.desiredHoodAngle = angleSupplier.getAsDouble();
+          if (hasBeenZeroed) {
+            outputs.mode = HoodMode.POSITION;
+            // io.setHoodPosition(angle);
+            outputs.desiredHoodAngle = angleSupplier.getAsDouble();
+          }
         });
   }
 
@@ -104,11 +107,12 @@ public class Hood extends SubsystemBase {
     outputs.kS = kS.get();
     io.applyOutputs(outputs);
 
-    // if (this.hasBeenZeroed) {
-    //   outputs.positionRad = 0;
-    //   io.applyOutputs(outputs);
-    // } else {
-    //   io.runHoodToZero();
-    // }
+    SmartDashboard.putBoolean("Hood-hasBeenZeroed", hasBeenZeroed);
+
+    if (this.hasBeenZeroed) {
+      io.applyOutputs(outputs);
+    } else {
+      io.runHoodToZero();
+    }
   }
 }

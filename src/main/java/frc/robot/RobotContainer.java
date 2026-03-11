@@ -228,8 +228,7 @@ public class RobotContainer {
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
     shooter.setDefaultCommand(shooter.runIdleCommand());
-    hood.setDefaultCommand(
-        hood.runHoodPosition(() -> operator_controller.getRightTriggerAxis() * 8));
+    hood.setDefaultCommand(hood.runHoodPosition(() -> 1.0));
     // drive base
 
     // Lock to 0° when A button is held
@@ -302,14 +301,14 @@ public class RobotContainer {
   }
 
   public Command shoot() {
-    return shooter
-        .runFixedSpeedCommand()
-        .alongWith(
-            Commands.sequence(hood.runHoodTarget()),
-            Commands.waitUntil(shooter.isShooterAtVelocity()))
-        .andThen(kicker.startKickerMotor())
-        .alongWith(roller.startRollerMotors())
-        .alongWith(intakePulseCommand());
+    return Commands.parallel(
+        shooter.runFixedSpeedCommand(),
+        Commands.sequence(
+            Commands.parallel(
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome

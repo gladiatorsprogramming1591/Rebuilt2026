@@ -76,6 +76,9 @@ public class ShooterIOKraken implements ShooterIO {
     LL_torqueCurrentAmps = leftShooterLeader.getTorqueCurrent();
     LF_torqueCurrentAmps = leftShooterFollower.getTorqueCurrent();
 
+    rightShooterLeader.optimizeBusUtilization(4, 0.1);
+    rightShooterFollower.optimizeBusUtilization(4, 0.1);
+
     var rightConfig = new TalonFXConfiguration();
     rightConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
     rightConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -132,15 +135,26 @@ public class ShooterIOKraken implements ShooterIO {
         RF_torqueCurrentAmps,
         LL_torqueCurrentAmps,
         LF_torqueCurrentAmps);
-    inputs.appliedVoltage = RL_appliedVolts.getValueAsDouble();
-    inputs.rightLeaderMotorTemp = RL_motorTemp.getValueAsDouble();
-    inputs.rightFollowerMotorTemp = RF_motorTemp.getValueAsDouble();
-    inputs.leftLeaderMotorTemp = LL_motorTemp.getValueAsDouble();
-    inputs.leftFollowerMotorTemp = LF_motorTemp.getValueAsDouble();
-    inputs.velocityRPM = RL_RPS.getValueAsDouble() * 60;
-
-    inputs.supplyCurrentAmps = RL_supplyCurrent.getValueAsDouble();
-    inputs.torqueCurrentAmps = RL_torqueCurrentAmps.getValueAsDouble();
+    inputs.RL_RPS = RL_RPS.getValueAsDouble();
+    inputs.RF_RPS = RF_RPS.getValueAsDouble();
+    inputs.LL_RPS = LL_RPS.getValueAsDouble();
+    inputs.LF_RPS = LF_RPS.getValueAsDouble();
+    inputs.RL_appliedVolts = RL_appliedVolts.getValueAsDouble();
+    inputs.RF_appliedVolts = RF_appliedVolts.getValueAsDouble();
+    inputs.LL_appliedVolts = LL_appliedVolts.getValueAsDouble();
+    inputs.LF_appliedVolts = LF_appliedVolts.getValueAsDouble();
+    inputs.RL_motorTemp = RL_motorTemp.getValueAsDouble();
+    inputs.RF_motorTemp = RF_motorTemp.getValueAsDouble();
+    inputs.LL_motorTemp = LL_motorTemp.getValueAsDouble();
+    inputs.LF_motorTemp = LF_motorTemp.getValueAsDouble();
+    inputs.RL_supplyCurrent = RL_supplyCurrent.getValueAsDouble();
+    inputs.RF_supplyCurrent = RF_supplyCurrent.getValueAsDouble();
+    inputs.LL_supplyCurrent = LL_supplyCurrent.getValueAsDouble();
+    inputs.LF_supplyCurrent = LF_supplyCurrent.getValueAsDouble();
+    inputs.RL_torqueCurrentAmps = RL_torqueCurrentAmps.getValueAsDouble();
+    inputs.RF_torqueCurrentAmps = RF_torqueCurrentAmps.getValueAsDouble();
+    inputs.LL_torqueCurrentAmps = LL_torqueCurrentAmps.getValueAsDouble();
+    inputs.LF_torqueCurrentAmps = LF_torqueCurrentAmps.getValueAsDouble();
   }
 
   @Override
