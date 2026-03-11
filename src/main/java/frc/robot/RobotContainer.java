@@ -46,7 +46,6 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
@@ -256,17 +255,21 @@ public class RobotContainer {
 
     // shooter
     driver_controller.y().whileTrue(shooter.runShooterTarget());
-    //intake
+    // intake
     driver_controller
         .leftTrigger()
         .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.startRollerMotors()));
     driver_controller
         .rightBumper()
-        .whileTrue(intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a certain position
+        .whileTrue(
+            intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a
+    // certain position
     driver_controller
         .leftBumper()
-        .whileTrue(intake.runStow()); // TODO: needs to be a toggle eventually that runs until a certain encoder value
-    //roller
+        .whileTrue(
+            intake.runStow()); // TODO: needs to be a toggle eventually that runs until a certain
+    // encoder value
+    // roller
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
     // hood
     driver_controller.back().whileTrue(hood.runHoodTarget());
@@ -300,15 +303,13 @@ public class RobotContainer {
 
   public Command shoot() {
     return shooter
-      .runFixedSpeedCommand()
+        .runFixedSpeedCommand()
         .alongWith(
-          Commands.sequence(
-              hood.runHoodTarget()),
-          Commands.waitUntil(
-            shooter.isShooterAtVelocity()))
-          .andThen(kicker.startKickerMotor())
-          .alongWith(roller.startRollerMotors())
-          .alongWith(intakePulseCommand());
+            Commands.sequence(hood.runHoodTarget()),
+            Commands.waitUntil(shooter.isShooterAtVelocity()))
+        .andThen(kicker.startKickerMotor())
+        .alongWith(roller.startRollerMotors())
+        .alongWith(intakePulseCommand());
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome

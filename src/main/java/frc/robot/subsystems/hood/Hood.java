@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.hood.HoodIO.HoodIOOutputs;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
@@ -59,16 +60,21 @@ public class Hood extends SubsystemBase {
           outputs.mode = HoodMode.POSITION;
           // io.setHoodPosition(angle);
           outputs.desiredHoodAngle = angleSupplier.getAsDouble();
-        }); 
+        });
   }
 
   public Command runHoodTarget() {
     return run(
         () -> {
-          outputs.mode = HoodMode.POSITION;
-          var params = ShooterCalculation.getInstance().getParameters();
-          outputs.desiredHoodAngle = params.hoodAngle();
-          outputs.velocityRadPerSecond = params.hoodVelocity();
+          if (Constants.tuningMode) {
+            outputs.mode = HoodMode.POSITION;
+            outputs.desiredHoodAngle = goalPosition.getAsDouble();
+          } else {
+            outputs.mode = HoodMode.POSITION;
+            var params = ShooterCalculation.getInstance().getParameters();
+            outputs.desiredHoodAngle = params.hoodAngle();
+            // outputs.velocityRadPerSecond = params.hoodVelocity();
+          }
         });
   }
 
