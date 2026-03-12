@@ -8,30 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.874589743589746,
-        "y": 8.151384615384616
+        "x": 7.204962121212121,
+        "y": 8.180631313131313
       },
       "isLocked": false,
       "linkedName": "Top NZ"
     },
     {
       "anchor": {
-        "x": 3.0140512820512835,
-        "y": 5.895512820512821
+        "x": 2.6241540404040404,
+        "y": 6.016199494949495
       },
       "prevControl": {
-        "x": 2.862884615384617,
-        "y": 8.058358974358974
+        "x": 2.58979797979798,
+        "y": 8.123371212121212
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top from NZ"
+      "linkedName": "Left start shoot"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.4964912280701773,
-      "rotationDegrees": -90.0
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.6263157894736918,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -47,7 +51,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -45.0
+    "rotation": -40.0
   },
   "reversed": false,
   "folder": "Competiton",

@@ -8,43 +8,43 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.163696682464456,
-        "y": 0.27374407582938254
+        "x": 6.4753436018957355,
+        "y": 0.33822274881516456
       },
       "isLocked": false,
       "linkedName": "bottom NZ extend"
     },
     {
       "anchor": {
-        "x": 5.990132541957013,
-        "y": 0.7506086645040033
+        "x": 5.379206161137441,
+        "y": 0.5961374407582936
       },
       "prevControl": {
-        "x": 6.076914612210734,
-        "y": 0.5121763701666929
+        "x": 6.876426702544098,
+        "y": 0.6591597480917553
       },
       "nextControl": {
-        "x": 5.903350471703291,
-        "y": 0.9890409588413137
+        "x": 4.125199978545406,
+        "y": 0.5433527234426158
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3911137440758297,
-        "y": 0.7506086645040033
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
       },
       "prevControl": {
-        "x": 4.888334285482486,
-        "y": 0.813630971837465
+        "x": 2.5995012683289542,
+        "y": 0.48884002539250493
       },
       "nextControl": {
-        "x": 2.137107561483794,
-        "y": 0.6978239471883255
+        "x": 2.8537914691943134,
+        "y": 2.165118483412322
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start shoot"
     },
     {
       "anchor": {
@@ -52,8 +52,8 @@
         "y": 4.002760663507108
       },
       "prevControl": {
-        "x": 3.3555630919945094,
-        "y": 3.187625142822372
+        "x": 2.8860308056872044,
+        "y": 2.584229857819904
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,11 +62,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 0.8,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.25,
+      "waypointRelativePos": 1.25,
       "rotationDegrees": 0.0
     }
   ],
@@ -75,7 +75,7 @@
   "eventMarkers": [
     {
       "name": "Idle Intake",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.25,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -86,7 +86,7 @@
     },
     {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 2.174353205849262,
+      "waypointRelativePos": 1.174353205849262,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

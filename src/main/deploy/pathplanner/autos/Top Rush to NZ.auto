@@ -7,13 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right start Shoot"
+            "pathName": "Left Start to NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Move to shoot lt"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move and consume lt (L)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move to ka-pew"
           }
         }
       ]
