@@ -77,11 +77,7 @@ public class Shooter extends SubsystemBase {
           // outputs.velocityRPM = shootRPM.getAsDouble();
           double flywheelSpeedRadPerSec =
               ShooterCalculation.getInstance().getParameters().flywheelSpeed();
-          outputs.desiredVelocityRPM =
-              MathUtil.clamp(
-                  flywheelSpeedRadPerSec * (2 * Math.PI) * 60,
-                  0,
-                  3000); // Convert to Rotations per minute
+          outputs.desiredVelocityRPM = MathUtil.clamp(flywheelSpeedRadPerSec, 0, 3000);
         });
   }
 
