@@ -100,6 +100,16 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command reverseIntakeMotor() {
+    return runEnd(
+        () -> {
+          io.setIntakeSpeed(-IntakeConstants.INTAKE_MOTOR_SPEED);
+        },
+        () -> {
+          io.stopIntakeMotor();
+        });
+  }
+
   public Command stow() {
     return runEnd(
         () -> {
@@ -115,6 +125,7 @@ public class Intake extends SubsystemBase {
         .alongWith(
             new WaitCommand(IntakeConstants.INTAKE_DELAY_SECONDS).andThen(startIntakeMotor()));
   }
+
 
   public Command stowIntakeOff() {
     return stopIntakeMotor().andThen(stow());

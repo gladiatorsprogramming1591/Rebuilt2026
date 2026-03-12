@@ -50,7 +50,7 @@ public interface ShooterIO {
   public default void runShooterDutyCycle(double shooterVelocity) {}
 
   public default BooleanSupplier shooterAtVelocity() {
-    return null;
+    return () -> false;
   }
 
   public default void setShooterMotorRPM(double rpm) {}

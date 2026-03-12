@@ -285,6 +285,7 @@ public class RobotContainer {
     // intake
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     operator_controller.a().whileTrue(intakePulseCommand());
+    operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
     // shooter
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().toggleOnTrue(shooter.runFixedSpeedCommand());
