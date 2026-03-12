@@ -51,6 +51,7 @@ public class HoodIOKraken implements HoodIO {
     hoodConfig.CurrentLimits.SupplyCurrentLimit = HoodConstants.HOOD_CURRENT_LIMIT;
     hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    hoodConfig.Feedback.SensorToMechanismRatio = HoodConstants.HOOD_MOTOR_REDUCTION;
     PhoenixUtil.tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(hoodConfig, 0.25));
 
     hoodSlot0.kP = HoodConstants.kP;
