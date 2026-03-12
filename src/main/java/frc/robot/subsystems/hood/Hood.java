@@ -87,14 +87,16 @@ public class Hood extends SubsystemBase {
 
   public Command runHoodToZero() {
     outputs.mode = HoodMode.SPEED;
-    return run(() -> io.runHoodToZero())
-        .until(() -> io.isHoodAtTrueZero())
-        .andThen(() -> io.zero())
+    return runOnce(() -> io.setHoodCurrentLimit(HoodConstants.HOOD_ZEROING_CURRENT_LIMIT))
+        .andThen(
+            run(() -> io.runHoodToZero())
+                .until(() -> io.isHoodAtTrueZero())
+                .andThen(() -> io.zeroHood()))
         .finallyDo(
             () -> {
               io.stopHood();
               io.setHoodCurrentLimit(HoodConstants.HOOD_CURRENT_LIMIT);
-              io.resetHoodZeroTimer();
+              io.resetHoodTimer();
             });
   }
 
@@ -105,7 +107,6 @@ public class Hood extends SubsystemBase {
     outputs.kP = kP.get();
     outputs.kD = kD.get();
     outputs.kS = kS.get();
-    io.applyOutputs(outputs);
 
     SmartDashboard.putBoolean("Hood-hasBeenZeroed", hasBeenZeroed);
 

@@ -59,7 +59,9 @@ public interface HoodIO {
 
   public default void setHoodCurrentLimit(double currentLimit) {}
 
-  public default void zero() {}
+  public default void zeroHood() {}
+
+  public default void applyCurrentLimit(double currentLimit) {}
 
   public default void runHoodToZero() {}
 
@@ -67,7 +69,7 @@ public interface HoodIO {
     return false;
   }
 
-  public default void resetHoodZeroTimer() {}
+  public default void resetHoodTimer() {}
 
   public default boolean isHoodAtTrueZero() {
     return false;
