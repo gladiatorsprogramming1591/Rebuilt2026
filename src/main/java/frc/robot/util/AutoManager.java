@@ -11,6 +11,7 @@ public class AutoManager {
   private SendableChooser<Command> autos;
   private Drive drivetrain;
   private String rightSideRushName = "Right Rush to NZ";
+  private String leftSideRushHub = "Bottom Rush to Hub";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -21,6 +22,8 @@ public class AutoManager {
     autos.addOption("Right Side Rush", wrapAutoWithPose(new PathPlannerAuto(rightSideRushName)));
     autos.addOption(
         "Left Side Rush", wrapAutoWithPose(new PathPlannerAuto(rightSideRushName, true)));
+    autos.addOption(
+        "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(leftSideRushHub, true)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

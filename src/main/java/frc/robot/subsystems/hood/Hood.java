@@ -69,7 +69,9 @@ public class Hood extends SubsystemBase {
   public Command runHoodTarget() {
     return run(
         () -> {
-          if (Constants.tuningMode) {
+          boolean tune = true;
+          // boolean tune = Constants.tuningMode;
+          if (tune) {
             outputs.mode = HoodMode.POSITION;
             outputs.desiredHoodAngle = goalPosition.getAsDouble();
           } else {
