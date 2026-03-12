@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
       default -> {
         // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " +
         // RobotState.getShooterMode());
-        io.runShooterVelocity(0);
+        io.runShooterDutyCycle(0);
       }
     }
     SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
@@ -85,12 +85,12 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public Command runShooterDutyCycle(double velocity) {
-    SmartDashboard.putNumber("Shooter Vel", velocity);
+  public Command runShooterDutyCycle(double dutyCycle) {
+    SmartDashboard.putNumber("Shooter duty cycle", dutyCycle);
     return run(
         () -> {
           RobotState.setShooterMode(ShooterModeState.DUTYCYCLE);
-          io.runShooterVelocity(velocity);
+          io.runShooterDutyCycle(dutyCycle);
         });
   }
 

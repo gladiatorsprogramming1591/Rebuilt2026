@@ -186,9 +186,9 @@ public class ShooterIOKraken implements ShooterIO {
   }
 
   @Override
-  public void runShooterVelocity(double shooterVelocity) {
-    rightShooterLeader.set(shooterVelocity);
-    leftShooterLeader.set(shooterVelocity);
+  public void runShooterDutyCycle(double dutyCycle) {
+    rightShooterLeader.set(dutyCycle);
+    leftShooterLeader.set(dutyCycle);
   }
 
   @Override

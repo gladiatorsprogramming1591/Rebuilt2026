@@ -47,7 +47,7 @@ public interface ShooterIO {
    */
   public default void runShooter(double shooterVelocity) {}
 
-  public default void runShooterVelocity(double shooterVelocity) {}
+  public default void runShooterDutyCycle(double shooterVelocity) {}
 
   public default BooleanSupplier shooterAtVelocity() {
     return null;

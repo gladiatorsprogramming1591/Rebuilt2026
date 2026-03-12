@@ -15,7 +15,7 @@ public class IntakeIOKraken implements IntakeIO {
     var intakeConfig = new TalonFXConfiguration();
     intakeConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.INTAKE_CURRENT_LIMIT;
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     PhoenixUtil.tryUntilOk(5, () -> intakeMotor.getConfigurator().apply(intakeConfig, 0.25));
 
     var deployConfig = new TalonFXConfiguration();
