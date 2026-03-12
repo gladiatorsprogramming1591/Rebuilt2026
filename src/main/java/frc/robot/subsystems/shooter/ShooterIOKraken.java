@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shooter;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -10,12 +12,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.PhoenixUtil;
-import java.util.function.BooleanSupplier;
 
 public class ShooterIOKraken implements ShooterIO {
   // private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
@@ -170,6 +172,7 @@ public class ShooterIOKraken implements ShooterIO {
 
     // rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     // leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+    lastCommandedVelocity = outputs.desiredVelocityRPM / 60;
     rightShooterLeader.setControl(
         magicVelocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     leftShooterLeader.setControl(
