@@ -126,7 +126,6 @@ public class Intake extends SubsystemBase {
             new WaitCommand(IntakeConstants.INTAKE_DELAY_SECONDS).andThen(startIntakeMotor()));
   }
 
-
   public Command stowIntakeOff() {
     return stopIntakeMotor().andThen(stow());
   }
