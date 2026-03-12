@@ -228,7 +228,7 @@ public class RobotContainer {
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
     shooter.setDefaultCommand(shooter.runIdleCommand());
-    hood.setDefaultCommand(hood.runHoodPosition(() -> 0.0));
+    hood.setDefaultCommand(hood.runHoodToZero());
     // drive base
 
     // Lock to 0° when A button is held

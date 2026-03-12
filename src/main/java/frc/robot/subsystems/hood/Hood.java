@@ -19,7 +19,7 @@ public class Hood extends SubsystemBase {
   private boolean hasBeenZeroed = false;
 
   private static final LoggedTunableNumber goalPosition =
-      new LoggedTunableNumber("Hood/GoalPosition", 1.0);
+      new LoggedTunableNumber("Hood/GoalPosition", 100.0);
   private static final LoggedTunableNumber kP =
       new LoggedTunableNumber("Hood/kP", HoodConstants.kP);
   private static final LoggedTunableNumber kD =

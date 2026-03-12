@@ -114,8 +114,10 @@ public class HoodIOKraken implements HoodIO {
 
   @Override
   public void zeroHood() {
-    positionOffset = hoodMotor.getPosition().getValueAsDouble();
-    hoodMotor.setPosition(0.0);
+    var hoodPosition = hoodMotor.getPosition().getValueAsDouble();
+    positionOffset = hoodPosition;
+    // TODO: make this a constant (zero tolerance)
+    if (hoodPosition > 0.1 && hoodPosition < -0.1) hoodMotor.setPosition(0.0);
     SmartDashboard.putNumber("Hood offset rots", positionOffset);
   }
 
