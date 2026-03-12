@@ -3,95 +3,88 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.401361445783133,
-        "y": 2.647180722891566
+        "x": 3.057973933649289,
+        "y": 4.002760663507108
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.163696682464456,
-        "y": 0.27374407582938254
+        "x": 2.3057227488151657,
+        "y": 3.0248341232227483
       },
       "isLocked": false,
-      "linkedName": "bottom NZ extend"
-    },
-    {
-      "anchor": {
-        "x": 5.990132541957013,
-        "y": 0.7506086645040033
-      },
-      "prevControl": {
-        "x": 6.076914612210734,
-        "y": 0.5121763701666929
-      },
-      "nextControl": {
-        "x": 5.903350471703291,
-        "y": 0.9890409588413137
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.3911137440758297,
-        "y": 0.7506086645040033
-      },
-      "prevControl": {
-        "x": 4.888334285482486,
-        "y": 0.813630971837465
-      },
-      "nextControl": {
-        "x": 2.137107561483794,
-        "y": 0.6978239471883255
-      },
-      "isLocked": false,
-      "linkedName": null
+      "linkedName": "FrontOfHub"
     },
     {
       "anchor": {
         "x": 3.057973933649289,
-        "y": 4.002760663507108
+        "y": 0.6391232227488137
       },
       "prevControl": {
-        "x": 3.3555630919945094,
-        "y": 3.187625142822372
+        "x": 2.7355805687203785,
+        "y": 0.617630331753553
+      },
+      "nextControl": {
+        "x": 3.307420223113442,
+        "y": 0.6557529753797573
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.475924170616114,
+        "y": 0.6391232227488137
+      },
+      "prevControl": {
+        "x": 3.647860597732775,
+        "y": 0.639123222748814
+      },
+      "nextControl": {
+        "x": 6.279788802985717,
+        "y": 0.6391232227488137
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.401361445783133,
+        "y": 2.647180722891566
+      },
+      "prevControl": {
+        "x": 6.193734939759036,
+        "y": 0.691120481927711
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FrontOfHub"
+      "linkedName": "bottom NZ extend"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.2,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.25,
+      "waypointRelativePos": 1.85,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.8855098389982117,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Idle Intake",
-      "waypointRelativePos": 0.5,
+      "name": "Prepare Intake",
+      "waypointRelativePos": 1.35,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Idle Intake"
-        }
-      }
-    },
-    {
-      "name": "Warm Up Shooter",
-      "waypointRelativePos": 2.174353205849262,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Warm Up Shooter"
+          "name": "Prepare Intake"
         }
       }
     }
@@ -106,13 +99,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Competiton",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": 90.0
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

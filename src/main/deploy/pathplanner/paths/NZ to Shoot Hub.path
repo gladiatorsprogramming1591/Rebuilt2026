@@ -3,48 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.401361445783133,
-        "y": 2.647180722891566
+        "x": 7.800108433734941,
+        "y": 3.1389277108433737
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.163696682464456,
-        "y": 0.27374407582938254
+        "x": 7.464016587677726,
+        "y": 1.4773459715639796
       },
       "isLocked": false,
-      "linkedName": "bottom NZ extend"
+      "linkedName": "NZ bottom"
     },
     {
       "anchor": {
-        "x": 5.990132541957013,
-        "y": 0.7506086645040033
+        "x": 6.378625592417063,
+        "y": 0.6391232227488137
       },
       "prevControl": {
-        "x": 6.076914612210734,
-        "y": 0.5121763701666929
+        "x": 6.8084834123222775,
+        "y": 0.6928554502369662
       },
       "nextControl": {
-        "x": 5.903350471703291,
-        "y": 0.9890409588413137
+        "x": 5.908350163030744,
+        "y": 0.580338794075523
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WP1"
     },
     {
       "anchor": {
-        "x": 3.3911137440758297,
-        "y": 0.7506086645040033
+        "x": 3.315888625592417,
+        "y": 0.6391232227488137
       },
       "prevControl": {
-        "x": 4.888334285482486,
-        "y": 0.813630971837465
+        "x": 4.3258502173999,
+        "y": 0.6391232227488137
       },
       "nextControl": {
-        "x": 2.137107561483794,
-        "y": 0.6978239471883255
+        "x": 2.821552132701421,
+        "y": 0.6391232227488138
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "WP2"
     },
     {
       "anchor": {
@@ -52,8 +52,8 @@
         "y": 4.002760663507108
       },
       "prevControl": {
-        "x": 3.3555630919945094,
-        "y": 3.187625142822372
+        "x": 2.671101895734597,
+        "y": 3.0785663507109002
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,11 +62,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 0.9964476021314443,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.25,
+      "waypointRelativePos": 2.373881932021466,
       "rotationDegrees": 0.0
     }
   ],
@@ -74,19 +74,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Idle Intake",
-      "waypointRelativePos": 0.5,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Idle Intake"
-        }
-      }
-    },
-    {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 2.174353205849262,
+      "waypointRelativePos": 1.55,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -105,7 +94,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "reversed": false,

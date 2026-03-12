@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.14368769228125,
-        "y": 0.13054918103225988
+        "x": 3.272902843601896,
+        "y": 0.3382227488151648
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -41,13 +41,13 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "bottom NZ extend"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.6,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 21.868873202422346
     },
     {
       "waypointRelativePos": 0.9302325581395368,

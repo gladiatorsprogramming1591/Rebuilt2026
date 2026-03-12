@@ -7,31 +7,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right start Shoot"
+            "pathName": "Right Start To NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "NZ to Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Consume (r)"
+            "pathName": "Hub to NZ extended"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move from NZ to shoot rt"
+            "pathName": "NZ Extended to Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "ALSO STUFF",
+  "folder": "Competition",
   "choreoAuto": false
 }
