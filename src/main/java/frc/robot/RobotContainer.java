@@ -315,7 +315,7 @@ public class RobotContainer {
     return Commands.parallel(
         shooter.runFixedSpeedCommand(),
         DriveCommands.rotateToHub(
-                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
+            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
                 hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),

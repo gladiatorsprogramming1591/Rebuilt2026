@@ -25,6 +25,7 @@ public class Shooter extends SubsystemBase {
       new LoggedTunableNumber("Shooter/Coast RPM", 750);
 
   private double loopCounter = 0;
+  private boolean hasSpeedTargetChanged = true;
 
   public Shooter(ShooterIO io) {
     this.io = io;
@@ -57,6 +58,7 @@ public class Shooter extends SubsystemBase {
   public Command runIdleCommand() {
     return run(
         () -> {
+          hasSpeedTargetChanged = true;
           RobotState.setShooterMode(ShooterModeState.IDLE);
           outputs.desiredVelocityRPM = coastRPM.getAsDouble();
         });
@@ -65,6 +67,7 @@ public class Shooter extends SubsystemBase {
   public Command runFixedSpeedCommand() {
     return run(
         () -> {
+          hasSpeedTargetChanged = true;
           RobotState.setShooterMode(ShooterModeState.ON);
           outputs.desiredVelocityRPM = shootRPM.getAsDouble();
         });
@@ -73,11 +76,12 @@ public class Shooter extends SubsystemBase {
   public Command runShooterTarget() {
     return run(
         () -> {
+          hasSpeedTargetChanged = true;
           RobotState.setShooterMode(ShooterModeState.ON);
           // outputs.velocityRPM = shootRPM.getAsDouble();
-          double flywheelSpeedRadPerSec =
+          double flywheelSpeedRPM =
               ShooterCalculation.getInstance().getParameters().flywheelSpeed();
-          outputs.desiredVelocityRPM = MathUtil.clamp(flywheelSpeedRadPerSec, 0, 3000);
+          outputs.desiredVelocityRPM = MathUtil.clamp(flywheelSpeedRPM, 0, 3000);
         });
   }
 
@@ -91,6 +95,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public BooleanSupplier isShooterAtVelocity() {
+    if (hasSpeedTargetChanged) {
+      hasSpeedTargetChanged = false;
+      return () -> false;
+    }
     return io.shooterAtVelocity();
   }
 }

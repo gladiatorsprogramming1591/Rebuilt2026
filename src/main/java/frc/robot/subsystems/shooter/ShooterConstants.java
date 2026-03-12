@@ -17,7 +17,7 @@ public class ShooterConstants {
   public static final double SHOOTER_MOTOR_REDUCTION = 1;
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 70;
   public static final int SHOOTER_MAX_VELOCITY = 5200;
-  public static final double SHOOTER_TOLERANCE = 0;
+  public static final double SHOOTER_TOLERANCE = 1;
   public static final double SHOOTER_MOTOR_INITIAL_SHOT_SPEED =
       0; // TODO: get value for first auto shot
 

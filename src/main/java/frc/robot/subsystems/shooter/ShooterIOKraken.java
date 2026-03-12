@@ -1,7 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -12,12 +10,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
+import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterIOKraken implements ShooterIO {
   // private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
@@ -78,8 +78,8 @@ public class ShooterIOKraken implements ShooterIO {
     LL_torqueCurrentAmps = leftShooterLeader.getTorqueCurrent();
     LF_torqueCurrentAmps = leftShooterFollower.getTorqueCurrent();
 
-    rightShooterLeader.optimizeBusUtilization(4, 0.1);
-    rightShooterFollower.optimizeBusUtilization(4, 0.1);
+    // rightShooterLeader.optimizeBusUtilization(4, 0.1);
+    // rightShooterFollower.optimizeBusUtilization(4, 0.1);
 
     var rightConfig = new TalonFXConfiguration();
     rightConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
@@ -108,6 +108,9 @@ public class ShooterIOKraken implements ShooterIO {
     leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> rightShooterLeader.getConfigurator().apply(rightConfig, 0.25));
     PhoenixUtil.tryUntilOk(5, () -> leftShooterLeader.getConfigurator().apply(leftConfig, 0.25));
+    PhoenixUtil.tryUntilOk(
+        5, () -> rightShooterFollower.getConfigurator().apply(rightConfig, 0.25));
+    PhoenixUtil.tryUntilOk(5, () -> leftShooterFollower.getConfigurator().apply(leftConfig, 0.25));
     rightShooterFollower.setControl(
         new Follower(rightShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     leftShooterFollower.setControl(
@@ -173,6 +176,9 @@ public class ShooterIOKraken implements ShooterIO {
     // rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     // leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     lastCommandedVelocity = outputs.desiredVelocityRPM / 60;
+
+    Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
+    SmartDashboard.putNumber("lastCommandedVelocity", lastCommandedVelocity);
     rightShooterLeader.setControl(
         magicVelocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     leftShooterLeader.setControl(
@@ -187,6 +193,7 @@ public class ShooterIOKraken implements ShooterIO {
 
   @Override
   public BooleanSupplier shooterAtVelocity() {
+
     return (() ->
         rightShooterLeader.getVelocity().getValueAsDouble()
                 > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE
