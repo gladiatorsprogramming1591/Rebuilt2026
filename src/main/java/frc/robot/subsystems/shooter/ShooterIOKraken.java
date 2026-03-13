@@ -43,7 +43,7 @@ public class ShooterIOKraken implements ShooterIO {
   private final StatusSignal<Current> RF_torqueCurrentAmps;
   private final StatusSignal<Current> LL_torqueCurrentAmps;
   private final StatusSignal<Current> LF_torqueCurrentAmps;
-  private double lastCommandedVelocity = 0.0;
+  private double lastCommandedVelocityRPS = 0.0;
 
   private final TalonFX rightShooterLeader =
       new TalonFX(ShooterConstants.RIGHT_SHOOTER_LEADER_MOTOR_ID);
@@ -159,11 +159,7 @@ public class ShooterIOKraken implements ShooterIO {
     inputs.RF_torqueCurrentAmps = RF_torqueCurrentAmps.getValueAsDouble();
     inputs.LL_torqueCurrentAmps = LL_torqueCurrentAmps.getValueAsDouble();
     inputs.LF_torqueCurrentAmps = LF_torqueCurrentAmps.getValueAsDouble();
-    inputs.shooterAtVelocity =
-        rightShooterLeader.getVelocity().getValueAsDouble()
-                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE
-            && leftShooterLeader.getVelocity().getValueAsDouble()
-                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE;
+    inputs.shooterAtVelocity = rightShooterAtVelocity().getAsBoolean();
   }
 
   @Override
@@ -179,10 +175,10 @@ public class ShooterIOKraken implements ShooterIO {
 
     // rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     // leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
-    lastCommandedVelocity = outputs.desiredVelocityRPM / 60;
+    lastCommandedVelocityRPS = outputs.desiredVelocityRPM / 60;
 
     // Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
-    SmartDashboard.putNumber("lastCommandedVelocity", lastCommandedVelocity);
+    SmartDashboard.putNumber("lastCommandedVelocityRPS", lastCommandedVelocityRPS);
     rightShooterLeader.setControl(
         magicVelocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     leftShooterLeader.setControl(
@@ -196,19 +192,45 @@ public class ShooterIOKraken implements ShooterIO {
   }
 
   @Override
-  public BooleanSupplier shooterAtVelocity() {
+  public BooleanSupplier rightShooterAtVelocity() {
 
     return (() ->
         rightShooterLeader.getVelocity().getValueAsDouble()
-                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE
-            && leftShooterLeader.getVelocity().getValueAsDouble()
-                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE);
+            > lastCommandedVelocityRPS - ShooterConstants.SHOOTER_TOLERANCE);
   }
 
   @Override
   public void setShooterMotorRPM(double rps) {
-    lastCommandedVelocity = rps;
+    lastCommandedVelocityRPS = rps;
     rightShooterLeader.setControl(magicVelocityControl.withVelocity(rps));
     leftShooterLeader.setControl(magicVelocityControl.withVelocity(rps));
+  }
+
+  // =======================UNTESTED/UNUSED METHODS=======================
+
+  /**
+   * =======================UNTESTED=======================
+   * ========================UNUSED========================
+   *
+   * @return
+   */
+  @Override
+  public BooleanSupplier leftShooterAtVelocity() {
+
+    return (() ->
+        leftShooterLeader.getVelocity().getValueAsDouble()
+            > lastCommandedVelocityRPS - ShooterConstants.SHOOTER_TOLERANCE);
+  }
+
+  /**
+   * =======================UNTESTED=======================
+   * ========================UNUSED========================
+   *
+   * @return
+   */
+  @Override
+  public BooleanSupplier bothShootersAtVelocity() {
+
+    return () -> leftShooterAtVelocity().getAsBoolean() && rightShooterAtVelocity().getAsBoolean();
   }
 }

@@ -31,6 +31,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodConstants;
 import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOKraken;
 import frc.robot.subsystems.hood.HoodIOSim;
@@ -47,6 +48,7 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -313,8 +315,9 @@ public class RobotContainer {
         shooter.runShooterTarget(),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
-                Commands.waitUntil(shooter.isShooterAtVelocity())),
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
                 roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
@@ -324,8 +327,9 @@ public class RobotContainer {
         shooter.runFixedSpeedCommand(),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
-                Commands.waitUntil(shooter.isShooterAtVelocity())),
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
                 roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
@@ -338,8 +342,9 @@ public class RobotContainer {
             .withTimeout(0.5),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
-                Commands.waitUntil(shooter.isShooterAtVelocity())),
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
                 roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
@@ -354,8 +359,9 @@ public class RobotContainer {
                 DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
-                Commands.waitUntil(shooter.isShooterAtVelocity())),
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
                 roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }

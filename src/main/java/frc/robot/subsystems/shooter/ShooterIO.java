@@ -51,7 +51,15 @@ public interface ShooterIO {
 
   public default void runShooterDutyCycle(double shooterVelocity) {}
 
-  public default BooleanSupplier shooterAtVelocity() {
+  public default BooleanSupplier rightShooterAtVelocity() {
+    return () -> false;
+  }
+
+  public default BooleanSupplier leftShooterAtVelocity() {
+    return () -> false;
+  }
+
+  public default BooleanSupplier bothShootersAtVelocity() {
     return () -> false;
   }
 

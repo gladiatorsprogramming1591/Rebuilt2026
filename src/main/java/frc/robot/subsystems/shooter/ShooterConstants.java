@@ -17,9 +17,8 @@ public class ShooterConstants {
   public static final double SHOOTER_MOTOR_REDUCTION = 1;
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 70;
   public static final int SHOOTER_MAX_VELOCITY = 5200;
-  public static final double SHOOTER_TOLERANCE = 1;
-  public static final double SHOOTER_MOTOR_INITIAL_SHOT_SPEED =
-      0; // TODO: get value for first auto shot
+  public static final double SHOOTER_TOLERANCE = 2;
+  public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.5;
 
   public static double kP = new LoggedTunableNumber("Shooter/kP", 0.65).getAsDouble();
   public static double kI = new LoggedTunableNumber("Shooter/kI", 0.0).getAsDouble();

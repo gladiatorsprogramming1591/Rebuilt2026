@@ -27,7 +27,7 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public BooleanSupplier shooterAtVelocity() {
+  public BooleanSupplier rightShooterAtVelocity() {
     return () -> true;
   }
 
@@ -41,6 +41,6 @@ public class ShooterIOSim implements ShooterIO {
     double lastCommandedVelocity = outputs.desiredVelocityRPM / 60;
 
     // Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
-    SmartDashboard.putNumber("lastCommandedVelocity", lastCommandedVelocity);
+    SmartDashboard.putNumber("lastCommandedVelocityRPS", lastCommandedVelocity);
   }
 }
