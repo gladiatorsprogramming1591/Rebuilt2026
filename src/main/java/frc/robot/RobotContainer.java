@@ -293,7 +293,7 @@ public class RobotContainer {
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
-    operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
+    driver_controller.start().whileTrue(hood.stopHood());
     operator_controller.x().onTrue(shootWithAim());
     operator_controller.y().onTrue(shootWithAimStationary());
 

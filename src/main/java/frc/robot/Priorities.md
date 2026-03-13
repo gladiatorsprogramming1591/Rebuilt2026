@@ -1,6 +1,6 @@
 High Priority
 CURRENT STRENGTH
-- Pass by herding 
+- Pass by herding
 ****- SUGGESTED PASS STRATEGY: Bump, center to wall, trench, repeat
 
 CURRENT GOAL
