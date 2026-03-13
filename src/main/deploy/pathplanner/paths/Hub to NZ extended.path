@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.057973933649289,
-        "y": 4.002760663507108
+        "x": 3.198045649072753,
+        "y": 2.7864194008559195
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3057227488151657,
-        "y": 3.0248341232227483
+        "x": 2.4457944642386296,
+        "y": 1.8084928605715596
       },
       "isLocked": false,
-      "linkedName": "FrontOfHub"
+      "linkedName": "Tilted Hub Shot"
     },
     {
       "anchor": {
@@ -111,7 +111,7 @@
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 41.63353933657022
   },
   "useDefaultConstraints": true
 }

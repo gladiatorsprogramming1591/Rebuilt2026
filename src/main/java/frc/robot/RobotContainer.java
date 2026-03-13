@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -289,6 +288,8 @@ public class RobotContainer {
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
+    operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 300.0));
+    operator_controller.povRight().whileTrue(hood.runHoodPosition(() -> -300.0));
     // shooter
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().whileTrue(shootFixed());
@@ -316,7 +317,8 @@ public class RobotContainer {
         hood.runHoodTarget(),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -329,7 +331,8 @@ public class RobotContainer {
         hood.runHoodTarget(),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -345,7 +348,8 @@ public class RobotContainer {
             .withTimeout(0.5),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -362,7 +366,8 @@ public class RobotContainer {
                 DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(

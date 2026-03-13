@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.LoggedTunableNumber;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -106,10 +105,10 @@ public class Hood extends SubsystemBase {
   public BooleanSupplier isHoodAtAngle() {
     return () -> (outputs.desiredHoodAngle - inputs.hoodAngle) < HoodConstants.HOOD_ANGLE_TOLERANCE;
   }
-  
+
   public void periodic() {
     io.updateInputs(inputs);
-    hasBeenZeroed = hasBeenZeroed || -0.5 < inputs.hoodAngle && inputs.hoodAngle < 0.5;
+    hasBeenZeroed = true; // || -50 < inputs.hoodAngle && inputs.hoodAngle < ;
     Logger.processInputs("Hood", inputs);
     outputs.kP = kP.get();
     outputs.kD = kD.get();

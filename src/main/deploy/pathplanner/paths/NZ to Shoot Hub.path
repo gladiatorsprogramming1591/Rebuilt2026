@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 3.057973933649289,
-        "y": 4.002760663507108
+        "x": 3.198045649072753,
+        "y": 2.7864194008559195
       },
       "prevControl": {
-        "x": 2.671101895734597,
-        "y": 3.0785663507109002
+        "x": 2.8111736111580607,
+        "y": 1.8622250880597115
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FrontOfHub"
+      "linkedName": "Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
@@ -83,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 41.63353933657022
   },
   "reversed": false,
   "folder": "Competiton",
