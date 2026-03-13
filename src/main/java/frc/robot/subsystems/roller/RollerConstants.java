@@ -8,7 +8,7 @@ public final class RollerConstants {
   public static final double ROLLER_CURRENT_LIMIT = 40.0;
 
   private static final LoggedTunableNumber topRollerMotorSpeed =
-      new LoggedTunableNumber("RollerTopSpeed/Tuning", 0.45);
+      new LoggedTunableNumber("RollerTopSpeed/Tuning", 1.0);
   public static final double TOP_ROLLER_MOTOR_SPEED = topRollerMotorSpeed.get();
 
   public static final LoggedNetworkNumber bottomRollerMotorSpeed =
