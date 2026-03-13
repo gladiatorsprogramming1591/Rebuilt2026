@@ -11,7 +11,8 @@ import frc.robot.util.PhoenixUtil;
 public class RollerIOKraken implements RollerIO {
   private final TalonFX rollerTopMotor = new TalonFX(RollerConstants.ROLLER_TOP_CAN_ID);
   private final TalonFX rollerBottomMotor = new TalonFX(RollerConstants.ROLLER_BOTTOM_CAN_ID);
-  private double speed = 0.0;
+  private double topRollerSpeed = 0.0;
+  private double bottomRollerSpeed = 0.0;
 
   public RollerIOKraken() {
     var rollerTopConfig = new TalonFXConfiguration();
@@ -33,25 +34,16 @@ public class RollerIOKraken implements RollerIO {
   }
 
   @Override
-  public void setTopRollerSpeed(double speed) {
-    this.speed = speed;
-    rollerTopMotor.set(this.speed);
-    SmartDashboard.putNumber("Top Roller Speed", this.speed);
-  }
-
-  @Override
-  public void setBottomRollerSpeed(double speed) {
-    this.speed = speed;
-    rollerBottomMotor.set(this.speed);
-    SmartDashboard.putNumber("Bottom Roller Speed", this.speed);
-  }
-
-  @Override
   public void updateInputs(RollerIOInputs inputs) {
-    inputs.rollerSpeed = this.speed;
     SmartDashboard.putNumber(
         "Top Roller Velocity", rollerTopMotor.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber(
         "Bottom Roller Velocity", rollerBottomMotor.getVelocity().getValueAsDouble());
+  }
+
+  @Override
+  public void applyOutputs(RollerIOOutputs outputs) {
+    rollerTopMotor.set(topRollerSpeed);
+    rollerBottomMotor.set(bottomRollerSpeed);
   }
 }

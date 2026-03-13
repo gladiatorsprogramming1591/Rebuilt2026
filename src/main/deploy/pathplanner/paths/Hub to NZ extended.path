@@ -78,6 +78,12 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Lower Hood",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
       "name": "Prepare Intake",
       "waypointRelativePos": 1.35,
       "endWaypointRelativePos": null,

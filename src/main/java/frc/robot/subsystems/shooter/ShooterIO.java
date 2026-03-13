@@ -26,8 +26,10 @@ public interface ShooterIO {
     public double RF_torqueCurrentAmps;
     public double LL_torqueCurrentAmps;
     public double LF_torqueCurrentAmps;
+    public boolean shooterAtVelocity;
   }
 
+  @AutoLog
   public class ShooterIOOutputs {
     public double desiredVelocityRPM = 0.0; // so far only used for sim
     public double kP;

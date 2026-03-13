@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 public class Roller extends SubsystemBase {
   private final RollerIO io;
   private final RollerIOInputsAutoLogged inputs = new RollerIOInputsAutoLogged();
+  private final RollerIOOutputsAutoLogged outputs = new RollerIOOutputsAutoLogged();
 
   public Roller(RollerIO io) {
     this.io = io;
@@ -16,28 +17,34 @@ public class Roller extends SubsystemBase {
   public Command runTopRollerMotor() {
     return runEnd(
         () -> {
-          io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          // io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          outputs.topRollerSpeed = -RollerConstants.TOP_ROLLER_MOTOR_SPEED;
         },
         () -> {
-          io.setTopRollerSpeed(0);
+          // io.setTopRollerSpeed(0);
+          outputs.topRollerSpeed = 0;
         });
   }
 
   public Command runBottomRollerMotor() {
     return runEnd(
         () -> {
-          io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
+          outputs.bottomRollerSpeed = -RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED;
+          // io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
         },
         () -> {
-          io.setBottomRollerSpeed(0);
+          outputs.bottomRollerSpeed = 0;
+          // io.setBottomRollerSpeed(0);
         });
   }
 
   public Command startRollerMotors() {
     return new RunCommand(
         () -> {
-          io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
-          io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
+          outputs.topRollerSpeed = RollerConstants.TOP_ROLLER_MOTOR_SPEED;
+          outputs.bottomRollerSpeed = -RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED;
+          // io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          // io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
         },
         this);
   }
@@ -45,8 +52,10 @@ public class Roller extends SubsystemBase {
   public Command reverseRollerMotors() {
     return new RunCommand(
         () -> {
-          io.setTopRollerSpeed(-RollerConstants.TOP_ROLLER_MOTOR_SPEED);
-          io.setBottomRollerSpeed(RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
+          outputs.topRollerSpeed = -RollerConstants.TOP_ROLLER_MOTOR_SPEED;
+          outputs.bottomRollerSpeed = RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED;
+          // io.setTopRollerSpeed(-RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          // io.setBottomRollerSpeed(RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
         },
         this);
   }
@@ -54,8 +63,10 @@ public class Roller extends SubsystemBase {
   public Command stopRollerMotors() {
     return new RunCommand(
         () -> {
-          io.setTopRollerSpeed(0.0);
-          io.setBottomRollerSpeed(0.0);
+          outputs.topRollerSpeed = 0;
+          outputs.bottomRollerSpeed = 0;
+          // io.setTopRollerSpeed(0.0);
+          // io.setBottomRollerSpeed(0.0);
         },
         this);
   }
@@ -63,5 +74,11 @@ public class Roller extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Roller", inputs);
+
+    Logger.recordOutput("Roller/Top Roller Speed", outputs.topRollerSpeed);
+    Logger.recordOutput("Roller/Bottom Roller Speed", outputs.bottomRollerSpeed);
+    // SmartDashboard.putNumber("Top Roller Speed", outputs.topRollerSpeed);
+    // SmartDashboard.putNumber("Bottom Roller Speed", outputs.bottomRollerSpeed);
+    io.applyOutputs(outputs);
   }
 }

@@ -12,6 +12,7 @@ public class AutoManager {
   private Drive drivetrain;
   private String rightSideRushName = "Right Rush to NZ";
   private String leftSideRushHub = "Bottom Rush to Hub";
+  private String middleShootPreload = "Middle Shoot Preload";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -24,6 +25,8 @@ public class AutoManager {
         "Left Side Rush", wrapAutoWithPose(new PathPlannerAuto(rightSideRushName, true)));
     autos.addOption(
         "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(leftSideRushHub, true)));
+    autos.addOption(
+      "Middle Shoot Preload", wrapAutoWithPose(new PathPlannerAuto(middleShootPreload)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

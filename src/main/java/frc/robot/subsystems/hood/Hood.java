@@ -3,7 +3,6 @@ package frc.robot.subsystems.hood;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.hood.HoodIO.HoodIOOutputs;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.LoggedTunableNumber;
@@ -13,7 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class Hood extends SubsystemBase {
   private final HoodIO io;
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
-  private final HoodIOOutputs outputs = new HoodIOOutputs();
+  private final HoodIOOutputsAutoLogged outputs = new HoodIOOutputsAutoLogged();
 
   private boolean hasBeenZeroed = false;
 
@@ -68,7 +67,7 @@ public class Hood extends SubsystemBase {
   public Command runHoodTarget() {
     return run(
         () -> {
-          boolean tune = true;
+          boolean tune = false;
           // boolean tune = Constants.tuningMode;
           if (tune) {
             outputs.mode = HoodMode.POSITION;
@@ -109,6 +108,8 @@ public class Hood extends SubsystemBase {
     outputs.kD = kD.get();
     outputs.kS = kS.get();
 
+    Logger.recordOutput("Hood/Desired Hood Angle", outputs.desiredHoodAngle);
+    Logger.recordOutput("Hood/Has Been Zeroed", hasBeenZeroed);
     SmartDashboard.putBoolean("Hood-hasBeenZeroed", hasBeenZeroed);
 
     if (this.hasBeenZeroed) {

@@ -19,6 +19,7 @@ public interface HoodIO {
     boolean hoodLimitSet = false;
   }
 
+  @AutoLog
   public static class HoodIOOutputs {
     boolean hasBeenZeroed = false;
     double positionRad = 0.0;

@@ -139,7 +139,7 @@ public class ShooterCalculation {
     passingMaxDistance = 17.16;
     phaseDelay = 0.03;
 
-    hoodAngleMap.put(0.96, 0.0);
+    hoodAngleMap.put(0.0, 0.0);
     hoodAngleMap.put(1.46, 0.0);
     hoodAngleMap.put(1.73, 0.0);
     hoodAngleMap.put(2.18, 0.0);
@@ -148,9 +148,11 @@ public class ShooterCalculation {
     hoodAngleMap.put(2.94, 50.0);
     hoodAngleMap.put(3.48, 110.0);
     hoodAngleMap.put(3.92, 230.0);
-    hoodAngleMap.put(4.35, 390.0);
-    hoodAngleMap.put(4.84, 500.0);
+    hoodAngleMap.put(4.35, 350.0);
+    hoodAngleMap.put(4.84, 400.0);
+    hoodAngleMap.put(5.46, 500.0);
 
+    flywheelSpeedMap.put(0.0, 1500.0);
     flywheelSpeedMap.put(0.96, 1500.0);
     flywheelSpeedMap.put(1.46, 1500.0);
     flywheelSpeedMap.put(1.73, 1650.0);
@@ -162,6 +164,7 @@ public class ShooterCalculation {
     flywheelSpeedMap.put(3.92, 2000.0);
     flywheelSpeedMap.put(4.35, 2000.0);
     flywheelSpeedMap.put(4.84, 2000.0);
+    flywheelSpeedMap.put(5.46, 2000.0);
 
     timeOfFlightMap.put(5.68, 1.16);
     timeOfFlightMap.put(4.55, 1.12);
@@ -174,10 +177,10 @@ public class ShooterCalculation {
     passingHoodAngleMap.put(7.80, Rotation2d.fromDegrees(38.0));
     passingHoodAngleMap.put(17.16, Rotation2d.fromDegrees(38.0));
 
-    passingFlywheelSpeedMap.put(5.46, 160.0);
-    passingFlywheelSpeedMap.put(6.62, 180.0);
-    passingFlywheelSpeedMap.put(7.80, 200.0);
-    passingFlywheelSpeedMap.put(17.16, 360.0);
+    passingFlywheelSpeedMap.put(5.46, 1008.0);
+    passingFlywheelSpeedMap.put(6.62, 1134.0);
+    passingFlywheelSpeedMap.put(7.80, 1260.0);
+    passingFlywheelSpeedMap.put(17.16, 2300.0);
 
     passingTimeOfFlightMap.put(5.46, 1.27);
     passingTimeOfFlightMap.put(6.62, 1.39);
@@ -278,18 +281,21 @@ public class ShooterCalculation {
     Pose2d lookaheadPose = launcherPosition;
     double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
 
-    for (int i = 0; i < 20; i++) {
-      timeOfFlight =
-          passing
-              ? passingTimeOfFlightMap.get(lookaheadLauncherToTargetDistance)
-              : timeOfFlightMap.get(lookaheadLauncherToTargetDistance);
-      double offsetX = launcherVelocity.vxMetersPerSecond * timeOfFlight;
-      double offsetY = launcherVelocity.vyMetersPerSecond * timeOfFlight;
-      lookaheadPose =
-          new Pose2d(
-              launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
-              launcherPosition.getRotation());
-      lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+    boolean doLookAhead = true;
+    if (doLookAhead) {
+      for (int i = 0; i < 20; i++) {
+        timeOfFlight =
+            passing
+                ? passingTimeOfFlightMap.get(lookaheadLauncherToTargetDistance)
+                : timeOfFlightMap.get(lookaheadLauncherToTargetDistance);
+        double offsetX = launcherVelocity.vxMetersPerSecond * timeOfFlight;
+        double offsetY = launcherVelocity.vyMetersPerSecond * timeOfFlight;
+        lookaheadPose =
+            new Pose2d(
+                launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
+                launcherPosition.getRotation());
+        lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+      }
     }
 
     // Account for launcher being off center
@@ -300,7 +306,7 @@ public class ShooterCalculation {
     // Calculate remaining parameters
     double hoodAngle =
         passing
-            ? passingHoodAngleMap.get(lookaheadLauncherToTargetDistance).getRadians()
+            ? passingHoodAngleMap.get(lookaheadLauncherToTargetDistance).getRotations()
             : hoodAngleMap.get(lookaheadLauncherToTargetDistance);
     if (lastDriveAngle == null) lastDriveAngle = driveAngle;
     if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle;
@@ -333,7 +339,7 @@ public class ShooterCalculation {
                     <= (passing ? passingMaxDistance : maxDistance),
             driveAngle,
             driveVelocity,
-            hoodAngle + Units.degreesToRadians(hoodAngleOffsetDeg),
+            hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg),
             hoodVelocity,
             flywheelVelocity,
             lookaheadLauncherToTargetDistance,
@@ -342,10 +348,15 @@ public class ShooterCalculation {
             passing);
 
     // Log calculated values
+    Logger.recordOutput("ShooterCalculation/HoodAngle", hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg));
+    Logger.recordOutput("ShooterCalculation/HoodVelocity", hoodVelocity);
+    Logger.recordOutput("ShooterCalculation/FlywheelVelocity", flywheelVelocity);
     Logger.recordOutput("ShooterCalculation/TargetPose", new Pose2d(target, Rotation2d.kZero));
     Logger.recordOutput("ShooterCalculation/LookaheadPose", lookaheadRobotPose);
     Logger.recordOutput(
-        "ShooterCalculation/LauncherToTargetDistance", lookaheadLauncherToTargetDistance);
+        "ShooterCalculation/LookaheadLauncherToTargetDistance", lookaheadLauncherToTargetDistance);
+    Logger.recordOutput(
+        "ShooterCalculation/LauncherToTargetDistance", launcherToTargetDistance);
 
     return latestParameters;
   }

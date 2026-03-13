@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
 import java.util.function.BooleanSupplier;
-import org.littletonrobotics.junction.Logger;
 
 public class ShooterIOKraken implements ShooterIO {
   // private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
@@ -160,6 +159,11 @@ public class ShooterIOKraken implements ShooterIO {
     inputs.RF_torqueCurrentAmps = RF_torqueCurrentAmps.getValueAsDouble();
     inputs.LL_torqueCurrentAmps = LL_torqueCurrentAmps.getValueAsDouble();
     inputs.LF_torqueCurrentAmps = LF_torqueCurrentAmps.getValueAsDouble();
+    inputs.shooterAtVelocity = rightShooterLeader.getVelocity().getValueAsDouble()
+                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE
+            && leftShooterLeader.getVelocity().getValueAsDouble()
+                > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE;
+
   }
 
   @Override
@@ -177,7 +181,7 @@ public class ShooterIOKraken implements ShooterIO {
     // leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     lastCommandedVelocity = outputs.desiredVelocityRPM / 60;
 
-    Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
+    // Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
     SmartDashboard.putNumber("lastCommandedVelocity", lastCommandedVelocity);
     rightShooterLeader.setControl(
         magicVelocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
