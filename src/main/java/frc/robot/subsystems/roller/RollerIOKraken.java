@@ -43,7 +43,7 @@ public class RollerIOKraken implements RollerIO {
 
   @Override
   public void applyOutputs(RollerIOOutputs outputs) {
-    rollerTopMotor.set(topRollerSpeed);
-    rollerBottomMotor.set(bottomRollerSpeed);
+    rollerTopMotor.set(outputs.topRollerSpeed);
+    rollerBottomMotor.set(outputs.bottomRollerSpeed);
   }
 }
