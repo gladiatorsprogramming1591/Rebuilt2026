@@ -159,11 +159,11 @@ public class ShooterIOKraken implements ShooterIO {
     inputs.RF_torqueCurrentAmps = RF_torqueCurrentAmps.getValueAsDouble();
     inputs.LL_torqueCurrentAmps = LL_torqueCurrentAmps.getValueAsDouble();
     inputs.LF_torqueCurrentAmps = LF_torqueCurrentAmps.getValueAsDouble();
-    inputs.shooterAtVelocity = rightShooterLeader.getVelocity().getValueAsDouble()
+    inputs.shooterAtVelocity =
+        rightShooterLeader.getVelocity().getValueAsDouble()
                 > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE
             && leftShooterLeader.getVelocity().getValueAsDouble()
                 > lastCommandedVelocity - ShooterConstants.SHOOTER_TOLERANCE;
-
   }
 
   @Override

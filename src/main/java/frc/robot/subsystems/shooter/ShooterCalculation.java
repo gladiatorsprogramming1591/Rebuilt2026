@@ -348,15 +348,15 @@ public class ShooterCalculation {
             passing);
 
     // Log calculated values
-    Logger.recordOutput("ShooterCalculation/HoodAngle", hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg));
+    Logger.recordOutput(
+        "ShooterCalculation/HoodAngle", hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg));
     Logger.recordOutput("ShooterCalculation/HoodVelocity", hoodVelocity);
     Logger.recordOutput("ShooterCalculation/FlywheelVelocity", flywheelVelocity);
     Logger.recordOutput("ShooterCalculation/TargetPose", new Pose2d(target, Rotation2d.kZero));
     Logger.recordOutput("ShooterCalculation/LookaheadPose", lookaheadRobotPose);
     Logger.recordOutput(
         "ShooterCalculation/LookaheadLauncherToTargetDistance", lookaheadLauncherToTargetDistance);
-    Logger.recordOutput(
-        "ShooterCalculation/LauncherToTargetDistance", launcherToTargetDistance);
+    Logger.recordOutput("ShooterCalculation/LauncherToTargetDistance", launcherToTargetDistance);
 
     return latestParameters;
   }

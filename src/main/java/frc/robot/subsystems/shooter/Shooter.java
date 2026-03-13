@@ -106,8 +106,8 @@ public class Shooter extends SubsystemBase {
   public BooleanSupplier isShooterAtVelocity() {
     return (() -> {
       if (hasSpeedTargetChanged) {
-      hasSpeedTargetChanged = false;
-      return false;
+        hasSpeedTargetChanged = false;
+        return false;
       }
       return inputs.shooterAtVelocity;
     });

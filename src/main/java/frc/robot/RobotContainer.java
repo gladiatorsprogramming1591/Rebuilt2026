@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -46,7 +47,6 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -112,7 +112,6 @@ public class RobotContainer {
           shooter = new Shooter(new ShooterIOSim());
           hood = new Hood(new HoodIOSim());
         }
-        registerNamedCommands();
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -181,6 +180,8 @@ public class RobotContainer {
 
     // Connect the gyro as the default vision yaw supplier
     vision.setYawSupplier(drive::getGyroRotation);
+
+    registerNamedCommands();
 
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -304,9 +305,7 @@ public class RobotContainer {
   }
 
   public Command warmUpShooterCommand() {
-    return Commands.parallel(
-      shooter.runShooterTarget(),
-      hood.runHoodTarget());
+    return Commands.parallel(shooter.runShooterTarget(), hood.runHoodTarget());
   }
 
   public Command shoot() {
@@ -322,9 +321,10 @@ public class RobotContainer {
 
   public Command shootWithAim() {
     return Commands.parallel(
-        shooter.runFixedSpeedCommand(),
+        shooter.runShooterTarget(),
         DriveCommands.rotateToHub(
-            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()).withTimeout(0.5),
+                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
+            .withTimeout(0.5),
         Commands.sequence(
             Commands.parallel(
                 hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
@@ -335,10 +335,12 @@ public class RobotContainer {
 
   public Command shootWithAimStationary() {
     return Commands.parallel(
-        shooter.runFixedSpeedCommand(),
-        DriveCommands.rotateToHub(
-            drive, () -> 0, () -> 0).withTimeout(0.5)
-            .andThen(DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
+        new InstantCommand(() -> System.out.println("Running shootWithAimStationary")),
+        shooter.runShooterTarget(),
+        DriveCommands.rotateToHub(drive, () -> 0, () -> 0)
+            .withTimeout(0.5)
+            .andThen(
+                DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
         Commands.sequence(
             Commands.parallel(
                 hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
