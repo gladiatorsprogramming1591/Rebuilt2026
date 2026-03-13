@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 6.401361445783133,
-        "y": 2.647180722891566
+        "y": 3.647
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.4753436018957355,
-        "y": 0.33822274881516456
+        "y": 1.3380420259235986
       },
       "isLocked": false,
       "linkedName": "bottom NZ extend"

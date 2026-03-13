@@ -55,7 +55,9 @@ public class IntakeIOKraken implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    SmartDashboard.putNumber("Deploy Velocity", deployMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
+    inputs.deploySpeed = deployMotor.getVelocity().getValueAsDouble();
+    inputs.deployTorqueCurrentFOC = deployMotor.getTorqueCurrent().getValueAsDouble();
+    inputs.deploySupplyCurrent = deployMotor.getSupplyCurrent().getValueAsDouble();
+    inputs.intakeSpeed = intakeMotor.getVelocity().getValueAsDouble();
   }
 }

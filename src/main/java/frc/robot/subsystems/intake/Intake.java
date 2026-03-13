@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.Logger;
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
   private final LoggedTunableNumber deploySpeed =
       new LoggedTunableNumber("Intake/DeploySpeed", IntakeConstants.DEPLOY_SPEED);
   private final LoggedTunableNumber intakeSpeed =
@@ -30,9 +31,13 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
+          outputs.appliedDeploySpeed = IntakeConstants.DEPLOY_SPEED;
+          outputs.appliedDeployCurrent = 0;
         },
         () -> {
           io.stopDeployMotor();
+          outputs.appliedDeploySpeed = 0;
+          outputs.appliedDeployCurrent = 0;
         });
   }
 
@@ -41,22 +46,31 @@ public class Intake extends SubsystemBase {
         () -> {
           io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
           io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED);
+          outputs.appliedDeploySpeed = IntakeConstants.DEPLOY_SPEED;
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
         },
         () -> {
           io.stopDeployMotor();
           io.setIntakeSpeed(IntakeConstants.INTAKE_IDLE_SPEED);
+          outputs.appliedDeploySpeed = 0;
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_IDLE_SPEED;
         });
   }
 
   public Command startIntakeMotor() {
+    outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
     return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED));
   }
 
   public Command idleIntakeMotor() {
+    outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_IDLE_SPEED;
     return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_IDLE_SPEED));
   }
 
   public Command stopIntakeMotor() {
+    outputs.appliedIntakeSpeed = 0;
     return new RunCommand(() -> io.setIntakeSpeed(0.0), this);
   }
 
@@ -64,9 +78,13 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           io.setDeployTorqueCurrentFOC(IntakeConstants.DEPLOY_TORQUE_CURRENT);
+          outputs.appliedDeployCurrent = IntakeConstants.DEPLOY_TORQUE_CURRENT;
+          outputs.appliedDeploySpeed = 0;
         },
         () -> {
           io.stopDeployMotor();
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedDeploySpeed = 0;
         });
   }
 
@@ -74,9 +92,13 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           io.setDeployTorqueCurrentFOC(-IntakeConstants.DEPLOY_TORQUE_CURRENT);
+          outputs.appliedDeployCurrent = -IntakeConstants.DEPLOY_TORQUE_CURRENT;
+          outputs.appliedDeploySpeed = 0;
         },
         () -> {
           io.stopDeployMotor();
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedDeploySpeed = 0;
         });
   }
 
@@ -84,18 +106,24 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           io.setDeploySpeed(IntakeConstants.STOW_SPEED);
+          outputs.appliedDeploySpeed = IntakeConstants.STOW_SPEED;
+          outputs.appliedDeployCurrent = 0;
         },
         () -> {
           io.stopDeployMotor();
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedDeploySpeed = 0;
         });
   }
 
   public Command runIntakeMotor() {
     return runEnd(
         () -> {
+          outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
           io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED);
         },
         () -> {
+          outputs.appliedIntakeSpeed = 0;
           io.stopIntakeMotor();
         });
   }
@@ -114,9 +142,13 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           io.setDeploySpeed(IntakeConstants.STOW_SPEED);
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedDeploySpeed = IntakeConstants.STOW_SPEED;
         },
         () -> {
           io.stopDeployMotor();
+          outputs.appliedDeployCurrent = 0;
+          outputs.appliedDeploySpeed = 0;
         });
   }
 
@@ -127,11 +159,18 @@ public class Intake extends SubsystemBase {
   }
 
   public Command stowIntakeOff() {
+    outputs.appliedDeployCurrent = 0;
+    outputs.appliedDeploySpeed = 0;
+    outputs.appliedIntakeSpeed = 0;
     return stopIntakeMotor().andThen(stow());
   }
 
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake speed", inputs);
+    Logger.recordOutput("Intake/Applied Intake Speed", outputs.appliedIntakeSpeed);
+    Logger.recordOutput("Intake/Applied Output Speed", outputs.appliedDeploySpeed);
+    Logger.recordOutput("Intake/Applied Deploy Current", outputs.appliedDeployCurrent);
+    io.applyOutputs(outputs);
   }
 }

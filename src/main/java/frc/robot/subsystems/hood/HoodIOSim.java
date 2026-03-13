@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class HoodIOSim implements HoodIO {
   private double speed = 0.0;
+  private double angle = 0.0;
 
   public HoodIOSim() {
     // Simulate the motor with a DCMotorSim
@@ -23,6 +24,12 @@ public class HoodIOSim implements HoodIO {
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
-    inputs.hoodSpeed = this.speed;
+    inputs.hoodSpeed = speed;
+    inputs.hoodAngle = angle;
+  }
+
+  @Override
+  public void applyOutputs(HoodIOOutputs outputs) {
+    angle = outputs.desiredHoodAngle;
   }
 }

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -46,7 +47,6 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -112,7 +112,6 @@ public class RobotContainer {
           shooter = new Shooter(new ShooterIOSim());
           hood = new Hood(new HoodIOSim());
         }
-        registerNamedCommands();
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -181,6 +180,8 @@ public class RobotContainer {
 
     // Connect the gyro as the default vision yaw supplier
     vision.setYawSupplier(drive::getGyroRotation);
+
+    registerNamedCommands();
 
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -253,7 +254,7 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // shooter
-    driver_controller.y().whileTrue(shooter.runShooterTarget());
+    driver_controller.y().whileTrue(shooter.runShooterTarget().alongWith(hood.runHoodTarget()));
     // intake
     driver_controller
         .leftTrigger()
@@ -291,6 +292,8 @@ public class RobotContainer {
     operator_controller.leftTrigger().toggleOnTrue(shooter.runFixedSpeedCommand());
     // hood
     operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
+    operator_controller.x().onTrue(shootWithAim());
+    operator_controller.y().onTrue(shootWithAimStationary());
 
     HubShiftUtil.setAllianceWinOverride(
         () -> {
@@ -301,9 +304,13 @@ public class RobotContainer {
         });
   }
 
+  public Command warmUpShooterCommand() {
+    return Commands.parallel(shooter.runShooterTarget(), hood.runHoodTarget());
+  }
+
   public Command shoot() {
     return Commands.parallel(
-        shooter.runFixedSpeedCommand(),
+        shooter.runShooterTarget(),
         Commands.sequence(
             Commands.parallel(
                 hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
@@ -314,9 +321,26 @@ public class RobotContainer {
 
   public Command shootWithAim() {
     return Commands.parallel(
-        shooter.runFixedSpeedCommand(),
+        shooter.runShooterTarget(),
         DriveCommands.rotateToHub(
-            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
+                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
+            .withTimeout(0.5),
+        Commands.sequence(
+            Commands.parallel(
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+  }
+
+  public Command shootWithAimStationary() {
+    return Commands.parallel(
+        new InstantCommand(() -> System.out.println("Running shootWithAimStationary")),
+        shooter.runShooterTarget(),
+        DriveCommands.rotateToHub(drive, () -> 0, () -> 0)
+            .withTimeout(0.5)
+            .andThen(
+                DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
         Commands.sequence(
             Commands.parallel(
                 hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
@@ -365,16 +389,14 @@ public class RobotContainer {
     return intake.idleIntakeMotor();
   }
 
-  public Command warmUpShooterCommand() {
-    return shooter.runShooterDutyCycle(ShooterConstants.SHOOTER_MOTOR_INITIAL_SHOT_SPEED);
-  }
-
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );
-    NamedCommands.registerCommand("Shoot Hub", shoot().withTimeout(4));
+    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(4));
     NamedCommands.registerCommand("Prepare Intake", intake.deployAndIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
+    NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
+    NamedCommands.registerCommand("Lower Hood", hood.runHoodDown().withTimeout(1.0));
   }
 
   /** Update dashboard outputs. */

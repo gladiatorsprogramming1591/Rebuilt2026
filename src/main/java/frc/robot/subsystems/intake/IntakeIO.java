@@ -7,7 +7,15 @@ public interface IntakeIO {
   public static class IntakeIOInputs {
     public double deploySpeed = 0.0;
     public double deployTorqueCurrentFOC = 0.0;
+    public double deploySupplyCurrent = 0.0;
     public double intakeSpeed = 0.0;
+  }
+
+  @AutoLog
+  public static class IntakeIOOutputs {
+    public double appliedIntakeSpeed = 0.0;
+    public double appliedDeploySpeed = 0.0;
+    public double appliedDeployCurrent = 0.0;
   }
 
   /**
@@ -16,6 +24,8 @@ public interface IntakeIO {
    * @param inputs container to populate
    */
   public default void updateInputs(IntakeIOInputs inputs) {}
+
+  public default void applyOutputs(IntakeIOOutputs outputs) {}
 
   /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.

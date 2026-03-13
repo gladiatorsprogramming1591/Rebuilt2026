@@ -4,8 +4,12 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface RollerIO {
   @AutoLog
-  public static class RollerIOInputs {
-    double rollerSpeed = 0.0;
+  public static class RollerIOInputs {}
+
+  @AutoLog
+  public static class RollerIOOutputs {
+    double bottomRollerSpeed = 0.0;
+    double topRollerSpeed = 0.0;
   }
 
   /**
@@ -14,6 +18,9 @@ public interface RollerIO {
    * @param inputs container to populate
    */
   public default void updateInputs(RollerIOInputs inputs) {}
+
+  public default void applyOutputs(RollerIOOutputs outputs) {}
+
   /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.
    *
@@ -29,12 +36,12 @@ public interface RollerIO {
    *
    * @param speed speed to set motor to
    */
-  public default void setTopRollerSpeed(double speed) {}
+  // public default void setTopRollerSpeed(double speed) {}
 
   /**
    * Set the bottom motor speed to {@code speed}.
    *
    * @param speed speed to set motor to
    */
-  public default void setBottomRollerSpeed(double speed) {}
+  // public default void setBottomRollerSpeed(double speed) {}
 }

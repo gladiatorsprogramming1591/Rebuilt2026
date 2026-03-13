@@ -85,6 +85,8 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
+    SmartDashboard.putData(CommandScheduler.getInstance());
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -102,9 +104,9 @@ public class Robot extends LoggedRobot {
     shooterCalculation.clearLaunchingParameters();
 
     // Log launching parameters
-    Logger.recordOutput("LaunchCalculator/Parameters", shooterCalculation.getParameters());
+    Logger.recordOutput("ShooterCalculation/Parameters", shooterCalculation.getParameters());
     Logger.recordOutput(
-        "LaunchCalculator/HoodAngleOffsetDeg", shooterCalculation.getHoodAngleOffsetDeg());
+        "ShooterCalculation/HoodAngleOffsetDeg", shooterCalculation.getHoodAngleOffsetDeg());
     String formattedOffset = String.format("%.1f", shooterCalculation.getHoodAngleOffsetDeg());
     if (formattedOffset.equals("-0.0")) {
       formattedOffset = "0.0";

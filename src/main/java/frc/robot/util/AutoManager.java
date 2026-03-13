@@ -10,8 +10,10 @@ import frc.robot.subsystems.drive.*;
 public class AutoManager {
   private SendableChooser<Command> autos;
   private Drive drivetrain;
-  private String rightSideRushName = "Right Rush to NZ";
   private String leftSideRushHub = "Bottom Rush to Hub";
+  private String middleShootStraight = "Middle Shoot Straight";
+  private String middleShootTop = "Middle Shoot Top";
+  private String middleShootBottom = "Middle Shoot Bottom";
   private String middleShootPreload = "Middle Shoot Preload";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
@@ -20,11 +22,16 @@ public class AutoManager {
     this.drivetrain = drivetrain;
 
     autos = new SendableChooser<>();
-    autos.addOption("Right Side Rush", wrapAutoWithPose(new PathPlannerAuto(rightSideRushName)));
-    autos.addOption(
-        "Left Side Rush", wrapAutoWithPose(new PathPlannerAuto(rightSideRushName, true)));
     autos.addOption("Right Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(leftSideRushHub)));
     autos.addOption(
+        "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(leftSideRushHub, true)));
+        "Left Side Rush", wrapAutoWithPose(new PathPlannerAuto(rightSideRushName, true)));
+    autos.addOption(
+        "Middle Shoot Straight", wrapAutoWithPose(new PathPlannerAuto(middleShootStraight)));
+    // autos.addOption(
+    //     "Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
+    // autos.addOption(
+    //     "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
         "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(leftSideRushHub, true)));
     autos.addOption("Middle Shoot Preload", wrapAutoWithPose(new PathPlannerAuto(middleShootPreload)));
   }
