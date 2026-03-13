@@ -257,8 +257,7 @@ public class RobotContainer {
     driver_controller.y().whileTrue(shooter.runShooterTarget().alongWith(hood.runHoodTarget()));
     // intake
     driver_controller
-        .leftTrigger()
-        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.startRollerMotors()));
+        .leftTrigger().whileTrue(shootFixed());
     driver_controller
         .rightBumper()
         .whileTrue(
@@ -311,6 +310,17 @@ public class RobotContainer {
   public Command shoot() {
     return Commands.parallel(
         shooter.runShooterTarget(),
+        Commands.sequence(
+            Commands.parallel(
+                hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
+                Commands.waitUntil(shooter.isShooterAtVelocity())),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+  }
+
+  public Command shootFixed() {
+    return Commands.parallel(
+        shooter.runFixedSpeedCommand(),
         Commands.sequence(
             Commands.parallel(
                 hood.runHoodTarget().raceWith(Commands.waitSeconds(0.5)),
