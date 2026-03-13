@@ -14,6 +14,8 @@ public final class HoodConstants {
   public static final double HOOD_ZEROING_SPEED = -0.15;
   public static final double HOOD_SET_TIMEOUT = 0.5;
 
+  public static final double HOOD_ANGLE_TOLERANCE = 20.0;
+
   public static final double HOOD_ZEROING_VEL_TOLERANCE = 0.10; // in rotations
   public static final double MIN_STATIONARY_DURATION = 2.0; // in seconds
 

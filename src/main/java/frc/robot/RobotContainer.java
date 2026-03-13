@@ -313,9 +313,10 @@ public class RobotContainer {
   public Command shoot() {
     return Commands.parallel(
         shooter.runShooterTarget(),
+        hood.runHoodTarget(),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -325,9 +326,10 @@ public class RobotContainer {
   public Command shootFixed() {
     return Commands.parallel(
         shooter.runFixedSpeedCommand(),
+        hood.runHoodTarget(),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -337,12 +339,13 @@ public class RobotContainer {
   public Command shootWithAim() {
     return Commands.parallel(
         shooter.runShooterTarget(),
+        hood.runHoodTarget(),
         DriveCommands.rotateToHub(
                 drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
             .withTimeout(0.5),
         Commands.sequence(
             Commands.parallel(
-                hood.runHoodTarget().raceWith(Commands.waitSeconds(HoodConstants.HOOD_SET_TIMEOUT)),
+                Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -351,8 +354,8 @@ public class RobotContainer {
 
   public Command shootWithAimStationary() {
     return Commands.parallel(
-        new InstantCommand(() -> System.out.println("Running shootWithAimStationary")),
         shooter.runShooterTarget(),
+        hood.runHoodTarget(),
         DriveCommands.rotateToHub(drive, () -> 0, () -> 0)
             .withTimeout(0.5)
             .andThen(
