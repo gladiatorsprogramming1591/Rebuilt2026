@@ -257,7 +257,8 @@ public class RobotContainer {
     driver_controller.y().whileTrue(shooter.runShooterTarget().alongWith(hood.runHoodTarget()));
     // intake
     driver_controller
-        .leftTrigger().whileTrue(shootFixed());
+        .leftTrigger()
+        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.startRollerMotors()));
     driver_controller
         .rightBumper()
         .whileTrue(
@@ -288,7 +289,7 @@ public class RobotContainer {
     operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
     // shooter
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
-    operator_controller.leftTrigger().toggleOnTrue(shooter.runFixedSpeedCommand());
+    operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
     operator_controller.start().onTrue(hood.stopHood()).debounce(2.0).onTrue(hood.runHoodToZero());
     operator_controller.x().onTrue(shootWithAim());
