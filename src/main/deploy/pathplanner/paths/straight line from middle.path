@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4326410256410265,
-        "y": 2.8721794871794875
+        "x": 2.7225348837209298,
+        "y": 2.9381627906976733
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4498793106742376,
-        "y": 2.6227745122308836
+        "x": 2.739773168754141,
+        "y": 2.6887578157490695
       },
       "isLocked": false,
       "linkedName": "middle start shoot b"
@@ -48,7 +48,7 @@
   "folder": "Testing",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 27.84920525180929
+    "rotation": 30.25643716352929
   },
   "useDefaultConstraints": true
 }
