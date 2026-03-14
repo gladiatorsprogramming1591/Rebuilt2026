@@ -288,8 +288,6 @@ public class RobotContainer {
     operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
-    operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 300.0));
-    operator_controller.povRight().whileTrue(hood.runHoodPosition(() -> -300.0));
     // shooter
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().whileTrue(shootFixed());
@@ -297,6 +295,8 @@ public class RobotContainer {
     driver_controller.start().whileTrue(hood.stopHood());
     operator_controller.x().onTrue(shootWithAim());
     operator_controller.y().onTrue(shootWithAimStationary());
+    operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
+    operator_controller.povRight().onTrue(hood.ZeroHood());
 
     HubShiftUtil.setAllianceWinOverride(
         () -> {

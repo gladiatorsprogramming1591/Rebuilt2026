@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
@@ -106,6 +107,10 @@ public class Hood extends SubsystemBase {
     return () -> (outputs.desiredHoodAngle - inputs.hoodAngle) < HoodConstants.HOOD_ANGLE_TOLERANCE;
   }
 
+  public Command ZeroHood() {
+    return new InstantCommand(() -> io.zeroHood());
+  }
+  
   public void periodic() {
     io.updateInputs(inputs);
     hasBeenZeroed = true; // || -50 < inputs.hoodAngle && inputs.hoodAngle < ;
