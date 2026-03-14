@@ -427,7 +427,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
     NamedCommands.registerCommand("Lower Hood And Stop Shooting", 
         Commands.parallel(
-            hood.runHoodDown(),
+            hood.runHoodToZero(),
             // This should be handled in the interrupt of startRollerMotors, but leaving here for redundancy
             roller.stopRollerMotors(), 
             kicker.stopKickerMotor()).withTimeout(1.0));
