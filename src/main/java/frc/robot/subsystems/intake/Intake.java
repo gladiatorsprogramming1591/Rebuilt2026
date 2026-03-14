@@ -130,6 +130,7 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  // TODO: apply outputs?
   public Command reverseIntakeMotor() {
     return runEnd(
         () -> {
