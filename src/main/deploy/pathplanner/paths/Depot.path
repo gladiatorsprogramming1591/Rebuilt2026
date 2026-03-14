@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.1651923076923087,
-        "y": 4.8024615384615394
+        "x": 2.5116046511627905,
+        "y": 4.825988372093023
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9150333429768405,
-        "y": 4.893511955452819
+        "x": 2.2614456864473222,
+        "y": 4.917038789084303
       },
       "isLocked": false,
       "linkedName": "middle start shoot a"
@@ -83,7 +83,7 @@
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -17.354024636261492
+    "rotation": -20.05208214609853
   },
   "useDefaultConstraints": true
 }

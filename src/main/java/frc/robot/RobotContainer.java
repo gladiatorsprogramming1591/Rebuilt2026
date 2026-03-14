@@ -403,7 +403,11 @@ public class RobotContainer {
   }
 
   public Command intakeCommand() {
-    return intake.deployIntake();
+    return intake.deployIntake().alongWith(roller.runBottomRollerWhileIntaking());
+  }
+
+  public Command prepareIntake() {
+    return intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking());
   }
 
   public Command intakeIn() {
@@ -417,11 +421,16 @@ public class RobotContainer {
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );
     NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(4));
-    NamedCommands.registerCommand("Prepare Intake", intake.deployAndIntake());
+    NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
-    NamedCommands.registerCommand("Lower Hood", hood.runHoodDown().withTimeout(1.0));
+    NamedCommands.registerCommand("Lower Hood And Stop Shooting", 
+        Commands.parallel(
+            hood.runHoodToZero(),
+            // This should be handled in the interrupt of startRollerMotors, but leaving here for redundancy
+            roller.stopRollerMotors(), 
+            kicker.stopKickerMotor()).withTimeout(1.0));
   }
 
   /** Update dashboard outputs. */

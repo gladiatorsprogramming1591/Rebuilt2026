@@ -26,10 +26,9 @@ public class AutoManager {
         "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(leftSideRushHub, true)));
     autos.addOption(
         "Middle Shoot Straight", wrapAutoWithPose(new PathPlannerAuto(middleShootStraight)));
-    // autos.addOption(
-    //     "Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
-    // autos.addOption(
-    //     "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
+    autos.addOption("Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
+    autos.addOption(
+        "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

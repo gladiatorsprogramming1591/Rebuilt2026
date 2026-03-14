@@ -4,12 +4,17 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface RollerIO {
   @AutoLog
-  public static class RollerIOInputs {}
+  public static class RollerIOInputs {
+    double bottomRollerCurrent = 0.0;
+    double topRollerCurrent = 0.0;
+  }
 
   @AutoLog
   public static class RollerIOOutputs {
     double bottomRollerSpeed = 0.0;
     double topRollerSpeed = 0.0;
+    boolean useRollerWhileIntakeCurrent = false;
+    boolean usingLowerCurrent = false;
   }
 
   /**

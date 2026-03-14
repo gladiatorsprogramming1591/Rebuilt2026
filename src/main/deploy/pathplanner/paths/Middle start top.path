@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.299823232323233,
+        "x": 3.6,
         "y": 4.057904040404041
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.93346511627907,
+        "x": 3.233641883955837,
         "y": 4.298662790697674
       },
       "isLocked": false,
@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.1651923076923087,
-        "y": 4.8024615384615394
+        "x": 2.5116046511627905,
+        "y": 4.825988372093023
       },
       "prevControl": {
-        "x": 2.4483255813953484,
-        "y": 4.667790697674418
+        "x": 2.79473792486583,
+        "y": 4.691317531305901
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,30 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Warm Up Shooter",
-      "waypointRelativePos": 0.278109722976644,
-      "endWaypointRelativePos": 0.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Warm Up Shooter"
-        }
-      }
-    },
-    {
-      "name": "Shoot Hub",
-      "waypointRelativePos": 0.3348268839103869,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shoot Hub"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.25,
     "maxAcceleration": 2.0,
@@ -65,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -17.354024636261492
+    "rotation": -20.05208214609853
   },
   "reversed": false,
   "folder": "Competiton",

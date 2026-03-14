@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public final class RollerConstants {
   // public static final double ROLLER_MAX_SPEED = 1.0;
   public static final double ROLLER_CURRENT_LIMIT = 40.0;
+  public static final double BOTTOM_ROLLER_INTAKE_CURRENT_LIMIT = 10.0;
 
   private static final LoggedTunableNumber topRollerMotorSpeed =
       new LoggedTunableNumber("RollerTopSpeed/Tuning", 1.0);
