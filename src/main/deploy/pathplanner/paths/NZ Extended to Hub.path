@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.401361445783133,
+        "x": 6.0,
         "y": 3.647
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.4753436018957355,
+        "x": 6.073982156112603,
         "y": 1.3380420259235986
       },
       "isLocked": false,
@@ -36,28 +36,28 @@
         "y": 1.3467831325301212
       },
       "prevControl": {
-        "x": 2.5995012683289542,
-        "y": 0.48884002539250493
+        "x": 2.6134421782212764,
+        "y": 0.48684079353624987
       },
       "nextControl": {
-        "x": 2.8537914691943134,
-        "y": 2.165118483412322
+        "x": 2.784289156626506,
+        "y": 1.7511084337349394
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
     },
     {
       "anchor": {
-        "x": 3.057973933649289,
-        "y": 4.002760663507108
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": {
-        "x": 2.8860308056872044,
-        "y": 2.584229857819904
+        "x": 3.0684096385542166,
+        "y": 2.516048192771084
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FrontOfHub"
+      "linkedName": "Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
@@ -66,7 +66,7 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.639999999999985,
       "rotationDegrees": 0.0
     }
   ],
@@ -106,7 +106,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 41.58495916051525
   },
   "reversed": false,
   "folder": "Competiton",

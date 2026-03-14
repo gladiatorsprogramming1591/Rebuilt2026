@@ -144,7 +144,7 @@ public class ShooterCalculation {
     hoodAngleMap.put(1.73, 0.0);
     hoodAngleMap.put(2.18, 0.0);
     hoodAngleMap.put(2.47, 0.0);
-    hoodAngleMap.put(2.70, 0.0);
+    hoodAngleMap.put(2.70, 30.0); // 0.0
     hoodAngleMap.put(2.94, 50.0);
     hoodAngleMap.put(3.48, 110.0);
     hoodAngleMap.put(3.92, 230.0);
@@ -154,8 +154,8 @@ public class ShooterCalculation {
 
     flywheelSpeedMap.put(0.0, 1500.0);
     flywheelSpeedMap.put(0.96, 1500.0);
-    flywheelSpeedMap.put(1.46, 1500.0);
-    flywheelSpeedMap.put(1.73, 1650.0);
+    flywheelSpeedMap.put(1.46, 1600.0); // 1500
+    flywheelSpeedMap.put(1.73, 1750.0); // 1650
     flywheelSpeedMap.put(2.18, 1800.0);
     flywheelSpeedMap.put(2.47, 1900.0);
     flywheelSpeedMap.put(2.70, 2000.0);

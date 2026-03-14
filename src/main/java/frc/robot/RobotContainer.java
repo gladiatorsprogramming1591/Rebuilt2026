@@ -30,7 +30,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hood.Hood;
-import frc.robot.subsystems.hood.HoodConstants;
 import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOKraken;
 import frc.robot.subsystems.hood.HoodIOSim;
@@ -314,11 +313,11 @@ public class RobotContainer {
   public Command shoot() {
     return Commands.parallel(
         shooter.runShooterTarget(),
-        hood.runHoodTarget(),
+        // hood.runHoodTarget(),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                // Commands.waitUntil(hood.isHoodAtAngle())
+                //     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -328,11 +327,11 @@ public class RobotContainer {
   public Command shootFixed() {
     return Commands.parallel(
         shooter.runFixedSpeedCommand(),
-        hood.runHoodTarget(),
+        // hood.runHoodTarget(),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                // Commands.waitUntil(hood.isHoodAtAngle())
+                //     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -342,14 +341,14 @@ public class RobotContainer {
   public Command shootWithAim() {
     return Commands.parallel(
         shooter.runShooterTarget(),
-        hood.runHoodTarget(),
+        // hood.runHoodTarget(),
         DriveCommands.rotateToHub(
                 drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
             .withTimeout(0.5),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                // Commands.waitUntil(hood.isHoodAtAngle())
+                // .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
@@ -359,15 +358,15 @@ public class RobotContainer {
   public Command shootWithAimStationary() {
     return Commands.parallel(
         shooter.runShooterTarget(),
-        hood.runHoodTarget(),
+        // hood.runHoodTarget(),
         DriveCommands.rotateToHub(drive, () -> 0, () -> 0)
             .withTimeout(0.5)
             .andThen(
                 DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
         Commands.sequence(
             Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                // Commands.waitUntil(hood.isHoodAtAngle())
+                //     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(

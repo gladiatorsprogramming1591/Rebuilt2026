@@ -110,7 +110,7 @@ public class Hood extends SubsystemBase {
   public Command ZeroHood() {
     return new InstantCommand(() -> io.zeroHood());
   }
-  
+
   public void periodic() {
     io.updateInputs(inputs);
     hasBeenZeroed = true; // || -50 < inputs.hoodAngle && inputs.hoodAngle < ;

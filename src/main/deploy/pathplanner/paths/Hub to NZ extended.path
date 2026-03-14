@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.198045649072753,
-        "y": 2.7864194008559195
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4457944642386296,
-        "y": 1.8084928605715596
+        "x": 2.5957488151658765,
+        "y": 1.95807345971564
       },
       "isLocked": false,
       "linkedName": "Tilted Hub Shot"
@@ -48,11 +48,11 @@
     },
     {
       "anchor": {
-        "x": 6.401361445783133,
+        "x": 6.0,
         "y": 3.647
       },
       "prevControl": {
-        "x": 6.2978023255813955,
+        "x": 5.896440879798263,
         "y": 1.4721976744186045
       },
       "nextControl": null,
@@ -111,7 +111,7 @@
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 41.63353933657022
+    "rotation": 41.58495916051525
   },
   "useDefaultConstraints": true
 }

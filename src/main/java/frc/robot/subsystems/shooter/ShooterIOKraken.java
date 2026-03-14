@@ -5,7 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -19,9 +19,9 @@ import frc.robot.util.PhoenixUtil;
 import java.util.function.BooleanSupplier;
 
 public class ShooterIOKraken implements ShooterIO {
-  // private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
-  final MotionMagicVelocityVoltage magicVelocityControl =
-      new MotionMagicVelocityVoltage(0).withSlot(0);
+  private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
+  // final MotionMagicVelocityVoltage velocityControl =
+  //     new MotionMagicVelocityVoltage(0).withSlot(0);
 
   private final StatusSignal<AngularVelocity> RL_RPS;
   private final StatusSignal<AngularVelocity> RF_RPS;
@@ -90,16 +90,17 @@ public class ShooterIOKraken implements ShooterIO {
 
     slot0Configs.kS = 0.0; // Add 0.0 V output to overcome static friction
     slot0Configs.kV = 0.125; // A velocity target of 1 rps results in 0.125 V output
-    slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0Configs.kP = 0.65; // An error of 1 rps results in 0.65 V output
+    slot0Configs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
+    slot0Configs.kP = 0.7; // An error of 1 rps results in 0.65 V output
     slot0Configs.kI = 0; // no output for integrated error
     slot0Configs.kD = 0; // no output for error derivative
 
     // set Motion Magic Velocity settings
+    // (UNUSED IF USING VelocityVoltage)
     var motionMagicConfigs = rightConfig.MotionMagic;
     motionMagicConfigs.MotionMagicAcceleration =
-        200; // Target acceleration of 200 rps/s (0.50 (?) seconds to max)
-    motionMagicConfigs.MotionMagicJerk = 2000; // Target jerk of 2000 rps/s/s (0.2 (?) seconds)
+        400; // Target acceleration of 200 rps/s (0.50 (?) seconds to max)
+    motionMagicConfigs.MotionMagicJerk = 4000; // Target jerk of 2000 rps/s/s (0.2 (?) seconds)
 
     // tryUntilOk(5, ()-> shooterFollower.getConfigurator().apply(shooterConfig, 0.25));
     var leftConfig = rightConfig.clone();
@@ -179,10 +180,8 @@ public class ShooterIOKraken implements ShooterIO {
 
     // Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
     SmartDashboard.putNumber("lastCommandedVelocityRPS", lastCommandedVelocityRPS);
-    rightShooterLeader.setControl(
-        magicVelocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
-    leftShooterLeader.setControl(
-        magicVelocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+    rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+    leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
   }
 
   @Override
@@ -202,8 +201,8 @@ public class ShooterIOKraken implements ShooterIO {
   @Override
   public void setShooterMotorRPM(double rps) {
     lastCommandedVelocityRPS = rps;
-    rightShooterLeader.setControl(magicVelocityControl.withVelocity(rps));
-    leftShooterLeader.setControl(magicVelocityControl.withVelocity(rps));
+    rightShooterLeader.setControl(velocityControl.withVelocity(rps));
+    leftShooterLeader.setControl(velocityControl.withVelocity(rps));
   }
 
   // =======================UNTESTED/UNUSED METHODS=======================

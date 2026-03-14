@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 3.198045649072753,
-        "y": 2.7864194008559195
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": {
-        "x": 2.8111736111580607,
-        "y": 1.8622250880597115
+        "x": 2.9611279620853077,
+        "y": 2.011805687203792
       },
       "nextControl": null,
       "isLocked": false,
@@ -83,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 41.63353933657022
+    "rotation": 41.58495916051525
   },
   "reversed": false,
   "folder": "Competiton",
