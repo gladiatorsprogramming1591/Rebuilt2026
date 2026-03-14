@@ -41,14 +41,16 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command deployAndIntake() {
+  public Command deployAndIntake(boolean idleIntake) {
     return runEnd(
         () -> {
           io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
-          io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED);
+          io.setIntakeSpeed(
+              idleIntake ? IntakeConstants.INTAKE_IDLE_SPEED : IntakeConstants.INTAKE_MOTOR_SPEED);
           outputs.appliedDeploySpeed = IntakeConstants.DEPLOY_SPEED;
           outputs.appliedDeployCurrent = 0;
-          outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
+          outputs.appliedIntakeSpeed =
+              idleIntake ? IntakeConstants.INTAKE_IDLE_SPEED : IntakeConstants.INTAKE_MOTOR_SPEED;
         },
         () -> {
           io.stopDeployMotor();

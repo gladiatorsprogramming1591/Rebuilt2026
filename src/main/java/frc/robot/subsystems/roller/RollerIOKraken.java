@@ -47,13 +47,19 @@ public class RollerIOKraken implements RollerIO {
     rollerTopMotor.set(outputs.topRollerSpeed);
     rollerBottomMotor.set(outputs.bottomRollerSpeed);
     // Swap current limits only once when requested currents change
-    if(!outputs.usingLowerCurrent && outputs.useRollerWhileIntakeCurrent) {
-      rollerBottomMotor.getConfigurator().apply(new CurrentLimitsConfigs()
-        .withStatorCurrentLimit(RollerConstants.BOTTOM_ROLLER_INTAKE_CURRENT_LIMIT));
+    if (!outputs.usingLowerCurrent && outputs.useRollerWhileIntakeCurrent) {
+      rollerBottomMotor
+          .getConfigurator()
+          .apply(
+              new CurrentLimitsConfigs()
+                  .withStatorCurrentLimit(RollerConstants.BOTTOM_ROLLER_INTAKE_CURRENT_LIMIT));
       outputs.usingLowerCurrent = true;
     } else if (outputs.usingLowerCurrent && !outputs.useRollerWhileIntakeCurrent) {
-      rollerBottomMotor.getConfigurator().apply(new CurrentLimitsConfigs()
-        .withStatorCurrentLimit(RollerConstants.ROLLER_CURRENT_LIMIT));
+      rollerBottomMotor
+          .getConfigurator()
+          .apply(
+              new CurrentLimitsConfigs()
+                  .withStatorCurrentLimit(RollerConstants.ROLLER_CURRENT_LIMIT));
       outputs.usingLowerCurrent = false;
     }
   }

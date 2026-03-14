@@ -1,7 +1,5 @@
 package frc.robot.subsystems.roller;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -35,7 +33,7 @@ public class RollerIOSim implements RollerIO {
 
   @Override
   public void applyOutputs(RollerIOOutputs outputs) {
-    if(!outputs.usingLowerCurrent && outputs.useRollerWhileIntakeCurrent) {
+    if (!outputs.usingLowerCurrent && outputs.useRollerWhileIntakeCurrent) {
       outputs.usingLowerCurrent = true;
     } else if (outputs.usingLowerCurrent && !outputs.useRollerWhileIntakeCurrent) {
       outputs.usingLowerCurrent = false;

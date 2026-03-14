@@ -259,11 +259,11 @@ public class RobotContainer {
     // intake
     driver_controller
         .leftTrigger()
-        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.startRollerMotors()));
+        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.runBottomRollerWhileIntaking()));
     driver_controller
         .rightBumper()
         .whileTrue(
-            intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a
+            intake.deployAndIntake(true)); // TODO: needs to be a toggle eventually that run until a
     // certain position
     driver_controller
         .leftBumper()
@@ -407,7 +407,7 @@ public class RobotContainer {
   }
 
   public Command prepareIntake() {
-    return intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking());
+    return intake.deployAndIntake(false).alongWith(roller.runBottomRollerWhileIntaking());
   }
 
   public Command intakeIn() {
@@ -425,12 +425,15 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
-    NamedCommands.registerCommand("Lower Hood And Stop Shooting", 
+    NamedCommands.registerCommand(
+        "Lower Hood And Stop Shooting",
         Commands.parallel(
-            hood.runHoodToZero(),
-            // This should be handled in the interrupt of startRollerMotors, but leaving here for redundancy
-            roller.stopRollerMotors(), 
-            kicker.stopKickerMotor()).withTimeout(1.0));
+                hood.runHoodToZero(),
+                // This should be handled in the interrupt of startRollerMotors, but leaving here
+                // for redundancy
+                roller.stopRollerMotors(),
+                kicker.stopKickerMotor())
+            .withTimeout(1.0));
   }
 
   /** Update dashboard outputs. */
