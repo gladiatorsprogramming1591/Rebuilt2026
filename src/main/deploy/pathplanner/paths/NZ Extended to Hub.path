@@ -86,7 +86,7 @@
     },
     {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 1.174353205849262,
+      "waypointRelativePos": 1.3191066997518615,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

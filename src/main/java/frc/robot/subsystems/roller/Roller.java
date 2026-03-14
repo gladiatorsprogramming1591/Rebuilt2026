@@ -39,25 +39,47 @@ public class Roller extends SubsystemBase {
   }
 
   public Command startRollerMotors() {
-    return new RunCommand(
+    return runEnd(
         () -> {
           outputs.topRollerSpeed = RollerConstants.TOP_ROLLER_MOTOR_SPEED;
           outputs.bottomRollerSpeed = -RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED;
           // io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
           // io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
         },
-        this);
+        () -> {
+          outputs.topRollerSpeed = 0;
+          outputs.bottomRollerSpeed = 0;
+        });
+  }
+
+  public Command runBottomRollerWhileIntaking() {
+    return runEnd(
+        () -> {
+          outputs.useRollerWhileIntakeCurrent = true;
+          outputs.topRollerSpeed = 0;
+          outputs.bottomRollerSpeed = -RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED;
+          // io.setTopRollerSpeed(RollerConstants.TOP_ROLLER_MOTOR_SPEED);
+          // io.setBottomRollerSpeed(-RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
+        },
+        () -> {
+          outputs.useRollerWhileIntakeCurrent = false;
+          outputs.topRollerSpeed = 0;
+          outputs.bottomRollerSpeed = 0;
+        });
   }
 
   public Command reverseRollerMotors() {
-    return new RunCommand(
+    return runEnd(
         () -> {
           outputs.topRollerSpeed = -RollerConstants.TOP_ROLLER_MOTOR_SPEED;
           outputs.bottomRollerSpeed = RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED;
           // io.setTopRollerSpeed(-RollerConstants.TOP_ROLLER_MOTOR_SPEED);
           // io.setBottomRollerSpeed(RollerConstants.BOTTOM_ROLLER_MOTOR_SPEED);
         },
-        this);
+        () -> {
+          outputs.topRollerSpeed = 0;
+          outputs.bottomRollerSpeed = 0;
+        });
   }
 
   public Command stopRollerMotors() {
@@ -77,6 +99,8 @@ public class Roller extends SubsystemBase {
 
     Logger.recordOutput("Roller/Top Roller Speed", outputs.topRollerSpeed);
     Logger.recordOutput("Roller/Bottom Roller Speed", outputs.bottomRollerSpeed);
+    Logger.recordOutput("Roller/useRollerWhileIntakeCurrent", outputs.useRollerWhileIntakeCurrent);
+    Logger.recordOutput("Roller/usingLowerCurrent", outputs.usingLowerCurrent);
     // SmartDashboard.putNumber("Top Roller Speed", outputs.topRollerSpeed);
     // SmartDashboard.putNumber("Bottom Roller Speed", outputs.bottomRollerSpeed);
     io.applyOutputs(outputs);
