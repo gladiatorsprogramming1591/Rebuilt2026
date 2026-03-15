@@ -7,8 +7,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.shooter.ShooterCalculation;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -23,8 +31,19 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
+  private static final double lowBatteryVoltage = 11.0;
+  private static final double lowBatteryDisabledTime = 2.0;
+
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private double autoStart;
+  private boolean autoMessagePrinted;
+
+  private final Timer disabledTimer = new Timer();
+  private final Alert lowBatteryAlert =
+      new Alert(
+          "Battery voltage is very low, turn off the robot or replace the battery to avoid damage.",
+          AlertType.kWarning);
 
   public Robot() {
     // Record metadata
@@ -66,6 +85,8 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
+    SmartDashboard.putData(CommandScheduler.getInstance());
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -78,6 +99,33 @@ public class Robot extends LoggedRobot {
     // timing (see the template project documentation for details)
     // Threads.setCurrentThreadPriority(true, 99);
 
+    // Clear launching parameters so that they are refreshed next getParameters()
+    var shooterCalculation = ShooterCalculation.getInstance();
+    shooterCalculation.clearLaunchingParameters();
+
+    // Log launching parameters
+    Logger.recordOutput("ShooterCalculation/Parameters", shooterCalculation.getParameters());
+    Logger.recordOutput(
+        "ShooterCalculation/HoodAngleOffsetDeg", shooterCalculation.getHoodAngleOffsetDeg());
+    String formattedOffset = String.format("%.1f", shooterCalculation.getHoodAngleOffsetDeg());
+    if (formattedOffset.equals("-0.0")) {
+      formattedOffset = "0.0";
+    }
+    SmartDashboard.putString("Launch Hood Angle Offset", formattedOffset);
+
+    // Low battery alert
+    if (DriverStation.isEnabled()) {
+      disabledTimer.reset();
+    }
+    if (RobotController.getBatteryVoltage() > 0.0
+        && RobotController.getBatteryVoltage() <= lowBatteryVoltage
+        && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
+      lowBatteryAlert.set(true);
+    }
+
+    // Update RobotContainer dashboard outputs
+    robotContainer.updateDashboardOutputs();
+
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing
     // finished or interrupted commands, and running subsystem periodic() methods.
@@ -85,13 +133,29 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    // Print auto duration
+    if (autonomousCommand != null) {
+      if (!autonomousCommand.isScheduled() && !autoMessagePrinted) {
+        if (DriverStation.isAutonomousEnabled()) {
+          System.out.printf(
+              "*** Auto finished in %.2f secs ***%n", Timer.getTimestamp() - autoStart);
+        } else {
+          System.out.printf(
+              "*** Auto cancelled in %.2f secs ***%n", Timer.getTimestamp() - autoStart);
+        }
+        autoMessagePrinted = true;
+      }
+    }
+
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(200);
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -101,6 +165,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(0);
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -122,6 +187,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(0);
   }
 
   /** This function is called periodically during operator control. */
@@ -133,6 +199,7 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(0);
   }
 
   /** This function is called periodically during test mode. */

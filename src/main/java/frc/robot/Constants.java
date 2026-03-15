@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static final boolean tuningMode = true; // TODO: Remove before FingerLakes
+  public static final boolean disableHAL = false;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -29,6 +31,8 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+  public static double loopPeriodSecs = 0.02;
 
   public class robotInitConstants {
     public static final DigitalInput dIO_port = new DigitalInput(9);

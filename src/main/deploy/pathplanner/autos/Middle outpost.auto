@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to outpost"
+            "pathName": "Middle start bottom"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "outpost shoot"
+            "pathName": "Move to outpost (m)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot from outpost "
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }

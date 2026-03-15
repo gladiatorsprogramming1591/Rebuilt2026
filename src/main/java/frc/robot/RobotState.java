@@ -12,11 +12,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.AllianceFlipUtil;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
  * RobotState: localization + motion state only. - Field Pose Estimators (odometry + vision) -
@@ -28,6 +31,8 @@ public final class RobotState {
 
   // ===== Singleton =====
   private static RobotState instance;
+
+  @Getter @AutoLogOutput private Pose2d estimatedPose = Pose2d.kZero;
 
   public static RobotState getInstance() {
     if (instance == null) instance = new RobotState();
@@ -86,6 +91,8 @@ public final class RobotState {
         new SwerveModulePosition(), new SwerveModulePosition()
       };
 
+  @Getter @Setter private ChassisSpeeds robotVelocity = new ChassisSpeeds();
+
   // ===== Timestamped fused field pose buffer =====
   private static final double kPoseBufferSecs = 2.0;
   private final TimeInterpolatableBuffer<Pose2d> fusedPoseBuffer =
@@ -102,6 +109,15 @@ public final class RobotState {
       new AtomicReference<>(new ChassisSpeeds());
 
   @Getter @Setter private static RobotMode mode = RobotMode.DISABLED;
+
+  public enum ShooterModeState {
+    DUTYCYCLE, // Run Shooter in Duty Cycle mode instead of Velocity
+    ON, // Shooter Motor is On - Kicker Motor is On
+    IDLE, // Shooter Motor is On - Kicker Motor is Off
+    OFF // Shooter Motor is Off - Kicker Motor is Off
+  }
+
+  @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
 
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);
@@ -207,8 +223,14 @@ public final class RobotState {
 
   /** Reset all estimators to a pose; preserves current wheel positions and raw gyro reading. */
   public synchronized void resetRobotPose(Pose2d pose) {
-    headingOffset = pose.getRotation().minus(robotHeadingRaw);
+    SmartDashboard.putNumber("B-headingOffset", headingOffset.getDegrees());
+    SmartDashboard.putNumber("B-robotHeadingRaw", robotHeadingRaw.getDegrees());
+    SmartDashboard.putNumber("B-yawWithOffset", yawWithOffset.getDegrees());
+    headingOffset = AllianceFlipUtil.apply(pose.getRotation().minus(robotHeadingRaw));
     yawWithOffset = robotHeadingRaw.plus(headingOffset);
+    SmartDashboard.putNumber("A-headingOffset", headingOffset.getDegrees());
+    SmartDashboard.putNumber("A-robotHeadingRaw", robotHeadingRaw.getDegrees());
+    SmartDashboard.putNumber("A-yawWithOffset", yawWithOffset.getDegrees());
 
     fieldLocalizer.resetPosition(yawWithOffset, currentWheelPositions, pose);
     odometry.resetPosition(yawWithOffset, currentWheelPositions, pose);
@@ -232,6 +254,10 @@ public final class RobotState {
 
   public Rotation2d getYawForVision() {
     return getRobotPoseField().getRotation();
+  }
+
+  public ChassisSpeeds getFieldVelocity() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(robotVelocity, headingOffset);
   }
 
   /** Constant-velocity lookahead using measured robot-relative speeds. */

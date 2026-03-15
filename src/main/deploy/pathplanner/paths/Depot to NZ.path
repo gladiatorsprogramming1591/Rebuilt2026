@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.5140128205128214,
+        "y": 6.779256410256411
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.5954102564102572,
+        "y": 7.558346153846154
+      },
+      "isLocked": false,
+      "linkedName": "Shoot from depo"
+    },
+    {
+      "anchor": {
+        "x": 7.816500000000001,
+        "y": 5.233
+      },
+      "prevControl": {
+        "x": 6.735076923082737,
+        "y": 8.41883333332752
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "NZ after depo"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.547368421052633,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -47.81555668421118
+  },
+  "useDefaultConstraints": true
+}

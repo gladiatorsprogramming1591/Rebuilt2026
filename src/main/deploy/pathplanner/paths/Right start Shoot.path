@@ -1,0 +1,77 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5722051282051295,
+        "y": 0.4418846153846152
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.276036144578313,
+        "y": 0.8113253012048198
+      },
+      "isLocked": false,
+      "linkedName": "bottom start"
+    },
+    {
+      "anchor": {
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
+      },
+      "prevControl": {
+        "x": 2.5260900708617045,
+        "y": 1.5965996022369913
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "bottom start shoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Warm Up Shooter"
+        }
+      }
+    },
+    {
+      "name": "Shoot Hub",
+      "waypointRelativePos": 0.7387289516567052,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shoot Hub"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 47.878369499734035
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

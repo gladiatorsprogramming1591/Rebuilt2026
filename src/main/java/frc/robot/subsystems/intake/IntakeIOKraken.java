@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
   private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_CAN_ID);
@@ -15,18 +16,19 @@ public class IntakeIOKraken implements IntakeIO {
     intakeConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.INTAKE_CURRENT_LIMIT;
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    intakeMotor.getConfigurator().apply(intakeConfig, 0.25);
+    PhoenixUtil.tryUntilOk(5, () -> intakeMotor.getConfigurator().apply(intakeConfig, 0.25));
 
     var deployConfig = new TalonFXConfiguration();
     deployConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.DEPLOY_CURRENT_LIMIT;
     deployConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     deployMotor.getConfigurator().apply(deployConfig, 0.25);
   }
 
   @Override
   public void setDeploySpeed(double speed) {
     deployMotor.set(speed);
+    SmartDashboard.putNumber("Deploy Set Speed", speed);
   }
 
   @Override
@@ -37,7 +39,7 @@ public class IntakeIOKraken implements IntakeIO {
 
   @Override
   public void setIntakeSpeed(double speed) {
-    deployMotor.set(speed);
+    intakeMotor.set(speed);
     SmartDashboard.putNumber("Intake Speed", speed);
   }
 
@@ -52,5 +54,10 @@ public class IntakeIOKraken implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {}
+  public void updateInputs(IntakeIOInputs inputs) {
+    inputs.deploySpeed = deployMotor.getVelocity().getValueAsDouble();
+    inputs.deployTorqueCurrentFOC = deployMotor.getTorqueCurrent().getValueAsDouble();
+    inputs.deploySupplyCurrent = deployMotor.getSupplyCurrent().getValueAsDouble();
+    inputs.intakeSpeed = intakeMotor.getVelocity().getValueAsDouble();
+  }
 }

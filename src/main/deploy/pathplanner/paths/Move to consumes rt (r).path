@@ -1,0 +1,64 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
+      },
+      "prevControl": null,
+      "nextControl": {
+<<<<<<< HEAD
+        "x": 2.8459326536916896,
+        "y": -0.5253578931109042
+=======
+        "x": 2.6127020202020206,
+        "y": -0.09917929292929228
+>>>>>>> c2965cc (Fixes to not run into walls)
+      },
+      "isLocked": false,
+      "linkedName": "bottom start shoot"
+    },
+    {
+      "anchor": {
+        "x": 7.016,
+        "y": 1.3721410256410262
+      },
+      "prevControl": {
+        "x": 6.211807692307693,
+        "y": 0.4883974358974351
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": 42.51
+  },
+  "reversed": false,
+  "folder": "STUFF",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 47.878369499734035
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Start To NZ"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NZ to Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Hub to NZ extended"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NZ Extended to Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Competition",
+  "choreoAuto": false
+}

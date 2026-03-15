@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6,
+        "y": 4.057904040404041
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.438971123334055,
+        "y": 3.8666719801220264
+      },
+      "isLocked": false,
+      "linkedName": "middle start"
+    },
+    {
+      "anchor": {
+        "x": 2.7225348837209298,
+        "y": 2.9381627906976733
+      },
+      "prevControl": {
+        "x": 2.956652058977102,
+        "y": 3.2650409081369163
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "middle start shoot b"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 30.25643716352929
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

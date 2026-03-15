@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L start Sh"
+            "pathName": "Left start Shoot"
           }
         },
         {
@@ -19,13 +19,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move and shoot lt"
+            "pathName": "Move to shoot lt"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to consume and pass lt"
+            "pathName": "Move, consume and pass lt"
           }
         },
         {
@@ -38,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Competion",
+  "folder": "Competition",
   "choreoAuto": false
 }

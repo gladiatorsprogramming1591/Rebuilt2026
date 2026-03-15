@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "depo"
+            "pathName": "Middle start top"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "shoot from depo"
+            "pathName": "Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depo to NZ"
+            "pathName": "Shoot from depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to NZ"
           }
         },
         {
@@ -32,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Competion",
+  "folder": "Competition",
   "choreoAuto": false
 }

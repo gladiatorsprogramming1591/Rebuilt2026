@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R start Sh"
+            "pathName": "Right start Shoot"
           }
         },
         {
@@ -38,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Competion",
+  "folder": "Competition",
   "choreoAuto": false
 }

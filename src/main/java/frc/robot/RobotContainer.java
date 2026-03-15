@@ -7,13 +7,15 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,17 +29,34 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodConstants;
+import frc.robot.subsystems.hood.HoodIO;
+import frc.robot.subsystems.hood.HoodIOKraken;
+import frc.robot.subsystems.hood.HoodIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.kicker.KickerIO;
+import frc.robot.subsystems.kicker.KickerIOKraken;
+import frc.robot.subsystems.kicker.KickerIOSim;
 import frc.robot.subsystems.roller.Roller;
 import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOKraken;
+import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.AutoManager;
+import frc.robot.util.HubShiftUtil;
+import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -50,8 +69,11 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Intake intake;
+  private final Kicker kicker;
   private final Roller roller;
+  private final Shooter shooter;
   private final Vision vision;
+  private final Hood hood;
 
   // Controller
   private final CommandXboxController driver_controller = new CommandXboxController(0);
@@ -59,6 +81,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final AutoManager autoManager;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -71,6 +94,25 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
+        Camera cam =
+            robotInitConstants.isCompBot
+                ? CameraConstants.RobotCameras.RIGHT
+                : CameraConstants.RobotCameras.LEFT;
+        vision = new Vision(cam);
+
+        if (robotInitConstants.isCompBot) {
+          intake = new Intake(new IntakeIOKraken());
+          kicker = new Kicker(new KickerIOKraken());
+          roller = new Roller(new RollerIOKraken());
+          shooter = new Shooter(new ShooterIOKraken());
+          hood = new Hood(new HoodIOKraken());
+        } else {
+          intake = new Intake(new IntakeIOSim());
+          kicker = new Kicker(new KickerIOSim());
+          roller = new Roller(new RollerIOSim());
+          shooter = new Shooter(new ShooterIOSim());
+          hood = new Hood(new HoodIOSim());
+        }
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -78,15 +120,6 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-        Camera cam =
-            robotInitConstants.isCompBot
-                ? CameraConstants.RobotCameras.RIGHT
-                : CameraConstants.RobotCameras.LEFT;
-        vision = new Vision(cam);
-
-        intake = new Intake(new IntakeIOKraken());
-
-        roller = new Roller(new RollerIOKraken());
 
         // The ModuleIOTalonFXS implementation provides an example implementation for
         // TalonFXS controller connected to a CANdi with a PWM encoder. The
@@ -118,10 +151,12 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackRight));
 
         intake = new Intake(new IntakeIOSim());
-
+        kicker = new Kicker(new KickerIOSim());
         roller = new Roller(new RollerIOSim());
-
         vision = new Vision();
+        shooter = new Shooter(new ShooterIOSim());
+        hood = new Hood(new HoodIOSim());
+
         break;
 
       default:
@@ -135,18 +170,24 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         intake = new Intake(new IntakeIO() {});
-
+        kicker = new Kicker(new KickerIO() {});
         roller = new Roller(new RollerIO() {});
-
+        shooter = new Shooter(new ShooterIO() {});
         vision = new Vision();
+        hood = new Hood(new HoodIO() {});
+
         break;
     }
 
     // Connect the gyro as the default vision yaw supplier
     vision.setYawSupplier(drive::getGyroRotation);
 
+    registerNamedCommands();
+
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoManager = new AutoManager(drive);
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -175,6 +216,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // ===================================== Driver Controls =====================================
+
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -183,18 +226,22 @@ public class RobotContainer {
             () -> -driver_controller.getLeftX(),
             () -> -driver_controller.getRightX()));
 
+    roller.setDefaultCommand(roller.stopRollerMotors());
+    kicker.setDefaultCommand(kicker.stopKickerMotor());
+    intake.setDefaultCommand(intake.stopIntakeMotor());
+    shooter.setDefaultCommand(shooter.runIdleCommand());
+    hood.setDefaultCommand(hood.runHoodToZero());
+    // drive base
+
     // Lock to 0° when A button is held
     driver_controller
         .a()
         .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driver_controller.getLeftY(),
-                () -> -driver_controller.getLeftX(),
-                () -> Rotation2d.kZero));
+            DriveCommands.rotateToHub(
+                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()));
 
     // Switch to X pattern when X button is pressed
-    // driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     driver_controller
@@ -207,14 +254,207 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    driver_controller.a().whileTrue(intake.runIntakeMotor());
+    // shooter
+    driver_controller.y().whileTrue(shooter.runShooterTarget().alongWith(hood.runHoodTarget()));
+    // intake
     driver_controller
-        .b()
+        .leftTrigger()
+        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.runBottomRollerWhileIntaking()));
+    driver_controller
+        .rightBumper()
         .whileTrue(
-            intake
-                .deployIntake()); // TODO: needs to be a toggle eventually that runs until a certain
+            intake.deployAndIntake(true)); // TODO: needs to be a toggle eventually that run until a
+    // certain position
+    driver_controller
+        .leftBumper()
+        // TODO: Kiley request: undeployed
+        // .leftBumper().or(operator_controller.rightTrigger())
+        .whileTrue(
+            intake.runStow()); // TODO: needs to be a toggle eventually that runs until a certain
     // encoder value
+    // roller
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
+    // hood
+    driver_controller.back().whileTrue(hood.runHoodTarget());
+    driver_controller.povUp().whileTrue(hood.runHoodUp());
+    driver_controller.povDown().whileTrue(hood.runHoodDown());
+    // kicker
+    driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
+    driver_controller.rightTrigger().whileTrue(shoot());
+
+    // ===================================== Operator Controls =====================================
+    // rollers
+    operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
+    operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
+    // intake
+    operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
+    operator_controller.a().whileTrue(intakePulseCommand());
+    operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
+    // TODO: Kiley request: undeployed
+    // operator_controller.start().whileTrue(intake.runIntakeMotor());
+    // shooter
+    operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
+    operator_controller.leftTrigger().whileTrue(shootFixed());
+    // hood
+    driver_controller.start().whileTrue(hood.stopHood());
+    operator_controller.x().onTrue(shootWithAim());
+    operator_controller.y().onTrue(shootWithAimStationary());
+    operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
+    operator_controller.povRight().onTrue(hood.ZeroHood());
+
+    HubShiftUtil.setAllianceWinOverride(
+        () -> {
+          if (operator_controller.back().getAsBoolean()) {
+            return Optional.of(true);
+          }
+          return Optional.empty();
+        });
+  }
+
+  public Command warmUpShooterCommand() {
+    return Commands.parallel(shooter.runShooterTarget(), hood.runHoodTarget());
+  }
+
+  public Command shoot() {
+    return Commands.parallel(
+        shooter.runShooterTarget(),
+        hood.runHoodTarget(),
+        Commands.sequence(
+            Commands.parallel(
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+  }
+
+  public Command shootFixed() {
+    return Commands.parallel(
+        shooter.runFixedSpeedCommand(),
+        hood.runHoodTarget(),
+        Commands.sequence(
+            Commands.parallel(
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+  }
+
+  public Command shootWithAim() {
+    return Commands.parallel(
+        shooter.runShooterTarget(),
+        hood.runHoodTarget(),
+        DriveCommands.rotateToHub(
+                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
+            .withTimeout(0.5),
+        Commands.sequence(
+            Commands.parallel(
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+  }
+
+  public Command shootWithAimStationary() {
+    return Commands.parallel(
+        shooter.runShooterTarget(),
+        hood.runHoodTarget(),
+        DriveCommands.rotateToHub(drive, () -> 0, () -> 0)
+            .withTimeout(0.5)
+            .andThen(
+                DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
+        Commands.sequence(
+            Commands.parallel(
+                Commands.waitUntil(hood.isHoodAtAngle())
+                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+                Commands.waitUntil(shooter.isShooterAtVelocity())
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+            Commands.parallel(
+                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+  }
+
+  // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
+  //   return intake.runIntakeMotor()
+  //   .andThen(Command.WaitCommand(5))
+  //   .andThen(intake.runStow());
+  // }
+
+  // TODO: Add this to shoot command
+  public Command intakePulseCommand() {
+    return intake
+        .idleIntakeMotor()
+        .alongWith(
+            Commands.sequence(
+                intake.runStow().withTimeout(0.5),
+                intake.deployIntake().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2),
+                intake.deployIntake().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.deployIntake().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.deployIntake().withTimeout(0.2),
+                intake.runStow().withTimeout(0.5),
+                intake.runStow().withTimeout(0.2)));
+  }
+
+  public Command intakeCommand() {
+    return intake.deployIntake().alongWith(roller.runBottomRollerWhileIntaking());
+  }
+
+  public Command prepareIntake() {
+    return intake.deployAndIntake(false).alongWith(roller.runBottomRollerWhileIntaking());
+  }
+
+  public Command intakeIn() {
+    return Commands.parallel(intake.stow());
+  }
+
+  public Command idleIntake() {
+    return intake.idleIntakeMotor();
+  }
+
+  public void registerNamedCommands() {
+    // NamedCommands.registerCommand("Aim to Hub", );
+    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(4));
+    NamedCommands.registerCommand("Prepare Intake", prepareIntake());
+    NamedCommands.registerCommand("Intake", intakeCommand());
+    NamedCommands.registerCommand("Intake In", intakeIn());
+    NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
+    NamedCommands.registerCommand(
+        "Lower Hood And Stop Shooting",
+        Commands.parallel(
+                hood.runHoodToZero(),
+                // This should be handled in the interrupt of startRollerMotors, but leaving here
+                // for redundancy
+                roller.stopRollerMotors(),
+                kicker.stopKickerMotor())
+            .withTimeout(1.0));
+  }
+
+  /** Update dashboard outputs. */
+  public void updateDashboardOutputs() {
+    // Publish match time
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+
+    // Update from HubShiftUtil
+    SmartDashboard.putString(
+        "Shifts/Remaining Shift Time",
+        String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
+    SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
+    SmartDashboard.putString(
+        "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+    SmartDashboard.putBoolean(
+        "Shifts/Active First?",
+        DriverStation.getAlliance().orElse(Alliance.Blue) == HubShiftUtil.getFirstActiveAlliance());
   }
 
   /**

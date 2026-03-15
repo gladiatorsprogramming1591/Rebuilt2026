@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L start Sh"
+            "pathName": "Left start Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to Consumtion Lt"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Consumes"
+            "pathName": "Move to consume lt (l)"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Blue Ally",
+  "folder": "ALSO STUFF",
   "choreoAuto": false
 }

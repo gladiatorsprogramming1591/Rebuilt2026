@@ -1,0 +1,87 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5116046511627905,
+        "y": 4.825988372093023
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7758820404401794,
+        "y": 6.1656985508032
+      },
+      "isLocked": false,
+      "linkedName": "middle start shoot a"
+    },
+    {
+      "anchor": {
+        "x": 4.4559487179487185,
+        "y": 7.523461538461538
+      },
+      "prevControl": {
+        "x": 2.6476593762981784,
+        "y": 7.6874041270127815
+      },
+      "nextControl": {
+        "x": 6.412289156626506,
+        "y": 7.346096385542169
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.793243589743589,
+        "y": 5.37224358974359
+      },
+      "prevControl": {
+        "x": 7.974951807228916,
+        "y": 7.335168674698796
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Top NZ"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.571894093686345,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "STUFF",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -20.05208214609853
+  },
+  "useDefaultConstraints": true
+}

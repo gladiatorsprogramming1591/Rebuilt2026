@@ -7,6 +7,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Right start Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "to NZ"
           }
         },
@@ -19,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "to NZ extended"
+            "pathName": "Hub to NZ extended"
           }
         },
         {
@@ -32,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Competion",
+  "folder": "Competition",
   "choreoAuto": false
 }

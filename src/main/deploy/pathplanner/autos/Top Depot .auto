@@ -1,0 +1,25 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left start Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot (l) "
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "ALSO STUFF",
+  "choreoAuto": false
+}

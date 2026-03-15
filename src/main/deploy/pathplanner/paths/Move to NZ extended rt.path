@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.177,
-        "y": 2.43
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1419358974358986,
-        "y": 0.03489743589743499
+        "x": 3.125009576768613,
+        "y": -0.606755329008341
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start shoot"
     },
     {
       "anchor": {
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 6.737217708644749,
-        "y": 0.43758747277603915
+        "y": 0.43758747277603893
       },
       "nextControl": {
         "x": 7.871730769230771,
@@ -41,10 +41,15 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "NZ extended bottom "
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4105263157894756,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -57,14 +62,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Competion",
+  "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 45.0
+    "rotation": 47.878369499734035
   },
   "useDefaultConstraints": true
 }
