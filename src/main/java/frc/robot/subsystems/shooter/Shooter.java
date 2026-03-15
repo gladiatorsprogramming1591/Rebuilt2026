@@ -46,6 +46,8 @@ public class Shooter extends SubsystemBase {
       default -> {
         // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " +
         // RobotState.getShooterMode());
+        // TODO***: Needs to only run once when coming out of DUTYCYCLE mode, not periodicly
+        // (or removed if interrupted by KrakenIO applyOutputs anyway)
         io.runShooterDutyCycle(0);
       }
     }

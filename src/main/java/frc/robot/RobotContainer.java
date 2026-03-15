@@ -182,9 +182,8 @@ public class RobotContainer {
     // Connect the gyro as the default vision yaw supplier
     vision.setYawSupplier(drive::getGyroRotation);
 
-    registerNamedCommands();
-
     // Set up auto routines
+    registerNamedCommands();
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoManager = new AutoManager(drive);
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
