@@ -11,12 +11,12 @@ High Priority:
 - Consider integrating toward state-based
 #### Battery Draw Management
 - Turn off all idling motors (shooter, intake, hood, etc.) if a brownout is detected near the end of a match (where we're unlikely to shoot)
+- investigate loss of power of intake when attempting fuel pick up before at speed (Potential fix: run intake automatically when hopper extended [if state-based; while not in intaking state])
 
 Mid Priority:
 -------------
-* Boolean supplier for when intake is fully extended and fully stowed (monitor for a spike in current over time when motor stalls against a hardstop)
+* Boolean supplier for when intake is fully extended and fully stowed (monitor for a spike in current over time when deploy motor stalls against a hardstop [or fuel w/ lower current spike])
 * Stow automatically
-* Update vendor dependencies
 * Verify that each subsystem is logging important motor info (current, voltage, velocity, position, etc.) via status codes
 * Review TODO in shooter periodic: shooter periodic sets shooter to a duty cycle of 0 when not in DUTYCYCLE mode
 
@@ -29,7 +29,8 @@ Low Priority:
 - Fine-tuning:
 
     - Tune kSpeedAt12Volts to be true max theoretical free speed (m/s) at 12 V applied output.
-        - Apply 12V to a drive motor using phoenix tuner, get motor vel / gearing (kDriveGearRatio)
+        - Apply 12V to each drive motor using phoenix tuner, get motor velocities (rot/sec), get average
+        - kSpeedAt12Volts = average motor vel (rot/sec) / gearing (kDriveGearRatio) * wheel circumference (w/ new tread in meters)
     - Review driveCommands PIDs (effects teleop drive)
     - Make Shooter and hood slot0 configs (e.g. outputs.kP) to be LoggedTunableNumbers.
         - Apply configs only when needed (e.g. a SmartDashboard button)
@@ -68,6 +69,7 @@ MISC
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+* Update vendor dependencies
 * *- change path to be even closer to hub on second rush to center, and stay in NZ
 - is drivetrain maxed out? A: No, kSpeedAt12Volts from 10 to 15 increased drive speed. reducing to 13.
 * *ALLIANCE REQ**: Move shoot pos closer to hub
