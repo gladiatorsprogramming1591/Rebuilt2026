@@ -25,6 +25,7 @@ Low Priority:
 
 - "driveCurrentLimit": 15.0 in pathplanner?
 - Verify whether PP_CONFIG for PathPlanner overrides our app settings. Consider tuning/matching configs with app
+    - Calculate MOI using sysID (Currently a rough estimate)
 - Investigate why Operator intake only buttons (POV up/down) were not working
 - Fine-tuning:
 
@@ -51,6 +52,20 @@ MISC
 - Go through all TODOs in code (over 25)
 - Ideal camera placement/mount
 - Is there a benefit to being able to interrupt the intake without interrupting the deploy? Can this be done without separating the subsystem?
+- Ask CAD for COF of the 3D printed swerve treads
+
+
+Albany Robot Changes:
+---------------------
+- Slapdown intake rather than rack and pinion
+    - May or may not have a powered reaction bar
+- Removing top rollers
+- Verticle extendable hopper (Similar to 1678)
+- Full length shooter
+    - Full length kicker
+    - Limelight has to move
+- Shooter rotates 180 degrees
+- Possibly maybe an L1 climber
 
 
 
