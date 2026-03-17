@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -286,7 +287,7 @@ public class RobotContainer {
     operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
     // intake
-    operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
+    operator_controller.povUp().whileTrue(new RepeatCommand(intake.idleIntakeMotorInstant()));
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
     // TODO: Kiley request: undeployed
@@ -386,7 +387,7 @@ public class RobotContainer {
   // TODO: Add this to shoot command
   public Command intakePulseCommand() {
     return intake
-        .idleIntakeMotor()
+        .idleIntakeMotorInstant()
         .alongWith(
             Commands.sequence(
                 intake.runStow().withTimeout(0.5),
@@ -418,7 +419,7 @@ public class RobotContainer {
   }
 
   public Command idleIntake() {
-    return intake.idleIntakeMotor();
+    return intake.idleIntakeMotorInstant();
   }
 
   public void registerNamedCommands() {

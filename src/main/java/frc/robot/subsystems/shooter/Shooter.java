@@ -48,7 +48,7 @@ public class Shooter extends SubsystemBase {
         // RobotState.getShooterMode());
         // TODO***: Needs to only run once when coming out of DUTYCYCLE mode, not periodicly
         // (or removed if interrupted by KrakenIO applyOutputs anyway)
-        io.runShooterDutyCycle(0);
+        // io.runShooterDutyCycle(0);
       }
     }
     Logger.recordOutput("Shooter/Desired Velocity RPM", outputs.desiredVelocityRPM);

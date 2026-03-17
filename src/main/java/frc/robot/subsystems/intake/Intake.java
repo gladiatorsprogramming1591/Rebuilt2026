@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -61,12 +60,7 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command startIntakeMotor() {
-    outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
-    return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_MOTOR_SPEED));
-  }
-
-  public Command idleIntakeMotor() {
+  public Command idleIntakeMotorInstant() {
     outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_IDLE_SPEED;
     return new InstantCommand(() -> io.setIntakeSpeed(IntakeConstants.INTAKE_IDLE_SPEED));
   }
@@ -153,12 +147,6 @@ public class Intake extends SubsystemBase {
           outputs.appliedDeployCurrent = 0;
           outputs.appliedDeploySpeed = 0;
         });
-  }
-
-  public Command deployIntakeOn() {
-    return deployIntake()
-        .alongWith(
-            new WaitCommand(IntakeConstants.INTAKE_DELAY_SECONDS).andThen(startIntakeMotor()));
   }
 
   public Command stowIntakeOff() {
