@@ -30,6 +30,11 @@ public class HoodIOSim implements HoodIO {
 
   @Override
   public void applyOutputs(HoodIOOutputs outputs) {
-    angle = outputs.desiredHoodAngle;
+    if (outputs.mode == HoodMode.POSITION) {
+      angle = outputs.desiredHoodAngle;
+    } else if (outputs.mode == HoodMode.SPEED) {
+      speed = outputs.desiredHoodSpeed;
+      angle += speed * 0.02 / HoodConstants.HOOD_MOTOR_REDUCTION;
+    }
   }
 }

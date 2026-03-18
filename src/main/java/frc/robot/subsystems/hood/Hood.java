@@ -37,10 +37,10 @@ public class Hood extends SubsystemBase {
     return runEnd(
         () -> {
           outputs.mode = HoodMode.SPEED;
-          io.setHoodSpeed(HoodConstants.HOOD_UP_SPEED);
+          outputs.desiredHoodSpeed = HoodConstants.HOOD_UP_SPEED;
         },
         () -> {
-          io.stopHood();
+          outputs.desiredHoodSpeed = 0;
         });
   }
 
@@ -48,10 +48,10 @@ public class Hood extends SubsystemBase {
     return runEnd(
         () -> {
           outputs.mode = HoodMode.SPEED;
-          io.setHoodSpeed(HoodConstants.HOOD_DOWN_SPEED);
+          outputs.desiredHoodSpeed = HoodConstants.HOOD_DOWN_SPEED;
         },
         () -> {
-          io.stopHood();
+          outputs.desiredHoodSpeed = 0;
         });
   }
 
@@ -84,7 +84,10 @@ public class Hood extends SubsystemBase {
   }
 
   public Command stopHood() {
-    return runOnce(() -> io.stopHood());
+    return runOnce(() -> {
+      outputs.mode = HoodMode.SPEED;
+      outputs.desiredHoodSpeed = 0;
+    });
   }
 
   public Command runHoodToZero() {
@@ -122,6 +125,7 @@ public class Hood extends SubsystemBase {
     Logger.recordOutput("Hood/Desired Hood Angle", outputs.desiredHoodAngle);
     Logger.recordOutput("Hood/Has Been Zeroed", hasBeenZeroed);
     Logger.recordOutput("Hood/Mood Mode", outputs.mode);
+    Logger.recordOutput("Hood/Desired Hood Speed", outputs.desiredHoodSpeed);
     SmartDashboard.putBoolean("Hood-hasBeenZeroed", hasBeenZeroed);
 
     if (this.hasBeenZeroed) {

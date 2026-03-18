@@ -1,6 +1,5 @@
 package frc.robot.subsystems.hood;
 
-import edu.wpi.first.units.measure.AngularVelocity;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface HoodIO {
@@ -24,7 +23,8 @@ public interface HoodIO {
     boolean hasBeenZeroed = false;
     double positionRad = 0.0;
     double velocityRadPerSecond = 0.0;
-    double desiredHoodAngle;
+    double desiredHoodAngle = 0.0;
+    double desiredHoodSpeed = 0.0;
     HoodMode mode;
     double kP = 0.0;
     double kD = 0.0;
@@ -44,15 +44,6 @@ public interface HoodIO {
   public default boolean getIsConnected(HoodIOInputs inputs) {
     return false;
   }
-
-  /**
-   * Set the motor speed to {@code speed}.
-   *
-   * @param speed speed to set motor to
-   */
-  public default void setHoodSpeed(AngularVelocity angularVelocity) {}
-
-  public default void setHoodSpeed(double speed) {}
 
   public default void setHoodPosition(double angle) {}
 

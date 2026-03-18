@@ -102,12 +102,6 @@ public class HoodIOKraken implements HoodIO {
   }
 
   @Override
-  public void setHoodSpeed(double speed) {
-    hoodMotor.set(speed);
-    SmartDashboard.putNumber("Hood Speed", speed);
-  }
-
-  @Override
   public void stopHood() {
     hoodMotor.stopMotor();
   }
@@ -203,6 +197,9 @@ public class HoodIOKraken implements HoodIO {
               .withPosition(outputs.desiredHoodAngle)
               .withSlot(0)
               .withFeedForward(outputs.kS));
+    } else if (outputs.mode == HoodMode.SPEED) {
+      hoodMotor.set(outputs.desiredHoodSpeed);
+      SmartDashboard.putNumber("Desired Hood Speed", outputs.desiredHoodSpeed);
     }
   }
 }
