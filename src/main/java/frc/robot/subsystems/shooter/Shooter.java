@@ -55,6 +55,9 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
     SmartDashboard.putBoolean("Shooter DoApplyOutputs", doApplyOutputs);
     SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
+    if (ShooterConstants.isLowCeiling && RobotState.getShooterMode() == ShooterModeState.ON) {
+      outputs.desiredVelocityRPM *= ShooterConstants.flywheelLowCeilingScaler;
+    }
     if (doApplyOutputs) {
       io.applyOutputs(outputs);
     }

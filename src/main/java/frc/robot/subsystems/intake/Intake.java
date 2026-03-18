@@ -67,7 +67,7 @@ public class Intake extends SubsystemBase {
 
   public Command stopIntakeMotor() {
     outputs.appliedIntakeSpeed = 0;
-    return new RunCommand(() -> io.setIntakeSpeed(0.0), this);
+    return new RunCommand(() -> io.stopIntakeMotor(), this);
   }
 
   public Command deployIntakeUsingCurrent() {

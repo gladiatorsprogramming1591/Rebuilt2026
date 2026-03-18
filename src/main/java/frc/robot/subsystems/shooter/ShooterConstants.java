@@ -20,6 +20,11 @@ public class ShooterConstants {
   public static final double SHOOTER_TOLERANCE = 2;
   public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.5;
 
+  // Change this to true to scale down flywheel speed when ceiling clearance is low.
+  // TODO: Lower max clamp as well.
+  public static boolean isLowCeiling = false;
+  public static double flywheelLowCeilingScaler = 0.50;
+
   public static double kP = new LoggedTunableNumber("Shooter/kP", 0.65).getAsDouble();
   public static double kI = new LoggedTunableNumber("Shooter/kI", 0.0).getAsDouble();
   public static double kD = new LoggedTunableNumber("Shooter/kD", 0.0).getAsDouble();

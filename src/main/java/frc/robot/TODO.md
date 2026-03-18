@@ -23,10 +23,8 @@ Mid Priority:
 Low Priority:
 -------------
 
-- "driveCurrentLimit": 15.0 in pathplanner?
-- Verify whether PP_CONFIG for PathPlanner overrides our app settings. Consider tuning/matching configs with app
-    - Calculate MOI using sysID (Currently a rough estimate)
-- Investigate why Operator intake only buttons (POV up/down) were not working
+- Calculate PP MOI using sysID (Currently a rough estimate)
+- Ask Nick W for TPU tread COF
 - Fine-tuning:
 
     - Tune kSpeedAt12Volts to be true max theoretical free speed (m/s) at 12 V applied output.
@@ -84,6 +82,12 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Investigate why Operator intake only buttons (POV up/down) were not working
+    - A: Intake idle was an instant command, so its default command (set to stop intake) was likely running directly after. Since some command groups rely on it being an instant command (ends instantly), we wrapped it in a RepeatCommand only where Op' POV up calls it.
+- "driveCurrentLimit": 15.0 in pathplanner?
+    - A: PP app weight was very light
+- Verify whether PP_CONFIG for PathPlanner overrides our app settings. Consider tuning/matching configs with app
+    - A: Updated values in code and set app to match. MOI roughly calculated & left COF at default
 * Update vendor dependencies
 * *- change path to be even closer to hub on second rush to center, and stay in NZ
 - is drivetrain maxed out? A: No, kSpeedAt12Volts from 10 to 15 increased drive speed. reducing to 13.
