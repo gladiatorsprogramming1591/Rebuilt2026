@@ -111,7 +111,8 @@ public class HoodIOKraken implements HoodIO {
     var hoodPosition = hoodMotor.getPosition().getValueAsDouble();
     positionOffset = hoodPosition;
     // TODO: make this a constant (zero tolerance)
-    if (hoodPosition > 0.1 && hoodPosition < -0.1) hoodMotor.setPosition(0.0);
+    if (hoodPosition > HoodConstants.HOOD_ANGLE_TOLERANCE
+        || hoodPosition < -HoodConstants.HOOD_ANGLE_TOLERANCE) hoodMotor.setPosition(0.0);
     SmartDashboard.putNumber("Hood offset rots", positionOffset);
   }
 
@@ -169,8 +170,7 @@ public class HoodIOKraken implements HoodIO {
 
   private boolean hasHoodStopped() {
     boolean retVal =
-        Math.abs(hoodMotor.getVelocity().getValueAsDouble())
-            < HoodConstants.HOOD_ZEROING_VEL_TOLERANCE;
+        hoodSupplyCurrent.getValueAsDouble() > HoodConstants.HOOD_ZEROING_CURRENT_THRESHOLD;
     SmartDashboard.putBoolean("hasHoodStopped", retVal);
     return retVal;
   }

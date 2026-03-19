@@ -230,7 +230,8 @@ public class RobotContainer {
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
     shooter.setDefaultCommand(shooter.runIdleCommand());
-    hood.setDefaultCommand(hood.runHoodToZero());
+    //TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
+    hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasBeenZeroed()));
     // drive base
 
     // Lock to 0° when A button is held
@@ -290,13 +291,14 @@ public class RobotContainer {
     operator_controller.povUp().whileTrue(new RepeatCommand(intake.idleIntakeMotorInstant()));
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
+    operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
     // TODO: Kiley request: undeployed
     // operator_controller.start().whileTrue(intake.runIntakeMotor());
     // shooter
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
-    driver_controller.start().whileTrue(hood.stopHood());
+    driver_controller.start().whileTrue(hood.stopHood()).debounce(1.5).onTrue(hood.runHoodToZero());
     operator_controller.x().onTrue(shootWithAim());
     operator_controller.y().onTrue(shootWithAimStationary());
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));

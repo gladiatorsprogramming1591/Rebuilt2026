@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -31,6 +32,10 @@ public class Hood extends SubsystemBase {
 
   public Hood(HoodIO io) {
     this.io = io;
+  }
+
+  public BooleanSupplier getHasBeenZeroed() {
+    return () -> hasBeenZeroed;
   }
 
   public Command runHoodUp() {
@@ -84,10 +89,11 @@ public class Hood extends SubsystemBase {
   }
 
   public Command stopHood() {
-    return runOnce(() -> {
-      outputs.mode = HoodMode.SPEED;
-      outputs.desiredHoodSpeed = 0;
-    });
+    return runOnce(
+        () -> {
+          outputs.mode = HoodMode.SPEED;
+          outputs.desiredHoodSpeed = 0;
+        });
   }
 
   public Command runHoodToZero() {
@@ -116,7 +122,7 @@ public class Hood extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    hasBeenZeroed = true; // || -50 < inputs.hoodAngle && inputs.hoodAngle < ;
+    hasBeenZeroed = hasBeenZeroed || DriverStation.isEnabled() && io.isHoodAtTrueZero();
     Logger.processInputs("Hood", inputs);
     outputs.kP = kP.get();
     outputs.kD = kD.get();
@@ -124,7 +130,7 @@ public class Hood extends SubsystemBase {
 
     Logger.recordOutput("Hood/Desired Hood Angle", outputs.desiredHoodAngle);
     Logger.recordOutput("Hood/Has Been Zeroed", hasBeenZeroed);
-    Logger.recordOutput("Hood/Mood Mode", outputs.mode);
+    Logger.recordOutput("Hood/Hood Mode", outputs.mode);
     Logger.recordOutput("Hood/Desired Hood Speed", outputs.desiredHoodSpeed);
     SmartDashboard.putBoolean("Hood-hasBeenZeroed", hasBeenZeroed);
 
