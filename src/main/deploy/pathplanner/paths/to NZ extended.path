@@ -24,7 +24,7 @@
         "y": 0.6386019971469343
       },
       "nextControl": {
-        "x": 6.343807571028661,
+        "x": 6.239942938659058,
         "y": 0.6386019971469341
       },
       "isLocked": false,
@@ -32,22 +32,22 @@
     },
     {
       "anchor": {
-        "x": 6.401361445783133,
-        "y": 2.647180722891566
+        "x": 6.0,
+        "y": 3.647
       },
       "prevControl": {
-        "x": 6.193734939759036,
-        "y": 0.691120481927711
+        "x": 6.0,
+        "y": 2.1469999999999994
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom NZ extend"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.6,
-      "rotationDegrees": 21.868873202422346
+      "rotationDegrees": 0.0
     },
     {
       "waypointRelativePos": 0.9302325581395368,
@@ -89,7 +89,7 @@
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 47.878369499734035
+    "rotation": -132.122
   },
   "useDefaultConstraints": true
 }

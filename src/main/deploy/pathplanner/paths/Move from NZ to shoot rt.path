@@ -47,11 +47,11 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.9266547406082268,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 1.373881932021466,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -59,7 +59,7 @@
   "eventMarkers": [
     {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 0.7648017381857684,
+      "waypointRelativePos": 0.9435215946843853,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -79,7 +79,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 47.878369499734035
+    "rotation": -132.122
   },
   "reversed": false,
   "folder": "Competiton",

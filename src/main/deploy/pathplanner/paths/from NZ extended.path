@@ -8,66 +8,50 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.762335236681324,
-        "y": 1.2735633529378165
+        "x": 6.130410256410259,
+        "y": 1.3256282051282051
       },
       "isLocked": false,
       "linkedName": "bottom NZ extend"
     },
     {
       "anchor": {
-        "x": 5.990132541957013,
-        "y": 0.7506086645040033
+        "x": 6.0,
+        "y": 0.558166666666666
       },
       "prevControl": {
-        "x": 6.076914612210734,
-        "y": 0.5121763701666929
+        "x": 6.249525932998972,
+        "y": 0.5427780747560079
       },
       "nextControl": {
-        "x": 5.903350471703291,
-        "y": 0.9890409588413137
+        "x": 5.750474067001028,
+        "y": 0.5735552585773241
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3911137440758297,
-        "y": 0.7506086645040033
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
       },
       "prevControl": {
-        "x": 4.888334285482486,
-        "y": 0.813630971837465
-      },
-      "nextControl": {
-        "x": 2.137107561483794,
-        "y": 0.6978239471883255
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.057973933649289,
-        "y": 4.002760663507108
-      },
-      "prevControl": {
-        "x": 3.3555630919945094,
-        "y": 3.187625142822372
+        "x": 3.5605769230769244,
+        "y": 0.13955128205128164
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FrontOfHub"
+      "linkedName": "bottom start shoot"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.6,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 2.25,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 2,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -86,7 +70,7 @@
     },
     {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 2.174353205849262,
+      "waypointRelativePos": 1.5681063122923538,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -106,7 +90,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": -132.122
   },
   "reversed": false,
   "folder": "Competiton",
