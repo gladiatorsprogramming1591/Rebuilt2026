@@ -230,7 +230,8 @@ public class RobotContainer {
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
     shooter.setDefaultCommand(shooter.runIdleCommand());
-    //TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
+    // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster.
+    // Why?
     hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasBeenZeroed()));
     // drive base
 
@@ -281,7 +282,7 @@ public class RobotContainer {
     driver_controller.povDown().whileTrue(hood.runHoodDown());
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
-    driver_controller.rightTrigger().whileTrue(shoot());
+    driver_controller.rightTrigger().whileTrue(shootWithAim());
 
     // ===================================== Operator Controls =====================================
     // rollers
@@ -350,8 +351,7 @@ public class RobotContainer {
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
         DriveCommands.rotateToHub(
-                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
-            .withTimeout(0.5),
+            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
