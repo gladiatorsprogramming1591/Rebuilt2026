@@ -66,6 +66,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+// spotless:off
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
@@ -280,6 +281,7 @@ public class RobotContainer {
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
+    driver_controller.start().whileTrue(hood.stopHood()).debounce(1.5).onTrue(hood.runHoodToZero());
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.rightTrigger().whileTrue(shootWithAim());
@@ -299,7 +301,6 @@ public class RobotContainer {
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
-    driver_controller.start().whileTrue(hood.stopHood()).debounce(1.5).onTrue(hood.runHoodToZero());
     operator_controller.x().onTrue(shootWithAim());
     operator_controller.y().onTrue(shootWithAimStationary());
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
@@ -467,4 +468,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+  // spotless:on
 }

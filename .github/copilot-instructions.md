@@ -28,7 +28,7 @@ Short, actionable guidance for an AI code assistant working in this repository (
 - Build locally (Windows PowerShell):
   - .\gradlew.bat build
   - .\gradlew.bat test
-- Deploy to RoboRIO: .\gradlew.bat deploy (GradleRIO will read the team number from WPILib prefs or you can pass `-Pteam=####`).
+- Deploy to RoboRIO: .\gradlew.bat deploy (GradleRIO will read the team number from WPILib prefs or you can pass `-Pteam=#### `).
 - Run replay/watch helper (project defines a `replayWatch` task): .\gradlew.bat replayWatch
 - Note: spotless formatting runs as part of compilation (`spotlessApply` is a compile dependency). If you see formatting failures, run: .\gradlew.bat spotlessApply
 
