@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 3.125009576768613,
-        "y": -0.6067553290083407
+        "y": -0.6067553290083405
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -54,7 +54,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.25,
+    "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

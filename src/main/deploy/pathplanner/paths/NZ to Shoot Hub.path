@@ -16,65 +16,45 @@
     },
     {
       "anchor": {
-        "x": 6.378625592417063,
-        "y": 0.6391232227488137
+        "x": 6.380955777460769,
+        "y": 0.5868473609129818
       },
       "prevControl": {
-        "x": 6.8084834123222775,
-        "y": 0.6928554502369662
+        "x": 6.810813597365983,
+        "y": 0.6405795884011343
       },
       "nextControl": {
-        "x": 5.908350163030744,
-        "y": 0.580338794075523
+        "x": 5.910680348074449,
+        "y": 0.5280629322396911
       },
       "isLocked": false,
       "linkedName": "WP1"
     },
     {
       "anchor": {
-        "x": 3.315888625592417,
-        "y": 0.6391232227488137
+        "x": 2.9392724679029953,
+        "y": 0.7938659058487907
       },
       "prevControl": {
-        "x": 4.3258502173999,
-        "y": 0.6391232227488137
-      },
-      "nextControl": {
-        "x": 2.821552132701421,
-        "y": 0.6391232227488138
-      },
-      "isLocked": false,
-      "linkedName": "WP2"
-    },
-    {
-      "anchor": {
-        "x": 3.348,
-        "y": 2.936
-      },
-      "prevControl": {
-        "x": 2.9611279620853077,
-        "y": 2.011805687203792
+        "x": 4.064935805991441,
+        "y": 0.23750356633380865
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tilted Hub Shot"
+      "linkedName": "Bottom Trench Shoot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9964476021314443,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 2.373881932021466,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.6958855098389962,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.25,
+    "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -83,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 41.58495916051525
+    "rotation": 62.71201205448449
   },
   "reversed": false,
   "folder": "Competiton",
