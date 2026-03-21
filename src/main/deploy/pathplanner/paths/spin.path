@@ -3,55 +3,51 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.729650602409638,
-        "y": 1.3467831325301212
+        "x": 5.839705128205129,
+        "y": 3.767551282051283
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.037307692307693,
-        "y": 0.05815384615384689
+        "x": 6.088588076201816,
+        "y": 3.7439445415630623
       },
       "isLocked": false,
-      "linkedName": "bottom start shoot"
+      "linkedName": "Start spinning"
     },
     {
       "anchor": {
-        "x": 7.746730769230771,
-        "y": 2.1861153846153853
+        "x": 7.653705128205129,
+        "y": 2.8024102564102567
       },
       "prevControl": {
-        "x": 7.002525641025643,
-        "y": 0.22094871794871884
+        "x": 7.688589743589743,
+        "y": 3.8605769230769234
       },
       "nextControl": {
-        "x": 7.835269203902168,
-        "y": 2.419912188669544
+        "x": 7.618040232583099,
+        "y": 1.7205750892086618
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.8,
-        "y": 3.55
+        "x": 6.246692307692309,
+        "y": 1.7093589743589748
       },
       "prevControl": {
-        "x": 7.8,
-        "y": 3.3
+        "x": 6.466810082672853,
+        "y": 1.8278839301177296
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "NZ extended bottom "
+      "linkedName": "end of spin"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.48070175438596385,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 1.3543859649123067,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -66,14 +62,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 90.0
+    "velocity": 0.0,
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Competiton",
+  "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -132.122
+    "rotation": 110.0
   },
   "useDefaultConstraints": true
 }

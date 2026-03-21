@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5140128205128214,
-        "y": 6.779256410256411
+        "x": 6.246692307692309,
+        "y": 1.7093589743589748
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5954102564102572,
-        "y": 7.558346153846154
+        "x": 5.211782051282053,
+        "y": 2.7326410256410263
       },
       "isLocked": false,
-      "linkedName": "Shoot from depo"
+      "linkedName": "end of spin"
     },
     {
       "anchor": {
-        "x": 7.816500000000001,
-        "y": 5.233
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": {
-        "x": 6.735076923082737,
-        "y": 8.41883333332752
+        "x": 4.6885128205128215,
+        "y": 2.5931025641025642
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "NZ after depo"
+      "linkedName": "Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.547368421052633,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 0.766666666666667,
+      "rotationDegrees": -138.41
     }
   ],
   "constraintZones": [],
@@ -46,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": -90.0
+    "velocity": 0,
+    "rotation": -138.415
   },
   "reversed": false,
   "folder": "STUFF",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -47.81555668421118
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
