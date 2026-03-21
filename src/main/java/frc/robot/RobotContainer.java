@@ -89,6 +89,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Start logging
     DataLogManager.start();
+    SmartDashboard.putBoolean("isCompBot", robotInitConstants.isCompBot);
     // Record DS control and joystick data
     DriverStation.startDataLog(DataLogManager.getLog());
     switch (Constants.currentMode) {
@@ -219,13 +220,16 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // ===================================== Driver Controls =====================================
 
+    double driveSpeedMultiplier = 1.0; // This will be squared, 0.4 is good for kids
+    double rotationMultiplier = 1.0; // Use 0.4 for kids
+
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driver_controller.getLeftY(),
-            () -> -driver_controller.getLeftX(),
-            () -> -driver_controller.getRightX()));
+            () -> -driver_controller.getLeftY() * driveSpeedMultiplier,
+            () -> -driver_controller.getLeftX() * driveSpeedMultiplier,
+            () -> -driver_controller.getRightX() * rotationMultiplier));
 
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());

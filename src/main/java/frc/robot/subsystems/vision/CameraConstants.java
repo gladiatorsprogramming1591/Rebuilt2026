@@ -53,20 +53,20 @@ public class CameraConstants {
     public static final Camera LEFT = // Practice Bot
         new Camera(
             new CameraIOLimelight("one", CameraType.LIMELIGHT_4),
-            Limelight3GConstants.HORIZONTAL_FOV,
-            Limelight3GConstants.VERTICAL_FOV,
-            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight4Constants.HORIZONTAL_FOV,
+            Limelight4Constants.VERTICAL_FOV,
+            Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
             NetworkTableInstance.getDefault()
                 .getTable("limelight-one")
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
-                -0.3429,
-                0.041275,
+                0.3429,
+                -0.0127,
                 0.22225,
-                new Rotation3d(0, Units.degreesToRadians(35.5), Units.degreesToRadians(180.0))));
+                new Rotation3d(0, Units.degreesToRadians(37.8), Units.degreesToRadians(0.0))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
     public static final Camera RIGHT = // Comp Bot
