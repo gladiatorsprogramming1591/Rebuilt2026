@@ -16,58 +16,42 @@
     },
     {
       "anchor": {
-        "x": 5.379206161137441,
-        "y": 0.5961374407582936
+        "x": 5.371740370898715,
+        "y": 0.48333808844507875
       },
       "prevControl": {
-        "x": 6.876426702544098,
-        "y": 0.6591597480917553
+        "x": 6.868960912305372,
+        "y": 0.5463603957785405
       },
       "nextControl": {
-        "x": 4.125199978545406,
-        "y": 0.5433527234426158
+        "x": 4.11773418830668,
+        "y": 0.43055337112940095
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.729650602409638,
-        "y": 1.3467831325301212
+        "x": 2.9392724679029953,
+        "y": 0.7938659058487907
       },
       "prevControl": {
-        "x": 2.6134421782212764,
-        "y": 0.48684079353624987
-      },
-      "nextControl": {
-        "x": 2.784289156626506,
-        "y": 1.7511084337349394
-      },
-      "isLocked": false,
-      "linkedName": "bottom start shoot"
-    },
-    {
-      "anchor": {
-        "x": 3.348,
-        "y": 2.936
-      },
-      "prevControl": {
-        "x": 3.0684096385542166,
-        "y": 2.516048192771084
+        "x": 3.534450784593438,
+        "y": 0.5480313837375184
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Tilted Hub Shot"
+      "linkedName": "Bottom Trench Shoot"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.8,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 1.639999999999985,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
@@ -86,7 +70,7 @@
     },
     {
       "name": "Warm Up Shooter",
-      "waypointRelativePos": 1.3191066997518615,
+      "waypointRelativePos": 1.15,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -97,7 +81,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.25,
+    "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -106,7 +90,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 41.58495916051525
+    "rotation": 62.71201205448449
   },
   "reversed": false,
   "folder": "Competiton",

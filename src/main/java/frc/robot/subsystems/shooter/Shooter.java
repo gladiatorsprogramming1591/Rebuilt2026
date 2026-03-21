@@ -46,13 +46,18 @@ public class Shooter extends SubsystemBase {
       default -> {
         // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " +
         // RobotState.getShooterMode());
-        io.runShooterDutyCycle(0);
+        // TODO***: Needs to only run once when coming out of DUTYCYCLE mode, not periodicly
+        // (or removed if interrupted by KrakenIO applyOutputs anyway)
+        // io.runShooterDutyCycle(0);
       }
     }
     Logger.recordOutput("Shooter/Desired Velocity RPM", outputs.desiredVelocityRPM);
     SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
     SmartDashboard.putBoolean("Shooter DoApplyOutputs", doApplyOutputs);
     SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
+    if (ShooterConstants.isLowCeiling && RobotState.getShooterMode() == ShooterModeState.ON) {
+      outputs.desiredVelocityRPM *= ShooterConstants.flywheelLowCeilingScaler;
+    }
     if (doApplyOutputs) {
       io.applyOutputs(outputs);
     }

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -65,6 +66,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+// spotless:off
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
@@ -182,9 +184,8 @@ public class RobotContainer {
     // Connect the gyro as the default vision yaw supplier
     vision.setYawSupplier(drive::getGyroRotation);
 
-    registerNamedCommands();
-
     // Set up auto routines
+    registerNamedCommands();
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoManager = new AutoManager(drive);
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
@@ -230,7 +231,9 @@ public class RobotContainer {
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntakeMotor());
     shooter.setDefaultCommand(shooter.runIdleCommand());
-    hood.setDefaultCommand(hood.runHoodToZero());
+    // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster.
+    // Why?
+    hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasBeenZeroed()));
     // drive base
 
     // Lock to 0° when A button is held
@@ -278,25 +281,26 @@ public class RobotContainer {
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
+    driver_controller.start().whileTrue(hood.stopHood()).debounce(1.5).onTrue(hood.runHoodToZero());
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
-    driver_controller.rightTrigger().whileTrue(shoot());
+    driver_controller.rightTrigger().whileTrue(shootWithAim());
 
     // ===================================== Operator Controls =====================================
     // rollers
     operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
     // intake
-    operator_controller.povUp().whileTrue(intake.idleIntakeMotor());
+    operator_controller.povUp().whileTrue(new RepeatCommand(intake.idleIntakeMotorInstant()));
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
+    operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
     // TODO: Kiley request: undeployed
     // operator_controller.start().whileTrue(intake.runIntakeMotor());
     // shooter
     operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
     operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
-    driver_controller.start().whileTrue(hood.stopHood());
     operator_controller.x().onTrue(shootWithAim());
     operator_controller.y().onTrue(shootWithAimStationary());
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
@@ -348,8 +352,7 @@ public class RobotContainer {
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
         DriveCommands.rotateToHub(
-                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX())
-            .withTimeout(0.5),
+            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
@@ -387,7 +390,7 @@ public class RobotContainer {
   // TODO: Add this to shoot command
   public Command intakePulseCommand() {
     return intake
-        .idleIntakeMotor()
+        .idleIntakeMotorInstant()
         .alongWith(
             Commands.sequence(
                 intake.runStow().withTimeout(0.5),
@@ -419,7 +422,7 @@ public class RobotContainer {
   }
 
   public Command idleIntake() {
-    return intake.idleIntakeMotor();
+    return intake.idleIntakeMotorInstant();
   }
 
   public void registerNamedCommands() {
@@ -465,4 +468,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
+  // spotless:on
 }

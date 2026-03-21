@@ -16,7 +16,7 @@ public final class HoodConstants {
 
   public static final double HOOD_ANGLE_TOLERANCE = 20.0;
 
-  public static final double HOOD_ZEROING_VEL_TOLERANCE = 0.10; // in rotations
+  public static final double HOOD_ZEROING_CURRENT_THRESHOLD = 3.0;
   public static final double MIN_STATIONARY_DURATION = 2.0; // in seconds
 
   // TODO: Find these limits. Find how to always update hood angle (even while disabled)

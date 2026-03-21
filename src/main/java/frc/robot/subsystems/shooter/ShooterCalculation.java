@@ -140,14 +140,14 @@ public class ShooterCalculation {
     phaseDelay = 0.03;
 
     hoodAngleMap.put(0.0, 0.0);
-    hoodAngleMap.put(1.46, 0.0);
-    hoodAngleMap.put(1.73, 0.0);
-    hoodAngleMap.put(2.18, 0.0);
-    hoodAngleMap.put(2.47, 0.0);
-    hoodAngleMap.put(2.70, 30.0); // 0.0
-    hoodAngleMap.put(2.94, 50.0);
-    hoodAngleMap.put(3.48, 110.0);
-    hoodAngleMap.put(3.92, 230.0);
+    hoodAngleMap.put(1.46, 30.0);
+    hoodAngleMap.put(1.73, 60.0);
+    hoodAngleMap.put(2.18, 90.0);
+    hoodAngleMap.put(2.47, 120.0);
+    hoodAngleMap.put(2.70, 150.0); // 0.0
+    hoodAngleMap.put(2.94, 180.0);
+    hoodAngleMap.put(3.48, 210.0);
+    hoodAngleMap.put(3.92, 240.0);
     hoodAngleMap.put(4.35, 350.0);
     hoodAngleMap.put(4.84, 400.0);
     hoodAngleMap.put(5.46, 500.0);
@@ -155,12 +155,12 @@ public class ShooterCalculation {
     flywheelSpeedMap.put(0.0, 1500.0);
     flywheelSpeedMap.put(0.96, 1500.0);
     flywheelSpeedMap.put(1.46, 1600.0); // 1500
-    flywheelSpeedMap.put(1.73, 1750.0); // 1650
-    flywheelSpeedMap.put(2.18, 1800.0);
-    flywheelSpeedMap.put(2.47, 1900.0);
-    flywheelSpeedMap.put(2.70, 2000.0);
-    flywheelSpeedMap.put(2.94, 2000.0);
-    flywheelSpeedMap.put(3.48, 2000.0);
+    flywheelSpeedMap.put(1.73, 1650.0); // 1650
+    flywheelSpeedMap.put(2.18, 1700.0);
+    flywheelSpeedMap.put(2.47, 1750.0);
+    flywheelSpeedMap.put(2.70, 1800.0);
+    flywheelSpeedMap.put(2.94, 1850.0);
+    flywheelSpeedMap.put(3.48, 1900.0);
     flywheelSpeedMap.put(3.92, 2000.0);
     flywheelSpeedMap.put(4.35, 2000.0);
     flywheelSpeedMap.put(4.84, 2000.0);
