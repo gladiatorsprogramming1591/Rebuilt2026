@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Bottom Rush to NZ"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "bump"
+            "pathName": "First Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Hub to NZ extended"
+            "pathName": "Weird thingy "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New New Path"
+            "pathName": "Second bump"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Competition",
   "choreoAuto": false
 }
