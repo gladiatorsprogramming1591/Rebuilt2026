@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 public class Kicker extends SubsystemBase {
   private final KickerIO io;
   private final KickerIOInputsAutoLogged inputs = new KickerIOInputsAutoLogged();
+  private final KickerIOOutputsAutoLogged outputs = new KickerIOOutputsAutoLogged();
 
   public Kicker(KickerIO io) {
     this.io = io;
@@ -16,23 +17,26 @@ public class Kicker extends SubsystemBase {
   public Command runKickerMotor() {
     return runEnd(
         () -> {
-          io.setKickerSpeed(KickerConstants.KICKER_MOTOR_SPEED);
+          outputs.desiredKickerSpeed = KickerConstants.KICKER_MOTOR_SPEED;
         },
         () -> {
-          io.setKickerSpeed(0.0);
+          outputs.desiredKickerSpeed = 0.0;
         });
   }
 
   public Command startKickerMotor() {
-    return new RunCommand(() -> io.setKickerSpeed(KickerConstants.KICKER_MOTOR_SPEED), this);
+    return new RunCommand(
+        () -> outputs.desiredKickerSpeed = KickerConstants.KICKER_MOTOR_SPEED, this);
   }
 
   public Command stopKickerMotor() {
-    return new RunCommand(() -> io.setKickerSpeed(0.0), this);
+    return new RunCommand(() -> outputs.desiredKickerSpeed = 0.0, this);
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Intake speed", inputs);
+    Logger.processInputs("Kicker", inputs);
+    io.applyOutputs(outputs);
+    Logger.recordOutput("Kicker/Speed", outputs.desiredKickerSpeed);
   }
 }

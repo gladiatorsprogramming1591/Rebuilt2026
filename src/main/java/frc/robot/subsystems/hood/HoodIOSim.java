@@ -16,6 +16,11 @@ public class HoodIOSim implements HoodIO {
             DCMotor.getKrakenX44Foc(1));
   }
 
+  @Override
+  public boolean isHoodAtTrueZero() {
+    return true;
+  }
+
   // @Override
   // public void setHoodSpeed(double speed) {
   //   this.speed = MathUtil.clamp(speed, 0, 1.0);
