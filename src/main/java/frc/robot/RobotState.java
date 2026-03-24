@@ -5,6 +5,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -33,6 +34,12 @@ public final class RobotState {
   private static RobotState instance;
 
   @Getter @AutoLogOutput private Pose2d estimatedPose = Pose2d.kZero;
+
+  private static final double poseBufferSizeSec = 2.0;
+  private final TimeInterpolatableBuffer<Rotation3d> rotationBuffer =
+      TimeInterpolatableBuffer.createBuffer(poseBufferSizeSec);
+
+  @Getter @Setter private ChassisSpeeds robotSetpointVelocity = new ChassisSpeeds();
 
   public static RobotState getInstance() {
     if (instance == null) instance = new RobotState();
@@ -241,6 +248,15 @@ public final class RobotState {
 
   public Pose2d getRobotPoseField() {
     return fieldLocalizer.getEstimatedPosition();
+  }
+
+  public Rotation2d getRotation() {
+    return fieldLocalizer.getEstimatedPosition().getRotation();
+  }
+
+  public Optional<Rotation3d> getEstimatedRotation3dAtTimestamp(double timestamp) {
+    var estimatedRotation = rotationBuffer.getSample(timestamp);
+    return estimatedRotation;
   }
 
   public Pose2d getRobotPoseOdometry() {
