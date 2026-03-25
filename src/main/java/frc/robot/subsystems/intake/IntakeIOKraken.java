@@ -1,22 +1,26 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
-  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_CAN_ID);
-  private final TalonFX deployMotor = new TalonFX(IntakeConstants.DEPLOY_CAN_ID);
+  private final TalonFX intakeLeft = new TalonFX(IntakeConstants.INTAKE_LEFT);
+  private final TalonFX intakeRight = new TalonFX(IntakeConstants.INTAKE_RIGHT);
+  private final TalonFX deployMotor = new TalonFX(IntakeConstants.INTAKE_DEPLOY);
 
   public IntakeIOKraken() {
     var intakeConfig = new TalonFXConfiguration();
     intakeConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.INTAKE_CURRENT_LIMIT;
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    PhoenixUtil.tryUntilOk(5, () -> intakeMotor.getConfigurator().apply(intakeConfig, 0.25));
+    PhoenixUtil.tryUntilOk(5, () -> intakeLeft.getConfigurator().apply(intakeConfig, 0.25));
+    intakeRight.setControl(new Follower(intakeLeft.getDeviceID(), MotorAlignmentValue.Aligned)); 
 
     var deployConfig = new TalonFXConfiguration();
     deployConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.DEPLOY_CURRENT_LIMIT;

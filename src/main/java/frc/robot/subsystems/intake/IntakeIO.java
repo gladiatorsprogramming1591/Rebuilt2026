@@ -16,6 +16,8 @@ public interface IntakeIO {
     public double appliedIntakeSpeed = 0.0;
     public double appliedDeploySpeed = 0.0;
     public double appliedDeployCurrent = 0.0;
+
+    public double position = 0.0; 
   }
 
   /**
@@ -58,4 +60,6 @@ public interface IntakeIO {
   public default void stopDeployMotor() {}
   /** stops the intake motor */
   public default void stopIntakeMotor() {}
+
+  public default void runPosition(double positionRads) {}
 }
