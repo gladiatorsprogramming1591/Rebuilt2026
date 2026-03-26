@@ -46,7 +46,7 @@ public class IntakeIOKraken implements IntakeIO {
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     PhoenixUtil.tryUntilOk(5, () -> intakeLeft.getConfigurator().apply(intakeConfig, 0.25));
-    intakeRight.setControl(new Follower(intakeLeft.getDeviceID(), MotorAlignmentValue.Aligned));
+    intakeRight.setControl(new Follower(intakeLeft.getDeviceID(), MotorAlignmentValue.Opposed));
 
     var deployConfig = new TalonFXConfiguration();
     deployConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.DEPLOY_CURRENT_LIMIT;
@@ -130,11 +130,12 @@ public class IntakeIOKraken implements IntakeIO {
   public void applyOutputs(IntakeIOOutputs outputs) {
     switch (RobotState.getIntakeMode()) {
       case POSITION:
+        // TODO: Needs to be moved out of period into button on SmartDashboard
         if (Constants.tuningMode) {
-          deploySlot0.kP = IntakeConstants.kP;
-          deploySlot0.kI = IntakeConstants.kI;
-          deploySlot0.kD = IntakeConstants.kD;
-          deploySlot0.kV = IntakeConstants.kFF;
+          deploySlot0.kP = outputs.kP;
+          deploySlot0.kI = outputs.kI;
+          deploySlot0.kD = outputs.kD;
+          deploySlot0.kV = outputs.kFF;
           deployMotor.getConfigurator().apply(deploySlot0);
         }
 
