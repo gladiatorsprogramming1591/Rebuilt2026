@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -27,10 +28,10 @@ public class Intake extends SubsystemBase {
   private final LoggedTunableNumber intakeDelaySeconds =
       new LoggedTunableNumber("Intake/IntakeDelaySeconds", IntakeConstants.INTAKE_DELAY_SECONDS);
       
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", 0.0);
-  private static final LoggedTunableNumber kI = new LoggedTunableNumber("Intake/kI", 0.0);
-  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Intake/kD", 0.0);
-  private static final LoggedTunableNumber kFF = new LoggedTunableNumber("Intake/kFF", 0.0);
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", IntakeConstants.kP);
+  private static final LoggedTunableNumber kI = new LoggedTunableNumber("Intake/kI", IntakeConstants.kI);
+  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
+  private static final LoggedTunableNumber kFF = new LoggedTunableNumber("Intake/kFF", IntakeConstants.kFF);
 
   private static final double intakeMaxAngle = Units.degreesToRadians(0); //TODO set the max and min angle 
   private static final double intakeMinAngle = Units.degreesToRadians(0); //TODO set the max and min angle 
@@ -40,6 +41,49 @@ public class Intake extends SubsystemBase {
 
   public Intake(IntakeIO io) {
     this.io = io;
+  }
+
+public void runPosition(double positionRads) {
+    goalAngle = positionRads; 
+    outputs.desiredPosition = MathUtil.clamp(goalAngle, intakeMinAngle, intakeMaxAngle);
+  }
+
+  // TODO: Change from runEnd to let applyOutputs check for down and stop motor. Probably need new states.
+  public Command deploy() {
+    return runEnd(
+        () -> {
+          outputs.desiredPosition = IntakeConstants.UP;
+          RobotState.setIntakeMode(RobotState.IntakeModeState.POSITION);
+        },
+        () -> {
+          outputs.appliedDeploySpeed = 0;
+          RobotState.setIntakeMode(RobotState.IntakeModeState.OFF);
+
+        });
+  }
+
+  // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new states.
+  public Command stow() {
+    return runEnd(
+        () -> {
+          outputs.desiredPosition = IntakeConstants.DOWN;
+          RobotState.setIntakeMode(RobotState.IntakeModeState.POSITION);
+        },
+        () -> {
+          outputs.appliedDeploySpeed = 0;
+          RobotState.setIntakeMode(RobotState.IntakeModeState.OFF);
+
+        });
+  }
+
+  // TODO: Need to implement
+  public Command deployAndIntake() {
+    return new InstantCommand();
+  }
+
+  // TODO: Need to implement
+  public Command stopIntake() {
+    return new InstantCommand();
   }
 
   public void periodic() {
@@ -54,32 +98,12 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/Applied Intake Speed", outputs.appliedIntakeSpeed);
     Logger.recordOutput("Intake/Applied Output Speed", outputs.appliedDeploySpeed);
     Logger.recordOutput("Intake/Applied Deploy Current", outputs.appliedDeployCurrent);
+    Logger.recordOutput("Intake/kP", outputs.kP);
+    Logger.recordOutput("Intake/kI", outputs.kI);
+    Logger.recordOutput("Intake/kD", outputs.kD);
+    Logger.recordOutput("Intake/kFF", outputs.kFF);
+    Logger.recordOutput("Intake/desiredPosition" , outputs.desiredPosition);
     io.applyOutputs(outputs);
   }
-
-  public void runPosition(double positionRads) {
-    goalAngle = positionRads; 
-    outputs.position = MathUtil.clamp(goalAngle, intakeMinAngle, intakeMaxAngle);
-  }
-
-  // public Command deployIntake() {
-  //   return runEnd(
-  //       () -> {
-  //         io.setDeploySpeed(IntakeConstants.DEPLOY_SPEED);
-  //         outputs.appliedDeploySpeed = IntakeConstants.DEPLOY_SPEED;
-  //         outputs.appliedDeployCurrent = 0;
-  //       },
-  //       () -> {
-  //         io.stopDeployMotor();
-  //         outputs.appliedDeploySpeed = 0;
-  //         outputs.appliedDeployCurrent = 0;
-  //       });
-  // }
-
-  public void intakeToggle() {
-    
-  }
-    
-
 
 }

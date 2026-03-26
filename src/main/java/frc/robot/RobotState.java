@@ -121,6 +121,7 @@ public final class RobotState {
 
   public enum IntakeModeState {
     POSITION, //TODO: probably good to add more 
+    SPEED,
     OFF
   }
 

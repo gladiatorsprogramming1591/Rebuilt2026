@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.RobotState;
 
 public class IntakeIOSim implements IntakeIO {
   private DCMotorSim intakeSim =
@@ -18,44 +19,35 @@ public class IntakeIOSim implements IntakeIO {
           DCMotor.getKrakenX44Foc(1));
 
   private double deployAppliedSpeed;
-  private double deployAppliedTorqueCurrentFOC;
   private double intakeAppliedSpeed;
+  private double deployAngle;
 
   public IntakeIOSim() {
     deployAppliedSpeed = 0.0;
-    deployAppliedTorqueCurrentFOC = 0.0;
     intakeAppliedSpeed = 0.0;
-  }
-
-  @Override
-  public void setDeploySpeed(double speed) {
-    deployAppliedSpeed = speed;
-  }
-
-  @Override
-  public void setDeployTorqueCurrentFOC(double current) {
-    deployAppliedTorqueCurrentFOC = current;
-  }
-
-  @Override
-  public void setIntakeSpeed(double speed) {
-    intakeAppliedSpeed = speed;
-  }
-
-  @Override
-  public void stopDeployMotor() {
-    deployAppliedSpeed = 0;
-  }
-
-  @Override
-  public void stopIntakeMotor() {
-    intakeAppliedSpeed = 0;
+    deployAngle = 0.0;
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.deploySpeed = deployAppliedSpeed;
-    inputs.deployTorqueCurrentFOC = deployAppliedTorqueCurrentFOC;
-    inputs.intakeSpeed = intakeAppliedSpeed;
+    inputs.intakeLeftSpeed = intakeAppliedSpeed;
+    inputs.deployPosition = deployAngle;
+  }
+
+  @Override
+  public void applyOutputs(IntakeIOOutputs outputs) {
+    intakeAppliedSpeed = outputs.appliedIntakeSpeed;
+    switch (RobotState.getIntakeMode()) {
+      case POSITION:
+        deployAngle = outputs.desiredPosition;
+        break;
+      case SPEED:
+        deployAppliedSpeed = outputs.appliedDeploySpeed;
+        break;
+      default:
+        System.out.println("Intake Apply Outputs Empty Default");
+        break;
+    }
   }
 }
