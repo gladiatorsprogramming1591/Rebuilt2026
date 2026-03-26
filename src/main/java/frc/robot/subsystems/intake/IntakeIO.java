@@ -24,7 +24,7 @@ public interface IntakeIO {
     public double kI = 0.0;
     public double kD = 0.0;
     public double kFF = 0.0;
-    public double desiredPosition = 0.0; 
+    public double desiredPosition = 0.0;
   }
 
   /**

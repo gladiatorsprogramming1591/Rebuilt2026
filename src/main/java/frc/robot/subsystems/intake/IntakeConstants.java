@@ -1,9 +1,9 @@
 package frc.robot.subsystems.intake;
 
 public final class IntakeConstants {
-  public static final int INTAKE_DEPLOY = 30; 
-  public static final int INTAKE_RIGHT = 29; 
-  public static final int INTAKE_LEFT = 28; 
+  public static final int INTAKE_DEPLOY = 30;
+  public static final int INTAKE_RIGHT = 29;
+  public static final int INTAKE_LEFT = 28;
 
   public static final int TOP_DEPLOY_DIO_PORT = 1;
 
@@ -22,7 +22,7 @@ public final class IntakeConstants {
   public static final double kFF = 0.0;
 
   public static final double UP = 0.0;
-  public static final double DOWN = 1.0; //placeholder until tested
+  public static final double DOWN = 1.0; // placeholder until tested
 
   // % Duty-Cycle
   public static final double INTAKE_MOTOR_SPEED = 0.70;

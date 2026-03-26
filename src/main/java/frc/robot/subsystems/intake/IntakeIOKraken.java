@@ -10,15 +10,14 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import frc.robot.Constants;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
@@ -38,7 +37,8 @@ public class IntakeIOKraken implements IntakeIO {
   private final StatusSignal<Temperature> intakeLeftTemp = intakeLeft.getDeviceTemp();
   private final StatusSignal<Temperature> intakeRightTemp = intakeRight.getDeviceTemp();
   private final StatusSignal<AngularVelocity> intakeLeftAngularVelocity = intakeLeft.getVelocity();
-  private final StatusSignal<AngularVelocity> intakeRightAngularVelocity = intakeRight.getVelocity();
+  private final StatusSignal<AngularVelocity> intakeRightAngularVelocity =
+      intakeRight.getVelocity();
 
   public IntakeIOKraken() {
     var intakeConfig = new TalonFXConfiguration();
@@ -46,7 +46,7 @@ public class IntakeIOKraken implements IntakeIO {
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     PhoenixUtil.tryUntilOk(5, () -> intakeLeft.getConfigurator().apply(intakeConfig, 0.25));
-    intakeRight.setControl(new Follower(intakeLeft.getDeviceID(), MotorAlignmentValue.Aligned)); 
+    intakeRight.setControl(new Follower(intakeLeft.getDeviceID(), MotorAlignmentValue.Aligned));
 
     var deployConfig = new TalonFXConfiguration();
     deployConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.DEPLOY_CURRENT_LIMIT;
@@ -61,19 +61,19 @@ public class IntakeIOKraken implements IntakeIO {
     deployMotor.getConfigurator().apply(deploySlot0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-      50,
-      deployAngle,
-      deployAngularVelocity,
-      deploySupplyCurrent,
-      deployTorqueCurrent,
-      intakeLeftTemp,
-      intakeRightTemp,
-      intakeLeftAngularVelocity,
-      intakeRightAngularVelocity);
+        50,
+        deployAngle,
+        deployAngularVelocity,
+        deploySupplyCurrent,
+        deployTorqueCurrent,
+        intakeLeftTemp,
+        intakeRightTemp,
+        intakeLeftAngularVelocity,
+        intakeRightAngularVelocity);
 
-      deployMotor.optimizeBusUtilization();
-      intakeLeft.optimizeBusUtilization();
-      intakeRight.optimizeBusUtilization();
+    deployMotor.optimizeBusUtilization();
+    intakeLeft.optimizeBusUtilization();
+    intakeRight.optimizeBusUtilization();
   }
 
   @Override
@@ -107,14 +107,14 @@ public class IntakeIOKraken implements IntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-      deployAngle,
-      deployAngularVelocity,
-      deploySupplyCurrent,
-      deployTorqueCurrent,
-      intakeLeftTemp,
-      intakeRightTemp,
-      intakeLeftAngularVelocity,
-      intakeRightAngularVelocity);
+        deployAngle,
+        deployAngularVelocity,
+        deploySupplyCurrent,
+        deployTorqueCurrent,
+        intakeLeftTemp,
+        intakeRightTemp,
+        intakeLeftAngularVelocity,
+        intakeRightAngularVelocity);
 
     inputs.deploySpeed = deployAngularVelocity.getValueAsDouble();
     inputs.deployTorqueCurrentFOC = deployTorqueCurrent.getValueAsDouble();
@@ -130,7 +130,7 @@ public class IntakeIOKraken implements IntakeIO {
   public void applyOutputs(IntakeIOOutputs outputs) {
     switch (RobotState.getIntakeMode()) {
       case POSITION:
-        if(Constants.tuningMode) {
+        if (Constants.tuningMode) {
           deploySlot0.kP = IntakeConstants.kP;
           deploySlot0.kI = IntakeConstants.kI;
           deploySlot0.kD = IntakeConstants.kD;
@@ -139,10 +139,10 @@ public class IntakeIOKraken implements IntakeIO {
         }
 
         deployMotor.setControl(
-          positionControl
-            .withPosition(outputs.desiredPosition)
-            .withSlot(0)
-            .withFeedForward(outputs.kFF));
+            positionControl
+                .withPosition(outputs.desiredPosition)
+                .withSlot(0)
+                .withFeedForward(outputs.kFF));
         break;
       case OFF:
         deployMotor.set(0);

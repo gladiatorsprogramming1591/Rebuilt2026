@@ -120,7 +120,7 @@ public final class RobotState {
   @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
 
   public enum IntakeModeState {
-    POSITION, //TODO: probably good to add more 
+    POSITION, // TODO: probably good to add more
     SPEED,
     OFF
   }
