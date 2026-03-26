@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
+import frc.robot.RobotState.IntakeModeState;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -86,7 +87,20 @@ public class Intake extends SubsystemBase {
 
   // TODO: Need to implement
   public Command stopIntake() {
-    return new InstantCommand();
+    return run(
+        () -> {
+          outputs.appliedIntakeSpeed = 0;
+          outputs.appliedDeploySpeed = 0;
+          RobotState.setIntakeMode(IntakeModeState.OFF);
+        });
+  }
+
+  /** Returns a command that sets intake speed to 0. Doesn't impact deploy. */
+  public Command stopIntakeInstant() {
+    return new InstantCommand(
+        () -> {
+          outputs.appliedIntakeSpeed = 0;
+        });
   }
 
   public void periodic() {

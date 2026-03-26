@@ -45,8 +45,11 @@ public class IntakeIOSim implements IntakeIO {
       case SPEED:
         deployAppliedSpeed = outputs.appliedDeploySpeed;
         break;
+      case OFF:
+        deployAppliedSpeed = 0;
+        break;
       default:
-        System.out.println("Intake Apply Outputs Empty Default");
+        System.out.println("Intake Apply Outputs Empty Default" + RobotState.getIntakeMode().toString());
         break;
     }
   }

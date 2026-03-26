@@ -389,8 +389,8 @@ public class RobotContainer {
 
   public Command intakePulseCommand() {
     return intake
-        .stopIntake()
-        .alongWith(
+        .stopIntakeInstant()
+        .andThen(
             Commands.sequence(
                 intake.stow().withTimeout(0.5),
                 intake.deploy().withTimeout(0.2),

@@ -145,8 +145,12 @@ public class IntakeIOKraken implements IntakeIO {
                 .withSlot(0)
                 .withFeedForward(outputs.kFF));
         break;
+      case SPEED:
+        deployMotor.set(outputs.appliedDeploySpeed);
+        break;
       case OFF:
         deployMotor.set(0);
+        break;
       default:
         System.out.println("Intake Apply Outputs Empty Default");
         break;
