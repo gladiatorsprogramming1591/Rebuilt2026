@@ -80,6 +80,20 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command deployWithSpeed() {
+    return runEnd(
+      () -> {
+          System.out.println("deployWithSpeed: " + deploySpeed.getAsDouble());
+          outputs.appliedDeploySpeed = deploySpeed.getAsDouble();
+          RobotState.setIntakeMode(RobotState.IntakeModeState.SPEED);
+        },
+        () -> {
+          System.out.println("deployWithSpeed: " + 0);
+          outputs.appliedDeploySpeed = 0;
+          RobotState.setIntakeMode(RobotState.IntakeModeState.OFF);
+        });
+  }
+
   // TODO: Need to implement
   public Command deployAndIntake() {
     return new InstantCommand();
@@ -112,6 +126,7 @@ public class Intake extends SubsystemBase {
     outputs.kD = kD.getAsDouble();
     outputs.kFF = kFF.getAsDouble();
 
+    Logger.recordOutput("Intake/Mode", RobotState.getIntakeMode().toString());
     Logger.recordOutput("Intake/Applied Intake Speed", outputs.appliedIntakeSpeed);
     Logger.recordOutput("Intake/Applied Output Speed", outputs.appliedDeploySpeed);
     Logger.recordOutput("Intake/Applied Deploy Current", outputs.appliedDeployCurrent);

@@ -293,6 +293,7 @@ public class RobotContainer {
     // intake
     operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
     operator_controller.a().whileTrue(intakePulseCommand());
+    operator_controller.rightTrigger().whileTrue(intake.deployWithSpeed());
     // operator_controller.povDown().whileTrue(intake.reverseIntakeMotor()); // TODO: Add back later
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
     // TODO: Kiley request: undeployed
