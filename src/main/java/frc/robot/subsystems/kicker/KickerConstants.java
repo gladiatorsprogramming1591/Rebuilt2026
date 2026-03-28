@@ -11,4 +11,6 @@ public final class KickerConstants {
   private static final LoggedTunableNumber kickerSpeed =
       new LoggedTunableNumber("KickerSpeed/Tuning", -1.00);
   public static final double KICKER_MOTOR_SPEED = kickerSpeed.get();
+
+  public static final int KICKER_2_CAN_ID = 0;
 }
