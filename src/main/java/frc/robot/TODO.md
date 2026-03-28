@@ -1,5 +1,7 @@
 High Priority:
 --------------
+- Adjust autos for V3 new cam/shooter locations
+    - Auto "Bottom Rush to Hub" is still hitting wall, worsening after each trench pass. Odometry loss is likely aggravated due to camara not seeing April Tags at all through auto. Path must be edited to work for V3 cam placement/shooter reorientation.
 - Investigate shoot from NZ passing map (can test via sim)
 #### Code Refactor:
 - Ensure inputs/outputs are being used/updated/logged properly across subsystems' IO, Real, and Sim
