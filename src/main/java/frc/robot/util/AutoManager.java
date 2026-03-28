@@ -10,11 +10,12 @@ import frc.robot.subsystems.drive.*;
 public class AutoManager {
   private SendableChooser<Command> autos;
   private Drive drivetrain;
+  // FYI: Auto names are case-sensitive!
   private String rightSideRushHub = "Bottom Rush to Hub";
   private String middleShootStraight = "Middle Shoot Straight";
   private String middleShootTop = "Middle Shoot Top";
   private String middleShootBottom = "Middle Shoot Bottom";
-  private String rightSideBumpReturn = "Bottom Bump";
+  private String rightSideBumpReturn = "Bottom bump";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
