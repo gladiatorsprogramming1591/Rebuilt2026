@@ -14,6 +14,7 @@ public class AutoManager {
   private String middleShootStraight = "Middle Shoot Straight";
   private String middleShootTop = "Middle Shoot Top";
   private String middleShootBottom = "Middle Shoot Bottom";
+  private String rightSideBumpReturn = "Bottom Bump";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -29,6 +30,7 @@ public class AutoManager {
     autos.addOption("Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
     autos.addOption(
         "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
+    autos.addOption("Bottom Bump", wrapAutoWithPose(new PathPlannerAuto(rightSideBumpReturn)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

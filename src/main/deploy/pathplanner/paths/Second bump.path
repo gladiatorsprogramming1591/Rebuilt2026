@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6,
-        "y": 4.057904040404041
+        "x": 5.839705128205129,
+        "y": 3.767551282051283
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.438971123334055,
-        "y": 3.8666719801220264
+        "x": 6.665307692307693,
+        "y": 1.8721538461538463
       },
       "isLocked": false,
-      "linkedName": "middle start"
+      "linkedName": "Start spinning"
     },
     {
       "anchor": {
-        "x": 2.7225348837209298,
-        "y": 2.9381627906976733
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": {
-        "x": 2.956652058977102,
-        "y": 3.2650409081369163
+        "x": 2.769858974358976,
+        "y": 2.221
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "middle start shoot b"
+      "linkedName": "Tilted Hub Shot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -138.41
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.25643716352929
+    "rotation": -138.415
   },
   "reversed": false,
-  "folder": "STUFF",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 110.0
   },
   "useDefaultConstraints": true
 }

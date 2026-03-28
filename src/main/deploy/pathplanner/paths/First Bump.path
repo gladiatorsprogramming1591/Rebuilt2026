@@ -8,46 +8,30 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.468779948814582,
-        "y": 1.919918260720606
+        "x": 5.630397435897437,
+        "y": 2.267512820512822
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
     },
     {
       "anchor": {
-        "x": 6.380955777460769,
-        "y": 0.5868473609129818
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": {
-        "x": 6.810813597365983,
-        "y": 0.6405795884011343
-      },
-      "nextControl": {
-        "x": 5.910680348074449,
-        "y": 0.5280629322396911
-      },
-      "isLocked": false,
-      "linkedName": "WP1"
-    },
-    {
-      "anchor": {
-        "x": 2.9392724679029953,
-        "y": 0.7938659058487907
-      },
-      "prevControl": {
-        "x": 4.064935805991441,
-        "y": 0.23750356633380865
+        "x": 4.804794871794872,
+        "y": 2.174487179487179
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Bottom Trench Shoot"
+      "linkedName": "Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.6958855098389962,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.4877192982456121,
+      "rotationDegrees": -138.41
     }
   ],
   "constraintZones": [],
@@ -63,12 +47,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 62.71201205448449
+    "rotation": -138.415
   },
   "reversed": false,
-  "folder": "Competiton",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 2.0,
+    "velocity": 0,
     "rotation": 90.0
   },
   "useDefaultConstraints": true
