@@ -48,7 +48,6 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
@@ -375,10 +374,8 @@ public class RobotContainer {
     return Commands.parallel(
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
-        DriveCommands.rotateToHub(drive, () -> 0, () -> 0)
-            .withTimeout(0.5)
-            .andThen(
-                DriveCommands.joystickDrive(drive, () -> 0, () -> 0, () -> 0).withTimeout(0.1)),
+        DriveCommands.joystickDriveWhileLaunching(drive, () -> 0, () -> 0)
+            .withTimeout(0.5), // TODO: This could run for the entire time we are shooting and remove the TO
         Commands.sequence(
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
