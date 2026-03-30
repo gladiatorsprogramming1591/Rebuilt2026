@@ -23,16 +23,23 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.shooter.ShooterCalculation;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.FieldConstants;
+import frc.robot.util.GeomUtil;
+import frc.robot.util.LoggedTunableNumber;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   // TODO***: Investigate/tune these
@@ -45,6 +52,35 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+
+  private static final LoggedTunableNumber driveLaunchKp =
+      new LoggedTunableNumber("DriveCommands/Launching/kP", 8.0);
+  private static final LoggedTunableNumber driveLaunchKd =
+      new LoggedTunableNumber("DriveCommands/Launching/kD", 0.5);
+  private static final LoggedTunableNumber driveYawLaunchToleranceDeg =
+      new LoggedTunableNumber("DriveCommands/Launching/YawToleranceDeg", 10.0);
+  private static final LoggedTunableNumber drivePitchLaunchToleranceDeg =
+      new LoggedTunableNumber("DriveCommands/Launching/PitchToleranceDeg", 5.0);
+  private static final LoggedTunableNumber driveRollLaunchToleranceDeg =
+      new LoggedTunableNumber("DriveCommands/Launching/RollToleranceDeg", 5.0);
+  private static final LoggedTunableNumber driveYawPassToleranceDeg =
+      new LoggedTunableNumber("DriveCommands/Passing/YawToleranceDeg", 15.0);
+  private static final LoggedTunableNumber drivePitchPassToleranceDeg =
+      new LoggedTunableNumber("DriveCommands/Passing/PitchToleranceDeg", 5.0);
+  private static final LoggedTunableNumber driveRollPassToleranceDeg =
+      new LoggedTunableNumber("DriveCommands/Passing/RollToleranceDeg", 5.0);
+
+  private static final LoggedTunableNumber lockMetersPerSecondThreshold =
+      new LoggedTunableNumber("DriveCommands/Launching/LockMetersPerSecThreshold", 0.1);
+  private static final LoggedTunableNumber lockOmegaRadsPerSecThreshold =
+      new LoggedTunableNumber("DriveCommands/Launching/LockOmegaRadsPerSecThreshold", 0.15);
+
+  private static final LoggedTunableNumber driveLaunchMaxPolarVelocityRadPerSec =
+      new LoggedTunableNumber("DriveCommands/Launching/MaxPolarVelocityRadPerSec", 0.6);
+  private static final LoggedTunableNumber driveLauncherCORMinErrorDeg =
+      new LoggedTunableNumber("DriveCommands/Launching/DriveLauncherCORMinErrorDeg", 15.0);
+  private static final LoggedTunableNumber driveLauncherCORMaxErrorDeg =
+      new LoggedTunableNumber("DriveCommands/Launching/DriveLauncherCORMaxErrorDeg", 30.0);
 
   private DriveCommands() {}
 
@@ -168,6 +204,181 @@ public class DriveCommands {
 
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+  }
+
+  public static boolean atLaunchGoal() {
+    var passing = ShooterCalculation.getInstance().getParameters().passing();
+    var rotation3d =
+        RobotState.getInstance().getEstimatedRotation3dAtTimestamp(Timer.getTimestamp());
+    boolean inPitchAndRollTolerance =
+        rotation3d.isEmpty()
+            || (Math.abs(rotation3d.get().getX())
+                    <= Units.degreesToRadians(
+                        passing
+                            ? driveRollPassToleranceDeg.get()
+                            : driveRollLaunchToleranceDeg.get())
+                && Math.abs(rotation3d.get().getY())
+                    <= Units.degreesToRadians(
+                        passing
+                            ? drivePitchPassToleranceDeg.get()
+                            : drivePitchLaunchToleranceDeg.get()));
+
+    return DriverStation.isEnabled()
+        && Math.abs(
+                RobotState.getInstance()
+                    .getRotation()
+                    .minus(ShooterCalculation.getInstance().getParameters().driveAngle())
+                    .getRadians())
+            <= Units.degreesToRadians(
+                passing ? driveYawPassToleranceDeg.get() : driveYawLaunchToleranceDeg.get())
+        && inPitchAndRollTolerance;
+  }
+
+  public static Command joystickDriveWhileLaunching(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    // Create command
+    return Commands.run(
+        () -> {
+          // Run PID controller
+          final var parameters = ShooterCalculation.getInstance().getParameters();
+          double omegaOutput =
+              parameters.driveVelocity()
+                  + (parameters
+                          .driveAngle()
+                          .minus(RobotState.getInstance().getRotation())
+                          .getRadians()
+                      * driveLaunchKp.get())
+                  + ((parameters.driveVelocity()
+                          - RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond)
+                      * driveLaunchKd.get());
+
+          // Calculate speeds
+          Translation2d fieldRelativeLinearVelocity =
+              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble())
+                  .times(DriveConstants.maxLinearSpeed);
+          if (AllianceFlipUtil.shouldFlip()) {
+            fieldRelativeLinearVelocity = fieldRelativeLinearVelocity.times(-1.0);
+          }
+
+          // Only limit if launching, not passing
+          if (!ShooterCalculation.getInstance().getParameters().passing()) {
+            // Calculate max linear velocity magnitude based on the max polar velocity
+            double maxLinearVelocityMagnitude = Double.POSITIVE_INFINITY;
+            double robotAngle =
+                Math.abs(
+                    AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d())
+                        .minus(RobotState.getInstance().getEstimatedPose().getTranslation())
+                        .getAngle()
+                        .minus(fieldRelativeLinearVelocity.getAngle())
+                        .getRadians());
+            double robotHubDistance =
+                ShooterCalculation.getInstance().getParameters().distanceNoLookahead();
+            double hubAngle =
+                driveLaunchMaxPolarVelocityRadPerSec.get()
+                    * ShooterCalculation.getInstance().getNaiveTOF(robotHubDistance);
+            double lookaheadAngle = Math.PI - robotAngle - hubAngle;
+
+            // Calculate limit if triangle is valid (otherwise no limit)
+            if (lookaheadAngle > 0) {
+              double robotLookaheadDistance =
+                  robotHubDistance * Math.sin(hubAngle) / Math.sin(lookaheadAngle);
+              maxLinearVelocityMagnitude =
+                  robotLookaheadDistance
+                      / ShooterCalculation.getInstance().getNaiveTOF(robotHubDistance);
+            }
+
+            // Apply limit to velocity
+            if (fieldRelativeLinearVelocity.getNorm() > maxLinearVelocityMagnitude) {
+              fieldRelativeLinearVelocity =
+                  fieldRelativeLinearVelocity.times(
+                      maxLinearVelocityMagnitude / fieldRelativeLinearVelocity.getNorm());
+            }
+          }
+
+          // Apply chassis speeds
+          double corScalar =
+              MathUtil.clamp(
+                  (Math.abs(
+                              parameters
+                                  .driveAngle()
+                                  .minus(RobotState.getInstance().getRotation())
+                                  .getDegrees())
+                          - driveLauncherCORMinErrorDeg.get())
+                      / (driveLauncherCORMaxErrorDeg.get() - driveLauncherCORMinErrorDeg.get()),
+                  0.0,
+                  1.0);
+          Translation2d launcherToRobot =
+              ShooterConstants.robotToLauncher.getTranslation().toTranslation2d().unaryMinus();
+          ChassisSpeeds fieldRelativeSpeedsWithOffset =
+              GeomUtil.transformVelocity(
+                  new ChassisSpeeds(
+                      fieldRelativeLinearVelocity.getX(),
+                      fieldRelativeLinearVelocity.getY(),
+                      omegaOutput),
+                  launcherToRobot.times(1.0 - corScalar),
+                  RobotState.getInstance().getRotation());
+
+          // Apply O-lock
+          boolean oLock =
+              Math.hypot(
+                          fieldRelativeSpeedsWithOffset.vxMetersPerSecond,
+                          fieldRelativeSpeedsWithOffset.vyMetersPerSecond)
+                      < lockMetersPerSecondThreshold.get()
+                  && Math.abs(fieldRelativeSpeedsWithOffset.omegaRadiansPerSecond)
+                      < lockOmegaRadsPerSecThreshold.get();
+          Logger.recordOutput("DriveCommands/Launching/OLock", oLock);
+          if (oLock) {
+            drive.stopWithO();
+          } else {
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    fieldRelativeSpeedsWithOffset, RobotState.getInstance().getRotation()));
+          }
+
+          // Override robot setpoint speeds published by drive. We run our calculations using the
+          // speeds that will ultimately be applied once we are using the full robot-to-launcher
+          // transform. This prevents the setpoint from changing due to the shifting COR of the
+          // robot.
+          ChassisSpeeds fieldRelativeSpeedsWithFullOffset =
+              GeomUtil.transformVelocity(
+                  new ChassisSpeeds(
+                      fieldRelativeLinearVelocity.getX(),
+                      fieldRelativeLinearVelocity.getY(),
+                      omegaOutput),
+                  launcherToRobot,
+                  RobotState.getInstance().getRotation());
+          RobotState.getInstance()
+              .setRobotSetpointVelocity(
+                  ChassisSpeeds.discretize(
+                      ChassisSpeeds.fromFieldRelativeSpeeds(
+                          fieldRelativeSpeedsWithFullOffset,
+                          RobotState.getInstance().getRotation()),
+                      Constants.loopPeriodSecs));
+
+          // Log data
+          Logger.recordOutput(
+              "DriveCommands/Launching/SetpointPose",
+              new Pose2d(
+                  RobotState.getInstance().getEstimatedPose().getTranslation(),
+                  parameters.driveAngle()));
+          Logger.recordOutput("DriveCommands/Launching/AtGoalTolerance", atLaunchGoal());
+          Logger.recordOutput(
+              "DriveCommands/Launching/ErrorPosition",
+              parameters.driveAngle().minus(RobotState.getInstance().getRotation()));
+          Logger.recordOutput(
+              "DriveCommands/Launching/ErrorVelocityRadPerSec",
+              parameters.driveVelocity()
+                  - RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
+          Logger.recordOutput(
+              "DriveCommands/Launching/MeasuredPosition", RobotState.getInstance().getRotation());
+          Logger.recordOutput(
+              "DriveCommands/Launching/MeasuredVelocityRadPerSec",
+              RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
+          Logger.recordOutput("DriveCommands/Launching/SetpointPosition", parameters.driveAngle());
+          Logger.recordOutput(
+              "DriveCommands/Launching/SetpointVelocityRadPerSec", parameters.driveVelocity());
+        },
+        drive);
   }
 
   /**

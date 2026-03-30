@@ -48,6 +48,7 @@ import frc.robot.subsystems.roller.RollerIO;
 import frc.robot.subsystems.roller.RollerIOKraken;
 import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
@@ -352,10 +353,13 @@ public class RobotContainer {
   }
 
   public Command shootWithAim() {
+    // var shooterCalculation = ShooterCalculation.getInstance();
     return Commands.parallel(
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
-        DriveCommands.rotateToHub(
+        // DriveCommands.rotateToHub(
+        //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
+        DriveCommands.joystickDriveWhileLaunching(
             drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
