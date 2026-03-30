@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 5.630397435897437,
-        "y": 2.2675128205128217
+        "y": 2.267512820512822
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
@@ -50,7 +50,7 @@
     "rotation": -138.415
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

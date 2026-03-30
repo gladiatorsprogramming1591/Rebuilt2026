@@ -68,7 +68,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
