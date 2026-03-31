@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
 import java.util.function.BooleanSupplier;
 
+// spotless:off
 public class ShooterIOKraken implements ShooterIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
-  // final MotionMagicVelocityVoltage velocityControl =
-  //     new MotionMagicVelocityVoltage(0).withSlot(0);
+  // private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0).withSlot(0);
 
   private final StatusSignal<AngularVelocity> RL_RPS;
   private final StatusSignal<AngularVelocity> RF_RPS;
@@ -84,38 +84,36 @@ public class ShooterIOKraken implements ShooterIO {
     rightConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
     rightConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
 
     var slot0Configs = rightConfig.Slot0;
 
-    slot0Configs.kS = 0.0; // Add 0.0 V output to overcome static friction
-    slot0Configs.kV = 0.125; // A velocity target of 1 rps results in 0.125 V output
-    slot0Configs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0Configs.kP = 0.7; // An error of 1 rps results in 0.65 V output
-    slot0Configs.kI = 0; // no output for integrated error
-    slot0Configs.kD = 0; // no output for error derivative
+    slot0Configs.kP = ShooterConstants.kP.getAsDouble();
+    slot0Configs.kI = ShooterConstants.kI.getAsDouble();
+    slot0Configs.kD = ShooterConstants.kD.getAsDouble();
+    slot0Configs.kS = ShooterConstants.kS.getAsDouble();
+    slot0Configs.kV = ShooterConstants.kV.getAsDouble();
+    slot0Configs.kA = ShooterConstants.kA.getAsDouble();
 
-    // set Motion Magic Velocity settings
-    // (UNUSED IF USING VelocityVoltage)
+    // Motion Magic velocity configs
+    // only used when calling MM control request. e.g. new MotionMagicVelocityVoltage(<rps>)
     var motionMagicConfigs = rightConfig.MotionMagic;
-    motionMagicConfigs.MotionMagicAcceleration =
-        400; // Target acceleration of 200 rps/s (0.50 (?) seconds to max)
-    motionMagicConfigs.MotionMagicJerk = 4000; // Target jerk of 2000 rps/s/s (0.2 (?) seconds)
+    motionMagicConfigs.MotionMagicAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
+    motionMagicConfigs.MotionMagicJerk = ShooterConstants.kMMJerk.getAsDouble();
 
-    // tryUntilOk(5, ()-> shooterFollower.getConfigurator().apply(shooterConfig, 0.25));
     var leftConfig = rightConfig.clone();
 
-    leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // i.e. not inverted
     PhoenixUtil.tryUntilOk(5, () -> rightShooterLeader.getConfigurator().apply(rightConfig, 0.25));
     PhoenixUtil.tryUntilOk(5, () -> leftShooterLeader.getConfigurator().apply(leftConfig, 0.25));
-    PhoenixUtil.tryUntilOk(
-        5, () -> rightShooterFollower.getConfigurator().apply(rightConfig, 0.25));
+    PhoenixUtil.tryUntilOk(5, () -> rightShooterFollower.getConfigurator().apply(rightConfig, 0.25));
     PhoenixUtil.tryUntilOk(5, () -> leftShooterFollower.getConfigurator().apply(leftConfig, 0.25));
     rightShooterFollower.setControl(
         new Follower(rightShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     leftShooterFollower.setControl(
         new Follower(leftShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
   }
+  // spotless:on
 
   @Override
   public void updateInputs(ShooterIO.ShooterIOInputs inputs) {
@@ -169,16 +167,18 @@ public class ShooterIOKraken implements ShooterIO {
     slot0Configs.kP = outputs.kP;
     slot0Configs.kI = outputs.kI;
     slot0Configs.kD = outputs.kD;
+    slot0Configs.kS = outputs.kS;
     slot0Configs.kV = outputs.kV;
+    slot0Configs.kA = outputs.kA;
 
-    // rightShooterLeader.getConfigurator().apply(slot0Configs); // Cannot call periodicly
+    // rightShooterLeader.getConfigurator().apply(slot0Configs); // Cannot call periodicly TODO: Apply via dashboard
     // leftShooterLeader.getConfigurator().apply(slot0Configs);
 
     // rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     // leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     lastCommandedVelocityRPS = outputs.desiredVelocityRPM / 60;
 
-    // Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
+    // Logger.recordOutput(ShooterConstants.tableKey + "lastCommandedVelocityRPS", lastCommandedVelocityRPS);
     SmartDashboard.putNumber("lastCommandedVelocityRPS", lastCommandedVelocityRPS);
     rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
     leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
@@ -190,12 +190,19 @@ public class ShooterIOKraken implements ShooterIO {
     leftShooterLeader.set(dutyCycle);
   }
 
+  /**
+   * Checks if the velocity of the right leader motor is within tolerance of the target velocity.
+   * <p>
+   * Only works with positive (i.e. shooting) velocity targets, not negative.
+   *
+   * @return Boolean supplier of whether right leader motor velocity is at target
+   */
   @Override
   public BooleanSupplier rightShooterAtVelocity() {
 
     return (() ->
         rightShooterLeader.getVelocity().getValueAsDouble()
-            > lastCommandedVelocityRPS - ShooterConstants.SHOOTER_TOLERANCE);
+            > lastCommandedVelocityRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
   }
 
   @Override
@@ -218,7 +225,7 @@ public class ShooterIOKraken implements ShooterIO {
 
     return (() ->
         leftShooterLeader.getVelocity().getValueAsDouble()
-            > lastCommandedVelocityRPS - ShooterConstants.SHOOTER_TOLERANCE);
+            > lastCommandedVelocityRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
   }
 
   /**

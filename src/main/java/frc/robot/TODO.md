@@ -1,5 +1,17 @@
 High Priority:
 --------------
+- V3 Intake
+    - Deploy: negative output stows intake up
+        - Limit Extent: DIO 1
+        - Limit Stow: DIO 2
+        - Stator: 20
+        - Supply: 12
+        - Idle: Brake
+
+    - Intake: only right is inverted (clockwise positive)
+        - Stator: 120
+        - Supply: 40
+        - Idle: Coast
 - Investigate shoot from NZ passing map (can test via sim)
 #### Code Refactor:
 - Ensure inputs/outputs are being used/updated/logged properly across subsystems' IO, Real, and Sim
