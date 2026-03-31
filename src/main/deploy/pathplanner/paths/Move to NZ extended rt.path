@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.125009576768613,
-        "y": -0.6067553290083405
+        "x": 3.037307692307693,
+        "y": 0.05815384615384689
       },
       "isLocked": false,
       "linkedName": "bottom start shoot"
@@ -20,12 +20,12 @@
         "y": 2.1861153846153853
       },
       "prevControl": {
-        "x": 6.737217708644749,
-        "y": 0.43758747277603893
+        "x": 7.002525641025643,
+        "y": 0.22094871794871884
       },
       "nextControl": {
-        "x": 7.871730769230771,
-        "y": 2.402621735561495
+        "x": 7.835269203902168,
+        "y": 2.419912188669544
       },
       "isLocked": false,
       "linkedName": null
@@ -46,7 +46,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4105263157894756,
+      "waypointRelativePos": 0.48070175438596385,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.3543859649123067,
       "rotationDegrees": 90.0
     }
   ],
@@ -54,8 +58,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -69,7 +73,7 @@
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 47.878369499734035
+    "rotation": -132.122
   },
   "useDefaultConstraints": true
 }

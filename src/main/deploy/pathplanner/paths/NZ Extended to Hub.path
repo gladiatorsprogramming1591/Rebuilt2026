@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.073982156112603,
-        "y": 1.3380420259235986
+        "x": 6.362974358974359,
+        "y": 1.7558717948717946
       },
       "isLocked": false,
       "linkedName": "bottom NZ extend"
@@ -56,33 +56,10 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Idle Intake",
-      "waypointRelativePos": 0.25,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Idle Intake"
-        }
-      }
-    },
-    {
-      "name": "Warm Up Shooter",
-      "waypointRelativePos": 1.15,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Warm Up Shooter"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

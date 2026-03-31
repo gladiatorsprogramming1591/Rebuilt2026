@@ -7,37 +7,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle start top"
+            "pathName": "Bottom to NZ wiggle "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot"
+            "pathName": "First Bump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot from depot"
+            "pathName": "Weird thingy "
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to NZ"
+            "pathName": "Second bump"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Shoot after NZ lt"
+            "name": "Shoot Hub"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "ALSO STUFF",
+  "folder": "Competition",
   "choreoAuto": false
 }

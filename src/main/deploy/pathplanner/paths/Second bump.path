@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.467,
-        "y": 0.633
+        "x": 5.839705128205129,
+        "y": 3.767551282051283
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7092514818278695,
-        "y": 0.7159100701169558
+        "x": 6.963195435092723,
+        "y": 1.9324679029957212
       },
-      "isLocked": true,
-      "linkedName": null
+      "isLocked": false,
+      "linkedName": "Start spinning"
     },
     {
       "anchor": {
-        "x": 1.305,
-        "y": 1.1279487179487193
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": {
-        "x": 0.9089553759606432,
-        "y": 0.8180430071411826
+        "x": 2.769858974358976,
+        "y": 2.221
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Tilted Hub Shot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -138.41
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 40.621815096466555
+    "rotation": -138.415
   },
   "reversed": false,
-  "folder": "STUFF",
+  "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 110.0
   },
   "useDefaultConstraints": true
 }

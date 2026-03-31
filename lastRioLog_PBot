@@ -1,70 +1,57 @@
-Ran on 2026-2-17 9:33 PM
+Ran on 2026-3-28 2:48 PM
 ********** Robot program starting **********
 NT: Listening on NT3 port 1735, NT4 port 5810
-NT: Got a NT4 connection from 10.15.91.202 port 53841
-NT: CONNECTED NT4 client 'Elastic@1' (from 10.15.91.202:53841)
-NT: Got a NT4 connection from 10.15.91.202 port 53843
-NT: CONNECTED RTT client (from 10.15.91.202:53843)
-NT: Got a NT4 connection from 10.15.91.201 port 60450
-NT: CONNECTED NT4 client 'limelight-one@2' (from 10.15.91.201:60450)
-[AdvantageKit] Logging to "/U/logs/akit_cedd05b28822ec3f.wpilog"
-[phoenix] Library initialization is complete.
+NT: Got a NT4 connection from 10.15.91.202 port 51666
+NT: CONNECTED NT4 client 'DartClient_11387985@1' (from 10.15.91.202:51666)
+NT: Got a NT4 connection from 10.15.91.202 port 51667
+NT: CONNECTED RTT client (from 10.15.91.202:51667)
+NT: Got a NT4 connection from 10.15.91.202 port 51665
+NT: CONNECTED NT4 client 'Elastic@2' (from 10.15.91.202:51665)
+[AdvantageKit] Logging to "/U/logs/akit_27114ce824c62ebd.wpilog"
+NT: Got a NT4 connection from 10.15.91.201 port 44294
+NT: CONNECTED NT4 client 'limelight-one@3' (from 10.15.91.201:44294)
+DataLog: Logging to '/u/logs/FRC_TBD_cb45d6ec40b1f066.wpilog' (23.0 GiB free space)
+NT: Got a NT4 connection from 10.15.91.202 port 51669
+NT: CONNECTED RTT client (from 10.15.91.202:51669)
 [phoenix] CANbus Connected: canivore (can0, 787470D546324B532020204A130C12FF)
 [phoenix] CANbus Network Up: canivore (can0, 787470D546324B532020204A130C12FF)
-Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
-Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
-[phoenix-diagnostics] Server 2026.1.0 (Jan 7 2026, 19:24:14) running on port: 1250
-Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
-Using a Pro only feature on an unlicensed device. The device may not behave as expected if it continues to operate while unlicensed.
+[phoenix] Library initialization is complete.
+[phoenix] CANbus Successfully Started: canivore
 [phoenix] Signal Logger Started (Network: 787470D546324B532020204A130C12FF)
-DataLog: Logging to '/u/logs/FRC_TBD_f1d5738b35d93ebd.wpilog' (1.4 GiB free space)
 [phoenix] Signal Logger Started (Network: rio)
-Could not transmit CAN Frame.
-Could not transmit CAN Frame.
-Could not transmit CAN Frame.
-Failed to parse JSON in file required by auto: right start pass fuel
-Error at org.json.simple.parser.Yylex.yylex(Yylex.java:470): Failed to parse JSON in file required by auto: right start pass fuel
-at org.json.simple.parser.Yylex.yylex(Yylex.java:470)
-at org.json.simple.parser.JSONParser.nextToken(JSONParser.java:226)
-at org.json.simple.parser.JSONParser.parse(JSONParser.java:80)
-at org.json.simple.parser.JSONParser.parse(JSONParser.java:59)
-at org.json.simple.parser.JSONParser.parse(JSONParser.java:53)
-at com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:94)
-at com.pathplanner.lib.commands.PathPlannerAuto.<init>(PathPlannerAuto.java:63)
-at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooserWithOptionsModifier(AutoBuilder.java:450)
-at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:409)
-at com.pathplanner.lib.auto.AutoBuilder.buildAutoChooser(AutoBuilder.java:397)
-at frc.robot.RobotContainer.<init>(RobotContainer.java:143)
-at frc.robot.Robot.<init>(Robot.java:71)
-at edu.wpi.first.wpilibj.RobotBase.runRobot(RobotBase.java:387)
-at edu.wpi.first.wpilibj.RobotBase.startRobot(RobotBase.java:527)
-at frc.robot.Main.main(Main.java:26)
+[phoenix-diagnostics] Server 2026.1.2 (Mar 11 2026, 19:42:11) running on port: 1250
 ********** Robot program startup complete **********
 Loop time of 0.02s overrun
 Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
 CommandScheduler loop overrun
-Drive.periodic(): 0.193810s
-Roller.periodic(): 0.000185s
-buttons.run(): 0.012410s
-Vision.periodic(): 0.092824s
-Intake.periodic(): 0.000594s
-Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.193810s
-Roller.periodic(): 0.000185s
-buttons.run(): 0.012410s
-Vision.periodic(): 0.092824s
-Intake.periodic(): 0.000594s
-SmartDashboard.updateValues(): 0.007883s
-disabledInit(): 0.006084s
-robotPeriodic(): 0.744913s
-LiveWindow.updateValues(): 0.000093s
+Hood.periodic(): 0.001799s
+Roller.periodic(): 0.000390s
+Drive.periodic(): 0.076668s
+buttons.run(): 0.007141s
+Vision.periodic(): 0.243228s
+Intake.periodic(): 0.003172s
+Shooter.periodic(): 0.004433s
+Kicker.periodic(): 0.000204s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.001799s
+Roller.periodic(): 0.000390s
+Drive.periodic(): 0.076668s
+buttons.run(): 0.007141s
+Vision.periodic(): 0.243228s
+Intake.periodic(): 0.003172s
+Shooter.periodic(): 0.004433s
+Kicker.periodic(): 0.000204s
+SmartDashboard.updateValues(): 0.003395s
+disabledInit(): 0.007123s
+robotPeriodic(): 0.589890s
+LiveWindow.updateValues(): 0.000111s
 Shuffleboard.update(): 0.000056s
-disabledPeriodic(): 0.001651s
-Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.007883s
-disabledInit(): 0.006084s
-robotPeriodic(): 0.744913s
-LiveWindow.updateValues(): 0.000093s
+disabledPeriodic(): 0.001447s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.003395s
+disabledInit(): 0.007123s
+robotPeriodic(): 0.589890s
+LiveWindow.updateValues(): 0.000111s
 Shuffleboard.update(): 0.000056s
-disabledPeriodic(): 0.001651s
+disabledPeriodic(): 0.001447s
 CommandScheduler loop overrun
 CommandScheduler loop overrun
 CommandScheduler loop overrun
@@ -73,29 +60,839 @@ Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(Iter
 CommandScheduler loop overrun
 CommandScheduler loop overrun
 CommandScheduler loop overrun
-Drive.periodic(): 0.059193s
-Roller.periodic(): 0.000148s
-buttons.run(): 0.000093s
-Vision.periodic(): 0.012503s
-Intake.periodic(): 0.003506s
-Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Drive.periodic(): 0.059193s
-Roller.periodic(): 0.000148s
-buttons.run(): 0.000093s
-Vision.periodic(): 0.012503s
-Intake.periodic(): 0.003506s
-SmartDashboard.updateValues(): 0.017419s
-robotPeriodic(): 0.099854s
-LiveWindow.updateValues(): 0.000018s
-Shuffleboard.update(): 0.000037s
-disabledPeriodic(): 0.003265s
-Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.017419s
-robotPeriodic(): 0.099854s
-LiveWindow.updateValues(): 0.000018s
-Shuffleboard.update(): 0.000037s
-disabledPeriodic(): 0.003265s
+Hood.periodic(): 0.000130s
+Roller.periodic(): 0.000074s
+Drive.periodic(): 0.015155s
+buttons.run(): 0.000297s
+Vision.periodic(): 0.027843s
+Intake.periodic(): 0.000130s
+Shooter.periodic(): 0.000260s
+Kicker.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000130s
+Roller.periodic(): 0.000074s
+Drive.periodic(): 0.015155s
+buttons.run(): 0.000297s
+SmartDashboard.updateValues(): 0.001670s
+robotPeriodic(): 0.084773s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000278s
+Vision.periodic(): 0.027843s
+Intake.periodic(): 0.000130s
+Shooter.periodic(): 0.000260s
+Kicker.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001670s
+robotPeriodic(): 0.084773s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000278s
 CommandScheduler loop overrun
 CommandScheduler loop overrun
 Loop time of 0.02s overrun
 Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
 CommandScheduler loop overrun
 CommandScheduler loop overrun
+Hood.periodic(): 0.002263s
+Roller.periodic(): 0.000092s
+Drive.periodic(): 0.018234s
+buttons.run(): 0.000186s
+Vision.periodic(): 0.002040s
+Intake.periodic(): 0.000149s
+Shooter.periodic(): 0.000446s
+Kicker.periodic(): 0.000093s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.002263s
+Roller.periodic(): 0.000092s
+Drive.periodic(): 0.018234s
+buttons.run(): 0.000186s
+Vision.periodic(): 0.002040s
+Intake.periodic(): 0.000149s
+Shooter.periodic(): 0.000446s
+Kicker.periodic(): 0.000093s
+SmartDashboard.updateValues(): 0.002152s
+robotPeriodic(): 0.064795s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000315s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002152s
+robotPeriodic(): 0.064795s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000315s
+CommandScheduler loop overrun
+DataLog: Renamed log file from 'FRC_TBD_cb45d6ec40b1f066.wpilog' to 'FRC_20260328_184049.wpilog'
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.001670s
+robotPeriodic(): 0.021165s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000501s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001670s
+robotPeriodic(): 0.021165s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000501s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000130s
+Roller.periodic(): 0.000056s
+Drive.periodic(): 0.026527s
+buttons.run(): 0.000278s
+Vision.periodic(): 0.002282s
+Intake.periodic(): 0.000111s
+Shooter.periodic(): 0.000352s
+Kicker.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000130s
+Roller.periodic(): 0.000056s
+Drive.periodic(): 0.026527s
+buttons.run(): 0.000278s
+Vision.periodic(): 0.002282s
+Intake.periodic(): 0.000111s
+Shooter.periodic(): 0.000352s
+Kicker.periodic(): 0.000037s
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.001632s
+robotPeriodic(): 0.067003s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000167s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001632s
+robotPeriodic(): 0.067003s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000167s
+[AdvantageKit] Renaming log to "/U/logs/akit_26-03-28_18-40-51.wpilog"
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000204s
+Roller.periodic(): 0.000241s
+Drive.periodic(): 0.010388s
+buttons.run(): 0.000148s
+Vision.periodic(): 0.007940s
+Intake.periodic(): 0.000185s
+Shooter.periodic(): 0.000427s
+Kicker.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000204s
+Roller.periodic(): 0.000241s
+Drive.periodic(): 0.010388s
+buttons.run(): 0.000148s
+Vision.periodic(): 0.007940s
+Intake.periodic(): 0.000185s
+Shooter.periodic(): 0.000427s
+Kicker.periodic(): 0.000037s
+SmartDashboard.updateValues(): 0.000668s
+robotPeriodic(): 0.016305s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000687s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000668s
+robotPeriodic(): 0.016305s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000687s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+SmartDashboard.updateValues(): 0.000668s
+robotPeriodic(): 0.022501s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000149s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000668s
+robotPeriodic(): 0.022501s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000149s
+CommandScheduler loop overrun
+Hood.periodic(): 0.001447s
+Roller.periodic(): 0.000074s
+Drive.periodic(): 0.017159s
+buttons.run(): 0.000408s
+Vision.periodic(): 0.003265s
+Intake.periodic(): 0.000408s
+Shooter.periodic(): 0.000260s
+Kicker.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.001447s
+Roller.periodic(): 0.000074s
+Drive.periodic(): 0.017159s
+buttons.run(): 0.000408s
+Vision.periodic(): 0.003265s
+Intake.periodic(): 0.000408s
+Shooter.periodic(): 0.000260s
+Kicker.periodic(): 0.000037s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.001039s
+robotPeriodic(): 0.024393s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000111s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001039s
+robotPeriodic(): 0.024393s
+LiveWindow.updateValues(): 0.000019s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000111s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000259s
+Roller.periodic(): 0.001540s
+Drive.periodic(): 0.046821s
+buttons.run(): 0.000927s
+Vision.periodic(): 0.005379s
+Intake.periodic(): 0.000205s
+Shooter.periodic(): 0.000909s
+Kicker.periodic(): 0.000055s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000259s
+Roller.periodic(): 0.001540s
+Drive.periodic(): 0.046821s
+buttons.run(): 0.000927s
+Vision.periodic(): 0.005379s
+Intake.periodic(): 0.000205s
+Shooter.periodic(): 0.000909s
+Kicker.periodic(): 0.000055s
+SmartDashboard.updateValues(): 0.000798s
+robotPeriodic(): 0.086164s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000409s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000798s
+robotPeriodic(): 0.086164s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000409s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000297s
+Roller.periodic(): 0.000074s
+Drive.periodic(): 0.022352s
+buttons.run(): 0.000093s
+Vision.periodic(): 0.002987s
+Intake.periodic(): 0.011353s
+Shooter.periodic(): 0.000334s
+Kicker.periodic(): 0.000037s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000297s
+Roller.periodic(): 0.000074s
+Drive.periodic(): 0.022352s
+buttons.run(): 0.000093s
+Vision.periodic(): 0.002987s
+Intake.periodic(): 0.011353s
+Shooter.periodic(): 0.000334s
+Kicker.periodic(): 0.000037s
+SmartDashboard.updateValues(): 0.002263s
+robotPeriodic(): 0.059323s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000222s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.002263s
+robotPeriodic(): 0.059323s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000222s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.000483s
+robotPeriodic(): 0.030755s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000631s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000483s
+robotPeriodic(): 0.030755s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+disabledPeriodic(): 0.000631s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.004712s
+robotPeriodic(): 0.018550s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.000408s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.004712s
+robotPeriodic(): 0.018550s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.000408s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000167s
+Roller.periodic(): 0.000241s
+Drive.periodic(): 0.003710s
+InstantCommand.execute(): 0.000965s
+PathPlannerAuto.execute(): 0.022483s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.000593s
+Intake.periodic(): 0.000075s
+Shooter.periodic(): 0.000223s
+InstantCommand.end(false): 0.002448s
+Kicker.periodic(): 0.000018s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000167s
+Roller.periodic(): 0.000241s
+Drive.periodic(): 0.003710s
+InstantCommand.execute(): 0.000965s
+PathPlannerAuto.execute(): 0.022483s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.000593s
+Intake.periodic(): 0.000075s
+Shooter.periodic(): 0.000223s
+InstantCommand.end(false): 0.002448s
+Kicker.periodic(): 0.000018s
+*** Auto finished in 59.24 secs ***
+autonomousInit(): 0.005027s
+SmartDashboard.updateValues(): 0.000928s
+robotPeriodic(): 0.065834s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000612s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): autonomousInit(): 0.005027s
+SmartDashboard.updateValues(): 0.000928s
+robotPeriodic(): 0.065834s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000612s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.008848s
+robotPeriodic(): 0.020776s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000241s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.008848s
+robotPeriodic(): 0.020776s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000241s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000223s
+Roller.periodic(): 0.000056s
+Drive.periodic(): 0.002931s
+PathPlannerAuto.execute(): 0.023726s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.001002s
+Intake.periodic(): 0.000167s
+Shooter.periodic(): 0.000222s
+Kicker.periodic(): 0.000204s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000223s
+Roller.periodic(): 0.000056s
+Drive.periodic(): 0.002931s
+PathPlannerAuto.execute(): 0.023726s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.001002s
+Intake.periodic(): 0.000167s
+Shooter.periodic(): 0.000222s
+Kicker.periodic(): 0.000204s
+SmartDashboard.updateValues(): 0.000649s
+robotPeriodic(): 0.033761s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000093s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000649s
+robotPeriodic(): 0.033761s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000093s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.004192s
+robotPeriodic(): 0.020109s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000111s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.004192s
+robotPeriodic(): 0.020109s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000111s
+CommandScheduler loop overrun
+Hood.periodic(): 0.001317s
+Roller.periodic(): 0.000092s
+Drive.periodic(): 0.026044s
+PathPlannerAuto.execute(): 0.005584s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.006344s
+Intake.periodic(): 0.000631s
+Shooter.periodic(): 0.001874s
+Kicker.periodic(): 0.001076s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.001317s
+Roller.periodic(): 0.000092s
+Drive.periodic(): 0.026044s
+PathPlannerAuto.execute(): 0.005584s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.006344s
+Intake.periodic(): 0.000631s
+Shooter.periodic(): 0.001874s
+Kicker.periodic(): 0.001076s
+CommandScheduler loop overrun
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+teleopPeriodic(): 0.000408s
+SmartDashboard.updateValues(): 0.009646s
+robotPeriodic(): 0.020424s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): teleopPeriodic(): 0.000408s
+SmartDashboard.updateValues(): 0.009646s
+robotPeriodic(): 0.020424s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+teleopPeriodic(): 0.000093s
+SmartDashboard.updateValues(): 0.010778s
+robotPeriodic(): 0.019700s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): teleopPeriodic(): 0.000093s
+SmartDashboard.updateValues(): 0.010778s
+robotPeriodic(): 0.019700s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+teleopPeriodic(): 0.000593s
+SmartDashboard.updateValues(): 0.000408s
+robotPeriodic(): 0.019923s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): teleopPeriodic(): 0.000593s
+SmartDashboard.updateValues(): 0.000408s
+robotPeriodic(): 0.019923s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.000520s
+robotPeriodic(): 0.023910s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+autonomousPeriodic(): 0.000112s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000520s
+robotPeriodic(): 0.023910s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+autonomousPeriodic(): 0.000112s
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000056s
+Roller.periodic(): 0.000056s
+Drive.periodic(): 0.002375s
+PathPlannerAuto.execute(): 0.051216s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.000817s
+Intake.periodic(): 0.000055s
+Shooter.periodic(): 0.000166s
+Kicker.periodic(): 0.000019s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000056s
+Roller.periodic(): 0.000056s
+Drive.periodic(): 0.002375s
+PathPlannerAuto.execute(): 0.051216s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.000817s
+Intake.periodic(): 0.000055s
+SmartDashboard.updateValues(): 0.000371s
+robotPeriodic(): 0.063682s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000241s
+Shooter.periodic(): 0.000166s
+Kicker.periodic(): 0.000019s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000371s
+robotPeriodic(): 0.063682s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000241s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000278s
+Roller.periodic(): 0.000055s
+Drive.periodic(): 0.003321s
+InstantCommand.execute(): 0.000018s
+PathPlannerAuto.execute(): 0.035412s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.000538s
+Intake.periodic(): 0.000055s
+Shooter.periodic(): 0.000186s
+InstantCommand.end(false): 0.000019s
+Kicker.periodic(): 0.000019s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000278s
+Roller.periodic(): 0.000055s
+Drive.periodic(): 0.003321s
+InstantCommand.execute(): 0.000018s
+PathPlannerAuto.execute(): 0.035412s
+buttons.run(): 0.000074s
+Vision.periodic(): 0.000538s
+Intake.periodic(): 0.000055s
+Shooter.periodic(): 0.000186s
+InstantCommand.end(false): 0.000019s
+Kicker.periodic(): 0.000019s
+autonomousInit(): 0.003024s
+SmartDashboard.updateValues(): 0.001521s
+robotPeriodic(): 0.063219s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000148s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): autonomousInit(): 0.003024s
+SmartDashboard.updateValues(): 0.001521s
+robotPeriodic(): 0.063219s
+LiveWindow.updateValues(): 0.000018s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000148s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000111s
+Roller.periodic(): 0.000055s
+Drive.periodic(): 0.002987s
+PathPlannerAuto.execute(): 0.032852s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.001874s
+Intake.periodic(): 0.000074s
+Shooter.periodic(): 0.000297s
+Kicker.periodic(): 0.000000s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000111s
+Roller.periodic(): 0.000055s
+Drive.periodic(): 0.002987s
+SmartDashboard.updateValues(): 0.000371s
+robotPeriodic(): 0.047544s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+autonomousPeriodic(): 0.000278s
+PathPlannerAuto.execute(): 0.032852s
+buttons.run(): 0.000037s
+Vision.periodic(): 0.001874s
+Intake.periodic(): 0.000074s
+Shooter.periodic(): 0.000297s
+Kicker.periodic(): 0.000000s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000371s
+robotPeriodic(): 0.047544s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+autonomousPeriodic(): 0.000278s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000075s
+Roller.periodic(): 0.000037s
+Drive.periodic(): 0.002096s
+PathPlannerAuto.execute(): 0.031109s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.000909s
+Intake.periodic(): 0.000167s
+Shooter.periodic(): 0.000204s
+Kicker.periodic(): 0.000018s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000075s
+Roller.periodic(): 0.000037s
+Drive.periodic(): 0.002096s
+PathPlannerAuto.execute(): 0.031109s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.000909s
+Intake.periodic(): 0.000167s
+Shooter.periodic(): 0.000204s
+Kicker.periodic(): 0.000018s
+SmartDashboard.updateValues(): 0.000631s
+robotPeriodic(): 0.041348s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+autonomousPeriodic(): 0.000111s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000631s
+robotPeriodic(): 0.041348s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000018s
+autonomousPeriodic(): 0.000111s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.000463s
+robotPeriodic(): 0.023077s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000092s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000463s
+robotPeriodic(): 0.023077s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+disabledPeriodic(): 0.000092s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.000594s
+robotPeriodic(): 0.020442s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000111s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000594s
+robotPeriodic(): 0.020442s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000111s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000074s
+Roller.periodic(): 0.000055s
+Drive.periodic(): 0.002374s
+PathPlannerAuto.execute(): 0.034596s
+buttons.run(): 0.000223s
+Vision.periodic(): 0.000576s
+Intake.periodic(): 0.000055s
+Shooter.periodic(): 0.000149s
+Kicker.periodic(): 0.000019s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000074s
+Roller.periodic(): 0.000055s
+Drive.periodic(): 0.002374s
+PathPlannerAuto.execute(): 0.034596s
+buttons.run(): 0.000223s
+Vision.periodic(): 0.000576s
+Intake.periodic(): 0.000055s
+Shooter.periodic(): 0.000149s
+Kicker.periodic(): 0.000019s
+SmartDashboard.updateValues(): 0.000446s
+robotPeriodic(): 0.046096s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000093s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000446s
+robotPeriodic(): 0.046096s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000093s
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000074s
+Roller.periodic(): 0.000037s
+Drive.periodic(): 0.002022s
+PathPlannerAuto.execute(): 0.025544s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.001354s
+Intake.periodic(): 0.000056s
+Shooter.periodic(): 0.000316s
+Kicker.periodic(): 0.000018s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000074s
+Roller.periodic(): 0.000037s
+Drive.periodic(): 0.002022s
+PathPlannerAuto.execute(): 0.025544s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.001354s
+Intake.periodic(): 0.000056s
+Shooter.periodic(): 0.000316s
+Kicker.periodic(): 0.000018s
+SmartDashboard.updateValues(): 0.001132s
+robotPeriodic(): 0.037248s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000093s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.001132s
+robotPeriodic(): 0.037248s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000093s
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.000334s
+robotPeriodic(): 0.009497s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+autonomousPeriodic(): 0.000538s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000334s
+robotPeriodic(): 0.009497s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000019s
+autonomousPeriodic(): 0.000538s
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+CommandScheduler loop overrun
+Hood.periodic(): 0.000204s
+Roller.periodic(): 0.000111s
+Drive.periodic(): 0.036841s
+PathPlannerAuto.execute(): 0.000724s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.000964s
+Intake.periodic(): 0.000074s
+Shooter.periodic(): 0.000241s
+Kicker.periodic(): 0.000019s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): Hood.periodic(): 0.000204s
+Roller.periodic(): 0.000111s
+Drive.periodic(): 0.036841s
+PathPlannerAuto.execute(): 0.000724s
+buttons.run(): 0.000055s
+Vision.periodic(): 0.000964s
+Intake.periodic(): 0.000074s
+SmartDashboard.updateValues(): 0.000909s
+robotPeriodic(): 0.044501s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000111s
+Shooter.periodic(): 0.000241s
+Kicker.periodic(): 0.000019s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000909s
+robotPeriodic(): 0.044501s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+autonomousPeriodic(): 0.000111s
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+Loop time of 0.02s overrun
+Warning at edu.wpi.first.wpilibj.IterativeRobotBase.printLoopOverrunMessage(IterativeRobotBase.java:436): Loop time of 0.02s overrun
+SmartDashboard.updateValues(): 0.000445s
+robotPeriodic(): 0.019756s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.000371s
+Warning at edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:62): SmartDashboard.updateValues(): 0.000445s
+robotPeriodic(): 0.019756s
+LiveWindow.updateValues(): 0.000000s
+Shuffleboard.update(): 0.000000s
+disabledPeriodic(): 0.000371s
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN frame not received/too-stale. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.
+CAN message is stale, data is valid but old. Check the CAN bus wiring, CAN bus utilization, and power to the device.

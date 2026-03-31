@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.863,
-  "robotLength": 0.863,
+  "robotWidth": 0.864,
+  "robotLength": 0.864,
   "holonomicMode": true,
   "pathFolders": [
     "Competiton",
@@ -12,13 +12,13 @@
     "Competition",
     "Testing"
   ],
-  "defaultMaxVel": 2.0,
-  "defaultMaxAccel": 2.0,
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 60.0,
-  "robotMOI": 7.458,
+  "robotMass": 68.0,
+  "robotMOI": 8.452,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.049,
   "driveGearing": 6.122,

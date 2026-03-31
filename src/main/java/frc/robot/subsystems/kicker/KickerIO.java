@@ -8,12 +8,19 @@ public interface KickerIO {
     double kickerSpeed = 0.0;
   }
 
+  @AutoLog
+  public static class KickerIOOutputs {
+    double desiredKickerSpeed = 0.0;
+  }
+
   /**
    * Refreshes the {@link KickerIOInputs} object with the latest sensor readings and derived values.
    *
    * @param inputs container to populate
    */
   public default void updateInputs(KickerIOInputs inputs) {}
+
+  public default void applyOutputs(KickerIOOutputs outputs) {}
   /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.
    *
@@ -23,11 +30,4 @@ public interface KickerIO {
   public default boolean getIsConnected(KickerIOInputs inputs) {
     return false;
   }
-
-  /**
-   * Set the motor speed to {@code speed}.
-   *
-   * @param speed speed to set motor to
-   */
-  public default void setKickerSpeed(double speed) {}
 }

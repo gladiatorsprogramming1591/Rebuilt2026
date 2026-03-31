@@ -3,56 +3,58 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.804871794871797,
-        "y": 3.5815
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.468779948814582,
-        "y": 1.919918260720606
+        "x": 5.421064102564103,
+        "y": 0.4535128205128208
       },
       "isLocked": false,
-      "linkedName": "NZ bottom"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.380955777460769,
-        "y": 0.5868473609129818
+        "x": 7.525794871794874,
+        "y": 1.4651666666666676
       },
       "prevControl": {
-        "x": 6.810813597365983,
-        "y": 0.6405795884011343
+        "x": 7.303087338163281,
+        "y": 0.8141754145127751
       },
       "nextControl": {
-        "x": 5.910680348074449,
-        "y": 0.5280629322396911
+        "x": 7.676961538461539,
+        "y": 1.9070384615384612
       },
       "isLocked": false,
-      "linkedName": "WP1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9392724679029953,
-        "y": 0.7938659058487907
+        "x": 7.804871794871797,
+        "y": 3.5815
       },
       "prevControl": {
-        "x": 4.064935805991441,
-        "y": 0.23750356633380865
+        "x": 7.804871794871797,
+        "y": 2.8954358974358967
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Bottom Trench Shoot"
+      "linkedName": "NZ bottom"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.6958855098389962,
-      "rotationDegrees": 90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 3.0,
@@ -63,12 +65,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 62.71201205448449
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Competiton",
   "idealStartingState": {
-    "velocity": 2.0,
+    "velocity": 0,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

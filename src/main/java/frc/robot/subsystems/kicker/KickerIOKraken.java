@@ -10,7 +10,6 @@ import frc.robot.util.PhoenixUtil;
 
 public class KickerIOKraken implements KickerIO {
   private final TalonFX kickerMotor = new TalonFX(KickerConstants.KICKER_CAN_ID);
-  private double speed = 0.0;
 
   public KickerIOKraken() {
     var kickerConfig = new TalonFXConfiguration();
@@ -25,15 +24,13 @@ public class KickerIOKraken implements KickerIO {
   }
 
   @Override
-  public void setKickerSpeed(double speed) {
-    this.speed = speed;
-    kickerMotor.set(this.speed);
-    SmartDashboard.putNumber("Kicker Speed", this.speed);
+  public void updateInputs(KickerIOInputs inputs) {
+    inputs.kickerSpeed = kickerMotor.get();
+    SmartDashboard.putNumber("Kicker Velocity", kickerMotor.getVelocity().getValueAsDouble());
   }
 
   @Override
-  public void updateInputs(KickerIOInputs inputs) {
-    inputs.kickerSpeed = this.speed;
-    SmartDashboard.putNumber("Kicker Velocity", kickerMotor.getVelocity().getValueAsDouble());
+  public void applyOutputs(KickerIOOutputs outputs) {
+    kickerMotor.set(outputs.desiredKickerSpeed);
   }
 }

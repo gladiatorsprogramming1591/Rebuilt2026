@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.63796005706134,
-        "y": 0.44452211126961516
+        "x": 2.9700602409638552,
+        "y": 0.40699999999999936
       },
       "isLocked": false,
       "linkedName": "Bottom Trench Shoot"
     },
     {
       "anchor": {
-        "x": 5.617574893009986,
-        "y": 0.418644793152639
+        "x": 5.625493975903614,
+        "y": 0.48349397590361487
       },
       "prevControl": {
-        "x": 3.789511320126647,
-        "y": 0.41864479315263925
+        "x": 3.3071703981105083,
+        "y": 0.48349397590361487
       },
       "nextControl": {
-        "x": 6.617574893009986,
-        "y": 0.418644793152639
+        "x": 6.625493975903613,
+        "y": 0.48349397590361487
       },
       "isLocked": false,
       "linkedName": null
@@ -80,8 +80,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
