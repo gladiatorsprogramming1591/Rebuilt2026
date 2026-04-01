@@ -43,7 +43,7 @@ public class ShooterIOKraken implements ShooterIO {
   private final StatusSignal<Current> RF_torqueCurrentAmps;
   private final StatusSignal<Current> LL_torqueCurrentAmps;
   private final StatusSignal<Current> LF_torqueCurrentAmps;
-  private double lastCommandedVelocityRPS = 0.0;
+  private double desiredRPS = 0.0;
 
   private final TalonFX rightShooterLeader =
       new TalonFX(ShooterConstants.RIGHT_SHOOTER_LEADER_MOTOR_ID);
@@ -174,14 +174,11 @@ public class ShooterIOKraken implements ShooterIO {
     // rightShooterLeader.getConfigurator().apply(slot0Configs); // Cannot call periodicly TODO: Apply via dashboard
     // leftShooterLeader.getConfigurator().apply(slot0Configs);
 
-    // rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
-    // leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
-    lastCommandedVelocityRPS = outputs.desiredVelocityRPM / 60;
+    desiredRPS = outputs.desiredVelocityRPM / 60;
 
-    // Logger.recordOutput(ShooterConstants.tableKey + "lastCommandedVelocityRPS", lastCommandedVelocityRPS);
-    SmartDashboard.putNumber("lastCommandedVelocityRPS", lastCommandedVelocityRPS);
-    rightShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
-    leftShooterLeader.setControl(velocityControl.withVelocity(outputs.desiredVelocityRPM / 60));
+    SmartDashboard.putNumber("Desired RPS", desiredRPS);
+    rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
+    leftShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
   }
 
   @Override
@@ -202,14 +199,7 @@ public class ShooterIOKraken implements ShooterIO {
 
     return (() ->
         rightShooterLeader.getVelocity().getValueAsDouble()
-            > lastCommandedVelocityRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
-  }
-
-  @Override
-  public void setShooterMotorRPM(double rps) {
-    lastCommandedVelocityRPS = rps;
-    rightShooterLeader.setControl(velocityControl.withVelocity(rps));
-    leftShooterLeader.setControl(velocityControl.withVelocity(rps));
+            > desiredRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
   }
 
   // =======================UNTESTED/UNUSED METHODS=======================
@@ -225,7 +215,7 @@ public class ShooterIOKraken implements ShooterIO {
 
     return (() ->
         leftShooterLeader.getVelocity().getValueAsDouble()
-            > lastCommandedVelocityRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+            > desiredRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
   }
 
   /**
