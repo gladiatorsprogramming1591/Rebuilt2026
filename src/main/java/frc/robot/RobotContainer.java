@@ -233,7 +233,7 @@ public class RobotContainer {
 
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
-    intake.setDefaultCommand(intake.stopIntakeMotor());
+    intake.setDefaultCommand(intake.stopIntake());
     shooter.setDefaultCommand(shooter.runIdleCommand());
     // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster.
     // Why?
@@ -266,18 +266,18 @@ public class RobotContainer {
     // intake
     driver_controller
         .leftTrigger()
-        .toggleOnTrue(intake.runIntakeMotor().alongWith(roller.runBottomRollerWhileIntaking()));
+        .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
     driver_controller
         .rightBumper()
         .whileTrue(
-            intake.deployAndIntake(true)); // TODO: needs to be a toggle eventually that run until a
+            intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a
     // certain position
     driver_controller
         .leftBumper()
         // TODO: Kiley request: undeployed
         // .leftBumper().or(operator_controller.rightTrigger())
         .whileTrue(
-            intake.runStow()); // TODO: needs to be a toggle eventually that runs until a certain
+            intake.stow()); // TODO: needs to be a toggle eventually that runs until a certain
     // encoder value
     // roller
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
@@ -295,9 +295,10 @@ public class RobotContainer {
     operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
     operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
     // intake
-    operator_controller.povUp().whileTrue(new RepeatCommand(intake.idleIntakeMotorInstant()));
+    operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
     operator_controller.a().whileTrue(intakePulseCommand());
-    operator_controller.povDown().whileTrue(intake.reverseIntakeMotor());
+    operator_controller.rightTrigger().whileTrue(intake.deployWithSpeed());
+    // operator_controller.povDown().whileTrue(intake.reverseIntakeMotor()); // TODO: Add back later
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
     // TODO: Kiley request: undeployed
     // operator_controller.start().whileTrue(intake.runIntakeMotor());
@@ -392,42 +393,37 @@ public class RobotContainer {
   //   .andThen(intake.runStow());
   // }
 
-  // TODO: Add this to shoot command
   public Command intakePulseCommand() {
     return intake
-        .idleIntakeMotorInstant()
-        .alongWith(
+        .stopIntakeInstant()
+        .andThen(
             Commands.sequence(
-                intake.runStow().withTimeout(0.5),
-                intake.deployIntake().withTimeout(0.2),
-                intake.runStow().withTimeout(0.5),
-                intake.runStow().withTimeout(0.2),
-                intake.deployIntake().withTimeout(0.5),
-                intake.runStow().withTimeout(0.2),
-                intake.runStow().withTimeout(0.5),
-                intake.deployIntake().withTimeout(0.2),
-                intake.runStow().withTimeout(0.5),
-                intake.runStow().withTimeout(0.2),
-                intake.runStow().withTimeout(0.5),
-                intake.deployIntake().withTimeout(0.2),
-                intake.runStow().withTimeout(0.5),
-                intake.runStow().withTimeout(0.2)));
+                intake.stow().withTimeout(0.5),
+                intake.deploy().withTimeout(0.2),
+                intake.stow().withTimeout(0.5),
+                intake.stow().withTimeout(0.2),
+                intake.deploy().withTimeout(0.5),
+                intake.stow().withTimeout(0.2),
+                intake.stow().withTimeout(0.5),
+                intake.deploy().withTimeout(0.2),
+                intake.stow().withTimeout(0.5),
+                intake.stow().withTimeout(0.2),
+                intake.stow().withTimeout(0.5),
+                intake.deploy().withTimeout(0.2),
+                intake.stow().withTimeout(0.5),
+                intake.stow().withTimeout(0.2)));
   }
 
   public Command intakeCommand() {
-    return intake.deployIntake().alongWith(roller.runBottomRollerWhileIntaking());
+    return intake.deploy().alongWith(roller.runBottomRollerWhileIntaking());
   }
 
   public Command prepareIntake() {
-    return intake.deployAndIntake(false).alongWith(roller.runBottomRollerWhileIntaking());
+    return intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking());
   }
 
   public Command intakeIn() {
     return Commands.parallel(intake.stow());
-  }
-
-  public Command idleIntake() {
-    return intake.idleIntakeMotorInstant();
   }
 
   public void registerNamedCommands() {
