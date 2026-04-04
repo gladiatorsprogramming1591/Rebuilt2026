@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -52,9 +53,9 @@ public class ShooterIOKraken implements ShooterIO {
   private final TalonFX rightShooterFollower =
   new TalonFX(ShooterConstants.RIGHT_SHOOTER_FOLLOWER_MOTOR_ID);
   
-  private final TalonFX leftShooterLeader =
+  private final TalonFX leftShooterFollower1 =
   new TalonFX(ShooterConstants.LEFT_SHOOTER_LEADER_MOTOR_ID);
-  private final TalonFX leftShooterFollower =
+  private final TalonFX leftShooterFollower2 =
   new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
   
   private double desiredRPS = 0.0;
@@ -62,7 +63,7 @@ public class ShooterIOKraken implements ShooterIO {
   private double initConfigTimeout = 0.250;
   private double tunedConfigTimeout = 0.100; // Equivalent to default timeout
   private int initConfigMaxAttempts = 5;
-  private int tunedConfigMaxAttempts = 2; // Equivalent to default timeout
+  private int tunedConfigMaxAttempts = 2;
 
   public ShooterIOKraken() {
     if (Constants.tuningMode)
@@ -71,24 +72,24 @@ public class ShooterIOKraken implements ShooterIO {
     }
     RL_RPS = rightShooterLeader.getVelocity();
     RF_RPS = rightShooterFollower.getVelocity();
-    LL_RPS = leftShooterLeader.getVelocity();
-    LF_RPS = leftShooterFollower.getVelocity();
+    LL_RPS = leftShooterFollower1.getVelocity();
+    LF_RPS = leftShooterFollower2.getVelocity();
     RL_appliedVolts = rightShooterLeader.getMotorVoltage();
     RF_appliedVolts = rightShooterFollower.getMotorVoltage();
-    LL_appliedVolts = leftShooterLeader.getMotorVoltage();
-    LF_appliedVolts = leftShooterFollower.getMotorVoltage();
+    LL_appliedVolts = leftShooterFollower1.getMotorVoltage();
+    LF_appliedVolts = leftShooterFollower2.getMotorVoltage();
     RL_motorTemp = rightShooterLeader.getDeviceTemp();
     RF_motorTemp = rightShooterFollower.getDeviceTemp();
-    LL_motorTemp = leftShooterLeader.getDeviceTemp();
-    LF_motorTemp = leftShooterFollower.getDeviceTemp();
+    LL_motorTemp = leftShooterFollower1.getDeviceTemp();
+    LF_motorTemp = leftShooterFollower2.getDeviceTemp();
     RL_supplyCurrent = rightShooterLeader.getSupplyCurrent();
     RF_supplyCurrent = rightShooterFollower.getSupplyCurrent();
-    LL_supplyCurrent = leftShooterLeader.getSupplyCurrent();
-    LF_supplyCurrent = leftShooterFollower.getSupplyCurrent();
+    LL_supplyCurrent = leftShooterFollower1.getSupplyCurrent();
+    LF_supplyCurrent = leftShooterFollower2.getSupplyCurrent();
     RL_torqueCurrentAmps = rightShooterLeader.getTorqueCurrent();
     RF_torqueCurrentAmps = rightShooterFollower.getTorqueCurrent();
-    LL_torqueCurrentAmps = leftShooterLeader.getTorqueCurrent();
-    LF_torqueCurrentAmps = leftShooterFollower.getTorqueCurrent();
+    LL_torqueCurrentAmps = leftShooterFollower1.getTorqueCurrent();
+    LF_torqueCurrentAmps = leftShooterFollower2.getTorqueCurrent();
 
     // rightShooterLeader.optimizeBusUtilization(4, 0.1);
     // rightShooterFollower.optimizeBusUtilization(4, 0.1);
@@ -97,7 +98,7 @@ public class ShooterIOKraken implements ShooterIO {
     rightConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
     rightConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
+    rightConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // i.e. not inverted
 
     Slot0Configs slot0Configs = rightConfig.Slot0;
     slot0Configs.kP = ShooterConstants.kP.getAsDouble();
@@ -114,17 +115,19 @@ public class ShooterIOKraken implements ShooterIO {
     motionMagicConfigs.MotionMagicJerk = ShooterConstants.kMMJerk.getAsDouble();
 
     TalonFXConfiguration leftConfig = rightConfig.clone();
-    leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // i.e. not inverted
+    leftConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
 
     PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(rightConfig, initConfigTimeout));
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterLeader.getConfigurator().apply(leftConfig, initConfigTimeout));
     PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(rightConfig, initConfigTimeout));
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterFollower.getConfigurator().apply(leftConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterFollower1.getConfigurator().apply(leftConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterFollower2.getConfigurator().apply(leftConfig, initConfigTimeout));
 
     rightShooterFollower.setControl(
         new Follower(rightShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
-    leftShooterFollower.setControl(
-        new Follower(leftShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
+    leftShooterFollower1.setControl(
+        new StrictFollower(rightShooterLeader.getDeviceID()));
+    leftShooterFollower2.setControl(
+        new StrictFollower(rightShooterLeader.getDeviceID()));
   }
   // spotless:on
 
@@ -185,13 +188,11 @@ public class ShooterIOKraken implements ShooterIO {
 
     SmartDashboard.putNumber("Desired RPS", desiredRPS);
     rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
-    leftShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
   }
 
   @Override
   public void runShooterDutyCycle(double dutyCycle) {
     rightShooterLeader.set(dutyCycle);
-    leftShooterLeader.set(dutyCycle);
   }
 
   /**
@@ -219,15 +220,15 @@ public class ShooterIOKraken implements ShooterIO {
       TalonFXConfiguration tunedConfigs = createTunedMotorConfig(outputs);
       Slot0Configs slot0 = tunedConfigs.Slot0;
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(slot0, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterLeader.getConfigurator().apply(slot0, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower1.getConfigurator().apply(slot0, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(slot0, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower.getConfigurator().apply(slot0, tunedConfigTimeout)); 
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower2.getConfigurator().apply(slot0, tunedConfigTimeout)); 
       
       MotionMagicConfigs mmConfigs = tunedConfigs.MotionMagic;
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterLeader.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower1.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower.getConfigurator().apply(mmConfigs, tunedConfigTimeout));      
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower2.getConfigurator().apply(mmConfigs, tunedConfigTimeout));      
     }
   }
 
@@ -264,7 +265,7 @@ public class ShooterIOKraken implements ShooterIO {
   public BooleanSupplier leftShooterAtVelocity() {
 
     return (() ->
-        leftShooterLeader.getVelocity().getValueAsDouble()
+        leftShooterFollower1.getVelocity().getValueAsDouble()
             > desiredRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
   }
 
