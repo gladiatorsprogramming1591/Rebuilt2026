@@ -31,11 +31,15 @@ public interface ShooterIO {
 
   @AutoLog
   public class ShooterIOOutputs {
-    public double desiredVelocityRPM = 0.0; // so far only used for sim
+    public double desiredVelocityRPM = 0.0;
     public double kP;
     public double kI;
     public double kD;
+    public double kS;
     public double kV;
+    public double kA;
+    public double kMMAcceleration;
+    public double kMMJerk;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
@@ -45,9 +49,9 @@ public interface ShooterIO {
   /**
    * setting the shooter motor voltage
    *
-   * @param shooterVelocity voltage to set from -12 to 12
+   * @param voltage voltage to set from -12 to 12
    */
-  public default void runShooter(double shooterVelocity) {}
+  public default void runShooterVoltage(double voltage) {}
 
   public default void runShooterDutyCycle(double shooterVelocity) {}
 

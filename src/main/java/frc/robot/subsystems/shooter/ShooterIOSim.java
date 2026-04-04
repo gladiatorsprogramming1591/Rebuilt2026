@@ -13,16 +13,11 @@ public class ShooterIOSim implements ShooterIO {
               DCMotor.getKrakenX44Foc(2), 0.004, ShooterConstants.SHOOTER_MOTOR_REDUCTION),
           DCMotor.getKrakenX44Foc(2));
 
-  private double shooterVelocity = 0.0;
-
-  @Override
-  public void runShooter(double shooterVelocity) {
-    this.shooterVelocity = shooterVelocity;
-  }
+  private double shooterRPS = 0.0;
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.LF_RPS = inputs.LL_RPS = inputs.RF_RPS = inputs.RL_RPS = shooterVelocity;
+    inputs.LF_RPS = inputs.LL_RPS = inputs.RF_RPS = inputs.RL_RPS = shooterRPS;
     inputs.shooterAtVelocity = true;
   }
 
@@ -33,14 +28,14 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void setShooterMotorRPM(double rps) {
-    shooterVelocity = rps;
+    shooterRPS = rps;
   }
 
   @Override
   public void applyOutputs(ShooterIOOutputs outputs) {
     double lastCommandedVelocity = outputs.desiredVelocityRPM / 60;
 
-    // Logger.recordOutput("Shooter/lastCommandedVelocity", lastCommandedVelocity);
+    // Logger.recordOutput(ShooterConstants.tableKey + "lastCommandedVelocity", lastCommandedVelocity);
     SmartDashboard.putNumber("lastCommandedVelocityRPS", lastCommandedVelocity);
   }
 }

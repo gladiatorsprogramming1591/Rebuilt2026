@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ShooterModeState;
-import frc.robot.util.LoggedTunableNumber;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,18 +14,6 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private final ShooterIOOutputsAutoLogged outputs = new ShooterIOOutputsAutoLogged();
 
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", 0.6);
-  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0.0);
-  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Shooter/kV", 0.3);
-
-  private static final LoggedTunableNumber shootRPM =
-      new LoggedTunableNumber("Shooter/Shoot RPM", 2000);
-  private static final LoggedTunableNumber coastRPM =
-      new LoggedTunableNumber(
-          "Shooter/Coast RPM",
-          0); // TODO: DO NOT COMMIT THIS. RETURN TO 750 WHEN SHOOTER IS INSTALLED.
-
-  private double loopCounter = 0;
   private boolean hasSpeedTargetChanged = true;
 
   public Shooter(ShooterIO io) {
@@ -38,28 +25,31 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
 
-    outputs.kP = kP.getAsDouble();
-    outputs.kD = kD.getAsDouble();
-    outputs.kV = kV.getAsDouble();
+    outputs.kP = ShooterConstants.kP.getAsDouble();
+    outputs.kI = ShooterConstants.kI.getAsDouble();
+    outputs.kD = ShooterConstants.kD.getAsDouble();
+    outputs.kS = ShooterConstants.kS.getAsDouble();
+    outputs.kV = ShooterConstants.kV.getAsDouble();
+    outputs.kA = ShooterConstants.kA.getAsDouble();
+    outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
+    outputs.kMMJerk = ShooterConstants.kMMJerk.getAsDouble();
 
     boolean doApplyOutputs = true;
-    switch (RobotState.getShooterMode()) {
-      case DUTYCYCLE -> doApplyOutputs = false;
-      default -> {
-        // if(loopCounter++ % 25 == 0) System.out.println("Shooter mode : " +
-        // RobotState.getShooterMode());
-        // TODO***: Needs to only run once when coming out of DUTYCYCLE mode, not periodicly
-        // (or removed if interrupted by KrakenIO applyOutputs anyway)
-        // io.runShooterDutyCycle(0);
-      }
+    if (RobotState.getShooterMode() == ShooterModeState.DUTYCYCLE) {
+      doApplyOutputs = false;
     }
-    Logger.recordOutput("Shooter/Desired Velocity RPM", outputs.desiredVelocityRPM);
+    if (ShooterConstants.isLowCeiling && RobotState.getShooterMode() == ShooterModeState.ON) {
+      outputs.desiredVelocityRPM =
+          MathUtil.clamp(
+              outputs.desiredVelocityRPM * ShooterConstants.FLYWHEEL_LOW_CEILING_SCALER,
+              -Double.MAX_VALUE,
+              ShooterConstants.MAX_FLYWHEEL_LOW_CEILING_RPM);
+    }
+
+    Logger.recordOutput(ShooterConstants.tableKey + "Desired Velocity RPM", outputs.desiredVelocityRPM);
     SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
     SmartDashboard.putBoolean("Shooter DoApplyOutputs", doApplyOutputs);
     SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
-    if (ShooterConstants.isLowCeiling && RobotState.getShooterMode() == ShooterModeState.ON) {
-      outputs.desiredVelocityRPM *= ShooterConstants.flywheelLowCeilingScaler;
-    }
     if (doApplyOutputs) {
       io.applyOutputs(outputs);
     }
@@ -72,7 +62,7 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.IDLE);
-          outputs.desiredVelocityRPM = coastRPM.getAsDouble();
+          outputs.desiredVelocityRPM = ShooterConstants.coastRPM.getAsDouble();
         });
   }
 
@@ -83,7 +73,7 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.ON);
-          outputs.desiredVelocityRPM = shootRPM.getAsDouble();
+          outputs.desiredVelocityRPM = ShooterConstants.shootFixedRPM.getAsDouble();
         });
   }
 
@@ -95,9 +85,9 @@ public class Shooter extends SubsystemBase {
           }
           RobotState.setShooterMode(ShooterModeState.ON);
           // outputs.velocityRPM = shootRPM.getAsDouble();
-          double flywheelSpeedRPM =
-              ShooterCalculation.getInstance().getParameters().flywheelSpeed();
-          outputs.desiredVelocityRPM = MathUtil.clamp(flywheelSpeedRPM, 0, 3000);
+          double flywheelRPM = ShooterCalculation.getInstance().getParameters().flywheelSpeed();
+          outputs.desiredVelocityRPM =
+              MathUtil.clamp(flywheelRPM, 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
         });
   }
 

@@ -1,5 +1,17 @@
 High Priority:
 --------------
+- V3 Intake
+    - Deploy: negative output stows intake up
+        - Limit Extent: DIO 1
+        - Limit Stow: DIO 2
+        - Stator: 20
+        - Supply: 12
+        - Idle: Brake
+
+    - Intake: only right is inverted (clockwise positive)
+        - Stator: 120
+        - Supply: 40
+        - Idle: Coast
 - Adjust autos for V3 new cam/shooter locations
     - Auto "Bottom Rush to Hub" is still hitting wall, worsening after each trench pass. Odometry loss is likely aggravated due to camara not seeing April Tags at all through auto. Path must be edited to work for V3 cam placement/shooter reorientation.
     - First rush to NZ should have rotation slightly biased towards AZ to protect intake in event of bot-to-bot collision
