@@ -2,15 +2,18 @@ package frc.robot.subsystems.kicker;
 
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.PhoenixUtil;
 
 public class KickerIOKraken implements KickerIO {
   private final TalonFX kickerMotor = new TalonFX(KickerConstants.KICKER_CAN_ID);
-  private Boolean twoKickerMotors = true;
+  private TalonFX secondKickerMotor;
+  private boolean twoKickerMotors = true;
 
   public KickerIOKraken() {
     var kickerConfig = new TalonFXConfiguration();
@@ -22,9 +25,10 @@ public class KickerIOKraken implements KickerIO {
     kickerMotor
         .getConfigurator()
         .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(5.0));
-    if (twoKickerMotors = true) {
-      TalonFX secondKickerMotor = new TalonFX(KickerConstants.KICKER_2_CAN_ID);
+    if (twoKickerMotors == true) {
+      secondKickerMotor = new TalonFX(KickerConstants.KICKER_2_CAN_ID);
       PhoenixUtil.tryUntilOk(5, () -> secondKickerMotor.getConfigurator().apply(kickerConfig));
+      secondKickerMotor.setControl(new Follower(kickerMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     }
   }
 
@@ -37,8 +41,5 @@ public class KickerIOKraken implements KickerIO {
   @Override
   public void applyOutputs(KickerIOOutputs outputs) {
     kickerMotor.set(outputs.desiredKickerSpeed);
-    if (twoKickerMotors = true) {
-      kickerMotor.set(outputs.desiredKickerSpeed);
-    }
   }
 }
