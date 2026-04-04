@@ -27,7 +27,7 @@ public class ShooterConstants {
   private static final double m_ShootFixedRPM = 2000.0;
   private static final double m_CoastRPM = 750.0;
 
-  private static final double m_P = 0.70; // An error of 1 rps results in <0.70> V output
+  private static final double m_P = 0.45; // An error of 1 rps results in <0.45> V output. P above 0.50 causes oscillation
   private static final double m_I = 0.0; // no output for integrated error
   private static final double m_D = 0.0; // no output for error derivative
   private static final double m_S = 0.0; // Add <> V output to overcome static friction
