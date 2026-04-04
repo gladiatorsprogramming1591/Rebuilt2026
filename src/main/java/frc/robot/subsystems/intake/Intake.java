@@ -187,8 +187,8 @@ public class Intake extends SubsystemBase {
     }
 
     // Stop the deploy motor if our sensors detect we are down or up
-    if ((outputs.desiredPosition == IntakeConstants.DOWN) && inputs.isDeployDown ||
-        (outputs.desiredPosition == IntakeConstants.UP) && inputs.isDeployUp) {
+    if ((outputs.desiredPosition == IntakeConstants.DOWN) && inputs.isDeployDown
+        || (outputs.desiredPosition == IntakeConstants.UP) && inputs.isDeployUp) {
       deployStop();
     }
   }

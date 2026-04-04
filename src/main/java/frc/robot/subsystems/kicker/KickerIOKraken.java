@@ -19,7 +19,7 @@ public class KickerIOKraken implements KickerIO {
     var kickerConfig = new TalonFXConfiguration();
     kickerConfig.CurrentLimits.SupplyCurrentLimit = KickerConstants.KICKER_CURRENT_LIMIT;
     kickerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     kickerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     PhoenixUtil.tryUntilOk(5, () -> kickerMotor.getConfigurator().apply(kickerConfig, 0.25));
     kickerMotor
@@ -28,7 +28,8 @@ public class KickerIOKraken implements KickerIO {
     if (twoKickerMotors == true) {
       secondKickerMotor = new TalonFX(KickerConstants.KICKER_2_CAN_ID);
       PhoenixUtil.tryUntilOk(5, () -> secondKickerMotor.getConfigurator().apply(kickerConfig));
-      secondKickerMotor.setControl(new Follower(kickerMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+      secondKickerMotor.setControl(
+          new Follower(kickerMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     }
   }
 
