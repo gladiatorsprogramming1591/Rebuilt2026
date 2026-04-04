@@ -6,6 +6,7 @@ public final class IntakeConstants {
   public static final int INTAKE_LEFT = 28;
 
   public static final int TOP_DEPLOY_DIO_PORT = 1;
+  public static final int BOTTOM_DEPLOY_DIO_PORT = 2;
 
   public static final double INTAKE_GEAR_RATIO = 1.0;
   public static final double DEPLOY_GEAR_RATIO = 1.0;
@@ -15,6 +16,7 @@ public final class IntakeConstants {
 
   public static final double INTAKE_CURRENT_LIMIT = 60.0;
   public static final double DEPLOY_CURRENT_LIMIT = 12.0;
+  public static final double DEPLOY_CURRENT_STOP_THRESHOLD = DEPLOY_CURRENT_LIMIT;
 
   public static final double kP = 2.0;
   public static final double kI = 0.0;

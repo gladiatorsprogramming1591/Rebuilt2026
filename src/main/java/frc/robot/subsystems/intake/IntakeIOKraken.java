@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -15,7 +14,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
@@ -25,6 +23,7 @@ public class IntakeIOKraken implements IntakeIO {
   private final TalonFX intakeRight = new TalonFX(IntakeConstants.INTAKE_RIGHT);
   private final TalonFX deployMotor = new TalonFX(IntakeConstants.INTAKE_DEPLOY);
   private final DigitalInput topLimit = new DigitalInput(IntakeConstants.TOP_DEPLOY_DIO_PORT);
+  private final DigitalInput bottomLimit = new DigitalInput(IntakeConstants.BOTTOM_DEPLOY_DIO_PORT);
   private final PositionTorqueCurrentFOC positionControl =
       new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
 
@@ -77,34 +76,6 @@ public class IntakeIOKraken implements IntakeIO {
   }
 
   @Override
-  public void setDeploySpeed(double speed) {
-    deployMotor.set(speed);
-    SmartDashboard.putNumber("Deploy Set Speed", speed);
-  }
-
-  @Override
-  public void setDeployTorqueCurrentFOC(double current) {
-    TorqueCurrentFOC torqueCurrentRequest = new TorqueCurrentFOC(current);
-    deployMotor.setControl(torqueCurrentRequest);
-  }
-
-  @Override
-  public void setIntakeSpeed(double speed) {
-    intakeLeft.set(speed);
-    SmartDashboard.putNumber("Intake Speed", speed);
-  }
-
-  @Override
-  public void stopDeployMotor() {
-    deployMotor.stopMotor();
-  }
-
-  @Override
-  public void stopIntakeMotor() {
-    intakeLeft.stopMotor();
-  }
-
-  @Override
   public void updateInputs(IntakeIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         deployAngle,
@@ -121,14 +92,22 @@ public class IntakeIOKraken implements IntakeIO {
     inputs.deploySupplyCurrent = deploySupplyCurrent.getValueAsDouble();
     inputs.intakeLeftSpeed = intakeLeftAngularVelocity.getValueAsDouble();
     inputs.intakeRightSpeed = intakeRightAngularVelocity.getValueAsDouble();
-    inputs.deployPosition = deployAngle.getValueAsDouble();
     inputs.intakeLeftTemp = intakeLeftTemp.getValueAsDouble();
     inputs.intakeRightTemp = intakeRightTemp.getValueAsDouble();
+    inputs.isDeployDown =
+        bottomLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
+    inputs.isDeployUp =
+        topLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
+    if (inputs.isDeployUp) { // Re-zero when deploy is up
+      inputs.encoderOffset = -deployAngle.getValueAsDouble();
+    }
+    inputs.deployPosition = deployAngle.getValueAsDouble() + inputs.encoderOffset;
   }
 
   @Override
   public void applyOutputs(IntakeIOOutputs outputs) {
-    switch (RobotState.getIntakeMode()) {
+    intakeLeft.set(outputs.appliedIntakeSpeed);
+    switch (RobotState.getDeployMode()) {
       case POSITION:
         // TODO: Needs to be moved out of period into button on SmartDashboard
         if (Constants.tuningMode) {

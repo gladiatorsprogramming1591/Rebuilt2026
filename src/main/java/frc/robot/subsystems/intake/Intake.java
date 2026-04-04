@@ -4,9 +4,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-import frc.robot.RobotState.IntakeModeState;
+import frc.robot.RobotState.DeployModeState;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -41,6 +42,12 @@ public class Intake extends SubsystemBase {
   private static final double intakeMinAngle =
       Units.degreesToRadians(0); // TODO set the max and min angle
 
+  private int stoppedLoopCount = 0;
+  private static final int STOPPED_LOOP_COUNT_NEEDED = 2;
+  private boolean stopDeployOnCurrentSpike = false;
+  private boolean stopMotorWhenNotMoving = false;
+  private boolean isDeployStopped = true;
+
   @AutoLogOutput private double goalAngle = 0.0;
 
   public Intake(IntakeIO io) {
@@ -56,57 +63,80 @@ public class Intake extends SubsystemBase {
   // states.
   public Command deploy() {
     return runEnd(
-        () -> {
-          outputs.desiredPosition = IntakeConstants.UP;
-          RobotState.setIntakeMode(RobotState.IntakeModeState.POSITION);
-        },
-        () -> {
-          outputs.appliedDeploySpeed = 0;
-          RobotState.setIntakeMode(RobotState.IntakeModeState.OFF);
-        });
+            () -> {
+              isDeployStopped = false;
+              outputs.desiredPosition = IntakeConstants.DOWN;
+              RobotState.setDeployMode(RobotState.DeployModeState.POSITION);
+              stopDeployOnCurrentSpike = true;
+            },
+            () -> {
+              outputs.appliedDeploySpeed = 0;
+              RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+            })
+        .until(() -> isDeployStopped);
   }
 
   // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new
   // states.
   public Command stow() {
     return runEnd(
-        () -> {
-          outputs.desiredPosition = IntakeConstants.DOWN;
-          RobotState.setIntakeMode(RobotState.IntakeModeState.POSITION);
-        },
-        () -> {
-          outputs.appliedDeploySpeed = 0;
-          RobotState.setIntakeMode(RobotState.IntakeModeState.OFF);
-        });
+            () -> {
+              isDeployStopped = false;
+              outputs.desiredPosition = IntakeConstants.UP;
+              RobotState.setDeployMode(RobotState.DeployModeState.POSITION);
+              stopDeployOnCurrentSpike = true;
+            },
+            () -> {
+              outputs.appliedDeploySpeed = 0;
+              RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+            })
+        .until(() -> isDeployStopped);
   }
 
   public Command deployWithSpeed() {
     return runEnd(
-      () -> {
+        () -> {
+          isDeployStopped = false;
           System.out.println("deployWithSpeed: " + deploySpeed.getAsDouble());
           outputs.appliedDeploySpeed = deploySpeed.getAsDouble();
-          RobotState.setIntakeMode(RobotState.IntakeModeState.SPEED);
+          RobotState.setDeployMode(RobotState.DeployModeState.SPEED);
+          stopDeployOnCurrentSpike = true;
         },
         () -> {
           System.out.println("deployWithSpeed: " + 0);
           outputs.appliedDeploySpeed = 0;
-          RobotState.setIntakeMode(RobotState.IntakeModeState.OFF);
+          RobotState.setDeployMode(RobotState.DeployModeState.OFF);
         });
   }
 
-  // TODO: Need to implement
-  public Command deployAndIntake() {
-    return new InstantCommand();
+  public Command runIntake() {
+    return new RunCommand(
+            () -> {
+              outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
+            })
+        .andThen(
+            () -> {
+              outputs.appliedIntakeSpeed = 0.0;
+            });
   }
 
-  // TODO: Need to implement
+  public Command deployAndIntake() {
+    return deploy().alongWith(runIntake());
+  }
+
   public Command stopIntake() {
     return run(
         () -> {
           outputs.appliedIntakeSpeed = 0;
           outputs.appliedDeploySpeed = 0;
-          RobotState.setIntakeMode(IntakeModeState.OFF);
+          RobotState.setDeployMode(DeployModeState.OFF);
         });
+  }
+
+  public void deployStop() {
+    outputs.appliedDeploySpeed = 0;
+    RobotState.setDeployMode(DeployModeState.OFF);
+    isDeployStopped = true;
   }
 
   /** Returns a command that sets intake speed to 0. Doesn't impact deploy. */
@@ -126,7 +156,7 @@ public class Intake extends SubsystemBase {
     outputs.kD = kD.getAsDouble();
     outputs.kFF = kFF.getAsDouble();
 
-    Logger.recordOutput("Intake/Mode", RobotState.getIntakeMode().toString());
+    Logger.recordOutput("Intake/Mode", RobotState.getDeployMode().toString());
     Logger.recordOutput("Intake/Applied Intake Speed", outputs.appliedIntakeSpeed);
     Logger.recordOutput("Intake/Applied Output Speed", outputs.appliedDeploySpeed);
     Logger.recordOutput("Intake/Applied Deploy Current", outputs.appliedDeployCurrent);
@@ -136,5 +166,30 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/kFF", outputs.kFF);
     Logger.recordOutput("Intake/desiredPosition", outputs.desiredPosition);
     io.applyOutputs(outputs);
+
+    // For testing, turn deploy motors off after hitting hard stop
+    // TODO: Don't leave this in code as we will likely stop between bottom and top when hopper is
+    // full
+    if (stopMotorWhenNotMoving) {
+      if (inputs.intakeLeftSpeed == 0) {
+        stoppedLoopCount++;
+      } else {
+        stoppedLoopCount = 0;
+      }
+      if (stoppedLoopCount > STOPPED_LOOP_COUNT_NEEDED) {
+        deployStop();
+      }
+    }
+
+    if (stopDeployOnCurrentSpike
+        && inputs.deploySupplyCurrent >= IntakeConstants.DEPLOY_CURRENT_STOP_THRESHOLD) {
+      deployStop();
+    }
+
+    // Stop the deploy motor if our sensors detect we are down or up
+    if ((outputs.desiredPosition == IntakeConstants.DOWN) && inputs.isDeployDown ||
+        (outputs.desiredPosition == IntakeConstants.UP) && inputs.isDeployUp) {
+      deployStop();
+    }
   }
 }

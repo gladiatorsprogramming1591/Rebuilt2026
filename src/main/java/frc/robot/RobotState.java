@@ -119,13 +119,13 @@ public final class RobotState {
 
   @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
 
-  public enum IntakeModeState {
+  public enum DeployModeState {
     POSITION, // TODO: probably good to add more
     SPEED,
     OFF
   }
 
-  @Getter @Setter private static IntakeModeState intakeMode = IntakeModeState.OFF;
+  @Getter @Setter private static DeployModeState deployMode = DeployModeState.OFF;
 
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);

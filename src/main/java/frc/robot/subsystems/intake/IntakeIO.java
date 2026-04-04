@@ -13,6 +13,9 @@ public interface IntakeIO {
     public double deployPosition = 0.0;
     public double intakeLeftTemp = 0.0;
     public double intakeRightTemp = 0.0;
+    public boolean isDeployDown = false;
+    public boolean isDeployUp = false;
+    public double encoderOffset = 0.0;
   }
 
   @AutoLog
@@ -45,28 +48,4 @@ public interface IntakeIO {
   public default boolean getIsConnected(IntakeIOInputs inputs) {
     return false;
   }
-  /**
-   * sets the deployment motor's duty cycle
-   *
-   * @param speed duty cycle value from -1 to 1
-   */
-  public default void setDeploySpeed(double speed) {}
-  /**
-   * sets the deploy motor's torque current (FOC)
-   *
-   * @param current current value (in Amps)
-   */
-  public default void setDeployTorqueCurrentFOC(double current) {}
-  /**
-   * sets the intake motor's duty cycle
-   *
-   * @param speed duty cycle value from -1 to 1
-   */
-  public default void setIntakeSpeed(double speed) {}
-  /** stops the deploy motor */
-  public default void stopDeployMotor() {}
-  /** stops the intake motor */
-  public default void stopIntakeMotor() {}
-
-  public default void runPosition(double positionRads) {}
 }
