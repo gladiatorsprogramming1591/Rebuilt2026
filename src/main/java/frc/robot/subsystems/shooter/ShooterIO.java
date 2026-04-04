@@ -38,6 +38,8 @@ public interface ShooterIO {
     public double kS;
     public double kV;
     public double kA;
+    public double kMMAcceleration;
+    public double kMMJerk;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}

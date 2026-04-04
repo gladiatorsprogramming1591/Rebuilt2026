@@ -31,6 +31,8 @@ public class Shooter extends SubsystemBase {
     outputs.kS = ShooterConstants.kS.getAsDouble();
     outputs.kV = ShooterConstants.kV.getAsDouble();
     outputs.kA = ShooterConstants.kA.getAsDouble();
+    outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
+    outputs.kMMJerk = ShooterConstants.kMMJerk.getAsDouble();
 
     boolean doApplyOutputs = true;
     if (RobotState.getShooterMode() == ShooterModeState.DUTYCYCLE) {

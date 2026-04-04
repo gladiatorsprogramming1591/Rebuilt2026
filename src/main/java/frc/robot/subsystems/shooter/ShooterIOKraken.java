@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -15,7 +16,9 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
+
 import java.util.function.BooleanSupplier;
 
 // spotless:off
@@ -43,19 +46,29 @@ public class ShooterIOKraken implements ShooterIO {
   private final StatusSignal<Current> RF_torqueCurrentAmps;
   private final StatusSignal<Current> LL_torqueCurrentAmps;
   private final StatusSignal<Current> LF_torqueCurrentAmps;
-  private double desiredRPS = 0.0;
 
   private final TalonFX rightShooterLeader =
-      new TalonFX(ShooterConstants.RIGHT_SHOOTER_LEADER_MOTOR_ID);
+  new TalonFX(ShooterConstants.RIGHT_SHOOTER_LEADER_MOTOR_ID);
   private final TalonFX rightShooterFollower =
-      new TalonFX(ShooterConstants.RIGHT_SHOOTER_FOLLOWER_MOTOR_ID);
-
+  new TalonFX(ShooterConstants.RIGHT_SHOOTER_FOLLOWER_MOTOR_ID);
+  
   private final TalonFX leftShooterLeader =
-      new TalonFX(ShooterConstants.LEFT_SHOOTER_LEADER_MOTOR_ID);
+  new TalonFX(ShooterConstants.LEFT_SHOOTER_LEADER_MOTOR_ID);
   private final TalonFX leftShooterFollower =
-      new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
+  new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
+  
+  private double desiredRPS = 0.0;
+  private String updateConfigName = "Update Shooter Configs";
+  private double initConfigTimeout = 0.250;
+  private double tunedConfigTimeout = 0.100; // Equivalent to default timeout
+  private int initConfigMaxAttempts = 5;
+  private int tunedConfigMaxAttempts = 2; // Equivalent to default timeout
 
   public ShooterIOKraken() {
+    if (Constants.tuningMode)
+    {
+      SmartDashboard.putBoolean(updateConfigName, false);
+    }
     RL_RPS = rightShooterLeader.getVelocity();
     RF_RPS = rightShooterFollower.getVelocity();
     LL_RPS = leftShooterLeader.getVelocity();
@@ -80,14 +93,13 @@ public class ShooterIOKraken implements ShooterIO {
     // rightShooterLeader.optimizeBusUtilization(4, 0.1);
     // rightShooterFollower.optimizeBusUtilization(4, 0.1);
 
-    var rightConfig = new TalonFXConfiguration();
+    TalonFXConfiguration rightConfig = new TalonFXConfiguration();
     rightConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
     rightConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
 
-    var slot0Configs = rightConfig.Slot0;
-
+    Slot0Configs slot0Configs = rightConfig.Slot0;
     slot0Configs.kP = ShooterConstants.kP.getAsDouble();
     slot0Configs.kI = ShooterConstants.kI.getAsDouble();
     slot0Configs.kD = ShooterConstants.kD.getAsDouble();
@@ -97,17 +109,18 @@ public class ShooterIOKraken implements ShooterIO {
 
     // Motion Magic velocity configs
     // only used when calling MM control request. e.g. new MotionMagicVelocityVoltage(<rps>)
-    var motionMagicConfigs = rightConfig.MotionMagic;
+    MotionMagicConfigs motionMagicConfigs = rightConfig.MotionMagic;
     motionMagicConfigs.MotionMagicAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
     motionMagicConfigs.MotionMagicJerk = ShooterConstants.kMMJerk.getAsDouble();
 
-    var leftConfig = rightConfig.clone();
-
+    TalonFXConfiguration leftConfig = rightConfig.clone();
     leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // i.e. not inverted
-    PhoenixUtil.tryUntilOk(5, () -> rightShooterLeader.getConfigurator().apply(rightConfig, 0.25));
-    PhoenixUtil.tryUntilOk(5, () -> leftShooterLeader.getConfigurator().apply(leftConfig, 0.25));
-    PhoenixUtil.tryUntilOk(5, () -> rightShooterFollower.getConfigurator().apply(rightConfig, 0.25));
-    PhoenixUtil.tryUntilOk(5, () -> leftShooterFollower.getConfigurator().apply(leftConfig, 0.25));
+
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(rightConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterLeader.getConfigurator().apply(leftConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(rightConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterFollower.getConfigurator().apply(leftConfig, initConfigTimeout));
+
     rightShooterFollower.setControl(
         new Follower(rightShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     leftShooterFollower.setControl(
@@ -163,16 +176,10 @@ public class ShooterIOKraken implements ShooterIO {
 
   @Override
   public void applyOutputs(ShooterIOOutputs outputs) {
-    var slot0Configs = new Slot0Configs();
-    slot0Configs.kP = outputs.kP;
-    slot0Configs.kI = outputs.kI;
-    slot0Configs.kD = outputs.kD;
-    slot0Configs.kS = outputs.kS;
-    slot0Configs.kV = outputs.kV;
-    slot0Configs.kA = outputs.kA;
-
-    // rightShooterLeader.getConfigurator().apply(slot0Configs); // Cannot call periodicly TODO: Apply via dashboard
-    // leftShooterLeader.getConfigurator().apply(slot0Configs);
+    if (Constants.tuningMode)
+    {
+      tuneMotorConfigs(outputs);
+    }
 
     desiredRPS = outputs.desiredVelocityRPM / 60;
 
@@ -200,6 +207,49 @@ public class ShooterIOKraken implements ShooterIO {
     return (() ->
         rightShooterLeader.getVelocity().getValueAsDouble()
             > desiredRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+  }
+
+  
+  private void tuneMotorConfigs(ShooterIOOutputs outputs)
+  {
+    if (SmartDashboard.getBoolean(updateConfigName, true))
+      {
+      SmartDashboard.putBoolean(updateConfigName, false);
+      
+      TalonFXConfiguration tunedConfigs = createTunedMotorConfig(outputs);
+      Slot0Configs slot0 = tunedConfigs.Slot0;
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(slot0, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterLeader.getConfigurator().apply(slot0, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(slot0, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower.getConfigurator().apply(slot0, tunedConfigTimeout)); 
+      
+      MotionMagicConfigs mmConfigs = tunedConfigs.MotionMagic;
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterLeader.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower.getConfigurator().apply(mmConfigs, tunedConfigTimeout));      
+    }
+  }
+
+  /**
+   * Creates TalonFX configuration with latest PID, SVA, and Motion Magic settings updated by outputs.
+   * @param outputs
+   * @return TalonFX configuration with latest settings.
+   */
+  private TalonFXConfiguration createTunedMotorConfig(ShooterIOOutputs outputs)
+  {
+      TalonFXConfiguration configs = new TalonFXConfiguration();
+      Slot0Configs slot0Configs = configs.Slot0;
+      slot0Configs.kP = outputs.kP;
+      slot0Configs.kI = outputs.kI;
+      slot0Configs.kD = outputs.kD;
+      slot0Configs.kS = outputs.kS;
+      slot0Configs.kV = outputs.kV;
+      slot0Configs.kA = outputs.kA;
+      MotionMagicConfigs mmConfigs = configs.MotionMagic;
+      mmConfigs.MotionMagicAcceleration = outputs.kMMAcceleration;
+      mmConfigs.MotionMagicJerk = outputs.kMMJerk;
+      return configs;
   }
 
   // =======================UNTESTED/UNUSED METHODS=======================
