@@ -10,7 +10,6 @@ import frc.robot.util.PhoenixUtil;
 
 public class KickerIOKraken implements KickerIO {
   private final TalonFX kickerMotor = new TalonFX(KickerConstants.KICKER_CAN_ID);
-  private final TalonFX secondKickerMotor = new TalonFX(KickerConstants.KICKER_2_CAN_ID);
   private Boolean twoKickerMotors = true;
 
   public KickerIOKraken() {
@@ -24,6 +23,7 @@ public class KickerIOKraken implements KickerIO {
         .getConfigurator()
         .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(5.0));
     if (twoKickerMotors = true) {
+      TalonFX secondKickerMotor = new TalonFX(KickerConstants.KICKER_2_CAN_ID);
       PhoenixUtil.tryUntilOk(5, () -> secondKickerMotor.getConfigurator().apply(kickerConfig));
     }
   }
@@ -37,5 +37,8 @@ public class KickerIOKraken implements KickerIO {
   @Override
   public void applyOutputs(KickerIOOutputs outputs) {
     kickerMotor.set(outputs.desiredKickerSpeed);
+    if (twoKickerMotors = true) {
+      kickerMotor.set(outputs.desiredKickerSpeed);
+    }
   }
 }
