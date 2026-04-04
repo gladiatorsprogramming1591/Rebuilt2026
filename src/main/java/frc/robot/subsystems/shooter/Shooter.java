@@ -22,7 +22,9 @@ public class Shooter extends SubsystemBase {
   private static final LoggedTunableNumber shootRPM =
       new LoggedTunableNumber("Shooter/Shoot RPM", 2000);
   private static final LoggedTunableNumber coastRPM =
-      new LoggedTunableNumber("Shooter/Coast RPM", 750);
+      new LoggedTunableNumber(
+          "Shooter/Coast RPM",
+          0); // TODO: DO NOT COMMIT THIS. RETURN TO 750 WHEN SHOOTER IS INSTALLED.
 
   private double loopCounter = 0;
   private boolean hasSpeedTargetChanged = true;

@@ -17,7 +17,7 @@ public class Hood extends SubsystemBase {
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
   private final HoodIOOutputsAutoLogged outputs = new HoodIOOutputsAutoLogged();
 
-  private boolean hasBeenZeroed = false;
+  private boolean hasBeenZeroed = true; // TODO: Turn back to false when hood is installed.
 
   private static final LoggedTunableNumber goalPosition =
       new LoggedTunableNumber("Hood/GoalPosition", 100.0);

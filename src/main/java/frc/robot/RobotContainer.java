@@ -237,7 +237,8 @@ public class RobotContainer {
     shooter.setDefaultCommand(shooter.runIdleCommand());
     // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster.
     // Why?
-    hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasBeenZeroed()));
+    // hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasBeenZeroed()));
+    hood.setDefaultCommand(hood.stopHood()); // TODO: Turn back to previous when hood is installed.
     // drive base
 
     // Lock to 0° when A button is held

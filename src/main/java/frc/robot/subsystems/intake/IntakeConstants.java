@@ -5,8 +5,8 @@ public final class IntakeConstants {
   public static final int INTAKE_RIGHT = 29;
   public static final int INTAKE_LEFT = 28;
 
-  public static final int TOP_DEPLOY_DIO_PORT = 1;
-  public static final int BOTTOM_DEPLOY_DIO_PORT = 2;
+  public static final int BOTTOM_DEPLOY_DIO_PORT = 1;
+  public static final int TOP_DEPLOY_DIO_PORT = 2;
 
   public static final double INTAKE_GEAR_RATIO = 1.0;
   public static final double DEPLOY_GEAR_RATIO = 1.0;
