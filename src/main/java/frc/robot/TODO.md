@@ -1,9 +1,12 @@
 High Priority:
 --------------
+- Deploy function without up/down sensors
+- Test hood default command
+- Shooter coast to idle
 - V3 Intake
     - Deploy: negative output stows intake up
-        - Limit Extent: DIO 1
-        - Limit Stow: DIO 2
+        - Limit Extent: DIO <?>
+        - Limit Stow: DIO <?>
         - Stator: 20
         - Supply: 12
         - Idle: Brake

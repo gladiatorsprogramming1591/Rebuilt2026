@@ -3,10 +3,12 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ShooterModeState;
 import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -18,6 +20,7 @@ public class Shooter extends SubsystemBase {
 
   public Shooter(ShooterIO io) {
     this.io = io;
+    SmartDashboard.putBoolean("Shooter below coast RPM", true);
   }
 
   @Override
@@ -50,6 +53,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
     SmartDashboard.putBoolean("Shooter DoApplyOutputs", doApplyOutputs);
     SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
+    SmartDashboard.putBoolean("Shooter below coast RPM", isShooterBelowCoastRPM().getAsBoolean());
     if (doApplyOutputs) {
       io.applyOutputs(outputs);
     }
@@ -100,6 +104,20 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  /**
+   * Set duty-cycle to 0 to allow shooter to coast down to zero.
+   * @return
+   */
+  public Command stopAndCoastShooter()
+  {
+    return runShooterDutyCycle(0);
+  }
+
+  public Command coastShooterDefaultCommand()
+  {
+    return new ConditionalCommand(runIdleCommand(), stopAndCoastShooter(), isShooterBelowCoastRPM());
+  }
+
   public BooleanSupplier isShooterAtVelocity() {
     return (() -> {
       if (hasSpeedTargetChanged) {
@@ -109,4 +127,12 @@ public class Shooter extends SubsystemBase {
       return inputs.shooterAtVelocity;
     });
   }
+  
+  public BooleanSupplier isShooterBelowCoastRPM() {
+    if (hasSpeedTargetChanged) {
+      hasSpeedTargetChanged = false;
+      return () -> false;
+    }
+    return io.rightShooterBelowCoastRPM();
+  };
 }

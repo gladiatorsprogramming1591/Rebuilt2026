@@ -18,7 +18,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
@@ -234,11 +237,12 @@ public class RobotContainer {
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntake());
-    shooter.setDefaultCommand(shooter.runIdleCommand());
-    // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster.
-    // Why?
-    // hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasBeenZeroed()));
-    hood.setDefaultCommand(hood.stopHood()); // TODO: Turn back to previous when hood is installed.
+    shooter.setDefaultCommand(shooter.coastShooterDefaultCommand()); // TODO: See why coast doesn't run even while isShooterBelowCoastRPM is true
+    // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
+    // TODO: Prevent driving to zero repeatedly after first successful iteraton. Ready to test.
+    // TODO: Idea: "andThen" run "stopHood" indefinitely until interrupted (only if initially zeroed)
+    hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()));
+    // hood.setDefaultCommand(hood.stopHood());
     // drive base
 
     // Lock to 0° when A button is held
@@ -265,28 +269,27 @@ public class RobotContainer {
     // shooter
     driver_controller.y().whileTrue(shooter.runShooterTarget().alongWith(hood.runHoodTarget()));
     // intake
-    driver_controller
-        .leftTrigger()
-        .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
-    driver_controller
-        .rightBumper()
-        .whileTrue(
-            intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a
-    // certain position
+    // driver_controller //TODO: TEMPORARY
+    //     .leftTrigger()
+    //     .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
+    driver_controller.leftTrigger().toggleOnTrue(intake.runIntake());
+    // driver_controller // // TODO: TEMPORARY and broken?
+    //     .rightBumper()
+    //     .whileTrue(
+    //         intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a certain angle
     driver_controller
         .leftBumper()
-        // TODO: Kiley request: undeployed
+        // TODO: Kiley RIT request: undeployed
         // .leftBumper().or(operator_controller.rightTrigger())
         .whileTrue(
-            intake.stow()); // TODO: needs to be a toggle eventually that runs until a certain
-    // encoder value
+            intake.stow()); // TODO: needs to be a toggle eventually that runs until a certain angle
     // roller
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
     // hood
     driver_controller.back().whileTrue(hood.runHoodTarget());
     driver_controller.povUp().whileTrue(hood.runHoodUp());
     driver_controller.povDown().whileTrue(hood.runHoodDown());
-    driver_controller.start().whileTrue(hood.stopHood()).debounce(1.5).onTrue(hood.runHoodToZero());
+    driver_controller.start().whileTrue(hood.stopHoodContinuously()).debounce(1.5).onTrue(hood.runHoodToZero());
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.rightTrigger().whileTrue(shootWithAim());
@@ -360,8 +363,8 @@ public class RobotContainer {
         hood.runHoodTarget(),
         // DriveCommands.rotateToHub(
         //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
-        DriveCommands.joystickDriveWhileLaunching(
-            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
+        // DriveCommands.joystickDriveWhileLaunching( // TODO: TEMPORARY
+        //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
@@ -369,7 +372,8 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY
+                roller.startRollerMotors(), kicker.runKickerMotor())));
   }
 
   public Command shootWithAimStationary() {
@@ -420,7 +424,8 @@ public class RobotContainer {
   }
 
   public Command prepareIntake() {
-    return intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking());
+    // return intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()); // TODO: TEMPORARY
+    return new InstantCommand();
   }
 
   public Command intakeIn() {
