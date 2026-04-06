@@ -21,6 +21,7 @@ public class Shooter extends SubsystemBase {
   public Shooter(ShooterIO io) {
     this.io = io;
     SmartDashboard.putBoolean("Shooter below coast RPM", true);
+    SmartDashboard.putNumber("Shooter duty cycle", 0.0);
   }
 
   @Override
