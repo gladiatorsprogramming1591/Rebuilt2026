@@ -20,7 +20,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 
+import static frc.robot.subsystems.shooter.ShooterConstants.coastRPM;
+
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 // spotless:off
 public class ShooterIOKraken implements ShooterIO {
@@ -59,16 +62,16 @@ public class ShooterIOKraken implements ShooterIO {
   new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
   
   private double desiredRPS = 0.0;
-  private String updateConfigName = "Update Shooter Configs";
-  private double initConfigTimeout = 0.250;
-  private double tunedConfigTimeout = 0.100; // Equivalent to default timeout
-  private int initConfigMaxAttempts = 5;
-  private int tunedConfigMaxAttempts = 2;
+  private static final String UPDATE_CONFIG_NAME = "Update Shooter Configs";
+  private static final double INIT_CONFIG_TIMEOUT = 0.250;
+  private static final double TUNED_CONFIG_TIMEOUT = 0.100; // Equivalent to default timeout
+  private static final int INIT_CONFIG_MAX_ATTEMPTS = 5;
+  private static final int TUNED_CONFIG_MAX_ATTEMPS = 2;
 
   public ShooterIOKraken() {
     if (Constants.tuningMode)
     {
-      SmartDashboard.putBoolean(updateConfigName, false);
+      SmartDashboard.putBoolean(UPDATE_CONFIG_NAME, false);
     }
     RL_RPS = rightShooterLeader.getVelocity();
     RF_RPS = rightShooterFollower.getVelocity();
@@ -117,10 +120,10 @@ public class ShooterIOKraken implements ShooterIO {
     TalonFXConfiguration leftConfig = rightConfig.clone();
     leftConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
 
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(rightConfig, initConfigTimeout));
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(rightConfig, initConfigTimeout));
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterFollower1.getConfigurator().apply(leftConfig, initConfigTimeout));
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> leftShooterFollower2.getConfigurator().apply(leftConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(INIT_CONFIG_MAX_ATTEMPTS, () -> rightShooterLeader.getConfigurator().apply(rightConfig, INIT_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(INIT_CONFIG_MAX_ATTEMPTS, () -> rightShooterFollower.getConfigurator().apply(rightConfig, INIT_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(INIT_CONFIG_MAX_ATTEMPTS, () -> leftShooterFollower1.getConfigurator().apply(leftConfig, INIT_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(INIT_CONFIG_MAX_ATTEMPTS, () -> leftShooterFollower2.getConfigurator().apply(leftConfig, INIT_CONFIG_TIMEOUT));
 
     rightShooterFollower.setControl(
         new Follower(rightShooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
@@ -204,38 +207,81 @@ public class ShooterIOKraken implements ShooterIO {
    */
   @Override
   public BooleanSupplier rightShooterAtVelocity() {
-
-    return (() ->
-        rightShooterLeader.getVelocity().getValueAsDouble()
-            > desiredRPS - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+    return rightShooterAtVelocity(() -> desiredRPS);
   }
 
-  
+  /**
+   * Checks if the velocity of the right leader motor is within tolerance of the target velocity.
+   * <p>
+   * Only works with positive (i.e. shooting) velocity targets, not negative.
+   *
+   * @param targetVelocity
+   * @return Boolean supplier of whether right leader motor velocity is at target
+   */
+  @Override
+  public BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetVelocity) {
+    return (() ->
+        rightShooterLeader.getVelocity().getValueAsDouble()
+            > targetVelocity.getAsDouble() - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+  }
+
+  /**
+   * Checks if the velocity of the right leader motor is below coast RPM + tolerance.
+   *
+   * @return Boolean supplier of whether right leader motor velocity is below coast RPM
+   */
+  @Override
+  public BooleanSupplier rightShooterBelowCoastRPM() {
+    return (() ->
+        RL_RPS.getValueAsDouble()
+            < (coastRPM.getAsDouble() / 60) + ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+  }
+
+  /**
+   * Applies the latest tunable TalonFX configurations to <b>all shooter motors</b>.
+   * <p>
+   * Only applies the configuration when the Smartdashboard boolean {@value #UPDATE_CONFIG_NAME} is changed from false to true (i.e. rising edge).
+   * 
+   * @param outputs Shooter outputs where the tunable configurations are accessable
+   * @see {@link #createTunedMotorConfig(frc.robot.subsystems.shooter.ShooterIO.ShooterIOOutputs) createTunedMotorConfig()}
+   * @see frc.robot.util.LoggedTunableNumber LoggedTunableNumber
+   */
   private void tuneMotorConfigs(ShooterIOOutputs outputs)
   {
-    if (SmartDashboard.getBoolean(updateConfigName, true))
+    if (SmartDashboard.getBoolean(UPDATE_CONFIG_NAME, true))
       {
-      SmartDashboard.putBoolean(updateConfigName, false);
+      SmartDashboard.putBoolean(UPDATE_CONFIG_NAME, false);
       
       TalonFXConfiguration tunedConfigs = createTunedMotorConfig(outputs);
       Slot0Configs slot0 = tunedConfigs.Slot0;
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(slot0, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower1.getConfigurator().apply(slot0, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(slot0, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower2.getConfigurator().apply(slot0, tunedConfigTimeout)); 
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> rightShooterLeader.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT));
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> leftShooterFollower1.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT));
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> rightShooterFollower.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT));
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> leftShooterFollower2.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT)); 
       
       MotionMagicConfigs mmConfigs = tunedConfigs.MotionMagic;
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterLeader.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower1.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rightShooterFollower.getConfigurator().apply(mmConfigs, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> leftShooterFollower2.getConfigurator().apply(mmConfigs, tunedConfigTimeout));      
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> rightShooterLeader.getConfigurator().apply(mmConfigs, TUNED_CONFIG_TIMEOUT));
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> leftShooterFollower1.getConfigurator().apply(mmConfigs, TUNED_CONFIG_TIMEOUT));
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> rightShooterFollower.getConfigurator().apply(mmConfigs, TUNED_CONFIG_TIMEOUT));
+      PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> leftShooterFollower2.getConfigurator().apply(mmConfigs, TUNED_CONFIG_TIMEOUT));      
     }
   }
 
   /**
-   * Creates TalonFX configuration with latest PID, SVA, and Motion Magic settings updated by outputs.
-   * @param outputs
-   * @return TalonFX configuration with latest settings.
+   * Creates a TalonFX configuration with the latest tunable settings for <b>all shooter motors</b>.
+   * 
+   * <ul>
+   *  <li> <b>Updated Configurations:</b>
+   *    <ul>
+          <li> {@code Slot0Configs}: P, I, D, S, V, and A
+          <li> {@code MotionMagicConfigs}: Acceleration and Jerk
+        </ul>
+   * </ul>
+   * 
+   * @param outputs Shooter outputs where the tunable configurations are accessable
+   * @return Tuned TalonFX configuration
+   * @see frc.robot.subsystems.shooter.Shooter#periodic Shooter periodic() where tunable configs are saved into outputs
+   * @see frc.robot.util.LoggedTunableNumber LoggedTunableNumber
    */
   private TalonFXConfiguration createTunedMotorConfig(ShooterIOOutputs outputs)
   {

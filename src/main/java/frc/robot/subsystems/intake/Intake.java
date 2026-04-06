@@ -19,14 +19,14 @@ public class Intake extends SubsystemBase {
 
   private final LoggedTunableNumber deploySpeed =
       new LoggedTunableNumber("Intake/DeploySpeed", IntakeConstants.DEPLOY_SPEED);
-  private final LoggedTunableNumber intakeSpeed =
-      new LoggedTunableNumber("Intake/IntakeSpeed", IntakeConstants.INTAKE_MOTOR_SPEED);
-  private final LoggedTunableNumber stowSpeed =
-      new LoggedTunableNumber("Intake/StowSpeed", IntakeConstants.STOW_SPEED);
-  private final LoggedTunableNumber deployCurrent =
-      new LoggedTunableNumber("Intake/DeployCurrent", IntakeConstants.DEPLOY_TORQUE_CURRENT);
-  private final LoggedTunableNumber intakeDelaySeconds =
-      new LoggedTunableNumber("Intake/IntakeDelaySeconds", IntakeConstants.INTAKE_DELAY_SECONDS);
+  // private final LoggedTunableNumber intakeSpeed =
+  //     new LoggedTunableNumber("Intake/IntakeSpeed", IntakeConstants.INTAKE_MOTOR_SPEED);
+  // private final LoggedTunableNumber stowSpeed =
+  //     new LoggedTunableNumber("Intake/StowSpeed", IntakeConstants.STOW_SPEED);
+  // private final LoggedTunableNumber deployCurrent =
+  //     new LoggedTunableNumber("Intake/DeployCurrent", IntakeConstants.DEPLOY_TORQUE_CURRENT);
+  // private final LoggedTunableNumber intakeDelaySeconds =
+  //     new LoggedTunableNumber("Intake/IntakeDelaySeconds", IntakeConstants.INTAKE_DELAY_SECONDS);
 
   private static final LoggedTunableNumber kP =
       new LoggedTunableNumber("Intake/kP", IntakeConstants.kP);
@@ -34,6 +34,12 @@ public class Intake extends SubsystemBase {
       new LoggedTunableNumber("Intake/kI", IntakeConstants.kI);
   private static final LoggedTunableNumber kD =
       new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
+  // private static final LoggedTunableNumber kS =
+  //     new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
+  // private static final LoggedTunableNumber kV =
+  //     new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
+  // private static final LoggedTunableNumber kA =
+  //     new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
   private static final LoggedTunableNumber kFF =
       new LoggedTunableNumber("Intake/kFF", IntakeConstants.kFF);
 
@@ -110,19 +116,18 @@ public class Intake extends SubsystemBase {
   }
 
   public Command runIntake() {
-    return new RunCommand(
+    return runEnd(
             () -> {
               outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
-            })
-        .andThen(
+            },
             () -> {
               outputs.appliedIntakeSpeed = 0.0;
             });
   }
 
-  public Command deployAndIntake() {
-    return deploy().alongWith(runIntake());
-  }
+  // public Command deployAndIntake() {
+  //   return deploy().alongWith(runIntake());
+  // }
 
   public Command stopIntake() {
     return run(

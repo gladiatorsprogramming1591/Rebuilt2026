@@ -15,13 +15,13 @@ public class ShooterConstants {
   public static final double SHOOTER_MOTOR_REDUCTION = 1.0; // Currently only used in Sim. TODO: Find and assign reduction to SensorToMechanismRatio
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 70;
   public static final double MAX_FLYWHEEL_RPM = 5200.0; // Unused. TODO: Find max RPM at 12 V
-  public static final double FLYWHEEL_TOLERANCE_RPS = 2.0; // +/- 120 RPM
+  public static final double FLYWHEEL_TOLERANCE_RPS = 1.0; // +/- 60 RPM
   public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.5;
-  public static final double MAX_FLYWHEEL_CALCULATED_RPM = 3000.0;
+  public static final double MAX_FLYWHEEL_CALCULATED_RPM = 1750.0; // TODO: TEMPORARY
   public static final double MAX_FLYWHEEL_LOW_CEILING_RPM = 2000.0;
   
   // Change this to true to scale down & lower max flywheel speed when ceiling clearance is low.
-  public static boolean isLowCeiling = false;
+  public static boolean isLowCeiling = false; // TODO: Causes shooter to stop
   public static final double FLYWHEEL_LOW_CEILING_SCALER = 2 / 3;
   
   private static final double m_ShootFixedRPM = 2000.0;

@@ -139,8 +139,8 @@ public class ShooterCalculation {
     passingMaxDistance = 17.16;
     phaseDelay = 0.03;
 
-    hoodAngleMap.put(0.0, 0.0);
-    hoodAngleMap.put(1.46, 30.0);
+    hoodAngleMap.put(0.0, 50.0);
+    hoodAngleMap.put(1.46, 50.0);
     hoodAngleMap.put(1.73, 60.0);
     hoodAngleMap.put(2.18, 90.0);
     hoodAngleMap.put(2.47, 120.0);
