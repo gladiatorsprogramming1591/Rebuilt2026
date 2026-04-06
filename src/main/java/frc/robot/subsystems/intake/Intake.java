@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.DeployModeState;
 import frc.robot.util.LoggedTunableNumber;
+
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -48,6 +51,9 @@ public class Intake extends SubsystemBase {
   private boolean stopMotorWhenNotMoving = false;
   private boolean isDeployStopped = true;
 
+  private BooleanSupplier currentLimitReached = 
+      () -> outputs.appliedDeployCurrent >= IntakeConstants.DEPLOY_CURRENT_LIMIT;
+
   @AutoLogOutput private double goalAngle = 0.0;
 
   public Intake(IntakeIO io) {
@@ -73,7 +79,7 @@ public class Intake extends SubsystemBase {
               outputs.appliedDeploySpeed = 0;
               RobotState.setDeployMode(RobotState.DeployModeState.OFF);
             })
-        .until(() -> isDeployStopped);
+        .until(currentLimitReached);
   }
 
   // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new
@@ -90,7 +96,9 @@ public class Intake extends SubsystemBase {
               outputs.appliedDeploySpeed = 0;
               RobotState.setDeployMode(RobotState.DeployModeState.OFF);
             })
-        .until(() -> isDeployStopped);
+        .until(currentLimitReached);
+      //robotcode.workplz 
+
   }
 
   public Command deployWithSpeed() {
