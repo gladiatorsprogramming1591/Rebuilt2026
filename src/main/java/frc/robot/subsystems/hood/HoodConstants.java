@@ -20,6 +20,7 @@ public final class HoodConstants {
   public static final double HOOD_ANGLE_TOLERANCE = 20.0;
 
   public static final double HOOD_ZEROING_CURRENT_THRESHOLD = 3.0;
+  public static final double HOOD_ZEROING_VELOCITY_THRESHOLD = 1.0;
   public static final double MIN_STATIONARY_DURATION = 0.75; // in seconds
 
   public static final double HOOD_LOWER_LIMIT = 0.0;

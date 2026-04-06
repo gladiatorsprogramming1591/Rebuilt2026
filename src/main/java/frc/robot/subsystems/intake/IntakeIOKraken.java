@@ -135,10 +135,15 @@ public class IntakeIOKraken implements IntakeIO {
       tuneDeployMotorConfigs(outputs);
     }
 
-    // intakeLeft.set(outputs.appliedIntakeSpeed);
-    // intakeRight.set(outputs.appliedIntakeSpeed);
-    intakeLeft.setControl(torqueDutyCycleControl.withOutput(outputs.appliedIntakeSpeed * IntakeConstants.MAX_TORQUE_DUTYCYCLE));
-    intakeRight.setControl(torqueDutyCycleControl.withOutput(outputs.appliedIntakeSpeed * IntakeConstants.MAX_TORQUE_DUTYCYCLE));
+    if (outputs.appliedIntakeSpeed == IntakeConstants.INTAKE_MOTOR_SPEED)
+    {
+      intakeLeft.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE));
+      intakeRight.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE));
+    } else
+    {
+      intakeLeft.set(outputs.appliedIntakeSpeed);
+      intakeRight.set(outputs.appliedIntakeSpeed);
+    }
 
     switch (RobotState.getDeployMode()) {
       case POSITION:

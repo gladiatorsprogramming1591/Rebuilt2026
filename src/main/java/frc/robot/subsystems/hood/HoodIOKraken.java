@@ -39,7 +39,7 @@ public class HoodIOKraken implements HoodIO {
   private final TalonFX hoodMotor = new TalonFX(HoodConstants.HOOD_CAN_ID);
   private final DigitalInput bottomLimitSensor = new DigitalInput(HoodConstants.HOOD_DIO_PORT);
   // Debouncer for DIO zero limit (filters out brief trips of sensor)
-  private final Debouncer bottomLimitSensorDebouncer = new Debouncer(HoodConstants.LIMIT_SENSOR_DEBOUNCE_TIME, DebounceType.kFalling);
+  private final Debouncer bottomLimitSensorDebouncer = new Debouncer(HoodConstants.LIMIT_SENSOR_DEBOUNCE_TIME, DebounceType.kRising);
   private final boolean isLimitSensorOutputInverted = bottomLimitSensor instanceof DigitalInput ? true : false;
   private final Timer timer = new Timer();
   private final Slot0Configs slot0 = new Slot0Configs();
@@ -194,9 +194,16 @@ public class HoodIOKraken implements HoodIO {
     return false;
   }
 
+  // private boolean hasHoodStopped() {
+  //   boolean retVal =
+  //       hoodSupplyCurrent.getValueAsDouble() > HoodConstants.HOOD_ZEROING_CURRENT_THRESHOLD;
+  //   SmartDashboard.putBoolean(SD_STOPPED, retVal);
+  //   return retVal;
+  // }
+  
   private boolean hasHoodStopped() {
     boolean retVal =
-        hoodSupplyCurrent.getValueAsDouble() > HoodConstants.HOOD_ZEROING_CURRENT_THRESHOLD;
+        hoodAngularVelocity.getValueAsDouble() < HoodConstants.HOOD_ZEROING_VELOCITY_THRESHOLD;
     SmartDashboard.putBoolean(SD_STOPPED, retVal);
     return retVal;
   }

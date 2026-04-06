@@ -19,7 +19,7 @@ public class Hood extends SubsystemBase {
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
   private final HoodIOOutputsAutoLogged outputs = new HoodIOOutputsAutoLogged();
 
-  private boolean hasInitiallyBeenZeroed = false; // TODO: set to false when fixed
+  private boolean hasInitiallyBeenZeroed = true; // TODO: set to false when fixed
   private boolean hasReducedCurrentLimit = false;
 
   private static final LoggedTunableNumber goalPosition =
@@ -112,6 +112,7 @@ public class Hood extends SubsystemBase {
     return new ConditionalCommand(
       // On true
       stopHoodContinuously(), // Indefinitely stops hood until inturrupted
+      // stopHoodOnce(),
       // On false
       new SequentialCommandGroup(
         runOnce(() -> 
