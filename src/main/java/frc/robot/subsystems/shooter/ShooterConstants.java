@@ -16,7 +16,8 @@ public class ShooterConstants {
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 70;
   public static final double MAX_FLYWHEEL_RPM = 5200.0; // Unused. TODO: Find max RPM at 12 V
   public static final double FLYWHEEL_TOLERANCE_RPS = 1.0; // +/- 60 RPM
-  public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.5;
+
+  public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.75; // 0.5. increased for now to better test "isShooterAtVelocity"
   public static final double MAX_FLYWHEEL_CALCULATED_RPM = 1750.0; // TODO: TEMPORARY
   public static final double MAX_FLYWHEEL_LOW_CEILING_RPM = 2000.0;
   
@@ -38,18 +39,21 @@ public class ShooterConstants {
   private static final double m_MMAcceleration = 400; // Target acceleration of <400> rps/s (<0.25> seconds to max)
   private static final double m_MMJerk = 4000; // Target jerk of <4000> rps/s/s (<0.1> seconds)
 
-  public static final String tableKey = "Shooter/";
-  public static final LoggedTunableNumber kP = new LoggedTunableNumber(tableKey + "kP", m_P);
-  public static final LoggedTunableNumber kI = new LoggedTunableNumber(tableKey + "kI", m_I);
-  public static final LoggedTunableNumber kD = new LoggedTunableNumber(tableKey + "kD", m_D);
-  public static final LoggedTunableNumber kS = new LoggedTunableNumber(tableKey + "kS", m_S);
-  public static final LoggedTunableNumber kV = new LoggedTunableNumber(tableKey + "kV", m_V);
-  public static final LoggedTunableNumber kA = new LoggedTunableNumber(tableKey + "kA", m_A);
-  public static final LoggedTunableNumber kMMAcceleration = new LoggedTunableNumber(tableKey + "kMMAcceleration", m_MMAcceleration);
-  public static final LoggedTunableNumber kMMJerk = new LoggedTunableNumber(tableKey + "kMMJerk", m_MMJerk);
+  /**
+   * Table key (i.e. folder) for Smart Dashboard and logging.
+   */
+  public static final String SHOOTER_TABLE_KEY = "Shooter/";
+  public static final LoggedTunableNumber kP = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kP", m_P);
+  public static final LoggedTunableNumber kI = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kI", m_I);
+  public static final LoggedTunableNumber kD = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kD", m_D);
+  public static final LoggedTunableNumber kS = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kS", m_S);
+  public static final LoggedTunableNumber kV = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kV", m_V);
+  public static final LoggedTunableNumber kA = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kA", m_A);
+  public static final LoggedTunableNumber kMMAcceleration = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kMMAcceleration", m_MMAcceleration);
+  public static final LoggedTunableNumber kMMJerk = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kMMJerk", m_MMJerk);
   
-  public static final LoggedTunableNumber shootFixedRPM = new LoggedTunableNumber(tableKey + "Shoot Fixed RPM", m_ShootFixedRPM);
-  public static final LoggedTunableNumber coastRPM = new LoggedTunableNumber(tableKey + "Coast RPM", m_CoastRPM);
+  public static final LoggedTunableNumber shootFixedRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Shoot Fixed RPM", m_ShootFixedRPM);
+  public static final LoggedTunableNumber coastRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Coast RPM", m_CoastRPM);
 
 
   public static Transform3d robotToLauncher =

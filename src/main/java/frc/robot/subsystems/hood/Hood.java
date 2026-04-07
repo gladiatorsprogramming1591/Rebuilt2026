@@ -12,6 +12,9 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.LoggedTunableNumber;
+
+import static frc.robot.subsystems.hood.HoodConstants.HOOD_TABLE_KEY;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -21,7 +24,7 @@ public class Hood extends SubsystemBase {
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
   private final HoodIOOutputsAutoLogged outputs = new HoodIOOutputsAutoLogged();
 
-  private boolean hasInitiallyBeenZeroed = true; // TODO: set to false when fixed
+  private boolean hasInitiallyBeenZeroed = true; // TODO: set to false when fixed. Currently not beeing updated.
   private boolean hasReducedCurrentLimit = false;
 
   private static final LoggedTunableNumber goalPosition =
@@ -170,6 +173,11 @@ public class Hood extends SubsystemBase {
         || HoodTrenchBounds.blueFarTrench.contains(robotTranslation);
   }
 
+  private void setHasInitiallyBeenZeroed(BooleanSupplier bool)
+  {
+    hasInitiallyBeenZeroed = bool.getAsBoolean();
+  }
+
   public void periodic() {
     io.updateInputs(inputs);
     hasInitiallyBeenZeroed = hasInitiallyBeenZeroed || DriverStation.isEnabled() && io.isHoodAtTrueZero();
@@ -178,13 +186,13 @@ public class Hood extends SubsystemBase {
     outputs.kD = kD.get();
     outputs.kS = kS.get();
 
-    Logger.recordOutput("Hood/Desired Hood Angle", outputs.desiredHoodAngle);
-    Logger.recordOutput("Hood/Has Been Zeroed", hasInitiallyBeenZeroed);
-    Logger.recordOutput("Hood/Hood Mode", outputs.mode);
-    Logger.recordOutput("Hood/Desired Hood Speed", outputs.desiredHoodSpeed);
-    SmartDashboard.putBoolean("Hood-hasBeenZeroed", hasInitiallyBeenZeroed);
-    SmartDashboard.putBoolean("Hood-hasReducedCurrentLimit", hasReducedCurrentLimit);
-    SmartDashboard.putBoolean("Hood-isHoodWithinZeroTolerance", io.isHoodWithinZeroTolerance().getAsBoolean());
+    Logger.recordOutput(HOOD_TABLE_KEY + "Desired Angle", outputs.desiredHoodAngle);
+    Logger.recordOutput(HOOD_TABLE_KEY + "Has Been Zeroed", hasInitiallyBeenZeroed);
+    Logger.recordOutput(HOOD_TABLE_KEY + "Hood Mode", outputs.mode);
+    Logger.recordOutput(HOOD_TABLE_KEY + "Desired Hood Speed", outputs.desiredHoodSpeed);
+    SmartDashboard.putBoolean(HOOD_TABLE_KEY + "hasInitiallyBeenZeroed", hasInitiallyBeenZeroed);
+    SmartDashboard.putBoolean(HOOD_TABLE_KEY + "hasReducedCurrentLimit", hasReducedCurrentLimit);
+    SmartDashboard.putBoolean(HOOD_TABLE_KEY + "isHoodWithinZeroTolerance", io.isHoodWithinZeroTolerance().getAsBoolean());
 
     if (hasInitiallyBeenZeroed) {
       runOnce(() -> setDefaultStatorCurrentLimit());

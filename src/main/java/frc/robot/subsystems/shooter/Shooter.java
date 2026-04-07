@@ -50,11 +50,13 @@ public class Shooter extends SubsystemBase {
               ShooterConstants.MAX_FLYWHEEL_LOW_CEILING_RPM);
     }
 
-    Logger.recordOutput(ShooterConstants.tableKey + "Desired Velocity RPM", outputs.desiredVelocityRPM);
-    SmartDashboard.putString("Shooter Mode", RobotState.getShooterMode().toString());
-    SmartDashboard.putBoolean("Shooter DoApplyOutputs", doApplyOutputs);
-    SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
-    SmartDashboard.putBoolean("Shooter below coast RPM", isShooterBelowCoastRPM().getAsBoolean());
+    Logger.recordOutput(ShooterConstants.SHOOTER_TABLE_KEY + "Desired Velocity RPM", outputs.desiredVelocityRPM);
+    SmartDashboard.putString(ShooterConstants.SHOOTER_TABLE_KEY + "Shooter Mode", RobotState.getShooterMode().toString());
+    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "DoApplyOutputs", doApplyOutputs);
+    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
+    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "below coast RPM", isShooterBelowCoastRPM().getAsBoolean());
+    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "hasSpeedTargetChanged", hasSpeedTargetChanged);
+
     if (doApplyOutputs) {
       io.applyOutputs(outputs);
     }
@@ -114,9 +116,17 @@ public class Shooter extends SubsystemBase {
     return runShooterDutyCycle(0);
   }
 
-  public Command coastShooterDefaultCommand()
+  public ConditionalCommand coastShooterDefaultCommand()
   {
-    return new ConditionalCommand(runIdleCommand(), stopAndCoastShooter(), isShooterBelowCoastRPM());
+    // return runEnd(
+    //   () -> stopAndCoastShooter().until(isShooterBelowCoastRPM()), 
+    //   () -> runIdleCommand());
+    ConditionalCommand conditionalCommand = new ConditionalCommand(
+      runIdleCommand(),
+      stopAndCoastShooter(),
+      isShooterBelowCoastRPM());
+      conditionalCommand.addRequirements(this);
+    return conditionalCommand;
   }
 
   public BooleanSupplier isShooterAtVelocity() {

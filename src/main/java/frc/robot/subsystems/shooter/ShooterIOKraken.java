@@ -21,6 +21,7 @@ import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.coastRPM;
+import static frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_TABLE_KEY;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -71,7 +72,7 @@ public class ShooterIOKraken implements ShooterIO {
   public ShooterIOKraken() {
     if (Constants.tuningMode)
     {
-      SmartDashboard.putBoolean(UPDATE_CONFIG_NAME, false);
+      SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);
     }
     RL_RPS = rightShooterLeader.getVelocity();
     RF_RPS = rightShooterFollower.getVelocity();
@@ -189,7 +190,7 @@ public class ShooterIOKraken implements ShooterIO {
 
     desiredRPS = outputs.desiredVelocityRPM / 60;
 
-    SmartDashboard.putNumber("Desired RPS", desiredRPS);
+    SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Desired RPS", desiredRPS);
     rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
   }
 
@@ -215,14 +216,13 @@ public class ShooterIOKraken implements ShooterIO {
    * <p>
    * Only works with positive (i.e. shooting) velocity targets, not negative.
    *
-   * @param targetVelocity
+   * @param targetRPS
    * @return Boolean supplier of whether right leader motor velocity is at target
    */
   @Override
-  public BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetVelocity) {
+  public BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetRPS) {
     return (() ->
-        rightShooterLeader.getVelocity().getValueAsDouble()
-            > targetVelocity.getAsDouble() - ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+        RL_RPS.getValueAsDouble() > (targetRPS.getAsDouble() - ShooterConstants.FLYWHEEL_TOLERANCE_RPS));
   }
 
   /**
@@ -232,9 +232,9 @@ public class ShooterIOKraken implements ShooterIO {
    */
   @Override
   public BooleanSupplier rightShooterBelowCoastRPM() {
+    double coastRPS = coastRPM.getAsDouble() / 60;
     return (() ->
-        RL_RPS.getValueAsDouble()
-            < (coastRPM.getAsDouble() / 60) + ShooterConstants.FLYWHEEL_TOLERANCE_RPS);
+        RL_RPS.getValueAsDouble() < (coastRPS + ShooterConstants.FLYWHEEL_TOLERANCE_RPS));
   }
 
   /**
@@ -248,9 +248,9 @@ public class ShooterIOKraken implements ShooterIO {
    */
   private void tuneMotorConfigs(ShooterIOOutputs outputs)
   {
-    if (SmartDashboard.getBoolean(UPDATE_CONFIG_NAME, true))
+    if (SmartDashboard.getBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false))
       {
-      SmartDashboard.putBoolean(UPDATE_CONFIG_NAME, false);
+      SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);
       
       TalonFXConfiguration tunedConfigs = createTunedMotorConfig(outputs);
       Slot0Configs slot0 = tunedConfigs.Slot0;

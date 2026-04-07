@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hood;
 
+import static frc.robot.subsystems.hood.HoodConstants.HOOD_TABLE_KEY;
+
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -25,16 +27,15 @@ import frc.robot.util.PhoenixUtil;
 
 public class HoodIOKraken implements HoodIO {
   // Smart Dashboard keys
-  private final String SD_KEY = "Hood/";
-  private final String SD_ANGLE_BEFORE_APPLIED_ZERO = SD_KEY + "Angle before applied zero";
-  private final String SD_STOPPED                   = SD_KEY + "Stopped";
-  private final String SD_STOPPED_OVER_TIME         = SD_KEY + "Stopped over time";
-  private final String SD_STOPPED_OVER_TIME_TIMER   = SD_KEY + "Stopped over time timer";
-  private final String SD_ACCEPTED_ZERO_COUNT       = SD_KEY + "Accepted zero count";
-  private final String SD_REJECTED_ZERO_COUNT       = SD_KEY + "Rejected zero count";
-  private final String SD_APPLIED_SUPPLY_CURRENT    = SD_KEY + "Supply current limit";
-  private final String SD_APPLIED_STATOR_CURRENT    = SD_KEY + "Stator current limit";
-  private final String SD_LIMIT_SENSOR_INVERTED    = SD_KEY + "limit sensor inverted";
+  private final String SD_ANGLE_BEFORE_APPLIED_ZERO = HOOD_TABLE_KEY + "Angle before applied zero";
+  private final String SD_STOPPED                   = HOOD_TABLE_KEY + "Stopped";
+  private final String SD_STOPPED_OVER_TIME         = HOOD_TABLE_KEY + "Stopped over time";
+  private final String SD_STOPPED_OVER_TIME_TIMER   = HOOD_TABLE_KEY + "Stopped over time timer";
+  private final String SD_ACCEPTED_ZERO_COUNT       = HOOD_TABLE_KEY + "Accepted zero count";
+  private final String SD_REJECTED_ZERO_COUNT       = HOOD_TABLE_KEY + "Rejected zero count";
+  private final String SD_APPLIED_SUPPLY_CURRENT    = HOOD_TABLE_KEY + "Supply current limit";
+  private final String SD_APPLIED_STATOR_CURRENT    = HOOD_TABLE_KEY + "Stator current limit";
+  private final String SD_LIMIT_SENSOR_INVERTED    = HOOD_TABLE_KEY + "limit sensor inverted";
   
   private final TalonFX hoodMotor = new TalonFX(HoodConstants.HOOD_CAN_ID);
   private final DigitalInput bottomLimitSensor = new DigitalInput(HoodConstants.HOOD_DIO_PORT);
