@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hood;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.LoggedTunableNumber;
@@ -158,6 +160,14 @@ public class Hood extends SubsystemBase {
       hasReducedCurrentLimit = false;
       io.setStatorCurrentLimit(HoodConstants.HOOD_STATOR_CURRENT_LIMIT);
     }
+  }
+
+  private boolean inTrenchBounds() {
+    Translation2d robotTranslation = RobotState.getInstance().getEstimatedPose().getTranslation();
+    return HoodTrenchBounds.redNearTrench.contains(robotTranslation)
+        || HoodTrenchBounds.redFarTrench.contains(robotTranslation)
+        || HoodTrenchBounds.blueNearTrench.contains(robotTranslation)
+        || HoodTrenchBounds.blueFarTrench.contains(robotTranslation);
   }
 
   public void periodic() {
