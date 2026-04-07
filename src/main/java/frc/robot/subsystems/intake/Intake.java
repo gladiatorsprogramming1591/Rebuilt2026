@@ -124,6 +124,15 @@ public class Intake extends SubsystemBase {
               outputs.appliedIntakeSpeed = 0.0;
             });
   }
+  public Command reverseIntake() {
+    return runEnd(
+            () -> {
+              outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_REVERSE_SPEED;
+            },
+            () -> {
+              outputs.appliedIntakeSpeed = 0.0;
+            });
+  }
 
   // public Command deployAndIntake() {
   //   return deploy().alongWith(runIntake());

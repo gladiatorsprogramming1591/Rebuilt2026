@@ -30,7 +30,8 @@ public final class IntakeConstants {
 
   // % Duty-Cycle
   public static final double INTAKE_MOTOR_SPEED = 0.60;
-  public static final double INTAKE_IDLE_SPEED = 0.10; // placeholder until tested
+  public static final double INTAKE_REVERSE_SPEED = -0.40;
+
   public static final double DEPLOY_SPEED = 0.4;
   public static final double STOW_SPEED = -0.25;
   // Amps
