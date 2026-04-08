@@ -7,9 +7,12 @@ package frc.robot.util;
 // the root directory of this project.
 
 import frc.robot.Constants;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 /**
@@ -102,22 +105,36 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    *     numbers in order inputted in method
    * @param tunableBooleans All tunable numbers to check
    */
-  // public static void ifChanged(
-  //     int id, Consumer<boolean[]> action, LoggedTunableBoolean... tunableBooleans) {
-  //   if (Arrays.stream(tunableBooleans).anyMatch(tunableBoolean -> tunableBoolean.hasChanged(id)))
-  // {
-  //     // TODO: Map to boolean array (if possible) then uncomment both this method and the one
-  // below
-  //
-  // action.accept(Arrays.stream(tunableBooleans).mapToDouble(LoggedTunableBoolean::get).toArray());
-  //   }
-  // }
+  public static void ifChanged(
+      int id, Consumer<boolean[]> action, LoggedTunableBoolean... tunableBooleans)
+  {
+    if (Arrays.stream(tunableBooleans).anyMatch(tunableBoolean -> tunableBoolean.hasChanged(id)))
+    {
+      // Converts LoggedTunableBoolean array (from vararg) to Boolean object array
+      Stream<LoggedTunableBoolean> stream = Arrays.stream(tunableBooleans);
+      Stream<Boolean> objBooleanStream = stream.map(LoggedTunableBoolean::get);
+      Boolean[] objBooleanArray = objBooleanStream.toArray(Boolean[]::new);
+
+      // Creates a primitive boolean array identical to Boolean object array
+      int arrayLength = objBooleanArray.length;
+      boolean[] primitiveBooleanArray = new boolean[arrayLength];
+    
+      for (int i = 0; i < arrayLength; i++) {
+        // Only updates "true" values since uninitialized primitive booleans already default to "false"
+        if (objBooleanArray[i].booleanValue())
+        {
+          primitiveBooleanArray[i] = true;
+        }
+      }
+      action.accept(primitiveBooleanArray);
+    }
+  }
 
   /** Runs action if any of the tunableNumbers have changed */
-  // public static void ifChanged(int id, Runnable action, LoggedTunableBoolean... tunableBooleans)
-  // {
-  //   ifChanged(id, values -> action.run(), tunableBooleans);
-  // }
+  public static void ifChanged(int id, Runnable action, LoggedTunableBoolean... tunableBooleans)
+  {
+    ifChanged(id, values -> action.run(), tunableBooleans);
+  }
 
   @Override
   public boolean getAsBoolean() {

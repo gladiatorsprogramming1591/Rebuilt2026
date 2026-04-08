@@ -66,7 +66,10 @@ public class CameraConstants {
                 0.3429,
                 -0.0127,
                 0.22225,
-                new Rotation3d(0, Units.degreesToRadians(37.8), Units.degreesToRadians(0.0))));
+                new Rotation3d(
+                    Units.degreesToRadians(0.0),
+                    Units.degreesToRadians(37.8),
+                    Units.degreesToRadians(0.0))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
     public static final Camera LEFT = // Comp Bot

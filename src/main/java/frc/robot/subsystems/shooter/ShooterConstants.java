@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.util.LoggedTunableBoolean;
 import frc.robot.util.LoggedTunableNumber;
 
 // spotless:off
@@ -39,12 +40,14 @@ public class ShooterConstants {
   private static final double m_MMAcceleration = 400; // Target acceleration of <400> rps/s (<0.25> seconds to max)
   private static final double m_MMJerk = 4000; // Target jerk of <4000> rps/s/s (<0.1> seconds)
 
-  private static final boolean useMotionMagic = false; // TODO: Tie this to LoggedTunnableBoolean
+  private static final boolean m_useMotionMagic = false;
 
   /**
    * Table key (i.e. folder) for Smart Dashboard and logging.
    */
   public static final String SHOOTER_TABLE_KEY = "Shooter/";
+  
+  public static final LoggedTunableBoolean useMotionMagic = new LoggedTunableBoolean(SHOOTER_TABLE_KEY + "Use Motion Magic?", m_useMotionMagic);
   public static final LoggedTunableNumber kP = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kP", m_P);
   public static final LoggedTunableNumber kI = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kI", m_I);
   public static final LoggedTunableNumber kD = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kD", m_D);
@@ -57,8 +60,15 @@ public class ShooterConstants {
   public static final LoggedTunableNumber shootFixedRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Shoot Fixed RPM", m_ShootFixedRPM);
   public static final LoggedTunableNumber coastRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Coast RPM", m_CoastRPM);
 
+  // Smart Dashboard keys
+    public static final String UPDATE_CONFIG_NAME = "Update Shooter Configs";
 
   public static Transform3d robotToLauncher =
       new Transform3d(-0.276, 0.09, 0.599, new Rotation3d(0.0, 0.0, Math.PI));
+
+  public class ShooterTableKeys
+  {
+
+  }
 }
 // spotless:on

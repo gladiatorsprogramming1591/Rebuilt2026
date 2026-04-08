@@ -186,6 +186,7 @@ spotless {
                     "**/shooter/**",
                     "**/intake/**",
                     "**/hood/**",
+                    "**/util/**",
                     "**/RobotContainer.java"
         }
         toggleOffOn()

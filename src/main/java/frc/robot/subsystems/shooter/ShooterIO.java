@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooter;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import static frc.robot.subsystems.shooter.ShooterConstants.UPDATE_CONFIG_NAME;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
@@ -43,6 +45,7 @@ public interface ShooterIO {
     public double kA;
     public double kMMAcceleration;
     public double kMMJerk;
+    public boolean useMotionMagic = false;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}
@@ -58,14 +61,34 @@ public interface ShooterIO {
 
   public default void runShooterDutyCycle(double shooterVelocity) {}
 
+  /**
+   * Checks if the velocity of the right leader motor is within tolerance of the target velocity.
+   * <p>
+   * IOKraken: Only works with positive (i.e. shooting) velocity targets, not negative.
+   *
+   * @return Boolean supplier of whether right leader motor velocity is at target
+   */
   public default BooleanSupplier rightShooterAtVelocity() {
     return () -> false;
   }
 
-  public default BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetVelocity) {
+  /**
+   * Checks if the velocity of the right leader motor is within tolerance of the target velocity.
+   * <p>
+   * IOKraken: Only works with positive (i.e. shooting) velocity targets, not negative.
+   *
+   * @param targetRPS
+   * @return Boolean supplier of whether right leader motor velocity is at target
+   */
+  public default BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetRPS) {
     return () -> false;
   }
 
+  /**
+   * Checks if the velocity of the right leader motor is below coast RPM + tolerance.
+   *
+   * @return Boolean supplier of whether right leader motor velocity is below coast RPM
+   */
   public default BooleanSupplier rightShooterBelowCoastRPM() {
     return () -> false;
   }
@@ -79,4 +102,15 @@ public interface ShooterIO {
   }
 
   public default void setShooterMotorRPM(double rpm) {}
+
+  /**
+   * Applies the latest tunable TalonFX configurations to <b>all shooter motors</b>.
+   * <p>
+   * Only applies the configuration when the Smartdashboard boolean {@value #UPDATE_CONFIG_NAME} is changed from false to true (i.e. rising edge).
+   * 
+   * @param outputs Shooter outputs where the tunable configurations are accessable
+   * @see {@link #createTunedMotorConfig(frc.robot.subsystems.shooter.ShooterIO.ShooterIOOutputs) createTunedMotorConfig()}
+   * @see frc.robot.util.LoggedTunableNumber LoggedTunableNumber
+   */
+  public default void tuneMotorConfigs(ShooterIOOutputs outputs) {}
 }
