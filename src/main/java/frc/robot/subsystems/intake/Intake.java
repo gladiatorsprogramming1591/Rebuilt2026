@@ -99,6 +99,20 @@ public class Intake extends SubsystemBase {
         .until(() -> isDeployStopped);
   }
 
+  public Command stowBump() {
+    return runEnd(
+            () -> {
+              isDeployStopped = false;
+              outputs.desiredPosition = IntakeConstants.BUMP;
+              RobotState.setDeployMode(RobotState.DeployModeState.POSITION);
+              stopDeployOnCurrentSpike = true;
+            },
+            () -> {
+              outputs.appliedDeploySpeed = 0;
+              RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+            });
+  }
+
   public Command deployWithSpeed() {
     return runEnd(
         () -> {

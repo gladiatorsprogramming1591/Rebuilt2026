@@ -27,6 +27,7 @@ public final class IntakeConstants {
 
   public static final double UP = 0.0;
   public static final double DOWN = 1.0; // placeholder until tested
+  public static final double BUMP = 2.0; // placeholder until tested
 
   // % Duty-Cycle
   public static final double INTAKE_MOTOR_SPEED = 0.60;
