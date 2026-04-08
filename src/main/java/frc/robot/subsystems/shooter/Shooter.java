@@ -5,8 +5,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ShooterModeState;
+
+import static frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_TABLE_KEY;
+import static frc.robot.subsystems.shooter.ShooterConstants.UPDATE_CONFIG_NAME;
+
 import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -20,8 +25,9 @@ public class Shooter extends SubsystemBase {
 
   public Shooter(ShooterIO io) {
     this.io = io;
-    SmartDashboard.putBoolean("Shooter below coast RPM", true);
-    SmartDashboard.putNumber("Shooter duty cycle", 0.0);
+    if (Constants.tuningMode) {SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);}
+    SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + "below coast RPM", true);
+    SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Duty-cycle", 0.0);
   }
 
   @Override
@@ -29,6 +35,7 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
 
+    outputs.useMotionMagic = ShooterConstants.useMotionMagic.getAsBoolean();
     outputs.kP = ShooterConstants.kP.getAsDouble();
     outputs.kI = ShooterConstants.kI.getAsDouble();
     outputs.kD = ShooterConstants.kD.getAsDouble();
@@ -37,6 +44,8 @@ public class Shooter extends SubsystemBase {
     outputs.kA = ShooterConstants.kA.getAsDouble();
     outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
     outputs.kMMJerk = ShooterConstants.kMMJerk.getAsDouble();
+
+    if (Constants.tuningMode) {io.tuneMotorConfigs(outputs);}
 
     boolean doApplyOutputs = true;
     if (RobotState.getShooterMode() == ShooterModeState.DUTYCYCLE) {
@@ -99,7 +108,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command runShooterDutyCycle(double dutyCycle) {
-    SmartDashboard.putNumber("Shooter duty cycle", dutyCycle);
+    SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Duty-cycle", dutyCycle);
     return run(
         () -> {
           RobotState.setShooterMode(ShooterModeState.DUTYCYCLE);
