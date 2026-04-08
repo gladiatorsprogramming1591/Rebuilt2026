@@ -7,27 +7,29 @@ package frc.robot.util;
 // the root directory of this project.
 
 import frc.robot.Constants;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
  * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
  * value not in dashboard.
  */
 @SuppressWarnings("unused")
-public class LoggedTunableBoolean implements BooleanSupplier {
+public class LoggedTunableBoolean implements DoubleSupplier {
   private static final String tableKey = "/Tuning";
 
   private final String key;
   private boolean hasDefault = false;
-  private boolean defaultValue;
-  private LoggedNetworkBoolean dashboardBoolean;
-  private Map<Integer, Boolean> lastHasChangedValues = new HashMap<>();
+  private double defaultValue;
+  private LoggedNetworkNumber dashboardNumber;
+  private Map<Integer, Double> lastHasChangedValues = new HashMap<>();
 
   /**
-   * Create a new LoggedTunableBoolean
+   * Create a new LoggedTunableNumber
    *
    * @param dashboardKey Key on dashboard
    */
@@ -36,12 +38,12 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   }
 
   /**
-   * Create a new LoggedTunableBoolean with the default value
+   * Create a new LoggedTunableNumber with the default value
    *
    * @param dashboardKey Key on dashboard
    * @param defaultValue Default value
    */
-  public LoggedTunableBoolean(String dashboardKey, boolean defaultValue) {
+  public LoggedTunableBoolean(String dashboardKey, double defaultValue) {
     this(dashboardKey);
     initDefault(defaultValue);
   }
@@ -51,12 +53,12 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    *
    * @param defaultValue The default value
    */
-  public void initDefault(boolean defaultValue) {
+  public void initDefault(double defaultValue) {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
       if (Constants.tuningMode && !Constants.disableHAL) {
-        dashboardBoolean = new LoggedNetworkBoolean(key, defaultValue);
+        dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
       }
     }
   }
@@ -66,11 +68,11 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    *
    * @return The current value
    */
-  public boolean get() {
+  public double get() {
     if (!hasDefault) {
-      return false;
+      return 0.0;
     } else {
-      return Constants.tuningMode && !Constants.disableHAL ? dashboardBoolean.get() : defaultValue;
+      return Constants.tuningMode && !Constants.disableHAL ? dashboardNumber.get() : defaultValue;
     }
   }
 
@@ -83,8 +85,8 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    *     otherwise.
    */
   public boolean hasChanged(int id) {
-    boolean currentValue = get();
-    Boolean lastValue = lastHasChangedValues.get(id);
+    double currentValue = get();
+    Double lastValue = lastHasChangedValues.get(id);
     if (lastValue == null || currentValue != lastValue) {
       lastHasChangedValues.put(id, currentValue);
       return true;
@@ -100,27 +102,22 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    *     objects. Recommended approach is to pass the result of "hashCode()"
    * @param action Callback to run when any of the tunable numbers have changed. Access tunable
    *     numbers in order inputted in method
-   * @param tunableBooleans All tunable numbers to check
+   * @param tunableNumbers All tunable numbers to check
    */
-  // public static void ifChanged(
-  //     int id, Consumer<boolean[]> action, LoggedTunableBoolean... tunableBooleans) {
-  //   if (Arrays.stream(tunableBooleans).anyMatch(tunableBoolean -> tunableBoolean.hasChanged(id)))
-  // {
-  //     // TODO: Map to boolean array (if possible) then uncomment both this method and the one
-  // below
-  //
-  // action.accept(Arrays.stream(tunableBooleans).mapToDouble(LoggedTunableBoolean::get).toArray());
-  //   }
-  // }
+  public static void ifChanged(
+      int id, Consumer<double[]> action, LoggedTunableNumber... tunableNumbers) {
+    if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
+      action.accept(Arrays.stream(tunableNumbers).mapToDouble(LoggedTunableNumber::get).toArray());
+    }
+  }
 
   /** Runs action if any of the tunableNumbers have changed */
-  // public static void ifChanged(int id, Runnable action, LoggedTunableBoolean... tunableBooleans)
-  // {
-  //   ifChanged(id, values -> action.run(), tunableBooleans);
-  // }
+  public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) {
+    ifChanged(id, values -> action.run(), tunableNumbers);
+  }
 
   @Override
-  public boolean getAsBoolean() {
+  public double getAsDouble() {
     return get();
   }
 }
