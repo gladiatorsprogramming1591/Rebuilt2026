@@ -85,9 +85,12 @@ public class CameraConstants {
                 -0.33, // forward + /backward -
                 -0.089, // side right + /left -
                 0.419, // up + / down -
-                new Rotation3d(Units.degreesToRadians(-10), Units.degreesToRadians(-25), Units.degreesToRadians(0.0))));
+                new Rotation3d(
+                    Units.degreesToRadians(0),
+                    Units.degreesToRadians(25),
+                    Units.degreesToRadians(170.0))));
 
-                /** Right-side Limelight configuration including physical transform and duties. */
+    /** Right-side Limelight configuration including physical transform and duties. */
     public static final Camera RIGHT = // Comp Bot
         new Camera(
             new CameraIOLimelight("three", CameraType.LIMELIGHT_4),
@@ -104,7 +107,10 @@ public class CameraConstants {
                 -0.33, // forward + /backward -
                 0.089, // side right + /left -
                 0.419, // up + / down -
-                new Rotation3d(Units.degreesToRadians(10), Units.degreesToRadians(-25), Units.degreesToRadians(0.0))));
+                new Rotation3d(
+                    Units.degreesToRadians(0),
+                    Units.degreesToRadians(25),
+                    Units.degreesToRadians(190.0))));
     /*
         private static final Camera LEFT_SIM =
             new Camera(
