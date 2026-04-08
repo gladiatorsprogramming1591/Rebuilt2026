@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -29,7 +30,7 @@ import java.util.function.DoubleSupplier;
 // spotless:off
 public class ShooterIOKraken implements ShooterIO {
   private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
-  // private final MotionMagicVelocityVoltage velocityControl = new MotionMagicVelocityVoltage(0).withSlot(0);
+  private final MotionMagicVelocityVoltage mmVelocityControl = new MotionMagicVelocityVoltage(0).withSlot(0);
 
   private final StatusSignal<AngularVelocity> RL_RPS;
   private final StatusSignal<AngularVelocity> RF_RPS;
@@ -191,7 +192,9 @@ public class ShooterIOKraken implements ShooterIO {
     desiredRPS = outputs.desiredVelocityRPM / 60;
 
     SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Desired RPS", desiredRPS);
-    rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
+    // TODO: toggle between mm and non-mm by reading LoggedTunnableBoolean
+    // rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
+    rightShooterLeader.setControl(mmVelocityControl.withVelocity(desiredRPS));
   }
 
   @Override

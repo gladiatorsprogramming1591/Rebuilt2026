@@ -3,6 +3,7 @@ High Priority:
 - Deploy function without up/down sensors
 - Test hood default command
 - Shooter coast to idle
+- Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
 - V3 Intake
     - Deploy: negative output stows intake up
         - Limit Extent: DIO <?>

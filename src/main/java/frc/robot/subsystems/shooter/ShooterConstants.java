@@ -39,6 +39,8 @@ public class ShooterConstants {
   private static final double m_MMAcceleration = 400; // Target acceleration of <400> rps/s (<0.25> seconds to max)
   private static final double m_MMJerk = 4000; // Target jerk of <4000> rps/s/s (<0.1> seconds)
 
+  private static final boolean useMotionMagic = false; // TODO: Tie this to LoggedTunnableBoolean
+
   /**
    * Table key (i.e. folder) for Smart Dashboard and logging.
    */

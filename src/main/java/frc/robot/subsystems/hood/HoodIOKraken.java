@@ -234,7 +234,8 @@ public class HoodIOKraken implements HoodIO {
 
   @Override
   public void applyOutputs(HoodIOOutputs outputs) {
-    SmartDashboard.putNumber("Desired Hood Angle", outputs.desiredHoodAngle);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Desired Hood Angle", outputs.desiredHoodAngle);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Desired Hood Speed", outputs.desiredHoodSpeed);
     if (outputs.mode == HoodMode.POSITION) {
       if (Constants.tuningMode) {
         slot0.kP = outputs.kP;
@@ -250,7 +251,6 @@ public class HoodIOKraken implements HoodIO {
               .withFeedForward(outputs.kS));
     } else if (outputs.mode == HoodMode.SPEED) {
       hoodMotor.set(outputs.desiredHoodSpeed);
-      SmartDashboard.putNumber("Desired Hood Speed", outputs.desiredHoodSpeed);
     }
   }
 }

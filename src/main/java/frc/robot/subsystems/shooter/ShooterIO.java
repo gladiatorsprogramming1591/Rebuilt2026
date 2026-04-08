@@ -34,6 +34,7 @@ public interface ShooterIO {
   @AutoLog
   public class ShooterIOOutputs {
     public double desiredVelocityRPM = 0.0;
+    public double desiredDutyCycle = 0.0;
     public double kP;
     public double kI;
     public double kD;
