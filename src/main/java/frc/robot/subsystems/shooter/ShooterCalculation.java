@@ -75,8 +75,8 @@ public class ShooterCalculation {
       new InterpolatingDoubleTreeMap();
 
   // Passing Maps
-  private static final InterpolatingTreeMap<Double, Rotation2d> passingHoodAngleMap =
-      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
+  private static final InterpolatingTreeMap<Double, Double> passingHoodAngleMap =
+      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Interpolator.forDouble());
   private static final InterpolatingDoubleTreeMap passingFlywheelSpeedMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap passingTimeOfFlightMap =
@@ -172,10 +172,11 @@ public class ShooterCalculation {
     timeOfFlightMap.put(1.88, 1.09);
     timeOfFlightMap.put(1.38, 0.90);
 
-    passingHoodAngleMap.put(5.46, Rotation2d.fromDegrees(38.0));
-    passingHoodAngleMap.put(6.62, Rotation2d.fromDegrees(38.0));
-    passingHoodAngleMap.put(7.80, Rotation2d.fromDegrees(38.0));
-    passingHoodAngleMap.put(17.16, Rotation2d.fromDegrees(38.0));
+    passingHoodAngleMap.put(0.0, 240.0);
+    passingHoodAngleMap.put(5.46, 240.0);
+    passingHoodAngleMap.put(6.62, 400.0);
+    passingHoodAngleMap.put(7.80, 500.0);
+    passingHoodAngleMap.put(17.16, 500.0);
 
     passingFlywheelSpeedMap.put(5.46, 1008.0);
     passingFlywheelSpeedMap.put(6.62, 1134.0);
@@ -306,7 +307,7 @@ public class ShooterCalculation {
     // Calculate remaining parameters
     double hoodAngle =
         passing
-            ? passingHoodAngleMap.get(lookaheadLauncherToTargetDistance).getRotations()
+            ? passingHoodAngleMap.get(lookaheadLauncherToTargetDistance)
             : hoodAngleMap.get(lookaheadLauncherToTargetDistance);
     if (lastDriveAngle == null) lastDriveAngle = driveAngle;
     if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle;
@@ -350,6 +351,8 @@ public class ShooterCalculation {
     // Log calculated values
     Logger.recordOutput(
         "ShooterCalculation/HoodAngle", hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg));
+    Logger.recordOutput("ShooterCalculation/Passing", passing);
+    Logger.recordOutput("ShooterCalculation/Target", target);
     Logger.recordOutput("ShooterCalculation/HoodVelocity", hoodVelocity);
     Logger.recordOutput("ShooterCalculation/FlywheelVelocity", flywheelVelocity);
     Logger.recordOutput("ShooterCalculation/TargetPose", new Pose2d(target, Rotation2d.kZero));

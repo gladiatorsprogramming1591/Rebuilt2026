@@ -312,6 +312,7 @@ public class RobotContainer {
     // hood
     operator_controller.x().onTrue(shootWithAim());
     // operator_controller.y().onTrue(shootWithAimStationary());
+    operator_controller.y().toggleOnTrue(intake.stowBump());
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
     operator_controller.povRight().onTrue(hood.ZeroHood());
 
@@ -438,6 +439,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
+    NamedCommands.registerCommand("Stow For Bump", intake.stowBump());
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
     NamedCommands.registerCommand(
         "Lower Hood And Stop Shooting",
