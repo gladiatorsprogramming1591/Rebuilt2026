@@ -97,7 +97,7 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     LoggedTracer.record("VisionStart");
     List<Rotation2d> mt1Yaws = new ArrayList<>();
-    // If available, push yaw to MT2 cameras before we read (254/6328 pattern).
+    // If available, push yaw to MT2 cameras before we read (254/63 28 pattern).
     Rotation2d yawNow = (yawSupplier != null) ? yawSupplier.get() : null;
 
     for (Camera cam : cameras) {
@@ -109,15 +109,15 @@ public class Vision extends SubsystemBase {
         // Limelight robot_orientation_set (required for MT2)
         // 254 VisionIOHardwareLimelight.setLLSettings()/orientation path; 6328 VisionIOLimelight
         cam.getIo().setRobotYawDegrees(yawNow.getDegrees());
-        SmartDashboard.putNumber("Camera Angle", yawNow.getDegrees());
+        SmartDashboard.putNumber(cam.getName() + " Camera Angle", yawNow.getDegrees());
       }
 
       Optional<LimelightHelpers.PoseEstimate> mt1Opt = cam.getIo().readMT1();
-      SmartDashboard.putBoolean("mt1Opt", mt1Opt.isPresent());
+      SmartDashboard.putBoolean(cam.getName() + " mt1Opt", mt1Opt.isPresent());
       if (mt1Opt.isPresent()) {
         var pe = mt1Opt.get();
         if (pe.pose != null && isPoseWithinField(pe.pose)) {
-          SmartDashboard.putBoolean("PoseInField", true);
+          SmartDashboard.putBoolean(cam.getName() + " PoseInField", true);
           if (pe.tagCount == 1
               && pe.rawFiducials != null
               && pe.rawFiducials.length >= 1
@@ -125,7 +125,7 @@ public class Vision extends SubsystemBase {
             mt1Yaws.add(pe.pose.getRotation());
           }
         } else {
-          SmartDashboard.putBoolean("PoseInField", false);
+          SmartDashboard.putBoolean(cam.getName() + " PoseInField", false);
         }
       }
     }
@@ -158,7 +158,7 @@ public class Vision extends SubsystemBase {
             }
           };
       cand.ifPresent(candidates::add);
-      SmartDashboard.putString("VisionMode", cam.getVisionMode().toString());
+      SmartDashboard.putString(cam.getName() + " VisionMode", cam.getVisionMode().toString());
     }
     // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
     // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't
