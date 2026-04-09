@@ -217,8 +217,4 @@ public class Camera {
   public CameraIO getIo() {
     return io;
   }
-
-  public String nameTableKey() {
-    return "Vision/Cameras/" + this.name + "/";
-  }
 }
