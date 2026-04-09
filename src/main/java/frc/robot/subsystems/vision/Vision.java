@@ -109,15 +109,15 @@ public class Vision extends SubsystemBase {
         // Limelight robot_orientation_set (required for MT2)
         // 254 VisionIOHardwareLimelight.setLLSettings()/orientation path; 6328 VisionIOLimelight
         cam.getIo().setRobotYawDegrees(yawNow.getDegrees());
-        SmartDashboard.putNumber(cam.getName() + " Camera Angle", yawNow.getDegrees());
+        SmartDashboard.putNumber(cam.getTableKey() + "Camera Angle", yawNow.getDegrees());
       }
 
       Optional<LimelightHelpers.PoseEstimate> mt1Opt = cam.getIo().readMT1();
-      SmartDashboard.putBoolean(cam.getName() + " mt1Opt", mt1Opt.isPresent());
+      SmartDashboard.putBoolean(cam.getTableKey() + "mt1Opt", mt1Opt.isPresent());
       if (mt1Opt.isPresent()) {
         var pe = mt1Opt.get();
         if (pe.pose != null && isPoseWithinField(pe.pose)) {
-          SmartDashboard.putBoolean(cam.getName() + " PoseInField", true);
+          SmartDashboard.putBoolean(cam.getTableKey() + "PoseInField", true);
           if (pe.tagCount == 1
               && pe.rawFiducials != null
               && pe.rawFiducials.length >= 1
@@ -125,7 +125,7 @@ public class Vision extends SubsystemBase {
             mt1Yaws.add(pe.pose.getRotation());
           }
         } else {
-          SmartDashboard.putBoolean(cam.getName() + " PoseInField", false);
+          SmartDashboard.putBoolean(cam.getTableKey() + "PoseInField", false);
         }
       }
     }
@@ -158,7 +158,7 @@ public class Vision extends SubsystemBase {
             }
           };
       cand.ifPresent(candidates::add);
-      SmartDashboard.putString(cam.getName() + " VisionMode", cam.getVisionMode().toString());
+      SmartDashboard.putString(cam.getTableKey() + "VisionMode", cam.getVisionMode().toString());
     }
     // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
     // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't
@@ -233,17 +233,17 @@ public class Vision extends SubsystemBase {
     // 6328 single-tag ambiguity gating
     if (pe.tagCount == 1 && pe.rawFiducials != null && pe.rawFiducials.length >= 1) {
       double ambiguity = pe.rawFiducials[0].ambiguity;
-      SmartDashboard.putNumber("Ambiguity", ambiguity);
+      SmartDashboard.putNumber(cam.getTableKey() + "Ambiguity", ambiguity);
       if (ambiguity > 0.5) { // conservative default; tune per camera
         Logger.recordOutput("Vision/Rejected/HighAmbiguity", ambiguity);
-        SmartDashboard.putBoolean("Ambiguity OK", false);
+        SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", false);
         return Optional.empty();
       } else {
-        SmartDashboard.putBoolean("Ambiguity OK", true);
+        SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", true);
       }
 
-      SmartDashboard.putNumber("Avg Tag Area", pe.avgTagArea);
-      SmartDashboard.putBoolean("Tag Area Ok", (pe.avgTagArea >= 0.25));
+      SmartDashboard.putNumber(cam.getTableKey() + "Avg Tag Area", pe.avgTagArea);
+      SmartDashboard.putBoolean(cam.getTableKey() + "Tag Area Ok", (pe.avgTagArea >= 0.25));
       if (pe.avgTagArea < 0.25) {
         return Optional.empty();
       }
@@ -251,7 +251,7 @@ public class Vision extends SubsystemBase {
       // TODO - had to comment this out after switching to MT1 tags, need to debug
       // // Ignore flickering when too close to tags
       // var priorPose = RobotState.getInstance().getRobotPoseField();
-      // SmartDashboard.putBoolean("YawDiff OK", true);
+      // SmartDashboard.putBoolean(cam.getTableKey() + "YawDiff OK", true);
       // if (pe.avgTagArea < 2.0) {
       //   double yawDiff =
       //       Math.abs(
@@ -259,7 +259,7 @@ public class Vision extends SubsystemBase {
       //               priorPose.getRotation().getRadians() - pose.getRotation().getRadians()));
 
       //   if (yawDiff > Units.degreesToRadians(5.0)) {
-      //     SmartDashboard.putBoolean("YawDiff OK", false);
+      //     SmartDashboard.putBoolean(cam.getTableKey() + "YawDiff OK", false);
       //     return Optional.empty();
       //   }
       // }
@@ -290,11 +290,11 @@ public class Vision extends SubsystemBase {
     boolean trustYaw = pe.tagCount >= 2;
     Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
 
-    SmartDashboard.putNumber("xyStd", xyStd);
-    SmartDashboard.putNumber("out.x", out.getX());
-    SmartDashboard.putNumber("out.y", out.getY());
-    SmartDashboard.putNumber("out.rot", out.getRotation().getDegrees());
-    SmartDashboard.putBoolean("trustYaw", trustYaw);
+    SmartDashboard.putNumber(cam.getTableKey() + "xyStd", xyStd);
+    SmartDashboard.putNumber(cam.getTableKey() + "out.x", out.getX());
+    SmartDashboard.putNumber(cam.getTableKey() + "out.y", out.getY());
+    SmartDashboard.putNumber(cam.getTableKey() + "out.rot", out.getRotation().getDegrees());
+    SmartDashboard.putBoolean(cam.getTableKey() + "trustYaw", trustYaw);
 
     // Logging (1678/254 style telemetry hygiene)
     Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out);
@@ -435,9 +435,9 @@ public class Vision extends SubsystemBase {
     Matrix<N3, N1> fusedStdN3 =
         VecBuilder.fill(fusedStd, fusedStd, a.trustYaw() && b.trustYaw() ? fusedStd : 9999.0);
     Logger.recordOutput("Vision/Fuse/stdN3", fusedStdN3);
-    SmartDashboard.putBoolean("a.trustYaw", a.trustYaw);
-    SmartDashboard.putBoolean("b.trustYaw", b.trustYaw);
-    SmartDashboard.putNumber("fusedStd", fusedStd);
+    SmartDashboard.putBoolean("Vision/Fuse/a.trustYaw", a.trustYaw);
+    SmartDashboard.putBoolean("Vision/Fuse/b.trustYaw", b.trustYaw);
+    SmartDashboard.putNumber("Vision/Fuse/fusedStd", fusedStd);
 
     int[] fusedIds =
         IntStream.concat(Arrays.stream(a.tagIds()), Arrays.stream(b.tagIds()))

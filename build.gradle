@@ -186,6 +186,7 @@ spotless {
                     "**/shooter/**",
                     "**/intake/**",
                     "**/hood/**",
+                    "**/vision/**",
                     "**/util/**",
                     "**/RobotContainer.java"
         }

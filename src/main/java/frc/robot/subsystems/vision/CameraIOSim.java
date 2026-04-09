@@ -47,6 +47,7 @@ public class CameraIOSim implements CameraIO {
   private final PhotonCameraSim cameraSim;
 
   private final String nameLl; // "limelight-<name>" to match logging & helpers
+  @Getter private final String tableKey;
   @Getter private final CameraType cameraType;
   @Getter private final double horizontalFOV;
   @Getter private final double verticalFOV;
@@ -161,6 +162,7 @@ public class CameraIOSim implements CameraIO {
       Supplier<Pose2d> fieldToRobotSupplier) {
 
     this.nameLl = "limelight-" + name;
+    this.tableKey = "Vision/Cameras/" + this.nameLl + "/";
     this.cameraType = cameraType;
     this.horizontalFOV = cameraType.horizontalFOV;
     this.verticalFOV = cameraType.verticalFOV;

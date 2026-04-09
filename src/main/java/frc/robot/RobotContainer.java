@@ -56,6 +56,7 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.CameraConstants.RobotCameras;
 import frc.robot.util.AutoManager;
 import frc.robot.util.HubShiftUtil;
 import java.util.Optional;
@@ -98,12 +99,11 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        Camera cam =
-            robotInitConstants.isCompBot
-                ? CameraConstants.RobotCameras.RIGHT
-                : CameraConstants.RobotCameras.LEFT;
-        vision = new Vision(cam);
-
+        if (robotInitConstants.isCompBot) {
+            vision = new Vision(RobotCameras.LEFT, RobotCameras.RIGHT);
+        } else {
+            vision = new Vision(RobotCameras.PBOT_CAMERA);
+        }
         if (robotInitConstants.isCompBot) {
           intake = new Intake(new IntakeIOKraken());
           kicker = new Kicker(new KickerIOKraken());
