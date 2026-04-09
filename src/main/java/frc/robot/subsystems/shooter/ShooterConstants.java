@@ -37,10 +37,11 @@ public class ShooterConstants {
   private static final double m_A = 0.0; // An acceleration of 1 rps/s requires <> V output
   // Motion Magic velocity configs
   // only used when calling MM control request. e.g. new MotionMagicVelocityVoltage(<rps>)
-  private static final double m_MMAcceleration = 400; // Target acceleration of <400> rps/s (<0.25> seconds to max)
-  private static final double m_MMJerk = 4000; // Target jerk of <4000> rps/s/s (<0.1> seconds)
+  // TODO: Conservative values until proper acceleration management between OFF and IDLE are in place.
+  private static final double m_MMAcceleration = 200; // Target acceleration of <200> rps/s (<0.50> seconds to max)
+  private static final double m_MMJerk = 2000; // Target jerk of <2000> rps/s/s (<0.2> seconds)
 
-  private static final boolean m_useMotionMagic = false;
+  private static final boolean m_useMotionMagic = true;
 
   /**
    * Table key (i.e. folder) for Smart Dashboard and logging.

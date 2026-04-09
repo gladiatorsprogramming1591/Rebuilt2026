@@ -1,27 +1,25 @@
 High Priority:
 --------------
+V3 Integration:
+--------------
 - Deploy function without up/down sensors
-- Test hood default command
+- Test hood default command: Investigate why it either works or not at all between code deploys
 - Shooter coast to idle
 - Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
-- V3 Intake
-    - Deploy: negative output stows intake up
-        - Limit Extent: DIO <?>
-        - Limit Stow: DIO <?>
-        - Stator: 20
-        - Supply: 12
-        - Idle: Brake
+    - Tune motor configs to prep to shoot faster
 
-    - Intake: only right is inverted (clockwise positive)
-        - Stator: 120
-        - Supply: 40
-        - Idle: Coast
-- Adjust autos for V3 new cam/shooter locations
-    - Auto "Bottom Rush to Hub" is still hitting wall, worsening after each trench pass. Odometry loss is likely aggravated due to camara not seeing April Tags at all through auto. Path must be edited to work for V3 cam placement/shooter reorientation.
+- Intake
+    - Ideas for smoother slapdown functions
+        - See if kG is suitable: kG increase as angle approaches deploy intake to slow down
+        - Use multiple slots: less intense P as angle approaches drop-point (due to gravity)
+        - Simplest: Only apply output up until angle exceeds pre-defined drop-point angle; let gravity do the rest
+    - Verify zeroing only happens when slapdown is up. Consider adding DIO invertion (refer to ShooterIOKraken)
+
+- Autos
     - First rush to NZ should have rotation slightly biased towards AZ to protect intake in event of bot-to-bot collision
-- Investigate shoot from NZ passing map (can test via sim)
-    - Investigate why shoot named command is causing odd rotation during bottom bump auto? is it v2 or v3?
+
 #### Code Refactor:
+- Consider renaming rollers and deploy to better reflect V3
 - Ensure inputs/outputs are being used/updated/logged properly across subsystems' IO, Real, and Sim
     - Consider using outputs when applying control requests to motors (where not already used)
 - Command structure & organization:
@@ -29,6 +27,7 @@ High Priority:
 - Mark unused/outdated commands or methods for removal within the subsystems & robotContainer
 - find and resolve inconsistencies across subsystems & robotContainer
 - Consider integrating toward state-based
+
 #### Battery Draw Management
 - Turn off all idling motors (shooter, intake, hood, etc.) if a brownout is detected near the end of a match (where we're unlikely to shoot)
 - investigate loss of power of intake when attempting fuel pick up before at speed (Potential fix: run intake automatically when hopper extended [if state-based; while not in intaking state])
@@ -102,6 +101,23 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- V3 Intake:
+    - Deploy: negative output stows intake up
+        - Limit Extent: DIO <?>
+        - Limit Stow: DIO <?>
+        - Stator: 20
+        - Supply: 12
+        - Idle: Coeast
+
+    - Intake: only right is inverted (clockwise positive)
+        - Stator: 120
+        - Supply: 40
+        - Idle: Coast
+- Autos:
+    - Auto "Bottom Rush to Hub" is still hitting wall, worsening after each trench pass. Odometry loss is likely aggravated due to camara not seeing April Tags at all through auto. Path must be edited to work for V3 cam placement/shooter reorientation.
+    - Investigate shoot from NZ passing map (can test via sim)
+    - Investigate why shoot named command is causing odd rotation during bottom bump auto? is it v2 or v3?
+
 - Investigate why Operator intake only buttons (POV up/down) were not working
     - A: Intake idle was an instant command, so its default command (set to stop intake) was likely running directly after. Since some command groups rely on it being an instant command (ends instantly), we wrapped it in a RepeatCommand only where Op' POV up calls it.
 - "driveCurrentLimit": 15.0 in pathplanner?
