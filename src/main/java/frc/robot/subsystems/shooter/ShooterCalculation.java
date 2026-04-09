@@ -178,11 +178,13 @@ public class ShooterCalculation {
     passingHoodAngleMap.put(7.80, 500.0);
     passingHoodAngleMap.put(17.16, 500.0);
 
+    passingFlywheelSpeedMap.put(3.40, 800.0);
     passingFlywheelSpeedMap.put(5.46, 1008.0);
     passingFlywheelSpeedMap.put(6.62, 1134.0);
     passingFlywheelSpeedMap.put(7.80, 1260.0);
     passingFlywheelSpeedMap.put(17.16, 2300.0);
 
+    passingTimeOfFlightMap.put(3.40, 1.10);
     passingTimeOfFlightMap.put(5.46, 1.27);
     passingTimeOfFlightMap.put(6.62, 1.39);
     passingTimeOfFlightMap.put(7.8, 1.49);
@@ -396,7 +398,7 @@ public class ShooterCalculation {
     Translation2d flippedGoalTranslation =
         AllianceFlipUtil.apply(
             new Translation2d(
-                xPassTarget, mirror ? FieldConstants.fieldWidth - yPassTarget : yPassTarget));
+                xPassTarget, flippedY));
 
     return flippedGoalTranslation;
   }

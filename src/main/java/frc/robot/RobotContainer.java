@@ -362,8 +362,8 @@ public class RobotContainer {
         hood.runHoodTarget(),
         // DriveCommands.rotateToHub(
         //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
-        // DriveCommands.joystickDriveWhileLaunching( // TODO: TEMPORARY
-        //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
+        DriveCommands.joystickDriveWhileLaunching( // TODO: TEMPORARY
+            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
