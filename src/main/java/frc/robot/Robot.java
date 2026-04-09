@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.robotInitConstants;
 import frc.robot.subsystems.shooter.ShooterCalculation;
+import frc.robot.util.HubShiftUtil;
+import frc.robot.util.HubShiftUtil.ShiftInfo;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -123,6 +125,21 @@ public class Robot extends LoggedRobot {
         && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
       lowBatteryAlert.set(true);
     }
+
+    ShiftInfo official = HubShiftUtil.getOfficialShiftInfo();
+
+    // Official shift info
+    SmartDashboard.putString(
+        "Shift/Official/CurrentShift",
+        HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+    SmartDashboard.putNumber(
+        "Shift/Official/Remaining", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+    SmartDashboard.putNumber(
+        "Shift/Official/RemainingTime", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+
+    SmartDashboard.putNumber(
+        "Shift/Official/ElapsedTime", Math.round(official.elapsedTime() * 10) / 10.0);
+    SmartDashboard.putBoolean("Shift/Official/Active", official.active());
 
     // Update RobotContainer dashboard outputs
     robotContainer.updateDashboardOutputs();
