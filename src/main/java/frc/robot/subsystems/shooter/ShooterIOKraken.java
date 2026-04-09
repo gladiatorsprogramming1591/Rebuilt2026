@@ -64,6 +64,7 @@ public class ShooterIOKraken implements ShooterIO {
   new TalonFX(ShooterConstants.LEFT_SHOOTER_FOLLOWER_MOTOR_ID);
   
   private double desiredRPS = 0.0;
+  private int tuneConfigsCreated = 0;
   private static final String CURRENT_CONTROL_MODE = "Control Mode";
   private static final double INIT_CONFIG_TIMEOUT = 0.250;
   private static final double TUNED_CONFIG_TIMEOUT = 0.100; // Equivalent to default timeout
@@ -72,6 +73,9 @@ public class ShooterIOKraken implements ShooterIO {
 
   public ShooterIOKraken() {
     SmartDashboard.putString(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, "N/A");
+    SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Tune configs created", tuneConfigsCreated);
+    SmartDashboard.putString(SHOOTER_TABLE_KEY + "Tune slot0 created", "N/A");
+    SmartDashboard.putString(SHOOTER_TABLE_KEY + "Tune MM created", "N/A");
 
     RL_RPS = rightShooterLeader.getVelocity();
     RF_RPS = rightShooterFollower.getVelocity();
@@ -227,7 +231,7 @@ public class ShooterIOKraken implements ShooterIO {
       {
       SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);
       
-      TalonFXConfiguration tunedConfigs = createTunedMotorConfig(outputs);
+      TalonFXConfiguration tunedConfigs = this.createTunedMotorConfig(outputs);
       Slot0Configs slot0 = tunedConfigs.Slot0;
       PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> rightShooterLeader.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT));
       PhoenixUtil.tryUntilOk(TUNED_CONFIG_MAX_ATTEMPS, () -> leftShooterFollower1.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT));
@@ -271,6 +275,10 @@ public class ShooterIOKraken implements ShooterIO {
       MotionMagicConfigs mmConfigs = configs.MotionMagic;
       mmConfigs.MotionMagicAcceleration = outputs.kMMAcceleration;
       mmConfigs.MotionMagicJerk = outputs.kMMJerk;
+
+      SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Tune configs created", ++tuneConfigsCreated);
+      SmartDashboard.putString(SHOOTER_TABLE_KEY + "Tune slot0 created", configs.Slot0.toString());
+      SmartDashboard.putString(SHOOTER_TABLE_KEY + "Tune MM created", configs.MotionMagic.toString());
       return configs;
   }
 

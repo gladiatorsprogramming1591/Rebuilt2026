@@ -168,16 +168,8 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
-  /**
-   * Applies the latest tunable TalonFX configurations to the <b>deploy motor</b>.
-   * <p>
-   * Only applies the configuration when the Smartdashboard boolean {@value #updateDeployConfigName} is changed from false to true (i.e. rising edge).
-   * 
-   * @param outputs Intake outputs where the tunable configurations are accessable
-   * @see {@link #createTunedDeployMotorConfig(frc.robot.subsystems.intake.IntakeIO.IntakeIOOutputs) createTunedDeployMotorConfig()}
-   * @see frc.robot.util.LoggedTunableNumber LoggedTunableNumber
-   */
-  private void tuneDeployMotorConfigs(IntakeIOOutputs outputs)
+  @Override
+  public void tuneDeployMotorConfigs(IntakeIOOutputs outputs)
   {
     if (SmartDashboard.getBoolean(updateDeployConfigName, true))
       {

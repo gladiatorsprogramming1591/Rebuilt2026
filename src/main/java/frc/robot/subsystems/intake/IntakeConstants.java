@@ -20,14 +20,16 @@ public final class IntakeConstants {
   public static final double DEPLOY_STATOR_CURRENT_LIMIT = 20.0;
   public static final double DEPLOY_CURRENT_STOP_THRESHOLD = DEPLOY_SUPPLY_CURRENT_LIMIT;
 
-  public static final double kP = 2.0;
+  public static final double kP = 0.5;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
   public static final double kFF = 0.0;
 
+  // Angles
   public static final double UP = 0.0;
-  public static final double DOWN = 1.0; // placeholder until tested
-  public static final double BUMP = 2.0; // placeholder until tested
+  // TODO: Find new DOWN angle after hard-stop cushioning
+  public static final double DOWN = 17.8818359375; // Mechanical down limit
+  public static final double BUMP = DOWN / 2;
 
   // % Duty-Cycle
   public static final double INTAKE_MOTOR_SPEED = 0.60;
