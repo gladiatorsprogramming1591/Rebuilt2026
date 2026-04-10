@@ -13,7 +13,11 @@ V3 Integration:
         - See if kG is suitable: kG increase as angle approaches deploy intake to slow down
         - Use multiple slots: less intense P as angle approaches drop-point (due to gravity)
         - Simplest: Only apply output up until angle exceeds pre-defined drop-point angle; let gravity do the rest
-    - Verify zeroing only happens when slapdown is up. Consider adding DIO invertion (refer to ShooterIOKraken)
+        - Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
+    - Handle chain skipping on deploy. since it pushes 0 (stow) out more, it prevents reaching DIO limit which prevents 0'ing
+        - Idea: constant unsubstantial output in appropiate direction until DIO triggered. (Above tasks may fix this anyway)
+        - Idea: clamp angle to never fall outside of 0.0 and DOWN range (by manipulating offset)
+    - Verify zeroing only happens when slapdown is up.
 
 - Autos
     - First rush to NZ should have rotation slightly biased towards AZ to protect intake in event of bot-to-bot collision
@@ -102,6 +106,7 @@ Albany Robot Changes:
 Completed
 ---------
 - V3 Intake:
+    - Consider adding DIO invertion (refer to ShooterIOKraken)
     - Deploy: negative output stows intake up
         - Limit Extent: DIO <?>
         - Limit Stow: DIO <?>

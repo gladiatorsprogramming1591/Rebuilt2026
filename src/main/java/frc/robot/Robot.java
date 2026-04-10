@@ -159,16 +159,16 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault()
           .getTable("limelight-two")
           .getEntry("throttle_set")
-          .setNumber(200);
+          .setNumber(100);
       NetworkTableInstance.getDefault()
           .getTable("limelight-three")
           .getEntry("throttle_set")
-          .setNumber(200);
+          .setNumber(100);
     } else {
       NetworkTableInstance.getDefault()
           .getTable("limelight-one")
           .getEntry("throttle_set")
-          .setNumber(200);
+          .setNumber(100);
     }
   }
 

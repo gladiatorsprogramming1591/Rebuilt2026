@@ -89,8 +89,8 @@ public class CameraConstants {
                 -0.089, // side right + /left -
                 0.419, // up + / down -
                 new Rotation3d(
-                    Units.degreesToRadians(0),
-                    Units.degreesToRadians(25),
+                    Units.degreesToRadians(3.45), // TODO: revisit these measurements with script results
+                    Units.degreesToRadians(23.98),// consider spliting the difference between left and right in the meantime
                     Units.degreesToRadians(170.0))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
@@ -111,8 +111,8 @@ public class CameraConstants {
                 0.089, // side right + /left -
                 0.419, // up + / down -
                 new Rotation3d(
-                    Units.degreesToRadians(0),
-                    Units.degreesToRadians(25),
+                    Units.degreesToRadians(-4.97),
+                    Units.degreesToRadians(24.77),
                     Units.degreesToRadians(190.0))));
     /*
         private static final Camera LEFT_SIM =

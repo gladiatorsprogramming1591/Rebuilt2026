@@ -61,7 +61,7 @@ public class IntakeIOSim implements IntakeIO {
   public void applyOutputs(IntakeIOOutputs outputs) {
     intakeAppliedSpeed = outputs.appliedIntakeSpeed;
     switch (RobotState.getDeployMode()) {
-      case POSITION:
+      case DEPLOY_POSITION: case STOW_POSITION: case BUMP_POSITION:
         deployAngle = outputs.desiredPosition;
         break;
       case SPEED:

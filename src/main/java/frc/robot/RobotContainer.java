@@ -7,7 +7,12 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -53,14 +58,10 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.vision.Camera;
-import frc.robot.subsystems.vision.CameraConstants;
-import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.CameraConstants.RobotCameras;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutoManager;
 import frc.robot.util.HubShiftUtil;
-import java.util.Optional;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -281,6 +282,7 @@ public class RobotContainer {
         // .leftBumper().or(operator_controller.rightTrigger())
         .whileTrue(
             intake.stow()); // TODO: needs to be a toggle eventually that runs until a certain angle
+    driver_controller.rightBumper().whileTrue(intake.deploy());
     // roller
     driver_controller.x().whileTrue(roller.runTopRollerMotor());
     // hood
@@ -299,7 +301,6 @@ public class RobotContainer {
     // intake
     operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
     operator_controller.a().whileTrue(intakePulseCommand());
-    operator_controller.rightTrigger().whileTrue(intake.deployWithSpeed());
     operator_controller.povDown().toggleOnTrue(intake.reverseIntake());
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
     // TODO: Kiley request: undeployed
@@ -362,7 +363,7 @@ public class RobotContainer {
         hood.runHoodTarget(),
         // DriveCommands.rotateToHub(
         //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
-        DriveCommands.joystickDriveWhileLaunching( // TODO: TEMPORARY
+        DriveCommands.joystickDriveWhileLaunching(
             drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
             Commands.parallel(
@@ -371,7 +372,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY
+                // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY: V3-ify intake pulse
                 roller.startRollerMotors(), kicker.runKickerMotor())));
   }
 
