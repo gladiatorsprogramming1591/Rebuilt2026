@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -55,7 +57,7 @@ public class IntakeIOKraken implements IntakeIO {
   public IntakeIOKraken() {
     if (Constants.tuningMode)
     {
-      SmartDashboard.putBoolean(updateDeployConfigName, false);
+      SmartDashboard.putBoolean(kintakeTableKey + updateDeployConfigName, false);
     }
     var intakeLeftConfig = new TalonFXConfiguration();
     var intakeCurrentLimits = intakeLeftConfig.CurrentLimits;
@@ -211,9 +213,9 @@ public class IntakeIOKraken implements IntakeIO {
   @Override
   public void tuneDeployMotorConfigs(IntakeIOOutputs outputs)
   {
-    if (SmartDashboard.getBoolean(updateDeployConfigName, true))
+    if (SmartDashboard.getBoolean(kintakeTableKey + updateDeployConfigName, true))
       {
-      SmartDashboard.putBoolean(updateDeployConfigName, false);
+      SmartDashboard.putBoolean(kintakeTableKey + updateDeployConfigName, false);
       
       TalonFXConfiguration tunedConfigs = createTunedDeployMotorConfig(outputs);
       Slot0Configs slot0 = tunedConfigs.Slot0;

@@ -1,52 +1,35 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.DeployModeState;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import static frc.robot.subsystems.intake.IntakeConstants.kdeployTableKey;
+import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
+import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
+
+/**
+ * Name conventions:
+ * <ul>
+ *  <li><b>Intake:</b> Whole subsystem
+ *  <li><b>Slapdown:</b> Intake pivoting arm
+ *    <ul>
+ *      <li> <b>Deploy:</b> Full extension
+ *      <li> <b>Stow:</b> Full retraction into frame perimeter
+ *    </ul>
+ *  <li><b>Rollers:</b> Rotating tubes that propel fuel into hopper
+ * </ul>
+ */
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
-
-  private final LoggedTunableNumber deploySpeed =
-      new LoggedTunableNumber("Intake/DeploySpeed", IntakeConstants.DEPLOY_SPEED);
-
-  // Deploy tunable configs
-  private static final LoggedTunableNumber kdeployP =
-      new LoggedTunableNumber("Intake/kdeployP", IntakeConstants.DeployConfigs.kP);
-  private static final LoggedTunableNumber kdeployI =
-      new LoggedTunableNumber("Intake/kdeployI", IntakeConstants.DeployConfigs.kI);
-  private static final LoggedTunableNumber kdeployD =
-      new LoggedTunableNumber("Intake/kdeployD", IntakeConstants.DeployConfigs.kD);
-  private static final LoggedTunableNumber kdeployFF =
-      new LoggedTunableNumber("Intake/kdeployFF", IntakeConstants.DeployConfigs.kFF);
-  // Stow tunable configs
-  private static final LoggedTunableNumber kstowP =
-      new LoggedTunableNumber("Intake/kstowP", IntakeConstants.StowConfigs.kP);
-  private static final LoggedTunableNumber kstowI =
-      new LoggedTunableNumber("Intake/kstowI", IntakeConstants.StowConfigs.kI);
-  private static final LoggedTunableNumber kstowD =
-      new LoggedTunableNumber("Intake/kstowD", IntakeConstants.StowConfigs.kD);
-  private static final LoggedTunableNumber kstowFF =
-      new LoggedTunableNumber("Intake/kstowFF", IntakeConstants.StowConfigs.kFF);
-  private static final LoggedTunableNumber kstowMMAcceleration =
-      new LoggedTunableNumber("Intake/kstowMMAcceleration", IntakeConstants.StowConfigs.kmmAcceleration);
-  private static final LoggedTunableNumber kstowMMJerk =
-      new LoggedTunableNumber("Intake/kstowMMJerk", IntakeConstants.StowConfigs.kmmJerk);
-
-  private static final double intakeMaxAngle =
-      Units.degreesToRadians(0); // TODO set the max and min angle
-  private static final double intakeMinAngle =
-      Units.degreesToRadians(0); // TODO set the max and min angle
-
+  
   private int stoppedLoopCount = 0;
   private static final int STOPPED_LOOP_COUNT_NEEDED = 2;
   private boolean stopDeployOnCurrentSpike = false;
@@ -61,7 +44,7 @@ public class Intake extends SubsystemBase {
 
   public void runPosition(double positionRads) {
     goalAngle = positionRads;
-    outputs.desiredPosition = MathUtil.clamp(goalAngle, intakeMinAngle, intakeMaxAngle);
+    outputs.desiredPosition = MathUtil.clamp(goalAngle, IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle);
   }
 
   // TODO: Change from runEnd to let applyOutputs check for down and stop motor. Probably need new
@@ -115,8 +98,8 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           isDeployStopped = false;
-          System.out.println("deployWithSpeed: " + deploySpeed.getAsDouble());
-          outputs.appliedDeploySpeed = deploySpeed.getAsDouble();
+          System.out.println("deployWithSpeed: " + IntakeConstants.deploySpeed.getAsDouble());
+          outputs.appliedDeploySpeed = IntakeConstants.deploySpeed.getAsDouble();
           RobotState.setDeployMode(RobotState.DeployModeState.SPEED);
           stopDeployOnCurrentSpike = true;
         },
@@ -177,36 +160,36 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
     // Deploy configs
-    outputs.kdeployP = kdeployP.getAsDouble();
-    outputs.kdeployI = kdeployI.getAsDouble();
-    outputs.kdeployD = kdeployD.getAsDouble();
-    outputs.kdeployFF = kdeployFF.getAsDouble();
+    outputs.kdeployP = IntakeConstants.kdeployP.getAsDouble();
+    outputs.kdeployI = IntakeConstants.kdeployI.getAsDouble();
+    outputs.kdeployD = IntakeConstants.kdeployD.getAsDouble();
+    outputs.kdeployFF = IntakeConstants.kdeployFF.getAsDouble();
     // Stow configs
-    outputs.kstowP = kstowP.getAsDouble();
-    outputs.kstowI = kstowI.getAsDouble();
-    outputs.kstowD = kstowD.getAsDouble();
-    outputs.kstowFF = kstowFF.getAsDouble();
-    outputs.kstowMMAcceleration = kstowMMAcceleration.getAsDouble();
-    outputs.kstowMMJerk = kstowMMJerk.getAsDouble();
+    outputs.kstowP = IntakeConstants.kstowP.getAsDouble();
+    outputs.kstowI = IntakeConstants.kstowI.getAsDouble();
+    outputs.kstowD = IntakeConstants.kstowD.getAsDouble();
+    outputs.kstowFF = IntakeConstants.kstowFF.getAsDouble();
+    outputs.kstowMMAcceleration = IntakeConstants.kstowMMAcceleration.getAsDouble();
+    outputs.kstowMMJerk = IntakeConstants.kstowMMJerk.getAsDouble();
 
-    Logger.recordOutput("Intake/Mode", RobotState.getDeployMode().toString());
-    Logger.recordOutput("Intake/Applied Intake Speed", outputs.appliedIntakeSpeed);
-    Logger.recordOutput("Intake/Applied Output Speed", outputs.appliedDeploySpeed);
-    Logger.recordOutput("Intake/Applied Deploy Current", outputs.appliedDeployCurrent);
+    Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getDeployMode().toString());
+    Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedIntakeSpeed);
+    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Speed", outputs.appliedDeploySpeed);
+    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Current", outputs.appliedDeployCurrent);
     // Deploy configs
-    Logger.recordOutput("Intake/kdeployP", outputs.kdeployP);
-    Logger.recordOutput("Intake/kdeployI", outputs.kdeployI);
-    Logger.recordOutput("Intake/kdeployD", outputs.kdeployD);
-    Logger.recordOutput("Intake/kdeployFF", outputs.kdeployFF);
+    Logger.recordOutput(kdeployTableKey + "kdeployP", outputs.kdeployP);
+    Logger.recordOutput(kdeployTableKey + "kdeployI", outputs.kdeployI);
+    Logger.recordOutput(kdeployTableKey + "kdeployD", outputs.kdeployD);
+    Logger.recordOutput(kdeployTableKey + "kdeployFF", outputs.kdeployFF);
     // Stow configs
-    Logger.recordOutput("Intake/kstowP", outputs.kstowP);
-    Logger.recordOutput("Intake/kstowI", outputs.kstowI);
-    Logger.recordOutput("Intake/kstowD", outputs.kstowD);
-    Logger.recordOutput("Intake/kstowFF", outputs.kstowFF);
-    Logger.recordOutput("Intake/kstowMMAcceleration", outputs.kstowMMAcceleration);
-    Logger.recordOutput("Intake/kstowMMJerk", outputs.kstowMMJerk);
+    Logger.recordOutput(kstowTableKey + "kstowP", outputs.kstowP);
+    Logger.recordOutput(kstowTableKey + "kstowI", outputs.kstowI);
+    Logger.recordOutput(kstowTableKey + "kstowD", outputs.kstowD);
+    Logger.recordOutput(kstowTableKey + "kstowFF", outputs.kstowFF);
+    Logger.recordOutput(kstowTableKey + "kstowMMAcceleration", outputs.kstowMMAcceleration);
+    Logger.recordOutput(kstowTableKey + "kstowMMJerk", outputs.kstowMMJerk);
 
-    Logger.recordOutput("Intake/desiredPosition", outputs.desiredPosition);
+    Logger.recordOutput(kintakeTableKey + "desiredPosition", outputs.desiredPosition);
     io.applyOutputs(outputs);
 
     // For testing, turn deploy motors off after hitting hard stop

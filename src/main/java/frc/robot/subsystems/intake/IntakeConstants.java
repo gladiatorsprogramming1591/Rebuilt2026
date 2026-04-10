@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 
 public final class IntakeConstants {
@@ -62,9 +63,44 @@ public final class IntakeConstants {
   public static final double DEPLOY_TORQUE_CURRENT = 10.0;
   public static final double STOW_TORQUE_CURRENT = -18.0;
   private static final double m_MaxTorqueDutyCycle = 60.0;
-
+  
   public static final double INTAKE_DELAY_SECONDS = 2.0; // placeholder until tested
+  
+  public static final double intakeMaxAngle =
+  Units.degreesToRadians(0); // TODO set the max and min angle
+  public static final double intakeMinAngle =
+  Units.degreesToRadians(0); // TODO set the max and min angle
+  
+  public static final String kintakeTableKey = "Intake/";
+  public static final String kdeployTableKey = kintakeTableKey + "Deploy/";
+  public static final String kstowTableKey = kintakeTableKey + "Stow/";
+  // Tunables
+  // Intake roller
+  public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
+      new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_MaxTorqueDutyCycle);
+  // Deploy
+  public static final LoggedTunableNumber deploySpeed =
+      new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOY_SPEED);
+  public static final LoggedTunableNumber kdeployP =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployP", DeployConfigs.kP);
+  public static final LoggedTunableNumber kdeployI =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployI", DeployConfigs.kI);
+  public static final LoggedTunableNumber kdeployD =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployD", DeployConfigs.kD);
+  public static final LoggedTunableNumber kdeployFF =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployFF", DeployConfigs.kFF);
+  // Stow
+  public static final LoggedTunableNumber kstowP =
+      new LoggedTunableNumber(kstowTableKey + "kstowP", StowConfigs.kP);
+  public static final LoggedTunableNumber kstowI =
+      new LoggedTunableNumber(kstowTableKey + "kstowI", StowConfigs.kI);
+  public static final LoggedTunableNumber kstowD =
+      new LoggedTunableNumber(kstowTableKey + "kstowD", StowConfigs.kD);
+  public static final LoggedTunableNumber kstowFF =
+      new LoggedTunableNumber(kstowTableKey + "kstowFF", StowConfigs.kFF);
+  public static final LoggedTunableNumber kstowMMAcceleration =
+      new LoggedTunableNumber(kstowTableKey + "kstowMMAcceleration", StowConfigs.kmmAcceleration);
+  public static final LoggedTunableNumber kstowMMJerk =
+      new LoggedTunableNumber(kstowTableKey + "kstowMMJerk", StowConfigs.kmmJerk);
 
-  public static final String INTAKE_TABLE_KEY = "Intake/";
-  public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE = new LoggedTunableNumber(INTAKE_TABLE_KEY + "Intake pick-up torque", m_MaxTorqueDutyCycle);
 }

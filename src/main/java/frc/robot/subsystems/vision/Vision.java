@@ -434,7 +434,8 @@ public class Vision extends SubsystemBase {
     // Log a 3-vector for downstream debuggers (254 shows covariance-ish logging)
     Matrix<N3, N1> fusedStdN3 =
         VecBuilder.fill(fusedStd, fusedStd, a.trustYaw() && b.trustYaw() ? fusedStd : 9999.0);
-    Logger.recordOutput("Vision/Fuse/stdN3", fusedStdN3);
+    // Logger.recordOutput("Vision/Fuse/stdN3", fusedStdN3); // Error at org.littletonrobotics.junction.LogTable.put(LogTable.java:799): [AdvantageKit] Auto serialization is not supported for type Vector
+    SmartDashboard.putNumberArray("Vision/Fuse/stdN3", fusedStdN3.getData());
     SmartDashboard.putBoolean("Vision/Fuse/a.trustYaw", a.trustYaw);
     SmartDashboard.putBoolean("Vision/Fuse/b.trustYaw", b.trustYaw);
     SmartDashboard.putNumber("Vision/Fuse/fusedStd", fusedStd);
