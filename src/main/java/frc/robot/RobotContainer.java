@@ -307,13 +307,13 @@ public class RobotContainer {
     operator_controller.a().whileTrue(intakePulseCommand());
     operator_controller.povDown().toggleOnTrue(intake.reverseIntake());
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
+    operator_controller.x().whileTrue(intake.deployWithSpeed());
     // TODO: Kiley request: undeployed
     // operator_controller.start().whileTrue(intake.runIntakeMotor());
     // shooter
-    operator_controller.b().toggleOnTrue(shooter.runShooterDutyCycle(0));
+    operator_controller.b().toggleOnTrue(shooter.stopAndCoastShooter());
     operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
-    operator_controller.x().onTrue(shootWithAim());
     // operator_controller.y().onTrue(shootWithAimStationary());
     operator_controller.y().toggleOnTrue(intake.stowBump());
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
