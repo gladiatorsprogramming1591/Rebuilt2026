@@ -19,7 +19,7 @@ public class ShooterConstants {
   public static final double FLYWHEEL_TOLERANCE_RPS = 1.0; // +/- 60 RPM
 
   public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.75; // 0.5. increased for now to better test "isShooterAtVelocity"
-  public static final double MAX_FLYWHEEL_CALCULATED_RPM = 1750.0; // TODO: TEMPORARY
+  public static final double MAX_FLYWHEEL_CALCULATED_RPM = 4000.0;
   public static final double MAX_FLYWHEEL_LOW_CEILING_RPM = 2000.0;
   
   // Change this to true to scale down & lower max flywheel speed when ceiling clearance is low.

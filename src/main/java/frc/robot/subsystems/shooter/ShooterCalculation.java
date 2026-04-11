@@ -172,17 +172,19 @@ public class ShooterCalculation {
     timeOfFlightMap.put(1.88, 1.09);
     timeOfFlightMap.put(1.38, 0.90);
 
-    passingHoodAngleMap.put(0.0, 240.0);
-    passingHoodAngleMap.put(5.46, 300.0); // 240
-    passingHoodAngleMap.put(6.62, 400.0);
-    passingHoodAngleMap.put(7.80, 500.0);
-    passingHoodAngleMap.put(17.16, 500.0);
+    passingHoodAngleMap.put(3.40, 700.0);
+    passingHoodAngleMap.put(4.275, 700.0); // Bumper against bump 
+    passingHoodAngleMap.put(5.46, 800.0); // 240
+    passingHoodAngleMap.put(6.62, 800.0); // 400
+    passingHoodAngleMap.put(7.80, 800.0); // 500
+    passingHoodAngleMap.put(17.16, 800.0); // 500
 
-    passingFlywheelSpeedMap.put(3.40, 1000.0); // 800
-    passingFlywheelSpeedMap.put(5.46, 1300.0); // 1008
-    passingFlywheelSpeedMap.put(6.62, 1600.0); // 1134
-    passingFlywheelSpeedMap.put(7.80, 2000.0); // 1260
-    passingFlywheelSpeedMap.put(17.16, 3000.0); // 2300
+    passingFlywheelSpeedMap.put(3.40, 1700.0); // 800
+    passingFlywheelSpeedMap.put(4.275, 1700.0); // Bumper against bump
+    passingFlywheelSpeedMap.put(5.46, 2000.0); // 1008
+    passingFlywheelSpeedMap.put(6.62, 2500.0); // 1134
+    passingFlywheelSpeedMap.put(7.80, 3800.0); // 1260
+    passingFlywheelSpeedMap.put(17.16, 6000.0); // 2300
 
     passingTimeOfFlightMap.put(3.40, 1.10);
     passingTimeOfFlightMap.put(5.46, 1.27);
