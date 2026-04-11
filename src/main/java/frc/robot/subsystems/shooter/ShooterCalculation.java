@@ -15,6 +15,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.AllianceFlipUtil;
@@ -295,7 +296,47 @@ public class ShooterCalculation {
     return timeOfFlightMap.get(maxDistance);
   }
 
+  public void updateMaps() {
+    if (SmartDashboard.getBoolean("HoodAngleMap/Update Hood Angles", true)) {
+        SmartDashboard.getBoolean("HoodAngleMap/Update Hood Angles", false);
+        hoodAngleMap.put(0.0, hoodAngle1.get());
+        hoodAngleMap.put(1.46, hoodAngle2.get()); // 50
+        hoodAngleMap.put(1.73, hoodAngle3.get()); // 60
+        hoodAngleMap.put(2.18, hoodAngle4.get());
+        hoodAngleMap.put(2.47, hoodAngle5.get());
+        hoodAngleMap.put(2.70, hoodAngle6.get()); // 0.0
+        hoodAngleMap.put(2.94, hoodAngle7.get());
+        hoodAngleMap.put(3.48, hoodAngle8.get());
+        hoodAngleMap.put(3.92, hoodAngle9.get());
+        hoodAngleMap.put(4.35, hoodAngle10.get());
+        hoodAngleMap.put(4.84, hoodAngle11.get());
+        hoodAngleMap.put(5.46, hoodAngle12.get());
+    }
+
+    if (SmartDashboard.getBoolean("HoodAngleMap/Update Flywheel Speeds", true)) {
+        SmartDashboard.putBoolean("HoodAngleMap/Update Flywheel Speeds", false);
+        flywheelSpeedMap.clear();
+        flywheelSpeedMap.put(0.0, flywheelSpeed1.get());
+        flywheelSpeedMap.put(0.96, flywheelSpeed2.get());
+        flywheelSpeedMap.put(1.46, flywheelSpeed3.get()); // 1500
+        flywheelSpeedMap.put(1.73, flywheelSpeed4.get()); // 1650
+        flywheelSpeedMap.put(2.18, flywheelSpeed5.get());
+        flywheelSpeedMap.put(2.47, flywheelSpeed6.get());
+        flywheelSpeedMap.put(2.70, flywheelSpeed7.get());
+        flywheelSpeedMap.put(2.94, flywheelSpeed8.get());
+        flywheelSpeedMap.put(3.48, flywheelSpeed9.get());
+        flywheelSpeedMap.put(3.92, flywheelSpeed10.get());
+        flywheelSpeedMap.put(4.35, flywheelSpeed11.get());
+        flywheelSpeedMap.put(4.84, flywheelSpeed12.get());
+        flywheelSpeedMap.put(5.46, flywheelSpeed13.get());
+    }
+  }
+
   public LaunchingParameters getParameters() {
+    if (Constants.tuningMode) {
+        updateMaps();
+    }
+
     boolean passing =
         AllianceFlipUtil.applyX(RobotState.getInstance().getRobotPoseField().getX())
             > FieldConstants.LinesVertical.hubCenter;
