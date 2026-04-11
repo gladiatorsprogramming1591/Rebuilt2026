@@ -15,7 +15,7 @@ public final class IntakeConstants {
 
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
-  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 12.0;
+  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 20.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 20.0;
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 
