@@ -19,6 +19,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj2.command.InstantCommand;
+// import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
@@ -29,6 +31,8 @@ public class IntakeIOKraken implements IntakeIO {
   private final TalonFX deployMotor = new TalonFX(IntakeConstants.INTAKE_DEPLOY);
   private final DigitalInput topLimit = new DigitalInput(IntakeConstants.TOP_DEPLOY_DIO_PORT);
   private final DigitalInput bottomLimit = new DigitalInput(IntakeConstants.BOTTOM_DEPLOY_DIO_PORT);
+  // private final Trigger zeroTrigger = new Trigger(() -> bottomLimit.get() == false);
+  // private final Trigger deployedTrigger = new Trigger(() -> topLimit.get() == false);
   private final int stowSlot = 0;
   private final int deploySlot = 1;
   private final PositionTorqueCurrentFOC torquePositionControl =
@@ -142,11 +146,17 @@ public class IntakeIOKraken implements IntakeIO {
     inputs.intakeRightTemp = intakeRightTemp.getValueAsDouble();
     inputs.isDeployDown = bottomLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
     inputs.isDeployUp = topLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
+    // stowedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.UP)));
+    // deployedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.DOWN)));
     double rawAngle = deployAngle.getValueAsDouble();
     if (inputs.isDeployUp) { // Re-zero when deploy is up
       rawStowPosition = rawAngle;
       encoderOffset = -rawAngle;
       inputs.encoderOffset = encoderOffset;
+    } else {
+      if (inputs.isDeployDown) {
+
+      }
     }
     angleWithOffset = rawAngle + encoderOffset;
     inputs.deployPosition = angleWithOffset;
@@ -233,7 +243,9 @@ public class IntakeIOKraken implements IntakeIO {
    * <ul>
    *  <li> <b>Updated Configurations:</b>
    *    <ul>
-          <li> {@code Slot0Configs}: P, I, D, and FF
+          <li> {@code Slot0Configs}: Stowing P, I, D, and FF
+          <li> {@code Slot1Configs}: Deploying P, I, D, and FF
+          <li> {@code MotionMagicConfigs}: Stowing Acceleration and Jerk
         </ul>
    * </ul>
    * 
@@ -246,16 +258,16 @@ public class IntakeIOKraken implements IntakeIO {
   {
       TalonFXConfiguration configs = new TalonFXConfiguration();
       Slot0Configs slot0 = configs.Slot0;
-      slot0.kP = outputs.kdeployP;
-      slot0.kI = outputs.kdeployI;
-      slot0.kD = outputs.kdeployD;
-      slot0.kS = outputs.kdeployFF;
+      slot0.kP = outputs.kstowP;
+      slot0.kI = outputs.kstowI;
+      slot0.kD = outputs.kstowD;
+      slot0.kS = outputs.kstowFF;
       
       Slot1Configs slot1 = configs.Slot1;
-      slot1.kP = outputs.kstowP;
-      slot1.kI = outputs.kstowI;
-      slot1.kD = outputs.kstowD;
-      slot1.kS = outputs.kstowFF;
+      slot1.kP = outputs.kdeployP;
+      slot1.kI = outputs.kdeployI;
+      slot1.kD = outputs.kdeployD;
+      slot1.kS = outputs.kdeployFF;
 
       MotionMagicConfigs mm = configs.MotionMagic;
       mm.MotionMagicAcceleration = outputs.kstowMMAcceleration;

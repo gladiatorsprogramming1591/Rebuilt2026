@@ -140,8 +140,8 @@ public class ShooterCalculation {
     phaseDelay = 0.03;
 
     hoodAngleMap.put(0.0, 50.0);
-    hoodAngleMap.put(1.46, 50.0);
-    hoodAngleMap.put(1.73, 60.0);
+    hoodAngleMap.put(1.46, 70.0); // 50
+    hoodAngleMap.put(1.73, 70.0); // 60
     hoodAngleMap.put(2.18, 90.0);
     hoodAngleMap.put(2.47, 120.0);
     hoodAngleMap.put(2.70, 150.0); // 0.0
@@ -173,16 +173,16 @@ public class ShooterCalculation {
     timeOfFlightMap.put(1.38, 0.90);
 
     passingHoodAngleMap.put(0.0, 240.0);
-    passingHoodAngleMap.put(5.46, 240.0);
+    passingHoodAngleMap.put(5.46, 300.0); // 240
     passingHoodAngleMap.put(6.62, 400.0);
     passingHoodAngleMap.put(7.80, 500.0);
     passingHoodAngleMap.put(17.16, 500.0);
 
-    passingFlywheelSpeedMap.put(3.40, 800.0);
-    passingFlywheelSpeedMap.put(5.46, 1008.0);
-    passingFlywheelSpeedMap.put(6.62, 1134.0);
-    passingFlywheelSpeedMap.put(7.80, 1260.0);
-    passingFlywheelSpeedMap.put(17.16, 2300.0);
+    passingFlywheelSpeedMap.put(3.40, 1000.0); // 800
+    passingFlywheelSpeedMap.put(5.46, 1300.0); // 1008
+    passingFlywheelSpeedMap.put(6.62, 1600.0); // 1134
+    passingFlywheelSpeedMap.put(7.80, 2000.0); // 1260
+    passingFlywheelSpeedMap.put(17.16, 3000.0); // 2300
 
     passingTimeOfFlightMap.put(3.40, 1.10);
     passingTimeOfFlightMap.put(5.46, 1.27);

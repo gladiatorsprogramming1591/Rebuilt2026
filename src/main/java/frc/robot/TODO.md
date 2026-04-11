@@ -3,8 +3,11 @@ High Priority:
 V3 Integration:
 --------------
 - Deploy function without up/down sensors
+    - Deploy seed pos if down
 - Test hood default command: Investigate why it either works or not at all between code deploys
 - Shooter coast to idle
+    - Shooter modes in applyOutputs
+
 - Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
     - Tune motor configs to prep to shoot faster
 
