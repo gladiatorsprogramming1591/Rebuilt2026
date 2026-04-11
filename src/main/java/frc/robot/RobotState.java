@@ -126,7 +126,7 @@ public final class RobotState {
 
   @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
 
-  public enum DeployModeState {
+  public enum SlapdownModeState {
     DEPLOY_POSITION,
     STOW_POSITION,
     BUMP_POSITION,
@@ -135,7 +135,7 @@ public final class RobotState {
     OFF
   }
 
-  @Getter @Setter private static DeployModeState deployMode = DeployModeState.OFF;
+  @Getter @Setter private static SlapdownModeState slapdownMode = SlapdownModeState.OFF;
 
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);

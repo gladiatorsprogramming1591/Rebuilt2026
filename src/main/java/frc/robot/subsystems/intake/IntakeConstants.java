@@ -1,27 +1,23 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 
 public final class IntakeConstants {
-  public static final int INTAKE_DEPLOY = 30;
-  public static final int INTAKE_RIGHT = 28;
-  public static final int INTAKE_LEFT = 29;
+  public static final int SLAPDOWN_ID = 30;
+  public static final int ROLLER_RIGHT = 28;
+  public static final int ROLLER_LEFT = 29;
 
-  public static final int BOTTOM_DEPLOY_DIO_PORT = 2;
-  public static final int TOP_DEPLOY_DIO_PORT = 1;
+  public static final int BOTTOM_SLAPDOWN_DIO_PORT = 2;
+  public static final int TOP_SLAPDOWN_DIO_PORT = 1;
 
-  public static final double INTAKE_GEAR_RATIO = 1.0;
-  public static final double DEPLOY_GEAR_RATIO = 1.0;
+  public static final double ROLLER_MOTOR_REDUCTION = 1.0; // placeholder until tested
+  public static final double SLAPDOWN_MOTOR_REDUCTION = 1.0; // placeholder until tested
 
-  public static final double INTAKE_MOTOR_REDUCTION = 1.0; // placeholder until tested
-  public static final double DEPLOY_MOTOR_REDUCTION = 1.0; // placeholder until tested
-
-  public static final double INTAKE_SUPPLY_CURRENT_LIMIT = 40.0;
-  public static final double INTAKE_STATOR_CURRENT_LIMIT = 120.0;
-  public static final double DEPLOY_SUPPLY_CURRENT_LIMIT = 12.0;
-  public static final double DEPLOY_STATOR_CURRENT_LIMIT = 20.0;
-  public static final double DEPLOY_CURRENT_STOP_THRESHOLD = DEPLOY_SUPPLY_CURRENT_LIMIT;
+  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
+  public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
+  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 12.0;
+  public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 20.0;
+  public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
 
@@ -52,24 +48,21 @@ public final class IntakeConstants {
   public static final double TIPPING_POINT = MIDDLE;
   public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;
   public static final double TIP_TOWARD_DEPLOY = TIPPING_POINT + 2;
-
+  public static final double MIN_ANGLE = UP;
+  public static final double MAX_ANGLE = DOWN;
+  
   // % Duty-Cycle
-  public static final double INTAKE_MOTOR_SPEED = 0.60;
-  public static final double INTAKE_REVERSE_SPEED = -0.40;
-
-  public static final double DEPLOY_SPEED = 0.4;
-  public static final double STOW_SPEED = -0.25;
+  public static final double ROLLER_PICKUP_SPEED = 0.60;
+  public static final double ROLLER_REVERSE_SPEED = -0.40;
+  public static final double DEPLOYING_SPEED = 0.4;
+  public static final double STOWING_SPEED = -0.25;
   // Amps
-  public static final double DEPLOY_TORQUE_CURRENT = 10.0;
-  public static final double STOW_TORQUE_CURRENT = -18.0;
-  private static final double m_MaxTorqueDutyCycle = 60.0;
+  public static final double DEPLOYING_TORQUE_CURRENT = 10.0;
+  public static final double STOWING_TORQUE_CURRENT = -18.0;
+  private static final double m_rollerTorqueCurrent = 60.0;
   
-  public static final double INTAKE_DELAY_SECONDS = 2.0; // placeholder until tested
+  public static final double ROLLER_DELAY_SECONDS = 2.0; // placeholder until tested
   
-  public static final double intakeMaxAngle =
-  Units.degreesToRadians(0); // TODO set the max and min angle
-  public static final double intakeMinAngle =
-  Units.degreesToRadians(0); // TODO set the max and min angle
   
   public static final String kintakeTableKey = "Intake/";
   public static final String kdeployTableKey = kintakeTableKey + "Deploy/";
@@ -77,10 +70,10 @@ public final class IntakeConstants {
   // Tunables
   // Intake roller
   public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
-      new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_MaxTorqueDutyCycle);
+      new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_rollerTorqueCurrent);
   // Deploy
   public static final LoggedTunableNumber deploySpeed =
-      new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOY_SPEED);
+      new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOYING_SPEED);
   public static final LoggedTunableNumber kdeployP =
       new LoggedTunableNumber(kdeployTableKey + "kdeployP", DeployConfigs.kP);
   public static final LoggedTunableNumber kdeployI =

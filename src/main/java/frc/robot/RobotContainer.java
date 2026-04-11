@@ -275,7 +275,7 @@ public class RobotContainer {
     // driver_controller //TODO: TEMPORARY
     //     .leftTrigger()
     //     .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
-    driver_controller.leftTrigger().toggleOnTrue(intake.runIntake());
+    driver_controller.leftTrigger().toggleOnTrue(intake.runRoller());
     // driver_controller // // TODO: TEMPORARY and broken?
     //     .rightBumper()
     //     .whileTrue(
@@ -305,7 +305,7 @@ public class RobotContainer {
     // intake
     operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
     operator_controller.a().whileTrue(intakePulseCommand());
-    operator_controller.povDown().toggleOnTrue(intake.reverseIntake());
+    operator_controller.povDown().toggleOnTrue(intake.reverseRoller());
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
     operator_controller.x().whileTrue(intake.deployWithSpeed());
     // TODO: Kiley request: undeployed

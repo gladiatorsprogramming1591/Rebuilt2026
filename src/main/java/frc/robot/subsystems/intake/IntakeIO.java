@@ -5,24 +5,24 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    public double deploySpeed = 0.0;
-    public double deployTorqueCurrentFOC = 0.0;
-    public double deploySupplyCurrent = 0.0;
-    public double intakeLeftSpeed = 0.0;
-    public double intakeRightSpeed = 0.0;
-    public double deployPosition = 0.0;
-    public double intakeLeftTemp = 0.0;
-    public double intakeRightTemp = 0.0;
-    public boolean isDeployDown = false;
-    public boolean isDeployUp = false;
+    public double slapdownSpeed = 0.0;
+    public double slapdownTorqueCurrentFOC = 0.0;
+    public double slapdownSupplyCurrent = 0.0;
+    public double rollerLeftSpeed = 0.0;
+    public double rollerRightSpeed = 0.0;
+    public double rollerLeftTemp = 0.0;
+    public double rollerRightTemp = 0.0;
+    public boolean isSlapdownDown = false;
+    public boolean isSlapdownUp = false;
+    public double position = 0.0;
     public double encoderOffset = 0.0;
   }
 
   @AutoLog
   public static class IntakeIOOutputs {
-    public double appliedIntakeSpeed = 0.0;
-    public double appliedDeploySpeed = 0.0;
-    public double appliedDeployCurrent = 0.0;
+    public double appliedRollerSpeed = 0.0;
+    public double appliedSlapdownSpeed = 0.0;
+    public double appliedSlapdownCurrent = 0.0;
     public double kdeployP = 0.0;
     public double kdeployI = 0.0;
     public double kdeployD = 0.0;

@@ -65,7 +65,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "below coast RPM", isShooterBelowCoastRPM().getAsBoolean());
     SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "hasSpeedTargetChanged", hasSpeedTargetChanged);
 
-    io.applyOutputs(outputs);
+    // io.applyOutputs(outputs); // TODO TEMP
   }
 
   public Command runIdleCommand() {

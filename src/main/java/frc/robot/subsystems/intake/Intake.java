@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
-import frc.robot.RobotState.DeployModeState;
+import frc.robot.RobotState.SlapdownModeState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,21 +30,21 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
   
-  private int stoppedLoopCount = 0;
-  private static final int STOPPED_LOOP_COUNT_NEEDED = 2;
-  private boolean stopDeployOnCurrentSpike = false;
-  private boolean stopMotorWhenNotMoving = false;
-  private boolean isDeployStopped = true;
+  private int slapdownStoppedLoopCount = 0;
+  private static final int SLAPDOWN_STOPPED_LOOP_COUNT_NEEDED = 2;
+  private boolean stopSlapdownOnCurrentSpike = false;
+  private boolean stopSlapdownWhenNotMoving = false;
+  private boolean isSlapdownStopped = true;
 
-  @AutoLogOutput private double goalAngle = 0.0;
+  @AutoLogOutput private double manualAngle = 0.0;
 
   public Intake(IntakeIO io) {
     this.io = io;
   }
 
-  public void runPosition(double positionRads) {
-    goalAngle = positionRads;
-    outputs.desiredPosition = MathUtil.clamp(goalAngle, IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle);
+  public void slapdownToPosition(double angle) {
+    manualAngle = angle;
+    outputs.desiredPosition = MathUtil.clamp(manualAngle, IntakeConstants.MIN_ANGLE, IntakeConstants.MAX_ANGLE);
   }
 
   // TODO: Change from runEnd to let applyOutputs check for down and stop motor. Probably need new
@@ -52,80 +52,80 @@ public class Intake extends SubsystemBase {
   public Command deploy() {
     return runEnd(
             () -> {
-              isDeployStopped = false;
+              isSlapdownStopped = false;
               outputs.desiredPosition = IntakeConstants.DOWN;
-              RobotState.setDeployMode(RobotState.DeployModeState.DEPLOY_POSITION);
-              stopDeployOnCurrentSpike = true;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.DEPLOY_POSITION);
+              stopSlapdownOnCurrentSpike = true;
             },
             () -> {
-              outputs.appliedDeploySpeed = 0;
-              RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+              outputs.appliedSlapdownSpeed = 0;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
             })
-        .until(() -> isDeployStopped);
+        .until(() -> isSlapdownStopped);
   }
 
   // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new states.
   public Command stow() {
     return runEnd(
             () -> {
-              isDeployStopped = false;
+              isSlapdownStopped = false;
               outputs.desiredPosition = IntakeConstants.UP;
-              RobotState.setDeployMode(RobotState.DeployModeState.STOW_POSITION);
-              stopDeployOnCurrentSpike = true;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.STOW_POSITION);
+              stopSlapdownOnCurrentSpike = true;
             },
             () -> {
-              outputs.appliedDeploySpeed = 0;
-              RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+              outputs.appliedSlapdownSpeed = 0;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
             })
-        .until(() -> isDeployStopped);
+        .until(() -> isSlapdownStopped);
   }
 
   public Command stowBump() {
     return runEnd(
             () -> {
-              isDeployStopped = false;
+              isSlapdownStopped = false;
               outputs.desiredPosition = IntakeConstants.BUMP;
-              RobotState.setDeployMode(RobotState.DeployModeState.BUMP_POSITION);
-              stopDeployOnCurrentSpike = true;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.BUMP_POSITION);
+              stopSlapdownOnCurrentSpike = true;
             },
             () -> {
-              outputs.appliedDeploySpeed = 0;
-              RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+              outputs.appliedSlapdownSpeed = 0;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
             });
   }
 
   public Command deployWithSpeed() {
     return runEnd(
         () -> {
-          isDeployStopped = false;
+          isSlapdownStopped = false;
           System.out.println("deployWithSpeed: " + IntakeConstants.deploySpeed.getAsDouble());
-          outputs.appliedDeploySpeed = IntakeConstants.deploySpeed.getAsDouble();
-          RobotState.setDeployMode(RobotState.DeployModeState.SPEED);
-          stopDeployOnCurrentSpike = true;
+          outputs.appliedSlapdownSpeed = IntakeConstants.deploySpeed.getAsDouble();
+          RobotState.setSlapdownMode(RobotState.SlapdownModeState.SPEED);
+          stopSlapdownOnCurrentSpike = true;
         },
         () -> {
           System.out.println("deployWithSpeed: " + 0);
-          outputs.appliedDeploySpeed = 0;
-          RobotState.setDeployMode(RobotState.DeployModeState.OFF);
+          outputs.appliedSlapdownSpeed = 0;
+          RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
         });
   }
 
-  public Command runIntake() {
+  public Command runRoller() {
     return runEnd(
             () -> {
-              outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
+              outputs.appliedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
             },
             () -> {
-              outputs.appliedIntakeSpeed = 0.0;
+              outputs.appliedRollerSpeed = 0.0;
             });
   }
-  public Command reverseIntake() {
+  public Command reverseRoller() {
     return runEnd(
             () -> {
-              outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_REVERSE_SPEED;
+              outputs.appliedRollerSpeed = IntakeConstants.ROLLER_REVERSE_SPEED;
             },
             () -> {
-              outputs.appliedIntakeSpeed = 0.0;
+              outputs.appliedRollerSpeed = 0.0;
             });
   }
 
@@ -136,23 +136,23 @@ public class Intake extends SubsystemBase {
   public Command stopIntake() {
     return run(
         () -> {
-          outputs.appliedIntakeSpeed = 0;
-          outputs.appliedDeploySpeed = 0;
-          RobotState.setDeployMode(DeployModeState.OFF);
+          outputs.appliedRollerSpeed = 0;
+          outputs.appliedSlapdownSpeed = 0;
+          RobotState.setSlapdownMode(SlapdownModeState.OFF);
         });
   }
 
   public void deployStop() {
-    outputs.appliedDeploySpeed = 0;
-    RobotState.setDeployMode(DeployModeState.OFF);
-    isDeployStopped = true;
+    outputs.appliedSlapdownSpeed = 0;
+    RobotState.setSlapdownMode(SlapdownModeState.OFF);
+    isSlapdownStopped = true;
   }
 
   /** Returns a command that sets intake speed to 0. Doesn't impact deploy. */
   public Command stopIntakeInstant() {
     return new InstantCommand(
         () -> {
-          outputs.appliedIntakeSpeed = 0;
+          outputs.appliedRollerSpeed = 0;
         });
   }
 
@@ -172,10 +172,10 @@ public class Intake extends SubsystemBase {
     outputs.kstowMMAcceleration = IntakeConstants.kstowMMAcceleration.getAsDouble();
     outputs.kstowMMJerk = IntakeConstants.kstowMMJerk.getAsDouble();
 
-    Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getDeployMode().toString());
-    Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedIntakeSpeed);
-    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Speed", outputs.appliedDeploySpeed);
-    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Current", outputs.appliedDeployCurrent);
+    Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getSlapdownMode().toString());
+    Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedRollerSpeed);
+    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Speed", outputs.appliedSlapdownSpeed);
+    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Current", outputs.appliedSlapdownCurrent); // ?: Not updated
     // Deploy configs
     Logger.recordOutput(kdeployTableKey + "kdeployP", outputs.kdeployP);
     Logger.recordOutput(kdeployTableKey + "kdeployI", outputs.kdeployI);
@@ -194,25 +194,25 @@ public class Intake extends SubsystemBase {
 
     // For testing, turn deploy motors off after hitting hard stop
     // TODO: Don't leave this in code as we will likely stop between bottom and top when hopper is full
-    if (stopMotorWhenNotMoving) {
-      if (inputs.intakeLeftSpeed == 0) {
-        stoppedLoopCount++;
+    if (stopSlapdownWhenNotMoving) {
+      if (inputs.rollerLeftSpeed == 0) {
+        slapdownStoppedLoopCount++;
       } else {
-        stoppedLoopCount = 0;
+        slapdownStoppedLoopCount = 0;
       }
-      if (stoppedLoopCount > STOPPED_LOOP_COUNT_NEEDED) {
+      if (slapdownStoppedLoopCount > SLAPDOWN_STOPPED_LOOP_COUNT_NEEDED) {
         deployStop();
       }
     }
 
-    if (stopDeployOnCurrentSpike
-        && inputs.deploySupplyCurrent >= IntakeConstants.DEPLOY_CURRENT_STOP_THRESHOLD) {
+    if (stopSlapdownOnCurrentSpike
+        && inputs.slapdownSupplyCurrent >= IntakeConstants.SLAPDOWN_CURRENT_STOP_THRESHOLD) {
       deployStop();
     }
 
     // Stop the deploy motor if our sensors detect we are down or up
-    if ((outputs.desiredPosition == IntakeConstants.DOWN) && inputs.isDeployDown
-        || (outputs.desiredPosition == IntakeConstants.UP) && inputs.isDeployUp) {
+    if ((outputs.desiredPosition == IntakeConstants.DOWN) && inputs.isSlapdownDown
+        || (outputs.desiredPosition == IntakeConstants.UP) && inputs.isSlapdownUp) {
       deployStop();
     }
   }

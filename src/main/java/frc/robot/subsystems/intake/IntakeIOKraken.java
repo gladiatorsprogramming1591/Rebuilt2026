@@ -28,11 +28,11 @@ import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
-  private final TalonFX intakeLeft = new TalonFX(IntakeConstants.INTAKE_LEFT);
-  private final TalonFX intakeRight = new TalonFX(IntakeConstants.INTAKE_RIGHT);
-  private final TalonFX deployMotor = new TalonFX(IntakeConstants.INTAKE_DEPLOY);
-  private final DigitalInput topLimit = new DigitalInput(IntakeConstants.TOP_DEPLOY_DIO_PORT);
-  private final DigitalInput bottomLimit = new DigitalInput(IntakeConstants.BOTTOM_DEPLOY_DIO_PORT);
+  private final TalonFX intakeLeft = new TalonFX(IntakeConstants.ROLLER_LEFT);
+  private final TalonFX intakeRight = new TalonFX(IntakeConstants.ROLLER_RIGHT);
+  private final TalonFX deployMotor = new TalonFX(IntakeConstants.SLAPDOWN_ID);
+  private final DigitalInput topLimit = new DigitalInput(IntakeConstants.TOP_SLAPDOWN_DIO_PORT);
+  private final DigitalInput bottomLimit = new DigitalInput(IntakeConstants.BOTTOM_SLAPDOWN_DIO_PORT);
   // private final Trigger zeroTrigger = new Trigger(() -> bottomLimit.get() == false);
   // private final Trigger deployedTrigger = new Trigger(() -> topLimit.get() == false);
   private final int stowSlot = 0;
@@ -73,8 +73,8 @@ public class IntakeIOKraken implements IntakeIO {
     }
     var intakeLeftConfig = new TalonFXConfiguration();
     var intakeCurrentLimits = intakeLeftConfig.CurrentLimits;
-    intakeCurrentLimits.SupplyCurrentLimit = IntakeConstants.INTAKE_SUPPLY_CURRENT_LIMIT;
-    intakeCurrentLimits.StatorCurrentLimit = IntakeConstants.INTAKE_STATOR_CURRENT_LIMIT;
+    intakeCurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
+    intakeCurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
     intakeCurrentLimits.SupplyCurrentLimitEnable = true;
     intakeCurrentLimits.StatorCurrentLimitEnable = true;
     intakeLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -91,8 +91,8 @@ public class IntakeIOKraken implements IntakeIO {
 
     var deployConfig = new TalonFXConfiguration();
     var deployCurrentLimits = deployConfig.CurrentLimits;
-    deployCurrentLimits.SupplyCurrentLimit = IntakeConstants.DEPLOY_SUPPLY_CURRENT_LIMIT;
-    deployCurrentLimits.StatorCurrentLimit = IntakeConstants.DEPLOY_STATOR_CURRENT_LIMIT;
+    deployCurrentLimits.SupplyCurrentLimit = IntakeConstants.SLAPDOWN_SUPPLY_CURRENT_LIMIT;
+    deployCurrentLimits.StatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
     deployCurrentLimits.SupplyCurrentLimitEnable = true;
     deployCurrentLimits.StatorCurrentLimitEnable = true;
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -145,29 +145,29 @@ public class IntakeIOKraken implements IntakeIO {
         intakeLeftAngularVelocity,
         intakeRightAngularVelocity);
 
-    inputs.deploySpeed = deployAngularVelocity.getValueAsDouble();
-    inputs.deployTorqueCurrentFOC = deployTorqueCurrent.getValueAsDouble();
-    inputs.deploySupplyCurrent = deploySupplyCurrent.getValueAsDouble();
-    inputs.intakeLeftSpeed = intakeLeftAngularVelocity.getValueAsDouble();
-    inputs.intakeRightSpeed = intakeRightAngularVelocity.getValueAsDouble();
-    inputs.intakeLeftTemp = intakeLeftTemp.getValueAsDouble();
-    inputs.intakeRightTemp = intakeRightTemp.getValueAsDouble();
-    inputs.isDeployDown = bottomLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
-    inputs.isDeployUp = topLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
+    inputs.slapdownSpeed = deployAngularVelocity.getValueAsDouble();
+    inputs.slapdownTorqueCurrentFOC = deployTorqueCurrent.getValueAsDouble();
+    inputs.slapdownSupplyCurrent = deploySupplyCurrent.getValueAsDouble();
+    inputs.rollerLeftSpeed = intakeLeftAngularVelocity.getValueAsDouble();
+    inputs.rollerRightSpeed = intakeRightAngularVelocity.getValueAsDouble();
+    inputs.rollerLeftTemp = intakeLeftTemp.getValueAsDouble();
+    inputs.rollerRightTemp = intakeRightTemp.getValueAsDouble();
+    inputs.isSlapdownDown = bottomLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
+    inputs.isSlapdownUp = topLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
     // stowedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.UP)));
     // deployedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.DOWN)));
     double rawAngle = deployAngle.getValueAsDouble();
-    if (inputs.isDeployUp) { // Re-zero when deploy is up
+    if (inputs.isSlapdownUp) { // Re-zero when deploy is up
       rawStowPosition = rawAngle;
       encoderOffset = -rawAngle;
       inputs.encoderOffset = encoderOffset;
     } else {
-      if (inputs.isDeployDown) {
+      if (inputs.isSlapdownDown) {
         rawDeployPosition = rawAngle; // TODO: Use this to update offset and/or clamp position output
       }
     }
     angleWithOffset = rawAngle + encoderOffset;
-    inputs.deployPosition = angleWithOffset;
+    inputs.position = angleWithOffset;
   }
 
   @Override
@@ -177,17 +177,17 @@ public class IntakeIOKraken implements IntakeIO {
       tuneDeployMotorConfigs(outputs);
     }
 
-    if (outputs.appliedIntakeSpeed == IntakeConstants.INTAKE_MOTOR_SPEED)
+    if (outputs.appliedRollerSpeed == IntakeConstants.ROLLER_PICKUP_SPEED)
     {
       intakeLeft.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
       intakeRight.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
     } else
     {
-      intakeLeft.set(outputs.appliedIntakeSpeed);
-      intakeRight.set(outputs.appliedIntakeSpeed);
+      intakeLeft.set(outputs.appliedRollerSpeed);
+      intakeRight.set(outputs.appliedRollerSpeed);
     }
 
-    switch (RobotState.getDeployMode()) {
+    switch (RobotState.getSlapdownMode()) {
 
       case DEPLOY_POSITION:
         slapToPosition(deploySlot, outputs.desiredPosition, outputs.kdeployFF);
@@ -206,7 +206,7 @@ public class IntakeIOKraken implements IntakeIO {
         break;
 
       case SPEED:
-        deployMotor.set(outputs.appliedDeploySpeed);
+        deployMotor.set(outputs.appliedSlapdownSpeed);
         break;
 
       case OFF:

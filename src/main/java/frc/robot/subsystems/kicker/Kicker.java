@@ -36,7 +36,7 @@ public class Kicker extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Kicker", inputs);
-    io.applyOutputs(outputs);
+    // io.applyOutputs(outputs); // TODO TEMP
     Logger.recordOutput("Kicker/Speed", outputs.desiredKickerSpeed);
   }
 }

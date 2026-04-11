@@ -11,13 +11,13 @@ public class IntakeIOSim implements IntakeIO {
   private DCMotorSim intakeSim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.INTAKE_MOTOR_REDUCTION),
+              DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.ROLLER_MOTOR_REDUCTION),
           DCMotor.getKrakenX44Foc(1));
 
   private DCMotorSim deploySim =
       new DCMotorSim(
           LinearSystemId.createDCMotorSystem(
-              DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.DEPLOY_MOTOR_REDUCTION),
+              DCMotor.getKrakenX44Foc(1), 0.004, IntakeConstants.SLAPDOWN_MOTOR_REDUCTION),
           DCMotor.getKrakenX44Foc(1));
 
   private double deployAppliedSpeed;
@@ -38,41 +38,41 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.deploySpeed = deployAppliedSpeed;
-    inputs.intakeLeftSpeed = intakeAppliedSpeed;
-    inputs.intakeRightSpeed = intakeAppliedSpeed;
-    inputs.deployPosition = deployAngle;
+    inputs.slapdownSpeed = deployAppliedSpeed;
+    inputs.rollerLeftSpeed = intakeAppliedSpeed;
+    inputs.rollerRightSpeed = intakeAppliedSpeed;
+    inputs.position = deployAngle;
     // inputs.isDeployDown = deployState.getAsDouble() == 0;
     // inputs.isDeployUp = deployState.getAsDouble() == 1;
-    inputs.isDeployDown = inputs.deployPosition == IntakeConstants.DOWN;
-    inputs.isDeployUp = inputs.deployPosition == IntakeConstants.UP;
-    if (inputs.isDeployUp) { // Re-zero when deploy is up
+    inputs.isSlapdownDown = inputs.position == IntakeConstants.DOWN;
+    inputs.isSlapdownUp = inputs.position == IntakeConstants.UP;
+    if (inputs.isSlapdownUp) { // Re-zero when deploy is up
       inputs.encoderOffset = -deployAngle;
-      inputs.deploySupplyCurrent = IntakeConstants.DEPLOY_CURRENT_STOP_THRESHOLD;
-    } else if (inputs.isDeployDown) {
-      inputs.deploySupplyCurrent = IntakeConstants.DEPLOY_CURRENT_STOP_THRESHOLD;
+      inputs.slapdownSupplyCurrent = IntakeConstants.SLAPDOWN_CURRENT_STOP_THRESHOLD;
+    } else if (inputs.isSlapdownDown) {
+      inputs.slapdownSupplyCurrent = IntakeConstants.SLAPDOWN_CURRENT_STOP_THRESHOLD;
     } else {
-      inputs.deploySupplyCurrent = 1.0; // Random non-zero current
+      inputs.slapdownSupplyCurrent = 1.0; // Random non-zero current
     }
-    inputs.deployPosition = deployAngle + inputs.encoderOffset;
+    inputs.position = deployAngle + inputs.encoderOffset;
   }
 
   @Override
   public void applyOutputs(IntakeIOOutputs outputs) {
-    intakeAppliedSpeed = outputs.appliedIntakeSpeed;
-    switch (RobotState.getDeployMode()) {
+    intakeAppliedSpeed = outputs.appliedRollerSpeed;
+    switch (RobotState.getSlapdownMode()) {
       case DEPLOY_POSITION: case STOW_POSITION: case BUMP_POSITION:
         deployAngle = outputs.desiredPosition;
         break;
       case SPEED:
-        deployAppliedSpeed = outputs.appliedDeploySpeed;
+        deployAppliedSpeed = outputs.appliedSlapdownSpeed;
         break;
       case OFF:
         deployAppliedSpeed = 0;
         break;
       default:
         System.out.println(
-            "Intake Apply Outputs Empty Default" + RobotState.getDeployMode().toString());
+            "Intake Apply Outputs Empty Default" + RobotState.getSlapdownMode().toString());
         break;
     }
   }
