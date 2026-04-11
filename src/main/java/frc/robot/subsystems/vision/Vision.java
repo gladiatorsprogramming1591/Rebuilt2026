@@ -102,8 +102,6 @@ public class Vision extends SubsystemBase {
 
     for (Camera cam : cameras) {
       cam.periodic();
-      boolean okToSeedYaw =
-          DriverStation.isDisabled(); // TODO: is this a good enough marker of when to seed yaw?
 
       if (yawNow != null && cam.getIo() != null) {
         // Limelight robot_orientation_set (required for MT2)
@@ -290,7 +288,8 @@ public class Vision extends SubsystemBase {
     // Trust yaw for multi-tag; else replace yaw with fused yaw (254 single-tag + gyro fusion idea).
     boolean trustYaw = pe.tagCount >= 2;
     Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
-    double rotStd = 9999;
+    boolean okToSeedYaw = DriverStation.isDisabled(); // TODO: is this a good enough marker of when to seed yaw?
+    double rotStd = (okToSeedYaw && trustYaw) ? 1 : 9999;
 
     SmartDashboard.putNumber(cam.getTableKey() + "xyStd", xyStd);
     SmartDashboard.putNumber(cam.getTableKey() + "out.x", out.getX());
