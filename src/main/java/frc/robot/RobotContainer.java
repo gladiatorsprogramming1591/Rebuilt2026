@@ -41,6 +41,10 @@ import frc.robot.subsystems.hood.HoodConstants;
 import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOKraken;
 import frc.robot.subsystems.hood.HoodIOSim;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.hopper.HopperIO;
+import frc.robot.subsystems.hopper.HopperIOKraken;
+import frc.robot.subsystems.hopper.HopperIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOKraken;
@@ -49,10 +53,6 @@ import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOKraken;
 import frc.robot.subsystems.kicker.KickerIOSim;
-import frc.robot.subsystems.roller.Roller;
-import frc.robot.subsystems.roller.RollerIO;
-import frc.robot.subsystems.roller.RollerIOKraken;
-import frc.robot.subsystems.roller.RollerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
@@ -75,7 +75,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Intake intake;
   private final Kicker kicker;
-  private final Roller roller;
+  private final Hopper hopper;
   private final Shooter shooter;
   private final Vision vision;
   private final Hood hood;
@@ -108,13 +108,13 @@ public class RobotContainer {
         if (robotInitConstants.isCompBot) {
           intake = new Intake(new IntakeIOKraken());
           kicker = new Kicker(new KickerIOKraken());
-          roller = new Roller(new RollerIOKraken());
+          hopper = new Hopper(new HopperIOKraken());
           shooter = new Shooter(new ShooterIOKraken());
           hood = new Hood(new HoodIOKraken());
         } else {
           intake = new Intake(new IntakeIOSim());
           kicker = new Kicker(new KickerIOSim());
-          roller = new Roller(new RollerIOSim());
+          hopper = new Hopper(new HopperIOSim());
           shooter = new Shooter(new ShooterIOSim());
           hood = new Hood(new HoodIOSim());
         }
@@ -157,7 +157,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSim());
         kicker = new Kicker(new KickerIOSim());
-        roller = new Roller(new RollerIOSim());
+        hopper = new Hopper(new HopperIOSim());
         vision = new Vision();
         shooter = new Shooter(new ShooterIOSim());
         hood = new Hood(new HoodIOSim());
@@ -176,7 +176,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIO() {});
         kicker = new Kicker(new KickerIO() {});
-        roller = new Roller(new RollerIO() {});
+        hopper = new Hopper(new HopperIO() {});
         shooter = new Shooter(new ShooterIO() {});
         vision = new Vision();
         hood = new Hood(new HoodIO() {});
@@ -233,7 +233,7 @@ public class RobotContainer {
             () -> -driver_controller.getLeftX() * driveSpeedMultiplier,
             () -> -driver_controller.getRightX() * rotationMultiplier));
 
-    roller.setDefaultCommand(roller.stopRollerMotors());
+    hopper.setDefaultCommand(hopper.stopBeltMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntake());
     shooter.setDefaultCommand(shooter.coastShooterDefaultCommand()); // TODO: See why coast doesn't run even while isShooterBelowCoastRPM is true
@@ -271,7 +271,7 @@ public class RobotContainer {
     // driver_controller //TODO: TEMPORARY
     //     .leftTrigger()
     //     .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
-    driver_controller.leftTrigger().toggleOnTrue(intake.runIntake());
+    driver_controller.leftTrigger().toggleOnTrue(intake.runIntakeWithRequirements());
     // driver_controller // // TODO: TEMPORARY and broken?
     //     .rightBumper()
     //     .whileTrue(
@@ -296,8 +296,8 @@ public class RobotContainer {
 
     // ===================================== Operator Controls =====================================
     // rollers
-    operator_controller.leftBumper().whileTrue(roller.reverseRollerMotors());
-    operator_controller.rightBumper().toggleOnTrue(roller.startRollerMotors());
+    operator_controller.leftBumper().whileTrue(hopper.reverseBeltMotors());
+    operator_controller.rightBumper().toggleOnTrue(hopper.startBeltMotors());
     // intake
     operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
     operator_controller.a().whileTrue(intakePulseCommand());
@@ -339,7 +339,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
 
   public Command shootFixed() {
@@ -353,7 +353,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
 
   public Command shootWithAim() {
@@ -373,7 +373,7 @@ public class RobotContainer {
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
                 // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY: V3-ify intake pulse
-                roller.startRollerMotors(), kicker.runKickerMotor())));
+                hopper.startBeltMotors(), kicker.runKickerMotor())));
   }
 
   public Command shootWithAimStationary() {
@@ -389,7 +389,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
@@ -420,12 +420,12 @@ public class RobotContainer {
   }
 
   public Command intakeCommand() {
-    return intake.deploy().alongWith(roller.runBottomRollerWhileIntaking());
+    return intake.deploy().alongWith(hopper.runBeltWhileIntaking());
   }
 
   public Command prepareIntake() {
     // return intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()); // TODO: TEMPORARY
-    return new InstantCommand();
+    return intake.deploy().alongWith(intake.runIntake());
   }
 
   public Command intakeIn() {
@@ -438,7 +438,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
-    NamedCommands.registerCommand("Stow For Bump", intake.stowBump());
+    NamedCommands.registerCommand("Stow For Bump", intake.stowBump().alongWith(intake.stopIntakeInstant()));
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
     NamedCommands.registerCommand(
         "Lower Hood And Stop Shooting",
@@ -446,7 +446,7 @@ public class RobotContainer {
                 hood.runHoodToZero(),
                 // This should be handled in the interrupt of startRollerMotors, but leaving here
                 // for redundancy
-                roller.stopRollerMotors(),
+                hopper.stopBeltMotors(),
                 kicker.stopKickerMotor())
             .withTimeout(1.0));
   }

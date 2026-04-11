@@ -3,75 +3,78 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.421064102564103,
-        "y": 0.4535128205128206
+        "x": 3.348,
+        "y": 2.936
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.421064102564103,
-        "y": 0.4535128205128208
+        "x": 1.1884230769230784,
+        "y": -0.8604743589743578
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Tilted Hub Shot"
     },
     {
       "anchor": {
-        "x": 8.281628205128206,
-        "y": 1.4186538461538465
+        "x": 7.711846153846155,
+        "y": 2.290769230769231
       },
       "prevControl": {
-        "x": 8.058920671496612,
-        "y": 0.767662593999954
+        "x": 7.979294871794872,
+        "y": 0.3256025641025655
       },
       "nextControl": {
-        "x": 8.43279487179487,
-        "y": 1.86052564102564
+        "x": 7.573846063472913,
+        "y": 3.3047698948160957
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.805,
-        "y": 2.7
+        "x": 6.154,
+        "y": 3.954
       },
       "prevControl": {
-        "x": 7.805,
-        "y": 2.3790000000000004
-      },
-      "nextControl": {
-        "x": 7.805,
-        "y": 2.95
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.804871794871797,
-        "y": 3.5815
-      },
-      "prevControl": {
-        "x": 7.804871794871797,
-        "y": 3.3315
+        "x": 7.374961538461538,
+        "y": 4.291217948717948
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Second Bump"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.3,
-      "rotationDegrees": 105.00000000000001
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.859649122807019,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Prepare Intake",
+      "name": "Lower Hood And Stop Shooting",
       "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Hood And Stop Shooting"
+        }
+      }
+    },
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.8283499446290112,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -90,14 +93,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 90.0
+    "velocity": 0.0,
+    "rotation": -138.41
   },
   "reversed": false,
   "folder": "Competiton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -138.415
   },
   "useDefaultConstraints": true
 }

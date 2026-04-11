@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.DeployModeState;
@@ -110,7 +111,14 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command runIntake() {
+public Command runIntake() {
+    return new RunCommand(
+            () -> {
+              outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;
+            });
+  }
+  
+  public Command runIntakeWithRequirements() {
     return runEnd(
             () -> {
               outputs.appliedIntakeSpeed = IntakeConstants.INTAKE_MOTOR_SPEED;

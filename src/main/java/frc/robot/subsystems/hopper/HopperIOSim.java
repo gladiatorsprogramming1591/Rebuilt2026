@@ -1,10 +1,10 @@
-package frc.robot.subsystems.roller;
+package frc.robot.subsystems.hopper;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-public class RollerIOSim implements RollerIO {
+public class HopperIOSim implements HopperIO {
   private double speed = 0.0;
 
   private final DCMotorSim intakeSim;
@@ -12,30 +12,20 @@ public class RollerIOSim implements RollerIO {
   private static final double inertia = 1.0;
   private static final double gearRatio = 1.0;
 
-  public RollerIOSim() {
+  public HopperIOSim() {
     intakeSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(INTAKE_GEARBOX, inertia, gearRatio), INTAKE_GEARBOX);
   }
 
-  // @Override
-  // public void setTopRollerSpeed(double speed) {
-  //   this.speed = MathUtil.clamp(speed, 0, 1.0);
-  // }
-
-  // @Override
-  // public void setBottomRollerSpeed(double speed) {
-  //   this.speed = speed;
-  // }
+  @Override
+  public void updateInputs(HopperIOInputs inputs) {}
 
   @Override
-  public void updateInputs(RollerIOInputs inputs) {}
-
-  @Override
-  public void applyOutputs(RollerIOOutputs outputs) {
-    if (!outputs.usingLowerCurrent && outputs.useRollerWhileIntakeCurrent) {
+  public void applyOutputs(HopperIOOutputs outputs) {
+    if (!outputs.usingLowerCurrent && outputs.useBeltWhileIntakeCurrent) {
       outputs.usingLowerCurrent = true;
-    } else if (outputs.usingLowerCurrent && !outputs.useRollerWhileIntakeCurrent) {
+    } else if (outputs.usingLowerCurrent && !outputs.useBeltWhileIntakeCurrent) {
       outputs.usingLowerCurrent = false;
     }
   }
