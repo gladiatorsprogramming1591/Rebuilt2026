@@ -3,13 +3,17 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
-- Deploy seed pos if down
 - Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
+
+READY TO TEST
+- Deploy seed pos if down with triggers
 
 
 ===============================================
 
-- Hood: Investigate why it either works or not at all between code deploys
+- Hood:
+    - Investigate why it either works or not at all between code deploys
+    - Hood zero trigger
 - Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
     - Tune motor configs to prep to shoot faster
 

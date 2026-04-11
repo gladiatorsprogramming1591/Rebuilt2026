@@ -31,7 +31,7 @@ public final class IntakeConstants {
 
   public class StowConfigs
   {
-    public static final double kP = 1.2;
+    public static final double kP = 1.3;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kFF = 0.0;
@@ -43,11 +43,11 @@ public final class IntakeConstants {
   public static final double UP = 0.0;
   public static final double DOWN = 17.8818359375; // TODO: Find new DOWN angle after hard-stop cushioning
   public static final double MIDDLE = DOWN / 2;
-  public static final double BUMP = MIDDLE;
+  public static final double BUMP = MIDDLE; // TODO: Find this
   // Points at which the slapdown succumbs to gravity
-  public static final double TIPPING_POINT = MIDDLE;
-  public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;
-  public static final double TIP_TOWARD_DEPLOY = TIPPING_POINT + 2;
+  public static final double TIPPING_POINT = MIDDLE;  // TODO: Find this
+  public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;  // TODO: Find this
+  public static final double TIP_TOWARD_DEPLOY = TIPPING_POINT + 2;  // TODO: Find this
   public static final double MIN_ANGLE = UP;
   public static final double MAX_ANGLE = DOWN;
   

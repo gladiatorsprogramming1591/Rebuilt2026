@@ -42,7 +42,7 @@ public class IntakeIOKraken implements IntakeIO {
   private final TorqueCurrentFOC torqueDutyCycleControl =
       new TorqueCurrentFOC(0.0).withDeadband(1.0);
 
-  private final StatusSignal<Angle> deployAngle = slapdownMotor.getPosition();
+  private final StatusSignal<Angle> slapdownAngle = slapdownMotor.getPosition();
   private final StatusSignal<Current> deploySupplyCurrent = slapdownMotor.getSupplyCurrent();
   private final StatusSignal<Current> deployTorqueCurrent = slapdownMotor.getTorqueCurrent();
   private final StatusSignal<AngularVelocity> deployAngularVelocity = slapdownMotor.getVelocity();
@@ -123,7 +123,7 @@ public class IntakeIOKraken implements IntakeIO {
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         IntakeConstants.STATUS_SIGNAL_UPDATE_FREQUENCY,
-        deployAngle,
+        slapdownAngle,
         deployAngularVelocity,
         deploySupplyCurrent,
         deployTorqueCurrent,
@@ -146,7 +146,7 @@ public class IntakeIOKraken implements IntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        deployAngle,
+        slapdownAngle,
         deployAngularVelocity,
         deploySupplyCurrent,
         deployTorqueCurrent,
@@ -166,7 +166,7 @@ public class IntakeIOKraken implements IntakeIO {
     inputs.isSlapdownUp = topLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
     // stowedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.UP)));
     // deployedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.DOWN)));
-    double rawAngle = deployAngle.getValueAsDouble();
+    double rawAngle = slapdownAngle.getValueAsDouble();
     if (inputs.isSlapdownUp) { // Re-zero when deploy is up
       rawStowPosition = rawAngle;
       encoderOffset = -rawAngle;
@@ -200,15 +200,23 @@ public class IntakeIOKraken implements IntakeIO {
     switch (RobotState.getSlapdownMode()) {
 
       case DEPLOY_POSITION:
-        slapToPosition(deploySlot, outputs.desiredPosition, outputs.kdeployFF);
+        if (slapdownAngle.getValueAsDouble() < IntakeConstants.TIP_TOWARD_DEPLOY) {
+          slapToPosition(deploySlot, outputs.desiredPosition, outputs.kdeployFF);
+        } else {
+          slapdownMotor.stopMotor();
+        }
         break;
 
       case STOW_POSITION:
-        slapToPosition(stowSlot, outputs.desiredPosition, outputs.kstowFF);
+        if (slapdownAngle.getValueAsDouble() > IntakeConstants.TIP_TOWARD_STOW) {
+          slapToPosition(stowSlot, outputs.desiredPosition, outputs.kstowFF);
+        } else {
+          slapdownMotor.stopMotor();
+        }
         break;
 
       case BUMP_POSITION:
-        if (deployAngle.getValueAsDouble() < IntakeConstants.MIDDLE) {
+        if (slapdownAngle.getValueAsDouble() < IntakeConstants.MIDDLE) {
           slapToPosition(deploySlot, outputs.desiredPosition, outputs.kdeployFF);
         } else {
           slapToPosition(stowSlot, outputs.desiredPosition, outputs.kstowFF);
@@ -233,7 +241,7 @@ public class IntakeIOKraken implements IntakeIO {
   private void slapToPosition(int slot, double position, double kFF) {
     slapdownMotor.setControl(
         torquePositionControl
-            .withPosition(position + rawStowPosition) // Undoes offset only during control
+            .withPosition(position)
             .withSlot(slot)
             .withFeedForward(kFF));
   }
