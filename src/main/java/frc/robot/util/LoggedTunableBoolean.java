@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 /**
- * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
+ * Class for a tunable boolean. Gets value from dashboard in tuning mode, returns default if not or
  * value not in dashboard.
  */
 @SuppressWarnings("unused")
@@ -50,7 +50,7 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   }
 
   /**
-   * Set the default value of the number. The default value can only be set once.
+   * Set the default value of the boolean. The default value can only be set once.
    *
    * @param defaultValue The default value
    */
@@ -78,11 +78,11 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   }
 
   /**
-   * Checks whether the number has changed since our last check
+   * Checks whether the boolean has changed since our last check
    *
    * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
    *     objects. Recommended approach is to pass the result of "hashCode()"
-   * @return True if the number has changed since the last time this method was called, false
+   * @return True if the boolean has changed since the last time this method was called, false
    *     otherwise.
    */
   public boolean hasChanged(int id) {

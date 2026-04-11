@@ -1,53 +1,35 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.RobotState.DeployModeState;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import static frc.robot.subsystems.intake.IntakeConstants.kdeployTableKey;
+import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
+import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
+
+/**
+ * Name conventions:
+ * <ul>
+ *  <li><b>Intake:</b> Whole subsystem
+ *  <li><b>Slapdown:</b> Intake pivoting arm
+ *    <ul>
+ *      <li> <b>Deploy:</b> Full extension
+ *      <li> <b>Stow:</b> Full retraction into frame perimeter
+ *    </ul>
+ *  <li><b>Rollers:</b> Rotating tubes that propel fuel into hopper
+ * </ul>
+ */
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
-
-  private final LoggedTunableNumber deploySpeed =
-      new LoggedTunableNumber("Intake/DeploySpeed", IntakeConstants.DEPLOY_SPEED);
-  // private final LoggedTunableNumber intakeSpeed =
-  //     new LoggedTunableNumber("Intake/IntakeSpeed", IntakeConstants.INTAKE_MOTOR_SPEED);
-  // private final LoggedTunableNumber stowSpeed =
-  //     new LoggedTunableNumber("Intake/StowSpeed", IntakeConstants.STOW_SPEED);
-  // private final LoggedTunableNumber deployCurrent =
-  //     new LoggedTunableNumber("Intake/DeployCurrent", IntakeConstants.DEPLOY_TORQUE_CURRENT);
-  // private final LoggedTunableNumber intakeDelaySeconds =
-  //     new LoggedTunableNumber("Intake/IntakeDelaySeconds", IntakeConstants.INTAKE_DELAY_SECONDS);
-
-  private static final LoggedTunableNumber kP =
-      new LoggedTunableNumber("Intake/kP", IntakeConstants.kP);
-  private static final LoggedTunableNumber kI =
-      new LoggedTunableNumber("Intake/kI", IntakeConstants.kI);
-  private static final LoggedTunableNumber kD =
-      new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
-  // private static final LoggedTunableNumber kS =
-  //     new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
-  // private static final LoggedTunableNumber kV =
-  //     new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
-  // private static final LoggedTunableNumber kA =
-  //     new LoggedTunableNumber("Intake/kD", IntakeConstants.kD);
-  private static final LoggedTunableNumber kFF =
-      new LoggedTunableNumber("Intake/kFF", IntakeConstants.kFF);
-
-  private static final double intakeMaxAngle =
-      Units.degreesToRadians(0); // TODO set the max and min angle
-  private static final double intakeMinAngle =
-      Units.degreesToRadians(0); // TODO set the max and min angle
-
+  
   private int stoppedLoopCount = 0;
   private static final int STOPPED_LOOP_COUNT_NEEDED = 2;
   private boolean stopDeployOnCurrentSpike = false;
@@ -62,7 +44,7 @@ public class Intake extends SubsystemBase {
 
   public void runPosition(double positionRads) {
     goalAngle = positionRads;
-    outputs.desiredPosition = MathUtil.clamp(goalAngle, intakeMinAngle, intakeMaxAngle);
+    outputs.desiredPosition = MathUtil.clamp(goalAngle, IntakeConstants.intakeMinAngle, IntakeConstants.intakeMaxAngle);
   }
 
   // TODO: Change from runEnd to let applyOutputs check for down and stop motor. Probably need new
@@ -72,7 +54,7 @@ public class Intake extends SubsystemBase {
             () -> {
               isDeployStopped = false;
               outputs.desiredPosition = IntakeConstants.DOWN;
-              RobotState.setDeployMode(RobotState.DeployModeState.POSITION);
+              RobotState.setDeployMode(RobotState.DeployModeState.DEPLOY_POSITION);
               stopDeployOnCurrentSpike = true;
             },
             () -> {
@@ -82,14 +64,13 @@ public class Intake extends SubsystemBase {
         .until(() -> isDeployStopped);
   }
 
-  // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new
-  // states.
+  // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new states.
   public Command stow() {
     return runEnd(
             () -> {
               isDeployStopped = false;
               outputs.desiredPosition = IntakeConstants.UP;
-              RobotState.setDeployMode(RobotState.DeployModeState.POSITION);
+              RobotState.setDeployMode(RobotState.DeployModeState.STOW_POSITION);
               stopDeployOnCurrentSpike = true;
             },
             () -> {
@@ -104,7 +85,7 @@ public class Intake extends SubsystemBase {
             () -> {
               isDeployStopped = false;
               outputs.desiredPosition = IntakeConstants.BUMP;
-              RobotState.setDeployMode(RobotState.DeployModeState.POSITION);
+              RobotState.setDeployMode(RobotState.DeployModeState.BUMP_POSITION);
               stopDeployOnCurrentSpike = true;
             },
             () -> {
@@ -117,8 +98,8 @@ public class Intake extends SubsystemBase {
     return runEnd(
         () -> {
           isDeployStopped = false;
-          System.out.println("deployWithSpeed: " + deploySpeed.getAsDouble());
-          outputs.appliedDeploySpeed = deploySpeed.getAsDouble();
+          System.out.println("deployWithSpeed: " + IntakeConstants.deploySpeed.getAsDouble());
+          outputs.appliedDeploySpeed = IntakeConstants.deploySpeed.getAsDouble();
           RobotState.setDeployMode(RobotState.DeployModeState.SPEED);
           stopDeployOnCurrentSpike = true;
         },
@@ -178,26 +159,41 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
+    // Deploy configs
+    outputs.kdeployP = IntakeConstants.kdeployP.getAsDouble();
+    outputs.kdeployI = IntakeConstants.kdeployI.getAsDouble();
+    outputs.kdeployD = IntakeConstants.kdeployD.getAsDouble();
+    outputs.kdeployFF = IntakeConstants.kdeployFF.getAsDouble();
+    // Stow configs
+    outputs.kstowP = IntakeConstants.kstowP.getAsDouble();
+    outputs.kstowI = IntakeConstants.kstowI.getAsDouble();
+    outputs.kstowD = IntakeConstants.kstowD.getAsDouble();
+    outputs.kstowFF = IntakeConstants.kstowFF.getAsDouble();
+    outputs.kstowMMAcceleration = IntakeConstants.kstowMMAcceleration.getAsDouble();
+    outputs.kstowMMJerk = IntakeConstants.kstowMMJerk.getAsDouble();
 
-    outputs.kP = kP.getAsDouble();
-    outputs.kI = kI.getAsDouble();
-    outputs.kD = kD.getAsDouble();
-    outputs.kFF = kFF.getAsDouble();
+    Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getDeployMode().toString());
+    Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedIntakeSpeed);
+    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Speed", outputs.appliedDeploySpeed);
+    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Current", outputs.appliedDeployCurrent);
+    // Deploy configs
+    Logger.recordOutput(kdeployTableKey + "kdeployP", outputs.kdeployP);
+    Logger.recordOutput(kdeployTableKey + "kdeployI", outputs.kdeployI);
+    Logger.recordOutput(kdeployTableKey + "kdeployD", outputs.kdeployD);
+    Logger.recordOutput(kdeployTableKey + "kdeployFF", outputs.kdeployFF);
+    // Stow configs
+    Logger.recordOutput(kstowTableKey + "kstowP", outputs.kstowP);
+    Logger.recordOutput(kstowTableKey + "kstowI", outputs.kstowI);
+    Logger.recordOutput(kstowTableKey + "kstowD", outputs.kstowD);
+    Logger.recordOutput(kstowTableKey + "kstowFF", outputs.kstowFF);
+    Logger.recordOutput(kstowTableKey + "kstowMMAcceleration", outputs.kstowMMAcceleration);
+    Logger.recordOutput(kstowTableKey + "kstowMMJerk", outputs.kstowMMJerk);
 
-    Logger.recordOutput("Intake/Mode", RobotState.getDeployMode().toString());
-    Logger.recordOutput("Intake/Applied Intake Speed", outputs.appliedIntakeSpeed);
-    Logger.recordOutput("Intake/Applied Output Speed", outputs.appliedDeploySpeed);
-    Logger.recordOutput("Intake/Applied Deploy Current", outputs.appliedDeployCurrent);
-    Logger.recordOutput("Intake/kP", outputs.kP);
-    Logger.recordOutput("Intake/kI", outputs.kI);
-    Logger.recordOutput("Intake/kD", outputs.kD);
-    Logger.recordOutput("Intake/kFF", outputs.kFF);
-    Logger.recordOutput("Intake/desiredPosition", outputs.desiredPosition);
+    Logger.recordOutput(kintakeTableKey + "desiredPosition", outputs.desiredPosition);
     io.applyOutputs(outputs);
 
     // For testing, turn deploy motors off after hitting hard stop
-    // TODO: Don't leave this in code as we will likely stop between bottom and top when hopper is
-    // full
+    // TODO: Don't leave this in code as we will likely stop between bottom and top when hopper is full
     if (stopMotorWhenNotMoving) {
       if (inputs.intakeLeftSpeed == 0) {
         stoppedLoopCount++;

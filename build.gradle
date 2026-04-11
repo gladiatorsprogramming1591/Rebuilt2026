@@ -7,6 +7,7 @@ plugins {
 }
 
 java {
+    // TODO: Any reason not to upgrade to the latest LTS?
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
@@ -186,6 +187,7 @@ spotless {
                     "**/shooter/**",
                     "**/intake/**",
                     "**/hood/**",
+                    "**/vision/**",
                     "**/util/**",
                     "**/RobotContainer.java"
         }

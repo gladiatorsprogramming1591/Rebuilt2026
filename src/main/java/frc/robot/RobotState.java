@@ -127,7 +127,10 @@ public final class RobotState {
   @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
 
   public enum DeployModeState {
-    POSITION, // TODO: probably good to add more
+    DEPLOY_POSITION,
+    STOW_POSITION,
+    BUMP_POSITION,
+    PULSE,
     SPEED,
     OFF
   }

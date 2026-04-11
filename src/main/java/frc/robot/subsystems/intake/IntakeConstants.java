@@ -1,12 +1,15 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.util.Units;
+import frc.robot.util.LoggedTunableNumber;
+
 public final class IntakeConstants {
   public static final int INTAKE_DEPLOY = 30;
   public static final int INTAKE_RIGHT = 28;
   public static final int INTAKE_LEFT = 29;
 
-  public static final int BOTTOM_DEPLOY_DIO_PORT = 1;
-  public static final int TOP_DEPLOY_DIO_PORT = 2;
+  public static final int BOTTOM_DEPLOY_DIO_PORT = 2;
+  public static final int TOP_DEPLOY_DIO_PORT = 1;
 
   public static final double INTAKE_GEAR_RATIO = 1.0;
   public static final double DEPLOY_GEAR_RATIO = 1.0;
@@ -20,16 +23,35 @@ public final class IntakeConstants {
   public static final double DEPLOY_STATOR_CURRENT_LIMIT = 20.0;
   public static final double DEPLOY_CURRENT_STOP_THRESHOLD = DEPLOY_SUPPLY_CURRENT_LIMIT;
 
-  public static final double kP = 0.5;
-  public static final double kI = 0.0;
-  public static final double kD = 0.0;
-  public static final double kFF = 0.0;
+  public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
+
+  public class DeployConfigs
+  {
+    public static final double kP = 1.45;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kFF = 0.0;
+  }
+
+  public class StowConfigs
+  {
+    public static final double kP = 1.2;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kFF = 0.0;
+    public static final double kmmAcceleration = 0.0;
+    public static final double kmmJerk = 0.0;
+  }
 
   // Angles
   public static final double UP = 0.0;
-  // TODO: Find new DOWN angle after hard-stop cushioning
-  public static final double DOWN = 17.8818359375; // Mechanical down limit
-  public static final double BUMP = DOWN / 2;
+  public static final double DOWN = 17.8818359375; // TODO: Find new DOWN angle after hard-stop cushioning
+  public static final double MIDDLE = DOWN / 2;
+  public static final double BUMP = MIDDLE;
+  // Points at which the slapdown succumbs to gravity
+  public static final double TIPPING_POINT = MIDDLE;
+  public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;
+  public static final double TIP_TOWARD_DEPLOY = TIPPING_POINT + 2;
 
   // % Duty-Cycle
   public static final double INTAKE_MOTOR_SPEED = 0.60;
@@ -40,7 +62,45 @@ public final class IntakeConstants {
   // Amps
   public static final double DEPLOY_TORQUE_CURRENT = 10.0;
   public static final double STOW_TORQUE_CURRENT = -18.0;
-  public static final double MAX_TORQUE_DUTYCYCLE = 60.0;
-
+  private static final double m_MaxTorqueDutyCycle = 60.0;
+  
   public static final double INTAKE_DELAY_SECONDS = 2.0; // placeholder until tested
+  
+  public static final double intakeMaxAngle =
+  Units.degreesToRadians(0); // TODO set the max and min angle
+  public static final double intakeMinAngle =
+  Units.degreesToRadians(0); // TODO set the max and min angle
+  
+  public static final String kintakeTableKey = "Intake/";
+  public static final String kdeployTableKey = kintakeTableKey + "Deploy/";
+  public static final String kstowTableKey = kintakeTableKey + "Stow/";
+  // Tunables
+  // Intake roller
+  public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
+      new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_MaxTorqueDutyCycle);
+  // Deploy
+  public static final LoggedTunableNumber deploySpeed =
+      new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOY_SPEED);
+  public static final LoggedTunableNumber kdeployP =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployP", DeployConfigs.kP);
+  public static final LoggedTunableNumber kdeployI =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployI", DeployConfigs.kI);
+  public static final LoggedTunableNumber kdeployD =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployD", DeployConfigs.kD);
+  public static final LoggedTunableNumber kdeployFF =
+      new LoggedTunableNumber(kdeployTableKey + "kdeployFF", DeployConfigs.kFF);
+  // Stow
+  public static final LoggedTunableNumber kstowP =
+      new LoggedTunableNumber(kstowTableKey + "kstowP", StowConfigs.kP);
+  public static final LoggedTunableNumber kstowI =
+      new LoggedTunableNumber(kstowTableKey + "kstowI", StowConfigs.kI);
+  public static final LoggedTunableNumber kstowD =
+      new LoggedTunableNumber(kstowTableKey + "kstowD", StowConfigs.kD);
+  public static final LoggedTunableNumber kstowFF =
+      new LoggedTunableNumber(kstowTableKey + "kstowFF", StowConfigs.kFF);
+  public static final LoggedTunableNumber kstowMMAcceleration =
+      new LoggedTunableNumber(kstowTableKey + "kstowMMAcceleration", StowConfigs.kmmAcceleration);
+  public static final LoggedTunableNumber kstowMMJerk =
+      new LoggedTunableNumber(kstowTableKey + "kstowMMJerk", StowConfigs.kmmJerk);
+
 }

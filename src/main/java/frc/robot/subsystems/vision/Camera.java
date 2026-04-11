@@ -20,6 +20,11 @@ public class Camera {
   private final CameraIO io;
   @Getter private final Pose3d cameraOffset;
   @Getter private final String name;
+  /**
+   * Network table key (e.g., {@code "Vision/Cameras/limelight-left"})
+   * @see edu.wpi.first.wpilibj.smartdashboard.SmartDashboard SmartDashboard
+   */
+  @Getter private final String tableKey;
   @Getter private final CameraType cameraType;
   @Getter private final double horizontalFOV;
   @Getter private final double verticalFOV;
@@ -55,6 +60,7 @@ public class Camera {
     io.setCameraOffset(offset);
     this.cameraOffset = new Pose3d(offset.getTranslation(), offset.getRotation());
     this.name = io.getName();
+    this.tableKey = io.getTableKey();
     this.cameraType = io.getCameraType();
     this.horizontalFOV = horizontalFOV;
     this.verticalFOV = verticalFOV;
@@ -89,6 +95,7 @@ public class Camera {
     this.io = io;
     this.cameraOffset = new Pose3d();
     this.name = name;
+    this.tableKey = io.getTableKey();
     this.cameraType = io.getCameraType();
     this.horizontalFOV = horizontalFOV;
     this.verticalFOV = verticalFOV;
