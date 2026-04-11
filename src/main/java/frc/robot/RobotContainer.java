@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -236,7 +237,10 @@ public class RobotContainer {
     roller.setDefaultCommand(roller.stopRollerMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
     intake.setDefaultCommand(intake.stopIntake());
-    shooter.setDefaultCommand(shooter.coastShooterDefaultCommand()); // TODO: See why coast doesn't run even while isShooterBelowCoastRPM is true
+    shooter.setDefaultCommand(new ConditionalCommand(
+                shooter.runIdleCommand().withTimeout(Constants.loopPeriodSecs * 3), 
+                shooter.stopAndCoastShooter().withTimeout(Constants.loopPeriodSecs * 3), // Needs to be greater than 1
+                () -> shooter.isShooterBelowCoastRPM().getAsBoolean())); // Necessary redundancy (for some reason)
     // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
     // TODO: Prevent driving to zero repeatedly after first successful iteraton. Ready to test.
     // TODO: Idea: "andThen" run "stopHood" indefinitely until interrupted (only if initially zeroed)
@@ -351,9 +355,11 @@ public class RobotContainer {
                 Commands.waitUntil(hood.isHoodAtAngle())
                     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
                 Commands.waitUntil(shooter.isShooterAtVelocity())
-                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
-            Commands.parallel(
-                roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT))
+            // Commands.parallel(
+                // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY: V3-ify intake pulse
+                // roller.startRollerMotors(), kicker.runKickerMotor())
+                ));
   }
 
   public Command shootWithAim() {

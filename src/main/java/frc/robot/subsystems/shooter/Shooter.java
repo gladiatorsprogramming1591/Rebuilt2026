@@ -25,9 +25,10 @@ public class Shooter extends SubsystemBase {
 
   public Shooter(ShooterIO io) {
     this.io = io;
-    if (Constants.tuningMode) {SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);}
+    if (Constants.tuningMode) {
+      SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);
+    }
     SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + "below coast RPM", true);
-    SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Duty-cycle", 0.0);
   }
 
   @Override
@@ -45,12 +46,10 @@ public class Shooter extends SubsystemBase {
     outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
     outputs.kMMJerk = ShooterConstants.kMMJerk.getAsDouble();
 
-    if (Constants.tuningMode) {io.tuneMotorConfigs(outputs);}
-
-    boolean doApplyOutputs = true;
-    if (RobotState.getShooterMode() == ShooterModeState.DUTYCYCLE) {
-      doApplyOutputs = false;
+    if (Constants.tuningMode) {
+      io.tuneMotorConfigs(outputs);
     }
+
     if (ShooterConstants.isLowCeiling && RobotState.getShooterMode() == ShooterModeState.ON) {
       outputs.desiredVelocityRPM =
           MathUtil.clamp(
@@ -60,15 +59,13 @@ public class Shooter extends SubsystemBase {
     }
 
     Logger.recordOutput(ShooterConstants.SHOOTER_TABLE_KEY + "Desired Velocity RPM", outputs.desiredVelocityRPM);
+    Logger.recordOutput(ShooterConstants.SHOOTER_TABLE_KEY + "Desired Duty-Cycle", outputs.desiredDutyCycle);
     SmartDashboard.putString(ShooterConstants.SHOOTER_TABLE_KEY + "Shooter Mode", RobotState.getShooterMode().toString());
-    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "DoApplyOutputs", doApplyOutputs);
     SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
     SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "below coast RPM", isShooterBelowCoastRPM().getAsBoolean());
     SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "hasSpeedTargetChanged", hasSpeedTargetChanged);
 
-    if (doApplyOutputs) {
-      io.applyOutputs(outputs);
-    }
+    io.applyOutputs(outputs);
   }
 
   public Command runIdleCommand() {
@@ -93,6 +90,18 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  public Command stopAndCoastShooter() {
+    return run(
+        () -> {
+          if (RobotState.getShooterMode() != ShooterModeState.OFF) {
+            hasSpeedTargetChanged = true;
+          }
+          RobotState.setShooterMode(ShooterModeState.OFF);
+          outputs.desiredVelocityRPM = 0.0;
+          outputs.desiredDutyCycle = 0.0;
+        });
+  }
+
   public Command runShooterTarget() {
     return run(
         () -> {
@@ -100,29 +109,20 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.ON);
-          // outputs.velocityRPM = shootRPM.getAsDouble();
           double flywheelRPM = ShooterCalculation.getInstance().getParameters().flywheelSpeed();
-          outputs.desiredVelocityRPM =
-              MathUtil.clamp(flywheelRPM, 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
+          outputs.desiredVelocityRPM = MathUtil.clamp(flywheelRPM, 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
         });
   }
 
   public Command runShooterDutyCycle(double dutyCycle) {
-    SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Duty-cycle", dutyCycle);
     return run(
         () -> {
+          if (RobotState.getShooterMode() != ShooterModeState.DUTYCYCLE) {
+            hasSpeedTargetChanged = true;
+          }
           RobotState.setShooterMode(ShooterModeState.DUTYCYCLE);
-          io.runShooterDutyCycle(dutyCycle);
+          outputs.desiredDutyCycle = dutyCycle;
         });
-  }
-
-  /**
-   * Set duty-cycle to 0 to allow shooter to coast down to zero.
-   * @return
-   */
-  public Command stopAndCoastShooter()
-  {
-    return runShooterDutyCycle(0);
   }
 
   public ConditionalCommand coastShooterDefaultCommand()

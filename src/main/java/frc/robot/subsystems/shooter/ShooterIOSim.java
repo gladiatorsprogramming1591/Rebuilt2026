@@ -17,7 +17,7 @@ public class ShooterIOSim implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.LF_RPS = inputs.LL_RPS = inputs.RF_RPS = inputs.RL_RPS = shooterRPS;
+    inputs.RPS_LF = inputs.RPS_LL = inputs.RPS_RF = inputs.RPS_RL = shooterRPS;
     inputs.shooterAtVelocity = true;
   }
 

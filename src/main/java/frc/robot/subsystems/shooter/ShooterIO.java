@@ -10,26 +10,30 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
   @AutoLog
   public static class ShooterIOInputs {
-    public double RL_RPS;
-    public double RF_RPS;
-    public double LL_RPS;
-    public double LF_RPS;
-    public double RL_appliedVolts;
-    public double RF_appliedVolts;
-    public double LL_appliedVolts;
-    public double LF_appliedVolts;
-    public double RL_motorTemp;
-    public double RF_motorTemp;
-    public double LL_motorTemp;
-    public double LF_motorTemp;
-    public double RL_supplyCurrent;
-    public double RF_supplyCurrent;
-    public double LL_supplyCurrent;
-    public double LF_supplyCurrent;
-    public double RL_torqueCurrentAmps;
-    public double RF_torqueCurrentAmps;
-    public double LL_torqueCurrentAmps;
-    public double LF_torqueCurrentAmps;
+    public double RPS_RL;
+    public double RPS_RF;
+    public double RPS_LL;
+    public double RPS_LF;
+    public double RPM_RL;
+    public double RPM_RF;
+    public double RPM_LL;
+    public double RPM_LF;
+    public double appliedVolts_RL;
+    public double appliedVolts_RF;
+    public double appliedVolts_LL;
+    public double appliedVolts_LF;
+    public double motorTemp_RL;
+    public double motorTemp_RF;
+    public double motorTemp_LL;
+    public double motorTemp_LF;
+    public double supplyCurrent_RL;
+    public double supplyCurrent_RF;
+    public double supplyCurrent_LL;
+    public double supplyCurrent_LF;
+    public double torqueCurrentAmps_RL;
+    public double torqueCurrentAmps_RF;
+    public double torqueCurrentAmps_LL;
+    public double torqueCurrentAmps_LF;
     public boolean shooterAtVelocity;
   }
 

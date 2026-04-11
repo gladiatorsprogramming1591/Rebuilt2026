@@ -116,8 +116,8 @@ public class Hood extends SubsystemBase {
   public Command runHoodToZero() {
     return new ConditionalCommand(
       // On true
-      stopHoodContinuously(), // Indefinitely stops hood until inturrupted
-      // stopHoodOnce(),
+      // stopHoodContinuously(), // Indefinitely stops hood until inturrupted
+      stopHoodOnce(),
       // On false
       new SequentialCommandGroup(
         runOnce(() -> 

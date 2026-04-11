@@ -27,7 +27,7 @@ public class ShooterConstants {
   public static final double FLYWHEEL_LOW_CEILING_SCALER = 2 / 3;
   
   private static final double m_ShootFixedRPM = 2000.0;
-  private static final double m_CoastRPM = 750.0;
+  private static final double m_CoastRPM = 600.0; // 750
 
   private static final double m_P = 0.45; // An error of 1 rps results in <0.45> V output. P above 0.50 causes oscillation
   private static final double m_I = 0.0; // no output for integrated error

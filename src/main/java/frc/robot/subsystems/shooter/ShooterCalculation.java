@@ -139,6 +139,7 @@ public class ShooterCalculation {
     passingMaxDistance = 17.16;
     phaseDelay = 0.03;
 
+    // TODO: 43rd TODO: MAKE THESE TUNABLE
     hoodAngleMap.put(0.0, 50.0);
     hoodAngleMap.put(1.46, 70.0); // 50
     hoodAngleMap.put(1.73, 70.0); // 60
@@ -175,9 +176,9 @@ public class ShooterCalculation {
     passingHoodAngleMap.put(3.40, 700.0);
     passingHoodAngleMap.put(4.275, 700.0); // Bumper against bump 
     passingHoodAngleMap.put(5.46, 800.0); // 240
-    passingHoodAngleMap.put(6.62, 800.0); // 400
-    passingHoodAngleMap.put(7.80, 800.0); // 500
-    passingHoodAngleMap.put(17.16, 800.0); // 500
+    passingHoodAngleMap.put(6.62, 950.0); // 400
+    passingHoodAngleMap.put(7.80, 1000.0); // 500
+    passingHoodAngleMap.put(17.16, 1009.0); // 500 1009 is approx max
 
     passingFlywheelSpeedMap.put(3.40, 1700.0); // 800
     passingFlywheelSpeedMap.put(4.275, 1700.0); // Bumper against bump

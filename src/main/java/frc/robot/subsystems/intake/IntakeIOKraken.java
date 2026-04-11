@@ -13,6 +13,8 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -54,11 +56,17 @@ public class IntakeIOKraken implements IntakeIO {
   private final double tunedConfigTimeout = 0.100; // Equivalent to default timeout
   private final int initConfigMaxAttempts = 5;
   private final int tunedConfigMaxAttempts = 2;
+  private int tuneConfigsCreated = 0;
   private double rawStowPosition = 0.0;
+  private double rawDeployPosition = 0.0;
   private double encoderOffset = 0.0;
   private double angleWithOffset = 0.0;
 
   public IntakeIOKraken() {
+    SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", 0);
+    SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", "N/A");
+    SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", "N/A");
+    SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", "N/A");
     if (Constants.tuningMode)
     {
       SmartDashboard.putBoolean(kintakeTableKey + updateDeployConfigName, false);
@@ -155,7 +163,7 @@ public class IntakeIOKraken implements IntakeIO {
       inputs.encoderOffset = encoderOffset;
     } else {
       if (inputs.isDeployDown) {
-
+        rawDeployPosition = rawAngle; // TODO: Use this to update offset and/or clamp position output
       }
     }
     angleWithOffset = rawAngle + encoderOffset;
@@ -272,6 +280,11 @@ public class IntakeIOKraken implements IntakeIO {
       MotionMagicConfigs mm = configs.MotionMagic;
       mm.MotionMagicAcceleration = outputs.kstowMMAcceleration;
       mm.MotionMagicJerk = outputs.kstowMMJerk;
+
+      SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", ++tuneConfigsCreated);
+      SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", configs.Slot0.toString());
+      SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", configs.Slot1.toString());
+      SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", configs.MotionMagic.toString());
       return configs;
   }
 }

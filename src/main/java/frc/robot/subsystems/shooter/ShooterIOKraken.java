@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.coastRPM;
@@ -161,26 +162,30 @@ public class ShooterIOKraken implements ShooterIO {
         RF_torqueCurrentAmps,
         LL_torqueCurrentAmps,
         LF_torqueCurrentAmps);
-    inputs.RL_RPS = RL_RPS.getValueAsDouble();
-    inputs.RF_RPS = RF_RPS.getValueAsDouble();
-    inputs.LL_RPS = LL_RPS.getValueAsDouble();
-    inputs.LF_RPS = LF_RPS.getValueAsDouble();
-    inputs.RL_appliedVolts = RL_appliedVolts.getValueAsDouble();
-    inputs.RF_appliedVolts = RF_appliedVolts.getValueAsDouble();
-    inputs.LL_appliedVolts = LL_appliedVolts.getValueAsDouble();
-    inputs.LF_appliedVolts = LF_appliedVolts.getValueAsDouble();
-    inputs.RL_motorTemp = RL_motorTemp.getValueAsDouble();
-    inputs.RF_motorTemp = RF_motorTemp.getValueAsDouble();
-    inputs.LL_motorTemp = LL_motorTemp.getValueAsDouble();
-    inputs.LF_motorTemp = LF_motorTemp.getValueAsDouble();
-    inputs.RL_supplyCurrent = RL_supplyCurrent.getValueAsDouble();
-    inputs.RF_supplyCurrent = RF_supplyCurrent.getValueAsDouble();
-    inputs.LL_supplyCurrent = LL_supplyCurrent.getValueAsDouble();
-    inputs.LF_supplyCurrent = LF_supplyCurrent.getValueAsDouble();
-    inputs.RL_torqueCurrentAmps = RL_torqueCurrentAmps.getValueAsDouble();
-    inputs.RF_torqueCurrentAmps = RF_torqueCurrentAmps.getValueAsDouble();
-    inputs.LL_torqueCurrentAmps = LL_torqueCurrentAmps.getValueAsDouble();
-    inputs.LF_torqueCurrentAmps = LF_torqueCurrentAmps.getValueAsDouble();
+    inputs.RPS_RL = RL_RPS.getValueAsDouble();
+    inputs.RPS_RF = RF_RPS.getValueAsDouble();
+    inputs.RPS_LL = LL_RPS.getValueAsDouble();
+    inputs.RPS_LF = LF_RPS.getValueAsDouble();
+    inputs.RPM_RL = RL_RPS.getValueAsDouble() * 60;
+    inputs.RPM_RF = RF_RPS.getValueAsDouble() * 60;
+    inputs.RPM_LL = LL_RPS.getValueAsDouble() * 60;
+    inputs.RPM_LF = LF_RPS.getValueAsDouble() * 60;
+    inputs.appliedVolts_RL = RL_appliedVolts.getValueAsDouble();
+    inputs.appliedVolts_RF = RF_appliedVolts.getValueAsDouble();
+    inputs.appliedVolts_LL = LL_appliedVolts.getValueAsDouble();
+    inputs.appliedVolts_LF = LF_appliedVolts.getValueAsDouble();
+    inputs.motorTemp_RL = RL_motorTemp.getValueAsDouble();
+    inputs.motorTemp_RF = RF_motorTemp.getValueAsDouble();
+    inputs.motorTemp_LL = LL_motorTemp.getValueAsDouble();
+    inputs.motorTemp_LF = LF_motorTemp.getValueAsDouble();
+    inputs.supplyCurrent_RL = RL_supplyCurrent.getValueAsDouble();
+    inputs.supplyCurrent_RF = RF_supplyCurrent.getValueAsDouble();
+    inputs.supplyCurrent_LL = LL_supplyCurrent.getValueAsDouble();
+    inputs.supplyCurrent_LF = LF_supplyCurrent.getValueAsDouble();
+    inputs.torqueCurrentAmps_RL = RL_torqueCurrentAmps.getValueAsDouble();
+    inputs.torqueCurrentAmps_RF = RF_torqueCurrentAmps.getValueAsDouble();
+    inputs.torqueCurrentAmps_LL = LL_torqueCurrentAmps.getValueAsDouble();
+    inputs.torqueCurrentAmps_LF = LF_torqueCurrentAmps.getValueAsDouble();
     inputs.shooterAtVelocity = rightShooterAtVelocity().getAsBoolean();
   }
 
@@ -190,21 +195,37 @@ public class ShooterIOKraken implements ShooterIO {
 
     SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Desired RPS", desiredRPS);
 
-    if (outputs.useMotionMagic)
-    {
-      rightShooterLeader.setControl(mmVelocityControl.withVelocity(desiredRPS));
-      SmartDashboard.putString(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, MotionMagicVelocityVoltage.class.getName());
-    } else
-    {
-      rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
-      SmartDashboard.putString(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, VelocityVoltage.class.getName());
+    switch (RobotState.getShooterMode()) {
+      case ON: case IDLE:
+        if (outputs.useMotionMagic)
+        {
+          rightShooterLeader.setControl(mmVelocityControl.withVelocity(desiredRPS));
+          SmartDashboard.putString(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, MotionMagicVelocityVoltage.class.getName());
+        } else
+        {
+          rightShooterLeader.setControl(velocityControl.withVelocity(desiredRPS));
+          SmartDashboard.putString(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, VelocityVoltage.class.getName());
+        }
+        break;
+
+      case DUTYCYCLE:
+        rightShooterLeader.set(outputs.desiredDutyCycle);
+        break;
+
+      case OFF:
+        rightShooterLeader.stopMotor();
+        break;
+
+      default:
+        System.out.println("Shooter Apply Outputs Empty Default");
+        break;
     }
   }
 
-  @Override
-  public void runShooterDutyCycle(double dutyCycle) {
-    rightShooterLeader.set(dutyCycle);
-  }
+  // @Override
+  // public void runShooterDutyCycle(double dutyCycle) {
+  //   rightShooterLeader.set(dutyCycle);
+  // }
 
   @Override
   public BooleanSupplier rightShooterAtVelocity() {
