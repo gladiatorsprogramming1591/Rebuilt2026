@@ -25,6 +25,8 @@ V3 Integration:
 - Autos
     - First rush to NZ should have rotation slightly biased towards AZ to protect intake in event of bot-to-bot collision
 
+- Loop overruns: look up in "Visual VM" tool in WPILib track down issue
+
 #### Code Refactor:
 - Consider renaming rollers and deploy to better reflect V3
 - Ensure inputs/outputs are being used/updated/logged properly across subsystems' IO, Real, and Sim
