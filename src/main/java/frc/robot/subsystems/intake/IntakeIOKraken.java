@@ -14,27 +14,27 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj2.command.InstantCommand;
-// import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
-  private final TalonFX intakeLeft = new TalonFX(IntakeConstants.ROLLER_LEFT);
-  private final TalonFX intakeRight = new TalonFX(IntakeConstants.ROLLER_RIGHT);
-  private final TalonFX deployMotor = new TalonFX(IntakeConstants.SLAPDOWN_ID);
+  private final TalonFX rollerLeftMotor = new TalonFX(IntakeConstants.ROLLER_LEFT);
+  private final TalonFX rollerRightMotor = new TalonFX(IntakeConstants.ROLLER_RIGHT);
+  private final TalonFX slapdownMotor = new TalonFX(IntakeConstants.SLAPDOWN_ID);
   private final DigitalInput topLimit = new DigitalInput(IntakeConstants.TOP_SLAPDOWN_DIO_PORT);
   private final DigitalInput bottomLimit = new DigitalInput(IntakeConstants.BOTTOM_SLAPDOWN_DIO_PORT);
-  // private final Trigger zeroTrigger = new Trigger(() -> bottomLimit.get() == false);
-  // private final Trigger deployedTrigger = new Trigger(() -> topLimit.get() == false);
+  private final Trigger zeroTrigger;
+  private final Trigger deployedTrigger;
   private final int stowSlot = 0;
   private final int deploySlot = 1;
   private final PositionTorqueCurrentFOC torquePositionControl =
@@ -42,20 +42,24 @@ public class IntakeIOKraken implements IntakeIO {
   private final TorqueCurrentFOC torqueDutyCycleControl =
       new TorqueCurrentFOC(0.0).withDeadband(1.0);
 
-  private final StatusSignal<Angle> deployAngle = deployMotor.getPosition();
-  private final StatusSignal<Current> deploySupplyCurrent = deployMotor.getSupplyCurrent();
-  private final StatusSignal<Current> deployTorqueCurrent = deployMotor.getTorqueCurrent();
-  private final StatusSignal<AngularVelocity> deployAngularVelocity = deployMotor.getVelocity();
-  private final StatusSignal<Temperature> intakeLeftTemp = intakeLeft.getDeviceTemp();
-  private final StatusSignal<Temperature> intakeRightTemp = intakeRight.getDeviceTemp();
-  private final StatusSignal<AngularVelocity> intakeLeftAngularVelocity = intakeLeft.getVelocity();
-  private final StatusSignal<AngularVelocity> intakeRightAngularVelocity = intakeRight.getVelocity();
+  private final StatusSignal<Angle> deployAngle = slapdownMotor.getPosition();
+  private final StatusSignal<Current> deploySupplyCurrent = slapdownMotor.getSupplyCurrent();
+  private final StatusSignal<Current> deployTorqueCurrent = slapdownMotor.getTorqueCurrent();
+  private final StatusSignal<AngularVelocity> deployAngularVelocity = slapdownMotor.getVelocity();
+  private final StatusSignal<Temperature> intakeLeftTemp = rollerLeftMotor.getDeviceTemp();
+  private final StatusSignal<Temperature> intakeRightTemp = rollerRightMotor.getDeviceTemp();
+  private final StatusSignal<AngularVelocity> intakeLeftAngularVelocity = rollerLeftMotor.getVelocity();
+  private final StatusSignal<AngularVelocity> intakeRightAngularVelocity = rollerRightMotor.getVelocity();
   
   private static final String updateDeployConfigName = "Update Deploy Configs";
   private final double initConfigTimeout = 0.250;
   private final double tunedConfigTimeout = 0.100; // Equivalent to default timeout
+  private final double encoderConfigTimeout = 0.100;
   private final int initConfigMaxAttempts = 5;
   private final int tunedConfigMaxAttempts = 2;
+  private final int encoderConfigMaxAttempts = 2;
+  private int seedZeroCount = 0;
+  private int seedDeployCount = 0;
   private int tuneConfigsCreated = 0;
   private double rawStowPosition = 0.0;
   private double rawDeployPosition = 0.0;
@@ -81,8 +85,8 @@ public class IntakeIOKraken implements IntakeIO {
     intakeLeftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // i.e. not inverted
     var intakeRightConfig = intakeLeftConfig.clone();
     intakeRightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> intakeRight.getConfigurator().apply(intakeRightConfig, initConfigTimeout));
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> intakeLeft.getConfigurator().apply(intakeLeftConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rollerRightMotor.getConfigurator().apply(intakeRightConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> rollerLeftMotor.getConfigurator().apply(intakeLeftConfig, initConfigTimeout));
     // PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> intakeLeftLeader.getConfigurator()
     //   .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(0.5)));
     // Find out why follower doesn't update with output fast enough
@@ -115,7 +119,7 @@ public class IntakeIOKraken implements IntakeIO {
     stowMMConfigs.MotionMagicAcceleration = IntakeConstants.StowConfigs.kmmAcceleration;
     stowMMConfigs.MotionMagicJerk = IntakeConstants.StowConfigs.kmmJerk;
 
-    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(deployConfig, initConfigTimeout));
+    PhoenixUtil.tryUntilOk(initConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(deployConfig, initConfigTimeout));
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         IntakeConstants.STATUS_SIGNAL_UPDATE_FREQUENCY,
@@ -128,9 +132,15 @@ public class IntakeIOKraken implements IntakeIO {
         intakeLeftAngularVelocity,
         intakeRightAngularVelocity);
 
-    deployMotor.optimizeBusUtilization();
-    intakeLeft.optimizeBusUtilization();
-    intakeRight.optimizeBusUtilization();
+    slapdownMotor.optimizeBusUtilization();
+    rollerLeftMotor.optimizeBusUtilization();
+    rollerRightMotor.optimizeBusUtilization();
+
+    zeroTrigger = new Trigger(topLimit::get);
+    deployedTrigger = new Trigger(bottomLimit::get);
+
+    zeroTrigger.onFalse(seedSlapdownPositionToZero());
+    deployedTrigger.onFalse(seedSlapdownPositionToDeploy());
   }
 
   @Override
@@ -179,12 +189,12 @@ public class IntakeIOKraken implements IntakeIO {
 
     if (outputs.appliedRollerSpeed == IntakeConstants.ROLLER_PICKUP_SPEED)
     {
-      intakeLeft.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
-      intakeRight.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
+      rollerLeftMotor.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
+      rollerRightMotor.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
     } else
     {
-      intakeLeft.set(outputs.appliedRollerSpeed);
-      intakeRight.set(outputs.appliedRollerSpeed);
+      rollerLeftMotor.set(outputs.appliedRollerSpeed);
+      rollerRightMotor.set(outputs.appliedRollerSpeed);
     }
 
     switch (RobotState.getSlapdownMode()) {
@@ -206,11 +216,11 @@ public class IntakeIOKraken implements IntakeIO {
         break;
 
       case SPEED:
-        deployMotor.set(outputs.appliedSlapdownSpeed);
+        slapdownMotor.set(outputs.appliedSlapdownSpeed);
         break;
 
       case OFF:
-        deployMotor.stopMotor();
+        slapdownMotor.stopMotor();
         break;
 
       default:
@@ -221,11 +231,27 @@ public class IntakeIOKraken implements IntakeIO {
 
   // TODO: Add deadband and/or coast when passing tip-point angle
   private void slapToPosition(int slot, double position, double kFF) {
-    deployMotor.setControl(
+    slapdownMotor.setControl(
         torquePositionControl
             .withPosition(position + rawStowPosition) // Undoes offset only during control
             .withSlot(slot)
             .withFeedForward(kFF));
+  }
+
+  private Command seedSlapdownPositionToZero() {
+    return new InstantCommand(() -> {
+      PhoenixUtil.tryUntilOk(encoderConfigMaxAttempts, () -> slapdownMotor.setPosition(IntakeConstants.UP));
+      System.out.println("Seed Slapdown To Zero Count: " + ++seedZeroCount);
+    }
+    );
+  }
+
+  private Command seedSlapdownPositionToDeploy() {
+    return new InstantCommand(() -> {
+      PhoenixUtil.tryUntilOk(encoderConfigMaxAttempts, () -> slapdownMotor.setPosition(IntakeConstants.DOWN));
+      System.out.println("Seed Slapdown To Deploy Count: " + ++seedDeployCount);
+    }
+    );
   }
 
   @Override
@@ -239,9 +265,9 @@ public class IntakeIOKraken implements IntakeIO {
       Slot0Configs slot0 = tunedConfigs.Slot0;
       Slot1Configs slot1 = tunedConfigs.Slot1;
       MotionMagicConfigs mm = tunedConfigs.MotionMagic;
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot0, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot1, tunedConfigTimeout));
-      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(mm, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(slot0, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(slot1, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(mm, tunedConfigTimeout));
     }
   }
 

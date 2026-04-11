@@ -2,21 +2,21 @@ High Priority:
 --------------
 V3 Integration:
 --------------
-- Deploy function without up/down sensors
-    - Deploy seed pos if down
-- Test hood default command: Investigate why it either works or not at all between code deploys
-- Shooter coast to idle
-    - Shooter modes in applyOutputs
+### On Deck
+- Deploy seed pos if down
+- Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
 
+
+===============================================
+
+- Hood: Investigate why it either works or not at all between code deploys
 - Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
     - Tune motor configs to prep to shoot faster
 
 - Intake
     - Ideas for smoother slapdown functions
         - See if kG is suitable: kG increase as angle approaches deploy intake to slow down
-        - Use multiple slots: less intense P as angle approaches drop-point (due to gravity)
         - Simplest: Only apply output up until angle exceeds pre-defined drop-point angle; let gravity do the rest
-        - Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
     - Handle chain skipping on deploy. since it pushes 0 (stow) out more, it prevents reaching DIO limit which prevents 0'ing
         - Idea: constant unsubstantial output in appropiate direction until DIO triggered. (Above tasks may fix this anyway)
         - Idea: clamp angle to never fall outside of 0.0 and DOWN range (by manipulating offset)
@@ -110,7 +110,10 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Shooter coast to idle
+    - Shooter modes in applyOutputs
 - V3 Intake:
+    - Deploy function without up/down sensors
     - Consider adding DIO invertion (refer to ShooterIOKraken)
     - Deploy: negative output stows intake up
         - Limit Extent: DIO <?>
