@@ -187,10 +187,11 @@ public class Vision extends SubsystemBase {
    * @param c candidate to feed
    */
   private void feedFieldEstimate(VisionCandidate c) {
-    RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev());
+    RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev(), c.rotStdDev());
     Logger.recordOutput("Vision/FusedPose", c.pose());
     Logger.recordOutput("Vision/FusedTimestamp", c.timestampSec());
     Logger.recordOutput("Vision/FusedXYStd", c.xyStdDev());
+    Logger.recordOutput("Vision/FusedRotStd", c.rotStdDev());
   }
 
   /**
@@ -289,6 +290,7 @@ public class Vision extends SubsystemBase {
     // Trust yaw for multi-tag; else replace yaw with fused yaw (254 single-tag + gyro fusion idea).
     boolean trustYaw = pe.tagCount >= 2;
     Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
+    double rotStd = 9999;
 
     SmartDashboard.putNumber(cam.getTableKey() + "xyStd", xyStd);
     SmartDashboard.putNumber(cam.getTableKey() + "out.x", out.getX());
@@ -299,12 +301,13 @@ public class Vision extends SubsystemBase {
     // Logging (1678/254 style telemetry hygiene)
     Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out);
     Logger.recordOutput("Vision/CandidateXYStd/" + cam.getName(), xyStd);
+    Logger.recordOutput("Vision/CandidateRotStd/" + cam.getName(), rotStd);
     Logger.recordOutput("Vision/CandidateTags/" + cam.getName(), pe.tagCount);
     int[] ids =
         (pe.rawFiducials == null)
             ? new int[0]
             : Arrays.stream(pe.rawFiducials).filter(f -> f != null).mapToInt(f -> f.id).toArray();
-    return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, trustYaw, ids));
+    return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, trustYaw, rotStd, ids));
   }
 
   /**
@@ -339,6 +342,7 @@ public class Vision extends SubsystemBase {
     double xyStd = cam.getPrimaryXYStandardDeviationCoefficient() * modeled;
 
     Pose2d out = (yawNow != null) ? new Pose2d(pe.pose.getTranslation(), yawNow) : pe.pose;
+    double rotStd = 9999;
 
     int[] ids =
         (pe.rawFiducials == null)
@@ -347,7 +351,7 @@ public class Vision extends SubsystemBase {
                 .filter(f -> f != null)
                 .mapToInt(f -> f.id)
                 .toArray();
-    return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, false, ids));
+    return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, false, rotStd, ids));
   }
 
   /**
@@ -430,22 +434,19 @@ public class Vision extends SubsystemBase {
     Pose2d fusedPose = new Pose2d(x, y, heading);
     double fusedStd = Math.sqrt(1.0 / (wAx + wBx));
     double t = b.timestampSec();
+    double rotStd = a.trustYaw() && b.trustYaw() ? fusedStd : 9999.0;
 
-    // Log a 3-vector for downstream debuggers (254 shows covariance-ish logging)
-    Matrix<N3, N1> fusedStdN3 =
-        VecBuilder.fill(fusedStd, fusedStd, a.trustYaw() && b.trustYaw() ? fusedStd : 9999.0);
-    // Logger.recordOutput("Vision/Fuse/stdN3", fusedStdN3); // Error at org.littletonrobotics.junction.LogTable.put(LogTable.java:799): [AdvantageKit] Auto serialization is not supported for type Vector
-    SmartDashboard.putNumberArray("Vision/Fuse/stdN3", fusedStdN3.getData());
-    SmartDashboard.putBoolean("Vision/Fuse/a.trustYaw", a.trustYaw);
-    SmartDashboard.putBoolean("Vision/Fuse/b.trustYaw", b.trustYaw);
-    SmartDashboard.putNumber("Vision/Fuse/fusedStd", fusedStd);
+    Logger.recordOutput("Vision/Fuse/a.trustYaw", a.trustYaw);
+    Logger.recordOutput("Vision/Fuse/b.trustYaw", b.trustYaw);
+    Logger.recordOutput("Vision/Fuse/fusedStd", fusedStd);
+    Logger.recordOutput("Vision/Fuse/rotStd", rotStd);
 
     int[] fusedIds =
         IntStream.concat(Arrays.stream(a.tagIds()), Arrays.stream(b.tagIds()))
             .distinct() // keep if you want unique IDs
             .toArray();
 
-    return new VisionCandidate(fusedPose, t, fusedStd, a.trustYaw() && b.trustYaw(), fusedIds);
+    return new VisionCandidate(fusedPose, t, fusedStd, a.trustYaw() && b.trustYaw(), rotStd, fusedIds);
   }
 
   /**
@@ -459,5 +460,5 @@ public class Vision extends SubsystemBase {
 
   /** Immutable per-camera candidate (already pre-fused for that camera). */
   private static record VisionCandidate(
-      Pose2d pose, double timestampSec, double xyStdDev, boolean trustYaw, int[] tagIds) {}
+      Pose2d pose, double timestampSec, double xyStdDev, boolean trustYaw, double rotStdDev, int[] tagIds) {}
 }
