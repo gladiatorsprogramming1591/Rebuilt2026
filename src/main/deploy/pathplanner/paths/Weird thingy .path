@@ -61,13 +61,23 @@
       "name": "Lower Hood And Stop Shooting",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Hood And Stop Shooting"
+        }
+      }
     },
     {
       "name": "Prepare Intake",
-      "waypointRelativePos": 0.5624103299856824,
+      "waypointRelativePos": 0.9561107359891924,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
     }
   ],
   "globalConstraints": {
