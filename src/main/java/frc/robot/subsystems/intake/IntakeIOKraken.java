@@ -7,6 +7,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -269,14 +270,20 @@ public class IntakeIOKraken implements IntakeIO {
       slot0.kP = outputs.kstowP;
       slot0.kI = outputs.kstowI;
       slot0.kD = outputs.kstowD;
-      slot0.kS = outputs.kstowFF;
+      slot0.kG = outputs.kstowG;
       
       Slot1Configs slot1 = configs.Slot1;
       slot1.kP = outputs.kdeployP;
       slot1.kI = outputs.kdeployI;
       slot1.kD = outputs.kdeployD;
-      slot1.kS = outputs.kdeployFF;
+      slot1.kG = outputs.kdeployG;
 
+      Slot2Configs slot2 = configs.Slot2;
+      slot2.kP = outputs.kstowFullP;
+      slot2.kI = outputs.kstowFullI;
+      slot2.kD = outputs.kstowFullD;
+      slot2.kG = outputs.kstowFullG;
+      
       MotionMagicConfigs mm = configs.MotionMagic;
       mm.MotionMagicAcceleration = outputs.kstowMMAcceleration;
       mm.MotionMagicJerk = outputs.kstowMMJerk;
