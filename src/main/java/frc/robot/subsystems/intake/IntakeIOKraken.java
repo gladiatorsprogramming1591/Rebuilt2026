@@ -38,6 +38,7 @@ public class IntakeIOKraken implements IntakeIO {
   // private final Trigger deployedTrigger = new Trigger(() -> topLimit.get() == false);
   private final int stowSlot = 0;
   private final int deploySlot = 1;
+  private final int stowFullSlot = 2;
   private final PositionTorqueCurrentFOC torquePositionControl =
       new PositionTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC torqueDutyCycleControl =
@@ -67,6 +68,7 @@ public class IntakeIOKraken implements IntakeIO {
     SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", 0);
     SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", "N/A");
+    SmartDashboard.putString(kintakeTableKey + "Tune slot2 deploy created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", "N/A");
     if (Constants.tuningMode)
     {
@@ -102,13 +104,19 @@ public class IntakeIOKraken implements IntakeIO {
     stowSlot0.kP = IntakeConstants.StowConfigs.kP;
     stowSlot0.kI = IntakeConstants.StowConfigs.kI;
     stowSlot0.kD = IntakeConstants.StowConfigs.kD;
-    stowSlot0.kV = IntakeConstants.StowConfigs.kFF;
+    stowSlot0.kG = IntakeConstants.StowConfigs.kG;
     
     Slot1Configs deploySlot1 = deployConfig.Slot1;
     deploySlot1.kP = IntakeConstants.DeployConfigs.kP;
     deploySlot1.kI = IntakeConstants.DeployConfigs.kI;
     deploySlot1.kD = IntakeConstants.DeployConfigs.kD;
-    deploySlot1.kV = IntakeConstants.DeployConfigs.kFF;
+    deploySlot1.kG = IntakeConstants.DeployConfigs.kG;
+
+    Slot2Configs deploySlot2 = deployConfig.Slot2;
+    deploySlot2.kP = IntakeConstants.DeployConfigs.kP;
+    deploySlot2.kI = IntakeConstants.DeployConfigs.kI;
+    deploySlot2.kD = IntakeConstants.DeployConfigs.kD;
+    deploySlot2.kG = IntakeConstants.DeployConfigs.kG;
 
     // If stow and deploy benefit from having different MM configs, consider using DynamicMotionMagic
     // https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/motion-magic.html#dynamic-motion-magic
@@ -158,13 +166,13 @@ public class IntakeIOKraken implements IntakeIO {
     // stowedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.UP)));
     // deployedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.DOWN)));
     double rawAngle = deployAngle.getValueAsDouble();
-    if (inputs.isSlapdownUp) { // Re-zero when deploy is up
-      rawStowPosition = rawAngle;
+    if (inputs.isSlapdownDown) { // Re-zero when deploy is down (horizontal)
+      rawDeployPosition = rawAngle;
       encoderOffset = -rawAngle;
       inputs.encoderOffset = encoderOffset;
     } else {
-      if (inputs.isSlapdownDown) {
-        rawDeployPosition = rawAngle; // TODO: Use this to update offset and/or clamp position output
+      if (inputs.isSlapdownUp) {
+        rawStowPosition = rawAngle; // TODO: Use this to update offset and/or clamp position output
       }
     }
     angleWithOffset = rawAngle + encoderOffset;
@@ -199,11 +207,14 @@ public class IntakeIOKraken implements IntakeIO {
         break;
 
       case BUMP_POSITION:
+        slapToPosition(stowFullSlot, outputs.desiredPosition, outputs.kstowFullFF);
+      /*
         if (deployAngle.getValueAsDouble() < IntakeConstants.MIDDLE) {
           slapToPosition(deploySlot, outputs.desiredPosition, outputs.kdeployFF);
         } else {
           slapToPosition(stowSlot, outputs.desiredPosition, outputs.kstowFF);
         }
+      */
         break;
 
       case SPEED:
@@ -220,11 +231,11 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
-  // TODO: Add deadband and/or coast when passing tip-point angle
+  // TODO: Add deadband and/or coast when passing tip-point angle (might not need with kG)
   private void slapToPosition(int slot, double position, double kFF) {
     deployMotor.setControl(
         torquePositionControl
-            .withPosition(position + rawStowPosition) // Undoes offset only during control
+            .withPosition(position) // + rawStowPosition - Undoes offset only during control, removed when adding kG
             .withSlot(slot)
             .withFeedForward(kFF));
   }
@@ -239,9 +250,11 @@ public class IntakeIOKraken implements IntakeIO {
       TalonFXConfiguration tunedConfigs = createTunedDeployMotorConfig(outputs);
       Slot0Configs slot0 = tunedConfigs.Slot0;
       Slot1Configs slot1 = tunedConfigs.Slot1;
+      Slot2Configs slot2 = tunedConfigs.Slot2;
       MotionMagicConfigs mm = tunedConfigs.MotionMagic;
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot0, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot1, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot2, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(mm, tunedConfigTimeout));
     }
   }
@@ -252,8 +265,9 @@ public class IntakeIOKraken implements IntakeIO {
    * <ul>
    *  <li> <b>Updated Configurations:</b>
    *    <ul>
-          <li> {@code Slot0Configs}: Stowing P, I, D, and FF
-          <li> {@code Slot1Configs}: Deploying P, I, D, and FF
+          <li> {@code Slot0Configs}: Stowing P, I, D, G, and FF
+          <li> {@code Slot1Configs}: Deploying P, I, D, G, and FF
+          <li> {@code Slot2Configs}: Stowing when Full P, I, D, G, and FF
           <li> {@code MotionMagicConfigs}: Stowing Acceleration and Jerk
         </ul>
    * </ul>
@@ -291,6 +305,7 @@ public class IntakeIOKraken implements IntakeIO {
       SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", ++tuneConfigsCreated);
       SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", configs.Slot0.toString());
       SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", configs.Slot1.toString());
+      SmartDashboard.putString(kintakeTableKey + "Tune slot2 deploy created", configs.Slot2.toString());
       SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", configs.MotionMagic.toString());
       return configs;
   }
