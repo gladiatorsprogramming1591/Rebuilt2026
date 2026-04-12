@@ -177,8 +177,8 @@ public class Intake extends SubsystemBase {
     outputs.kstowI = IntakeConstants.kstowI.getAsDouble();
     outputs.kstowD = IntakeConstants.kstowD.getAsDouble();
     outputs.kstowFF = IntakeConstants.kstowFF.getAsDouble();
-    outputs.kstowMMAcceleration = IntakeConstants.kstowMMAcceleration.getAsDouble();
-    outputs.kstowMMJerk = IntakeConstants.kstowMMJerk.getAsDouble();
+    outputs.kstowMMAcceleration = IntakeConstants.kMMAcceleration.getAsDouble();
+    outputs.kstowMMJerk = IntakeConstants.kMMJerk.getAsDouble();
 
     Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getSlapdownMode().toString());
     Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedRollerSpeed);
