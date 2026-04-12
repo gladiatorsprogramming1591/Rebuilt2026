@@ -145,17 +145,17 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber hoodAngle3 =
       new LoggedTunableNumber("HoodAngleMap/1.73", 70.0); // 60
   private static final LoggedTunableNumber hoodAngle4 =
-      new LoggedTunableNumber("HoodAngleMap/2.18", 90.0);
+      new LoggedTunableNumber("HoodAngleMap/2.18", 100.0);
   private static final LoggedTunableNumber hoodAngle5 =
       new LoggedTunableNumber("HoodAngleMap/2.47", 120.0);
   private static final LoggedTunableNumber hoodAngle6 =
-      new LoggedTunableNumber("HoodAngleMap/2.70", 150.0); // 0.0
+      new LoggedTunableNumber("HoodAngleMap/2.70", 315.0); // 0.0
   private static final LoggedTunableNumber hoodAngle7 =
-      new LoggedTunableNumber("HoodAngleMap/2.94", 180.0);
+      new LoggedTunableNumber("HoodAngleMap/2.94", 330.0);
   private static final LoggedTunableNumber hoodAngle8 =
-      new LoggedTunableNumber("HoodAngleMap/3.48", 210.0);
+      new LoggedTunableNumber("HoodAngleMap/3.48", 450.0);
   private static final LoggedTunableNumber hoodAngle9 =
-      new LoggedTunableNumber("HoodAngleMap/3.92", 240.0);
+      new LoggedTunableNumber("HoodAngleMap/3.92", 550.0);
   private static final LoggedTunableNumber hoodAngle10 =
       new LoggedTunableNumber("HoodAngleMap/4.35", 350.0);
   private static final LoggedTunableNumber hoodAngle11 =
@@ -168,21 +168,21 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber flywheelSpeed2 =
       new LoggedTunableNumber("FlyWheelSpeedMap/0.96", 1500.0);
   private static final LoggedTunableNumber flywheelSpeed3 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/1.46", 1600.0); // 1500
+      new LoggedTunableNumber("FlyWheelSpeedMap/1.46", 1700.0); // 1600
   private static final LoggedTunableNumber flywheelSpeed4 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/1.73", 1650.0); // 1650
+      new LoggedTunableNumber("FlyWheelSpeedMap/1.73", 1750.0); // 1650
   private static final LoggedTunableNumber flywheelSpeed5 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.18", 1700.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.18", 1900.0);
   private static final LoggedTunableNumber flywheelSpeed6 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.47", 1750.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.47", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed7 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.70", 1800.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.70", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed8 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.94", 1850.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.94", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed9 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/3.48", 1900.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/3.48", 2024.0);
   private static final LoggedTunableNumber flywheelSpeed10 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/3.92", 200.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/3.92", 2050.0);
   private static final LoggedTunableNumber flywheelSpeed11 =
       new LoggedTunableNumber("FlyWheelSpeedMap/4.35", 2000.0);
   private static final LoggedTunableNumber flywheelSpeed12 =
