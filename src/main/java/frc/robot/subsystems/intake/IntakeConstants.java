@@ -23,10 +23,10 @@ public final class IntakeConstants {
 
   public class DeployConfigs
   {
-    public static final double kP = 1.45;
+    public static final double kP = 1.25;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
-    public static final double kG = 0.0;
+    public static final double kG = 10.0;
     public static final double kFF = 0.0;
     public static final double kmmAcceleration = 0.0; // Not currently used, only using Stow MM values
     public static final double kmmJerk = 0.0; // Not currently used, only using Stow MM values
@@ -34,10 +34,10 @@ public final class IntakeConstants {
 
   public class StowConfigs
   {
-    public static final double kP = 1.2;
+    public static final double kP = 2.5;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
-    public static final double kG = 0.0;
+    public static final double kG = 10.0;
     public static final double kFF = 0.0;
     public static final double kmmAcceleration = 0.0;
     public static final double kmmJerk = 0.0;
@@ -83,6 +83,7 @@ public final class IntakeConstants {
   public static final String kintakeTableKey = "Intake/";
   public static final String kdeployTableKey = kintakeTableKey + "Deploy/";
   public static final String kstowTableKey = kintakeTableKey + "Stow/";
+  public static final String kstowFullTableKey = kintakeTableKey + "StowFull/";
   // Tunables
   // Intake roller
   public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
@@ -113,15 +114,15 @@ public final class IntakeConstants {
       new LoggedTunableNumber(kstowTableKey + "kstowFF", StowConfigs.kFF);
   // Stow - Full
   public static final LoggedTunableNumber kstowFullP =
-      new LoggedTunableNumber(kstowTableKey + "kstowP", StowFullConfigs.kP);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullP", StowFullConfigs.kP);
   public static final LoggedTunableNumber kstowFullI =
-      new LoggedTunableNumber(kstowTableKey + "kstowI", StowFullConfigs.kI);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullI", StowFullConfigs.kI);
   public static final LoggedTunableNumber kstowFullD =
-      new LoggedTunableNumber(kstowTableKey + "kstowD", StowFullConfigs.kD);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullD", StowFullConfigs.kD);
   public static final LoggedTunableNumber kstowFullG =
-      new LoggedTunableNumber(kstowTableKey + "kstowG", StowFullConfigs.kG);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullG", StowFullConfigs.kG);
   public static final LoggedTunableNumber kstowFullFF =
-      new LoggedTunableNumber(kstowTableKey + "kstowFF", StowFullConfigs.kFF);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullFF", StowFullConfigs.kFF);
 
   public static final LoggedTunableNumber kMMAcceleration =
       new LoggedTunableNumber(kstowTableKey + "kMMAcceleration", StowConfigs.kmmAcceleration);

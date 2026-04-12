@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -105,18 +106,21 @@ public class IntakeIOKraken implements IntakeIO {
     stowSlot0.kI = IntakeConstants.StowConfigs.kI;
     stowSlot0.kD = IntakeConstants.StowConfigs.kD;
     stowSlot0.kG = IntakeConstants.StowConfigs.kG;
+    stowSlot0.GravityType = GravityTypeValue.Arm_Cosine;
     
     Slot1Configs deploySlot1 = deployConfig.Slot1;
     deploySlot1.kP = IntakeConstants.DeployConfigs.kP;
     deploySlot1.kI = IntakeConstants.DeployConfigs.kI;
     deploySlot1.kD = IntakeConstants.DeployConfigs.kD;
     deploySlot1.kG = IntakeConstants.DeployConfigs.kG;
+    deploySlot1.GravityType = GravityTypeValue.Arm_Cosine;
 
     Slot2Configs stowFullSlot2 = deployConfig.Slot2;
     stowFullSlot2.kP = IntakeConstants.StowFullConfigs.kP;
     stowFullSlot2.kI = IntakeConstants.StowFullConfigs.kI;
     stowFullSlot2.kD = IntakeConstants.StowFullConfigs.kD;
     stowFullSlot2.kG = IntakeConstants.StowFullConfigs.kG;
+    stowFullSlot2.GravityType = GravityTypeValue.Arm_Cosine;
 
     // If stow and deploy benefit from having different MM configs, consider using DynamicMotionMagic
     // https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/motion-magic.html#dynamic-motion-magic
@@ -285,18 +289,21 @@ public class IntakeIOKraken implements IntakeIO {
       slot0.kI = outputs.kstowI;
       slot0.kD = outputs.kstowD;
       slot0.kG = outputs.kstowG;
+      slot0.GravityType = GravityTypeValue.Arm_Cosine;
       
       Slot1Configs slot1 = configs.Slot1;
       slot1.kP = outputs.kdeployP;
       slot1.kI = outputs.kdeployI;
       slot1.kD = outputs.kdeployD;
       slot1.kG = outputs.kdeployG;
+      slot1.GravityType = GravityTypeValue.Arm_Cosine;
 
       Slot2Configs slot2 = configs.Slot2;
       slot2.kP = outputs.kstowFullP;
       slot2.kI = outputs.kstowFullI;
       slot2.kD = outputs.kstowFullD;
       slot2.kG = outputs.kstowFullG;
+      slot2.GravityType = GravityTypeValue.Arm_Cosine;
       
       MotionMagicConfigs mm = configs.MotionMagic;
       mm.MotionMagicAcceleration = outputs.kstowMMAcceleration;

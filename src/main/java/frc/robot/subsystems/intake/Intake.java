@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.subsystems.intake.IntakeConstants.kdeployTableKey;
 import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
+import static frc.robot.subsystems.intake.IntakeConstants.kstowFullTableKey;
 import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
 
 /**
@@ -185,14 +186,22 @@ public class Intake extends SubsystemBase {
     outputs.kdeployP = IntakeConstants.kdeployP.getAsDouble();
     outputs.kdeployI = IntakeConstants.kdeployI.getAsDouble();
     outputs.kdeployD = IntakeConstants.kdeployD.getAsDouble();
+    outputs.kdeployG = IntakeConstants.kdeployG.getAsDouble();
     outputs.kdeployFF = IntakeConstants.kdeployFF.getAsDouble();
     // Stow configs
     outputs.kstowP = IntakeConstants.kstowP.getAsDouble();
     outputs.kstowI = IntakeConstants.kstowI.getAsDouble();
     outputs.kstowD = IntakeConstants.kstowD.getAsDouble();
     outputs.kstowFF = IntakeConstants.kstowFF.getAsDouble();
+    outputs.kstowG = IntakeConstants.kstowG.getAsDouble();
     outputs.kstowMMAcceleration = IntakeConstants.kMMAcceleration.getAsDouble();
     outputs.kstowMMJerk = IntakeConstants.kMMJerk.getAsDouble();
+    // Stow full configs
+    outputs.kstowFullP = IntakeConstants.kstowFullP.getAsDouble();
+    outputs.kstowFullI = IntakeConstants.kstowFullI.getAsDouble();
+    outputs.kstowFullD = IntakeConstants.kstowFullD.getAsDouble();
+    outputs.kstowFullFF = IntakeConstants.kstowFullFF.getAsDouble();
+    outputs.kstowFullG = IntakeConstants.kstowFullG.getAsDouble();
 
     Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getSlapdownMode().toString());
     Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedRollerSpeed);
@@ -202,14 +211,22 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kdeployTableKey + "kdeployP", outputs.kdeployP);
     Logger.recordOutput(kdeployTableKey + "kdeployI", outputs.kdeployI);
     Logger.recordOutput(kdeployTableKey + "kdeployD", outputs.kdeployD);
+    Logger.recordOutput(kdeployTableKey + "kdeployG", outputs.kdeployG);
     Logger.recordOutput(kdeployTableKey + "kdeployFF", outputs.kdeployFF);
     // Stow configs
     Logger.recordOutput(kstowTableKey + "kstowP", outputs.kstowP);
     Logger.recordOutput(kstowTableKey + "kstowI", outputs.kstowI);
     Logger.recordOutput(kstowTableKey + "kstowD", outputs.kstowD);
+    Logger.recordOutput(kstowTableKey + "kstowG", outputs.kstowG);
     Logger.recordOutput(kstowTableKey + "kstowFF", outputs.kstowFF);
     Logger.recordOutput(kstowTableKey + "kstowMMAcceleration", outputs.kstowMMAcceleration);
     Logger.recordOutput(kstowTableKey + "kstowMMJerk", outputs.kstowMMJerk);
+    // Stow Full configs
+    Logger.recordOutput(kstowFullTableKey + "kstowFullP", outputs.kstowFullP);
+    Logger.recordOutput(kstowFullTableKey + "kstowFullI", outputs.kstowFullI);
+    Logger.recordOutput(kstowFullTableKey + "kstowFullD", outputs.kstowFullD);
+    Logger.recordOutput(kstowFullTableKey + "kstowFullG", outputs.kstowFullG);
+    Logger.recordOutput(kstowFullTableKey + "kstowFullFF", outputs.kstowFullFF);
 
     Logger.recordOutput(kintakeTableKey + "desiredPosition", outputs.desiredPosition);
     io.applyOutputs(outputs);

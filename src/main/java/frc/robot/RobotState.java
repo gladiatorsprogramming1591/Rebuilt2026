@@ -186,9 +186,7 @@ public final class RobotState {
   public synchronized void addFieldVisionMeasurement(
       Pose2d visionPose, double timestampSeconds, double xyStdDev, double rotStdDev) {
     fieldLocalizer.addVisionMeasurement(
-        visionPose,
-        timestampSeconds,
-        VecBuilder.fill(xyStdDev, xyStdDev, rotStdDev));
+        visionPose, timestampSeconds, VecBuilder.fill(xyStdDev, xyStdDev, rotStdDev));
   }
 
   // ============================================================

@@ -40,8 +40,6 @@ public interface IntakeIO {
     public double kstowFullD = 0.0;
     public double kstowFullG = 0.0;
     public double kstowFullFF = 0.0;
-    public double kstowFullMMAcceleration = 0.0;
-    public double kstowFullMMJerk = 0.0;
     public double desiredPosition = 0.0;
   }
 
