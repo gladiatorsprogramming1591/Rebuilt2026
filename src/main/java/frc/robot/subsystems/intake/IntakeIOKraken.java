@@ -112,11 +112,11 @@ public class IntakeIOKraken implements IntakeIO {
     deploySlot1.kD = IntakeConstants.DeployConfigs.kD;
     deploySlot1.kG = IntakeConstants.DeployConfigs.kG;
 
-    Slot2Configs deploySlot2 = deployConfig.Slot2;
-    deploySlot2.kP = IntakeConstants.DeployConfigs.kP;
-    deploySlot2.kI = IntakeConstants.DeployConfigs.kI;
-    deploySlot2.kD = IntakeConstants.DeployConfigs.kD;
-    deploySlot2.kG = IntakeConstants.DeployConfigs.kG;
+    Slot2Configs stowFullSlot2 = deployConfig.Slot2;
+    stowFullSlot2.kP = IntakeConstants.StowFullConfigs.kP;
+    stowFullSlot2.kI = IntakeConstants.StowFullConfigs.kI;
+    stowFullSlot2.kD = IntakeConstants.StowFullConfigs.kD;
+    stowFullSlot2.kG = IntakeConstants.StowFullConfigs.kG;
 
     // If stow and deploy benefit from having different MM configs, consider using DynamicMotionMagic
     // https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/motion-magic.html#dynamic-motion-magic
@@ -305,7 +305,7 @@ public class IntakeIOKraken implements IntakeIO {
       SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", ++tuneConfigsCreated);
       SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", configs.Slot0.toString());
       SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", configs.Slot1.toString());
-      SmartDashboard.putString(kintakeTableKey + "Tune slot2 deploy created", configs.Slot2.toString());
+      SmartDashboard.putString(kintakeTableKey + "Tune slot2 stow full created", configs.Slot2.toString());
       SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", configs.MotionMagic.toString());
       return configs;
   }
