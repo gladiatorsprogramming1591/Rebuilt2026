@@ -343,7 +343,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   public Command shootFixed() {
@@ -357,7 +357,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   public Command shootWithAim() {
@@ -376,8 +376,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY: V3-ify intake pulse
-                hopper.startBeltMotors(), kicker.runKickerMotor())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   public Command shootWithAimStationary() {
@@ -393,7 +392,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome

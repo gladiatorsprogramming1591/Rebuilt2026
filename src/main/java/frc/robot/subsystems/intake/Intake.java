@@ -87,7 +87,21 @@ public class Intake extends SubsystemBase {
               isSlapdownStopped = false;
               outputs.desiredPosition = IntakeConstants.BUMP;
               RobotState.setSlapdownMode(RobotState.SlapdownModeState.BUMP_POSITION);
-              stopSlapdownOnCurrentSpike = true;
+              stopSlapdownOnCurrentSpike = false;
+            },
+            () -> {
+              outputs.appliedSlapdownSpeed = 0;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
+            });
+  }
+
+  public Command stowWhileShooting() {
+    return runEnd(
+            () -> {
+              isSlapdownStopped = false;
+              outputs.desiredPosition = IntakeConstants.SHOOTING_STOP;
+              RobotState.setSlapdownMode(RobotState.SlapdownModeState.BUMP_POSITION);
+              stopSlapdownOnCurrentSpike = false;
             },
             () -> {
               outputs.appliedSlapdownSpeed = 0;
