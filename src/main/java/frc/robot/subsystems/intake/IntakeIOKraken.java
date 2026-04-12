@@ -4,6 +4,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -71,14 +72,16 @@ public class IntakeIOKraken implements IntakeIO {
     SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", "N/A");
+    SmartDashboard.putString(kintakeTableKey + "Tune deploy current limits created", "N/A");
+    SmartDashboard.putString(kintakeTableKey + "Tune roller current limits created", "N/A");
     if (Constants.tuningMode)
     {
       SmartDashboard.putBoolean(kintakeTableKey + updateDeployConfigName, false);
     }
     var intakeLeftConfig = new TalonFXConfiguration();
     var intakeCurrentLimits = intakeLeftConfig.CurrentLimits;
-    intakeCurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
-    intakeCurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
+    intakeCurrentLimits.SupplyCurrentLimit = IntakeConstants.ROLLER_SUPPLY_CURRENT_LIMIT.get();
+    intakeCurrentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT.get();
     intakeCurrentLimits.SupplyCurrentLimitEnable = true;
     intakeCurrentLimits.StatorCurrentLimitEnable = true;
     intakeLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -95,8 +98,8 @@ public class IntakeIOKraken implements IntakeIO {
 
     var deployConfig = new TalonFXConfiguration();
     var deployCurrentLimits = deployConfig.CurrentLimits;
-    deployCurrentLimits.SupplyCurrentLimit = IntakeConstants.SLAPDOWN_SUPPLY_CURRENT_LIMIT;
-    deployCurrentLimits.StatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
+    deployCurrentLimits.SupplyCurrentLimit = IntakeConstants.SLAPDOWN_SUPPLY_CURRENT_LIMIT.get();
+    deployCurrentLimits.StatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT.get();
     deployCurrentLimits.SupplyCurrentLimitEnable = true;
     deployCurrentLimits.StatorCurrentLimitEnable = true;
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -265,21 +268,31 @@ public class IntakeIOKraken implements IntakeIO {
       Slot0Configs slot0 = tunedConfigs.Slot0;
       Slot1Configs slot1 = tunedConfigs.Slot1;
       MotionMagicConfigs mm = tunedConfigs.MotionMagic;
+      CurrentLimitsConfigs climits = tunedConfigs.CurrentLimits;
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(slot0, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(slot1, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(mm, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> slapdownMotor.getConfigurator().apply(climits, tunedConfigTimeout));
+      
+      TalonFXConfiguration tunedRollerConfigs = createTunedRollerMotorConfig(outputs);
+      CurrentLimitsConfigs rollerCLimits = tunedRollerConfigs.CurrentLimits;
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rollerLeftMotor.getConfigurator().apply(rollerCLimits, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> rollerRightMotor.getConfigurator().apply(rollerCLimits, tunedConfigTimeout));
+
     }
   }
 
+  // TODO: Add kG when it's ready
   /**
    * Creates a TalonFX configuration with the latest tunable settings for the <b>deploy motor</b>.
    * 
    * <ul>
    *  <li> <b>Updated Configurations:</b>
    *    <ul>
-          <li> {@code Slot0Configs}: Stowing P, I, D, and FF
-          <li> {@code Slot1Configs}: Deploying P, I, D, and FF
+          <li> {@code Slot0Configs}: Stowing P, I, and D
+          <li> {@code Slot1Configs}: Deploying P, I, D, and D
           <li> {@code MotionMagicConfigs}: Stowing Acceleration and Jerk
+          <li> {@code CurrentLimitConfigs}: Supply and stator for Slapdown and Roller
         </ul>
    * </ul>
    * 
@@ -295,22 +308,36 @@ public class IntakeIOKraken implements IntakeIO {
       slot0.kP = outputs.kstowP;
       slot0.kI = outputs.kstowI;
       slot0.kD = outputs.kstowD;
-      slot0.kS = outputs.kstowFF;
       
       Slot1Configs slot1 = configs.Slot1;
       slot1.kP = outputs.kdeployP;
       slot1.kI = outputs.kdeployI;
       slot1.kD = outputs.kdeployD;
-      slot1.kS = outputs.kdeployFF;
 
       MotionMagicConfigs mm = configs.MotionMagic;
       mm.MotionMagicAcceleration = outputs.kstowMMAcceleration;
       mm.MotionMagicJerk = outputs.kstowMMJerk;
 
+      CurrentLimitsConfigs climits = configs.CurrentLimits;
+      climits.SupplyCurrentLimit = IntakeConstants.SLAPDOWN_SUPPLY_CURRENT_LIMIT.get(); //TODO: Make these outputs
+      climits.StatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT.get();
+
       SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", ++tuneConfigsCreated);
       SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", configs.Slot0.toString());
       SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", configs.Slot1.toString());
       SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", configs.MotionMagic.toString());
+      SmartDashboard.putString(kintakeTableKey + "Tune deploy current limits created", configs.CurrentLimits.toString());
+      return configs;
+    }
+    
+    private TalonFXConfiguration createTunedRollerMotorConfig(IntakeIOOutputs outputs)
+    {
+      TalonFXConfiguration configs = new TalonFXConfiguration();
+      CurrentLimitsConfigs climits = configs.CurrentLimits;
+      climits.SupplyCurrentLimit = IntakeConstants.ROLLER_SUPPLY_CURRENT_LIMIT.get(); //TODO: Make these outputs
+      climits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT.get();
+
+      SmartDashboard.putString(kintakeTableKey + "Tune roller current limits created", configs.CurrentLimits.toString());
       return configs;
   }
 }

@@ -3,8 +3,7 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
-- Deploy seed pos if down
-- Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
+- slowly stow intake during shoot
 
 
 ===============================================
@@ -110,6 +109,8 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Deploy seed pos if down
+- Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
 - Shooter coast to idle
     - Shooter modes in applyOutputs
 - V3 Intake:

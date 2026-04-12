@@ -13,14 +13,14 @@ public final class IntakeConstants {
   public static final double ROLLER_MOTOR_REDUCTION = 1.0; // placeholder until tested
   public static final double SLAPDOWN_MOTOR_REDUCTION = 1.0; // placeholder until tested
 
-  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
-  public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
-  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 12.0;
-  public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 20.0;
-  public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
-
+  private static final double m_ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
+  private static final double m_ROLLER_STATOR_CURRENT_LIMIT = 120.0;
+  private static final double m_SLAPDOWN_SUPPLY_CURRENT_LIMIT = 20.0;
+  private static final double m_SLAPDOWN_STATOR_CURRENT_LIMIT = 20.0;
+  public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = m_SLAPDOWN_SUPPLY_CURRENT_LIMIT;
+  
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
-
+  
   public class DeployConfigs
   {
     public static final double kP = 1.45;
@@ -31,7 +31,7 @@ public final class IntakeConstants {
 
   public class StowConfigs
   {
-    public static final double kP = 1.2;
+    public static final double kP = 1.3;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kFF = 0.0;
@@ -95,5 +95,14 @@ public final class IntakeConstants {
       new LoggedTunableNumber(kstowTableKey + "kstowMMAcceleration", StowConfigs.kmmAcceleration);
   public static final LoggedTunableNumber kstowMMJerk =
       new LoggedTunableNumber(kstowTableKey + "kstowMMJerk", StowConfigs.kmmJerk);
+  // Current limits
+  public static final LoggedTunableNumber ROLLER_SUPPLY_CURRENT_LIMIT =
+      new LoggedTunableNumber("Roller supply current limit", m_ROLLER_SUPPLY_CURRENT_LIMIT);
+  public static final LoggedTunableNumber ROLLER_STATOR_CURRENT_LIMIT =
+      new LoggedTunableNumber("Roller stator current limit", m_ROLLER_STATOR_CURRENT_LIMIT);
+  public static final LoggedTunableNumber SLAPDOWN_SUPPLY_CURRENT_LIMIT = 
+      new LoggedTunableNumber("Slapdown supply current limit", m_SLAPDOWN_SUPPLY_CURRENT_LIMIT);
+  public static final LoggedTunableNumber SLAPDOWN_STATOR_CURRENT_LIMIT = 
+      new LoggedTunableNumber("Slapdown stator current limit", m_SLAPDOWN_STATOR_CURRENT_LIMIT);
 
 }
