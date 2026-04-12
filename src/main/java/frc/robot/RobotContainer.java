@@ -275,7 +275,7 @@ public class RobotContainer {
     // driver_controller //TODO: TEMPORARY
     //     .leftTrigger()
     //     .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
-    driver_controller.leftTrigger().toggleOnTrue(intake.runRoller());
+    driver_controller.leftTrigger().whileTrue(intake.runRoller());
     // driver_controller // // TODO: TEMPORARY and broken?
     //     .rightBumper()
     //     .whileTrue(
