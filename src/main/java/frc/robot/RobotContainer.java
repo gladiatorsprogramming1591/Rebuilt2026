@@ -304,20 +304,22 @@ public class RobotContainer {
     operator_controller.rightBumper().toggleOnTrue(hopper.startBeltMotors());
     // intake
     operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
-    operator_controller.a().whileTrue(intakePulseCommand());
-    operator_controller.povDown().toggleOnTrue(intake.reverseRoller());
-    operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
+    // operator_controller.povDown().toggleOnTrue(intake.reverseRoller());
+    operator_controller.povDown().whileTrue(intake.deploy());
     operator_controller.x().whileTrue(intake.deployWithSpeed());
+    operator_controller.y().whileTrue(intake.stowBump());
+    operator_controller.b().whileTrue(intake.stow());
+    operator_controller.a().whileTrue(intake.stowWhileShooting());
     // TODO: Kiley request: undeployed
     // operator_controller.start().whileTrue(intake.runIntakeMotor());
     // shooter
-    operator_controller.b().toggleOnTrue(shooter.stopAndCoastShooter());
+    // operator_controller.b().toggleOnTrue(shooter.stopAndCoastShooter());
     operator_controller.leftTrigger().whileTrue(shootFixed());
     // hood
     // operator_controller.y().onTrue(shootWithAimStationary());
-    operator_controller.y().toggleOnTrue(intake.stowBump());
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
     operator_controller.povRight().onTrue(hood.ZeroHood());
+    operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
 
     HubShiftUtil.setAllianceWinOverride(
         () -> {
@@ -343,7 +345,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   public Command shootFixed() {
@@ -357,7 +359,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   public Command shootWithAim() {
@@ -376,8 +378,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                // roller.startRollerMotors(), kicker.runKickerMotor(), intakePulseCommand()))); // TODO: TEMPORARY: V3-ify intake pulse
-                hopper.startBeltMotors(), kicker.runKickerMotor())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   public Command shootWithAimStationary() {
@@ -393,7 +394,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intakePulseCommand())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
