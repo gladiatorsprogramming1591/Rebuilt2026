@@ -26,13 +26,20 @@ public interface IntakeIO {
     public double kdeployP = 0.0;
     public double kdeployI = 0.0;
     public double kdeployD = 0.0;
+    public double kdeployG = 0.0;
     public double kdeployFF = 0.0;
     public double kstowP = 0.0;
     public double kstowI = 0.0;
     public double kstowD = 0.0;
+    public double kstowG = 0.0;
     public double kstowFF = 0.0;
     public double kstowMMAcceleration = 0.0;
     public double kstowMMJerk = 0.0;
+    public double kstowFullP = 0.0;
+    public double kstowFullI = 0.0;
+    public double kstowFullD = 0.0;
+    public double kstowFullG = 0.0;
+    public double kstowFullFF = 0.0;
     public double desiredPosition = 0.0;
   }
 
