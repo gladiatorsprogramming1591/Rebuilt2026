@@ -23,7 +23,7 @@ public final class IntakeConstants {
 
   public class DeployConfigs
   {
-    public static final double kP = 1.25;
+    public static final double kP = 2.25;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kG = 10.0;

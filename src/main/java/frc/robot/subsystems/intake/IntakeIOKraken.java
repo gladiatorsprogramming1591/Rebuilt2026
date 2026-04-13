@@ -239,7 +239,7 @@ public class IntakeIOKraken implements IntakeIO {
   private void slapToPosition(int slot, double position, double kFF) {
     deployMotor.setControl(
         torquePositionControl
-            .withPosition(position) // + rawStowPosition - Undoes offset only during control, removed when adding kG
+            .withPosition(position + rawDeployPosition) // Undoes offset only during control
             .withSlot(slot)
             .withFeedForward(kFF));
   }
