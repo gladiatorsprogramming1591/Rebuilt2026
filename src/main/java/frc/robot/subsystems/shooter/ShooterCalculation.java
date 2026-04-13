@@ -201,18 +201,18 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber passingHoodAngle5 =
       new LoggedTunableNumber("PassingHoodMap/7.8", 800.0); // 500
   private static final LoggedTunableNumber passingHoodAngle6 =
-      new LoggedTunableNumber("PassingFlywheelMap/8.67", 800.0); // 3/4 into NZ
+      new LoggedTunableNumber("PassingHoodMap/8.67", 800.0); // 3/4 into NZ
   private static final LoggedTunableNumber passingHoodAngle7 =
-      new LoggedTunableNumber("PassingFlywheelMap/9.65", 800.0); // NZ opposing bump
+      new LoggedTunableNumber("PassingHoodMap/9.65", 800.0); // NZ opposing bump
   private static final LoggedTunableNumber passingHoodAngle8 =
-      new LoggedTunableNumber("PassingFlywheelMap/10.16", 800.0); // NZ opposing trench
+      new LoggedTunableNumber("PassingHoodMap/10.16", 800.0); // NZ opposing trench
 // Within opposing AZ
 //   private static final LoggedTunableNumber passingHoodAngle9 =
-//       new LoggedTunableNumber("PassingFlywheelMap/11.68", 2250.0); // Opposing AZ bump
+//       new LoggedTunableNumber("PassingHoodMap/11.68", 2250.0); // Opposing AZ bump
 //   private static final LoggedTunableNumber passingHoodAngle10 =
-//       new LoggedTunableNumber("PassingFlywheelMap/13.29", 2250.0); // Opposing AZ 1/2
+//       new LoggedTunableNumber("PassingHoodMap/13.29", 2250.0); // Opposing AZ 1/2
 //   private static final LoggedTunableNumber passingHoodAngle11 =
-//       new LoggedTunableNumber("PassingFlywheelMap/14.81", 2250.0); // Opposing AZ wall
+//       new LoggedTunableNumber("PassingHoodMap/14.81", 2250.0); // Opposing AZ wall
   private static final LoggedTunableNumber passingHoodAngleLast =
       new LoggedTunableNumber("PassingHoodMap/17.16", 800.0); // 500 1009 is approx max
 
