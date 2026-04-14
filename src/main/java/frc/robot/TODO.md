@@ -6,12 +6,19 @@ V3 Integration:
 - Auto
     - implement CANRange - Jeff
     - shorten fuel launching arc at pose where auto shoots
+    - 2.5 cycle auto (with can range)
 - Deploy
     - look at peak forward/rev torque current slapdown
     - Log peak stator/supply current for
         - forward
         - reverse
         - add current graph tab in Elastic
+        - Stow while shooting state
+- Hopper
+        - Hopper empty detection
+            - current based and can range
+- Intake
+        - Duty cycle intake rollers
 READY TO TEST
 
 

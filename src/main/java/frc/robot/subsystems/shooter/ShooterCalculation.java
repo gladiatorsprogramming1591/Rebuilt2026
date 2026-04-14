@@ -164,11 +164,11 @@ public class ShooterCalculation {
       new LoggedTunableNumber("HoodAngleMap/5.46", 800.0); // we noticed that 750 was reaching the max for the hood, after is a deadspot.
 
   private static final LoggedTunableNumber flywheelSpeed1 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/0.0", 1500.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/0.0", 1450.0);
   private static final LoggedTunableNumber flywheelSpeed2 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/0.96", 1500.0);
+      new LoggedTunableNumber("FlyWheelSpeedMap/0.96", 1450.0);
   private static final LoggedTunableNumber flywheelSpeed3 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/1.46", 1700.0); // 1600
+      new LoggedTunableNumber("FlyWheelSpeedMap/1.46", 1650.0); // 1600
   private static final LoggedTunableNumber flywheelSpeed4 =
       new LoggedTunableNumber("FlyWheelSpeedMap/1.73", 1750.0); // 1650
   private static final LoggedTunableNumber flywheelSpeed5 =

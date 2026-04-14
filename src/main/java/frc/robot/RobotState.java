@@ -130,7 +130,7 @@ public final class RobotState {
     DEPLOY_POSITION,
     STOW_POSITION,
     BUMP_POSITION,
-    PULSE,
+    STOW_WHILE_SHOOTING,
     SPEED,
     OFF
   }

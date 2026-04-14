@@ -16,7 +16,9 @@ public final class IntakeConstants {
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
   public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
-  public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 20.0;
+  public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 30.0;
+  public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 20.0; 
+  public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -24.0; 
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
@@ -45,7 +47,7 @@ public final class IntakeConstants {
 
   public class StowFullConfigs
   {
-    public static final double kP = 3.0;
+    public static final double kP = 10.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kG = 10.0;
@@ -59,7 +61,7 @@ public final class IntakeConstants {
   public static final double DOWN = 0.0; // TODO: Find new DOWN angle after hard-stop cushioning
   public static final double MIDDLE = DOWN / 2;
   public static final double BUMP = MIDDLE;
-  public static final double SHOOTING_STOP = UP * 0.6;
+  public static final double SHOOTING_STOP = UP * 0.75;
   // Points at which the slapdown succumbs to gravity
   public static final double TIPPING_POINT = MIDDLE;
   public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;

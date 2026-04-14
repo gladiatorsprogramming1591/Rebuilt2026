@@ -380,7 +380,7 @@ public class RobotContainer {
           .and(() -> !driver_controller.back().getAsBoolean())
           .onTrue(
               Commands.runEnd(
-                      () -> driver_controller.setRumble(RumbleType.kRightRumble, 1.0),
+                      () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
                       () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
                   .withTimeout(0.25));
     }
@@ -485,7 +485,7 @@ public class RobotContainer {
 
   public Command prepareIntake() {
     return Commands.parallel(
-        intake.deployWithSpeed().withTimeout(1.5),
+        intake.deploy(),
         intake.runRollerWithoutRequirements());
   }
 

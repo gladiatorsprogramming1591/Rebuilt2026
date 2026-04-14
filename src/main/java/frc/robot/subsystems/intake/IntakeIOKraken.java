@@ -101,6 +101,10 @@ public class IntakeIOKraken implements IntakeIO {
     deployCurrentLimits.StatorCurrentLimitEnable = true;
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
+    var slapdownTorqueCurrentConfigs = deployConfig.TorqueCurrent; 
+    slapdownTorqueCurrentConfigs.PeakForwardTorqueCurrent = IntakeConstants.PEAK_FORWARD_STATOR_CURRENT_LIMIT;
+    slapdownTorqueCurrentConfigs.PeakReverseTorqueCurrent = IntakeConstants.PEAK_REVERSE_STATOR_CURRENT_LIMIT;
+
     Slot0Configs stowSlot0 = deployConfig.Slot0;
     stowSlot0.kP = IntakeConstants.StowConfigs.kP;
     stowSlot0.kI = IntakeConstants.StowConfigs.kI;

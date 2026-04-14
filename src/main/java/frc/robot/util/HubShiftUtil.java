@@ -38,7 +38,7 @@ public class HubShiftUtil {
 
   private static final double minFuelCountDelay = 1.0;
   private static final double maxFuelCountDelay = 2.0;
-  private static final double shiftEndFuelCountExtension = 3.0;
+  private static final double shiftEndFuelCountExtension = 1.0;
   private static final double minTimeOfFlight = ShooterCalculation.getMinTimeOfFlight();
   private static final double maxTimeOfFlight = ShooterCalculation.getMaxTimeOfFlight();
   private static final double approachingActiveFudge = -1 * (minTimeOfFlight + minFuelCountDelay);
