@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
 import frc.robot.commands.DriveCommands;
@@ -236,6 +239,12 @@ public class RobotContainer {
 
     hopper.setDefaultCommand(hopper.stopBeltMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
+    Trigger inLaunchingTolerance =
+        new Trigger(
+            () ->
+                hood.isHoodAtAngle().getAsBoolean()
+                && shooter.isShooterAtVelocity().getAsBoolean());
+
     intake.setDefaultCommand(intake.stopIntake());
     shooter.setDefaultCommand(new ConditionalCommand(
                 shooter.runIdleCommand().withTimeout(Constants.loopPeriodSecs * 3), 
@@ -297,6 +306,16 @@ public class RobotContainer {
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.rightTrigger().whileTrue(shootWithAim());
+    
+    driver_controller
+        .rightTrigger()
+        .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
+        .and(()-> DriverStation.isTeleop())
+        .onTrue(
+            Commands.runEnd(
+                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
+                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
+                .withTimeout(.5));
 
     // ===================================== Operator Controls =====================================
     // rollers
@@ -321,6 +340,11 @@ public class RobotContainer {
     operator_controller.povRight().onTrue(hood.ZeroHood());
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
 
+    // Reset hub shift timer when enabling
+    RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+    RobotModeTriggers.disabled().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+
     HubShiftUtil.setAllianceWinOverride(
         () -> {
           if (operator_controller.back().getAsBoolean()) {
@@ -328,6 +352,38 @@ public class RobotContainer {
           }
           return Optional.empty();
         });
+
+    // driver_controller
+    //     .rightTrigger()
+    //     // .and(() -> !ShooterCalculation.getnstance().getParameters().passing())
+    //     // .and(inLaunchingTolerance)
+    //     // .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
+    //     .onTrue(
+    //         Commands.run(
+    //             ()-> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
+    //             ()-> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
+    //             .withTimeout(0.5)
+    //              .onlyIf(() -> !ShooterCalculation.getInstance().getParameters().passing())
+    //              .onlyIf(() -> !HubShiftUtil.getOfficialShiftInfo().active())
+    //              .onlyIf(inLaunchingTolerance));
+        
+
+    
+    
+    // End-of-shift warning
+    for (int i = 1; i <= 5; i++) {
+      double time = i;
+      Trigger shiftAboutToEnd =
+          new Trigger(() -> (HubShiftUtil.getShiftedShiftInfo().remainingTime() < time));
+      shiftAboutToEnd
+          .and(RobotModeTriggers.teleop())
+          .and(() -> !driver_controller.back().getAsBoolean())
+          .onTrue(
+              Commands.runEnd(
+                      () -> driver_controller.setRumble(RumbleType.kRightRumble, 1.0),
+                      () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
+                  .withTimeout(0.25));
+    }
   }
 
   public Command warmUpShooterCommand() {
