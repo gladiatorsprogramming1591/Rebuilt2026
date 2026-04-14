@@ -3,10 +3,16 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
-- Set sizable deadzones for deploy and stow positions (e.g. set to coast if within deadzone)
-
+- Auto
+    - implement CANRange - Jeff
+    - shorten fuel launching arc at pose where auto shoots
+- Deploy
+    - look at peak forward/rev torque current slapdown
+    - Log peak stator/supply current for
+        - forward
+        - reverse
+        - add current graph tab in Elastic
 READY TO TEST
-- Deploy seed pos if down with triggers
 
 
 ===============================================
@@ -114,6 +120,8 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Test if deploy seed pos if down with triggers
+    - A: zero encoder works, but not seeding non-zero position. Is this a trigger issue or encoder-side issue?
 - Shooter coast to idle
     - Shooter modes in applyOutputs
 - V3 Intake:

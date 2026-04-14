@@ -439,7 +439,7 @@ public class RobotContainer {
 
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );
-    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(4));
+    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(3));
     NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());

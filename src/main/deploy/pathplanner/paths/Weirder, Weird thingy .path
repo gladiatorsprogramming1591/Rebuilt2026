@@ -8,36 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1884230769230784,
-        "y": -0.8604743589743578
+        "x": 1.5057469879518075,
+        "y": 0.07916867469879518
       },
       "isLocked": false,
       "linkedName": "Tilted Hub Shot"
     },
     {
       "anchor": {
-        "x": 7.711846153846155,
-        "y": 2.290769230769231
+        "x": 7.723614457831324,
+        "y": 1.9696626506024084
       },
       "prevControl": {
-        "x": 7.979294871794872,
-        "y": 0.3256025641025655
+        "x": 6.663626506024096,
+        "y": -0.35793975903614506
       },
       "nextControl": {
-        "x": 7.573846063472913,
-        "y": 3.3047698948160957
+        "x": 8.796079339676371,
+        "y": 4.324662855066274
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.154,
-        "y": 3.954
+        "x": 6.182807228915664,
+        "y": 4.461180722891566
       },
       "prevControl": {
-        "x": 7.374961538461538,
-        "y": 4.291217948717948
+        "x": 7.17722891566265,
+        "y": 5.849000000000001
       },
       "nextControl": null,
       "isLocked": false,
@@ -50,11 +50,15 @@
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.5768421052631574,
       "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 0.859649122807019,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.4554385964912115,
       "rotationDegrees": 90.0
     }
   ],

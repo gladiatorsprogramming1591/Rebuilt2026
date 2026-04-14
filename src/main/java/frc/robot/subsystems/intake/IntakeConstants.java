@@ -15,7 +15,7 @@ public final class IntakeConstants {
 
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
-  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 12.0;
+  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 20.0;
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 
@@ -45,10 +45,10 @@ public final class IntakeConstants {
 
   public class StowFullConfigs
   {
-    public static final double kP = 1.2;
+    public static final double kP = 3.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
-    public static final double kG = 0.0;
+    public static final double kG = 10.0;
     public static final double kFF = 0.0;
     public static final double kmmAcceleration = 0.0; // Not currently used, only using Stow MM values
     public static final double kmmJerk = 0.0; // Not currently used, only using Stow MM values
@@ -70,7 +70,7 @@ public final class IntakeConstants {
   // % Duty-Cycle
   public static final double ROLLER_PICKUP_SPEED = 0.60;
   public static final double ROLLER_REVERSE_SPEED = -0.40;
-  public static final double DEPLOYING_SPEED = 0.4;
+  public static final double DEPLOYING_SPEED = 0.5; // 0.4
   public static final double STOWING_SPEED = -0.25;
   // Amps
   public static final double DEPLOYING_TORQUE_CURRENT = 10.0;
