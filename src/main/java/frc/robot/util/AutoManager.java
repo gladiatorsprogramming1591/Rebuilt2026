@@ -2,10 +2,11 @@ package frc.robot.util;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.drive.Drive;
 
 public class AutoManager {
   private SendableChooser<Command> autos;
@@ -17,6 +18,8 @@ public class AutoManager {
   private String middleShootBottom = "Middle Shoot Bottom";
   private String rightSideBumpReturn = "Bottom bump";
   private String rightSideBumpWiggle = "Bottom Bump wiggle";
+  private String rightSideWiggles = "MORE WIGGLES";
+  private String rightSideBumps = "MORE BUMPS";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -24,17 +27,17 @@ public class AutoManager {
     this.drivetrain = drivetrain;
 
     autos = new SendableChooser<>();
-    autos.addOption("Right Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(rightSideRushHub)));
+    // autos.addOption("Right Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(rightSideRushHub)));
+    // autos.addOption(
+    //     "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(rightSideRushHub, true)));
+    // autos.addOption(
+    //     "Middle Shoot Straight", wrapAutoWithPose(new PathPlannerAuto(middleShootStraight)));
+    // autos.addOption("Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
+    // autos.addOption(
+    //     "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
+    autos.addOption("Left Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles, true)));
     autos.addOption(
-        "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(rightSideRushHub, true)));
-    autos.addOption(
-        "Middle Shoot Straight", wrapAutoWithPose(new PathPlannerAuto(middleShootStraight)));
-    autos.addOption("Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
-    autos.addOption(
-        "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
-    autos.addOption("Bottom Bump", wrapAutoWithPose(new PathPlannerAuto(rightSideBumpReturn)));
-    autos.addOption(
-        "Bottom Bump Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideBumpWiggle)));
+        "Right Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

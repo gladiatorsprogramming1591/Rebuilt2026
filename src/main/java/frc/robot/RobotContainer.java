@@ -385,8 +385,7 @@ public class RobotContainer {
     return Commands.parallel(
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
-        DriveCommands.joystickDriveWhileLaunching(drive, () -> 0, () -> 0)
-            .withTimeout(0.5), // TODO: This could run for the entire time we are shooting and remove the TO
+        DriveCommands.joystickDriveWhileLaunching(drive, () -> 0, () -> 0),
         Commands.sequence(
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
@@ -429,7 +428,9 @@ public class RobotContainer {
   }
 
   public Command prepareIntake() {
-    return intake.deploy().alongWith(intake.runRollerWithoutRequirements());
+    return Commands.parallel(
+        intake.deployWithSpeed().withTimeout(1.5),
+        intake.runRollerWithoutRequirements());
   }
 
   public Command intakeIn() {
