@@ -3,27 +3,32 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
+- Save Limelight pipeline
+- Shooter turnToTarget PID increase
 - Auto
-    - implement CANRange - Jeff
-    - shorten fuel launching arc at pose where auto shoots
     - 2.5 cycle auto (with can range)
+        - First Pass:
+            - hook back around to intake more on way to bump
+            - New combined path to bump OR set goal end-state velocity
+        - Reduce shooter timeout
 - Deploy
-    - look at peak forward/rev torque current slapdown
     - Log peak stator/supply current for
         - forward
         - reverse
         - add current graph tab in Elastic
         - Stow while shooting state
 - Hopper
-        - Hopper empty detection
-            - current based and can range
+    - Hopper empty detection
+        - current based and can range
 - Intake
-        - Duty cycle intake rollers
+    - Duty cycle intake rollers
 READY TO TEST
+    - implement CANRange - Jeff
 
 
 ===============================================
 
+-
 - Hood:
     - Investigate why it either works or not at all between code deploys
     - Hood zero trigger
@@ -127,6 +132,8 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+ - look at peak forward/rev torque current slapdown
+- shorten fuel launching arc at pose where auto shoots
 - Test if deploy seed pos if down with triggers
     - A: zero encoder works, but not seeding non-zero position. Is this a trigger issue or encoder-side issue?
 - Shooter coast to idle

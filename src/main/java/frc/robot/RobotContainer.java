@@ -423,8 +423,6 @@ public class RobotContainer {
     return Commands.parallel(
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
-        // DriveCommands.rotateToHub(
-        //     drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         DriveCommands.joystickDriveWhileLaunching(
             drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
         Commands.sequence(
