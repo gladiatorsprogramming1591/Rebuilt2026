@@ -6,6 +6,8 @@ public interface HopperIO {
   @AutoLog
   public static class HopperIOInputs {
     double beltCurrent = 0.0;
+    boolean hopperEmpty = false;
+    double hopperEmptyDistance = 1.0; // Iniitalized to some value beyond the far hopper wall
   }
 
   @AutoLog
