@@ -4,12 +4,14 @@
   "holonomicMode": true,
   "pathFolders": [
     "Competiton",
+    "Center auto",
     "STUFF",
     "Testing"
   ],
   "autoFolders": [
-    "Competition",
     "Albany",
+    "Competition",
+    "meh",
     "Testing"
   ],
   "defaultMaxVel": 5.0,

@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom to NZ wiggle "
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "First Bump"
+            "pathName": "Bottom wiggle + First bump"
           }
         },
         {
@@ -25,19 +19,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Weirder, Weird thingy "
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Second, Second bump"
+            "pathName": "BEAN"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bump out"
           }
         }
       ]
