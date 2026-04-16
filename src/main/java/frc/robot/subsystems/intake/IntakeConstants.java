@@ -57,7 +57,7 @@ public final class IntakeConstants {
   }
 
   // Angles
-  public static final double UP = -17.8818359375;
+  public static final double UP = -17.08056640625;
   public static final double DOWN = 0.0; // TODO: Find new DOWN angle after hard-stop cushioning
   public static final double MIDDLE = DOWN / 2;
   public static final double BUMP = MIDDLE;

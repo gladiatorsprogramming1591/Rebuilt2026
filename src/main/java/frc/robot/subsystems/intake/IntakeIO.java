@@ -15,6 +15,7 @@ public interface IntakeIO {
     public boolean isSlapdownDown = false;
     public boolean isSlapdownUp = false;
     public double position = 0.0;
+    public double rawPosition = 0.0;
     public double encoderOffset = 0.0;
   }
 

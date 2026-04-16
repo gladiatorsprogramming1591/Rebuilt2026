@@ -183,11 +183,12 @@ public class IntakeIOKraken implements IntakeIO {
         rawStowPosition = rawAngle; // TODO: Use this to update offset and/or clamp position output
         rawDeployPosition = rawAngle - IntakeConstants.UP;
         encoderOffset = -(rawAngle - IntakeConstants.UP);
-        inputs.encoderOffset = encoderOffset ;
+        inputs.encoderOffset = encoderOffset;
       }
     }
     angleWithOffset = rawAngle + encoderOffset;
     inputs.position = angleWithOffset;
+    inputs.rawPosition = rawAngle;
   }
 
   @Override

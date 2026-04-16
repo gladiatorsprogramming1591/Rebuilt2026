@@ -8,8 +8,8 @@ public final class HopperConstants {
   public static final double BELT_CURRENT_LIMIT = 40.0;
   public static final double BELT_INTAKE_CURRENT_LIMIT = 10.0;
   public static final LoggedTunableNumber HOPPER_EMPTY_DISTANCE_LIMIT =
-      new LoggedTunableNumber("Hopper/Hopper Empty Distance Limit", 0.48);
-  public static final double MIN_EMPTY_DURATION = 0.3;
+      new LoggedTunableNumber("Hopper/Hopper Empty Distance Limit", 0.475);
+  public static final double MIN_EMPTY_DURATION = 0.2;
 
   public static final LoggedNetworkNumber beltMotorSpeed =
       new LoggedNetworkNumber("/Tuning/beltMotorSpeed", 1.00);
