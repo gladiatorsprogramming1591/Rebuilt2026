@@ -9,12 +9,6 @@
           "data": {
             "pathName": "Move Back Middle"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "depo"
-          }
         }
       ]
     }

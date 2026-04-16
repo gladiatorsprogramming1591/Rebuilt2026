@@ -11,8 +11,9 @@
   "autoFolders": [
     "Albany",
     "Competition",
-    "meh",
-    "Testing"
+    "Center auto",
+    "Testing",
+    "meh"
   ],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 3.0,
