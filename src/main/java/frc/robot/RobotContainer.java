@@ -88,6 +88,10 @@ public class RobotContainer {
   private final CommandXboxController driver_controller = new CommandXboxController(0);
   private final CommandXboxController operator_controller = new CommandXboxController(1);
 
+  // Drive Speeds
+  private double driveSpeedMultiplier = 1.0; // This will be squared, 0.4 is good for kids
+  private double rotationMultiplier = 1.0; // Use 0.4 for kids
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final AutoManager autoManager;
@@ -226,9 +230,6 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // ===================================== Driver Controls =====================================
 
-    double driveSpeedMultiplier = 1.0; // This will be squared, 0.4 is good for kids
-    double rotationMultiplier = 1.0; // Use 0.4 for kids
-
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -256,6 +257,9 @@ public class RobotContainer {
     hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()));
     // hood.setDefaultCommand(hood.stopHood());
     // drive base
+
+    driver_controller.povLeft().whileTrue(new InstantCommand(() -> slowMode(true)))
+        .onFalse(new InstantCommand(() -> slowMode(false)));
 
     // Lock to 0° when A button is held
     driver_controller
@@ -383,6 +387,14 @@ public class RobotContainer {
                       () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
                       () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
                   .withTimeout(0.25));
+    }
+  }
+
+  public void slowMode(boolean isSlow) {
+    if (isSlow) {
+        driveSpeedMultiplier = 0.4;
+    } else {
+        driveSpeedMultiplier = 1.0;
     }
   }
 
