@@ -392,7 +392,7 @@ public class RobotContainer {
 
   public void slowMode(boolean isSlow) {
     if (isSlow) {
-        driveSpeedMultiplier = 0.4;
+        driveSpeedMultiplier = 0.6;
     } else {
         driveSpeedMultiplier = 1.0;
     }

@@ -3,6 +3,9 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
+- Make hood go down faster after shooting
+- timeout for slapdown curl while shooting
+- increase slow speed for drive
 - Save Limelight pipeline
 - Shooter turnToTarget PID increase
 - Auto
