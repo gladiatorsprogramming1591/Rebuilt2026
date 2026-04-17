@@ -39,8 +39,8 @@ public class IntakeIOSim implements IntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.slapdownSpeed = deployAppliedSpeed;
-    inputs.rollerLeftSpeed = intakeAppliedSpeed;
-    inputs.rollerRightSpeed = intakeAppliedSpeed;
+    inputs.RPS_RollerLeft = intakeAppliedSpeed;
+    inputs.RPS_RollerRight = intakeAppliedSpeed;
     inputs.position = deployAngle;
     // inputs.isDeployDown = deployState.getAsDouble() == 0;
     // inputs.isDeployUp = deployState.getAsDouble() == 1;

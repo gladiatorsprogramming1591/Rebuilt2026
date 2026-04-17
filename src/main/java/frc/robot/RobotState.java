@@ -137,6 +137,14 @@ public final class RobotState {
 
   @Getter @Setter private static SlapdownModeState slapdownMode = SlapdownModeState.OFF;
 
+  public enum RollerModeState {
+    DUTYCYCLE,
+    TORQUE_CURRENT,
+    VELOCITY
+  }
+
+  @Getter @Setter private static RollerModeState rollerMode = RollerModeState.TORQUE_CURRENT;
+
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);
   }
