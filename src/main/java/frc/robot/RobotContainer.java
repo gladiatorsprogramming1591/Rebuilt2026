@@ -66,6 +66,7 @@ import frc.robot.subsystems.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutoManager;
 import frc.robot.util.HubShiftUtil;
+import frc.robot.util.LoggedTunableNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -91,6 +92,8 @@ public class RobotContainer {
   // Drive Speeds
   private double driveSpeedMultiplier = 1.0; // This will be squared, 0.4 is good for kids
   private double rotationMultiplier = 1.0; // Use 0.4 for kids
+  
+  private LoggedTunableNumber autoStartDelay = new LoggedTunableNumber("Auto Start Delay", 1.0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -522,6 +525,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Idle Intake", intake.stopIntakeInstant());
     NamedCommands.registerCommand("Stow For Bump", intake.stowBump().alongWith(intake.stopIntakeInstant()));
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
+    NamedCommands.registerCommand("Tunable Wait", Commands.waitSeconds(autoStartDelay.get()));
     NamedCommands.registerCommand(
         "Lower Hood And Stop Shooting",
         Commands.parallel(

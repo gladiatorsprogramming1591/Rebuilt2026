@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Tunable Wait"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom wiggle + First bump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BEAN"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BEAN"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Albany",
+  "choreoAuto": false
+}
