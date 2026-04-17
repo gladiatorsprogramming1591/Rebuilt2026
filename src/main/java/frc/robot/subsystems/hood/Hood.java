@@ -143,7 +143,9 @@ public class Hood extends SubsystemBase {
   }
 
   public BooleanSupplier isHoodAtAngle() {
-    return () -> (outputs.desiredHoodAngle - inputs.hoodAngle) < HoodConstants.HOOD_ANGLE_TOLERANCE;
+    boolean atAngle = (outputs.desiredHoodAngle - inputs.hoodAngle) < HoodConstants.HOOD_ANGLE_TOLERANCE;
+    Logger.recordOutput(HOOD_TABLE_KEY + "atAngle", atAngle);
+    return () -> atAngle;
   }
 
   public Command ZeroHood() {

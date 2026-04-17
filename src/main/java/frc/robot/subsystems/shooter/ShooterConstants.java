@@ -16,7 +16,7 @@ public class ShooterConstants {
   public static final double SHOOTER_MOTOR_REDUCTION = 1.0; // Currently only used in Sim. TODO: Find and assign reduction to SensorToMechanismRatio
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 70;
   public static final double MAX_FLYWHEEL_RPM = 5200.0; // Unused. TODO: Find max RPM at 12 V
-  public static final double FLYWHEEL_TOLERANCE_RPS = 1.0; // +/- 60 RPM
+  public static final double FLYWHEEL_TOLERANCE_RPS = 3.0; // +/- 60 RPM
 
   public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.75; // 0.5. increased for now to better test "isShooterAtVelocity"
   public static final double MAX_FLYWHEEL_CALCULATED_RPM = 4000.0;
