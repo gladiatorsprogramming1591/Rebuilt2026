@@ -11,9 +11,27 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "depo"
+            "pathName": "outpost"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot after outpost"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
           }
         }
       ]

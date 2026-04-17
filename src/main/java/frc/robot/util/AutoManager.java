@@ -19,7 +19,10 @@ public class AutoManager {
   private String rightSideBumpReturn = "Bottom bump";
   private String rightSideBumpWiggle = "Bottom Bump wiggle";
   private String rightSideWiggles = "MORE WIGGLES";
+  private String rightSideWigglesTrench = "MORE WIGGLES but trench";
   private String rightSideBumps = "MORE BUMPS";
+  private String middleShoot = "Middle shoot";
+  private String middleOutpost = "Middle outpost";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -38,6 +41,11 @@ public class AutoManager {
     autos.addOption("Left Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles, true)));
     autos.addOption(
         "Right Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles)));
+    autos.addOption("Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench, true)));
+    autos.addOption(
+        "Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench)));
+    autos.addOption("Center Back up and shoot", wrapAutoWithPose(new PathPlannerAuto(middleShoot)));
+    autos.addOption("Center Outpost", wrapAutoWithPose(new PathPlannerAuto(middleOutpost)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

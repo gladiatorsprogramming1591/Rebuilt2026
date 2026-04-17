@@ -519,6 +519,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
+    NamedCommands.registerCommand("Idle Intake", intake.stopIntakeInstant());
     NamedCommands.registerCommand("Stow For Bump", intake.stowBump().alongWith(intake.stopIntakeInstant()));
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
     NamedCommands.registerCommand(
