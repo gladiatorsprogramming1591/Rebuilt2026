@@ -20,31 +20,15 @@
         "y": 1.9696626506024084
       },
       "prevControl": {
-        "x": 6.663626506024096,
-        "y": -0.35793975903614506
+        "x": 6.910711612508587,
+        "y": -0.45531083366455594
       },
       "nextControl": {
-        "x": 8.796079339676371,
-        "y": 4.324662855066274
+        "x": 8.153552068473608,
+        "y": 3.2522111269614835
       },
       "isLocked": false,
       "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.182807228915664,
-        "y": 4.461180722891566
-      },
-      "prevControl": {
-        "x": 6.674866915110686,
-        "y": 6.016381102271302
-      },
-      "nextControl": {
-        "x": 6.031978509384123,
-        "y": 3.9844725339914007
-      },
-      "isLocked": false,
-      "linkedName": "Second Bump"
     },
     {
       "anchor": {
@@ -52,12 +36,12 @@
         "y": 2.9
       },
       "prevControl": {
-        "x": 6.306565782010182,
-        "y": 3.2408899488446097
+        "x": 7.384196209691679,
+        "y": 3.7717825240031537
       },
       "nextControl": {
-        "x": 5.618772266574525,
-        "y": 2.4615094830228834
+        "x": 5.511466625499543,
+        "y": 2.58740931483337
       },
       "isLocked": false,
       "linkedName": "bean"
@@ -90,11 +74,11 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 1.4105263157894774,
+      "waypointRelativePos": 1.2,
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 2.077192982456149,
+      "waypointRelativePos": 1.8783542039356036,
       "rotationDegrees": -138.41
     }
   ],
@@ -125,7 +109,7 @@
     },
     {
       "name": "Stow For Bump",
-      "waypointRelativePos": 3.1539313399778846,
+      "waypointRelativePos": 2.1539313399778846,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
