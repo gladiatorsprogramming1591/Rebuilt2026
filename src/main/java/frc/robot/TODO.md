@@ -11,9 +11,11 @@ V3 Integration:
 - Auto
     - 2.5 cycle auto (with can range)
         - First Pass:
-            - hook back around to intake more on way to bump
+            - hook back around to intake more on way to bump (P-shape)
             - New combined path to bump OR set goal end-state velocity
-        - Reduce shooter timeout
+        - Second Pass:
+            - Combine NZ and Bump paths
+        - Reduce shooter timeout and/or use CANrange
     - Test Warm Up Shooter named command to see if it is working now that we coast the shooter
 - Deploy
     - Log peak stator/supply current for
@@ -21,9 +23,13 @@ V3 Integration:
         - reverse
         - add current graph tab in Elastic
         - Stow while shooting state
+    - Improve stow with balls
+        - Higher power needed
+        - Perhaps delay start of this by 1 second to conserve energy
 - Hopper
     - Hopper empty detection
-        - current based and can range
+        - current based and can ranges
+            - graph kicker current, see min amps while shooting, see average amps coasting
 - Intake
     - Duty cycle intake rollers
     - Check follower, if OK use velocity
