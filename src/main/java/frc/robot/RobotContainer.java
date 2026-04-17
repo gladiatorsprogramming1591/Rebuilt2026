@@ -314,7 +314,10 @@ public class RobotContainer {
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
     driver_controller.rightTrigger().whileTrue(shootWithAim());
-    
+    driver_controller.rightTrigger().and(()->hopper.isHopperEmpty())
+        .whileTrue(Commands.runEnd(
+                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.8),
+                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0)));    
     driver_controller
         .rightTrigger()
         .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
@@ -431,7 +434,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.5).andThen(intake.stowWhileShooting()))));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting()))));
   }
 
   public Command shootWithAim() {
@@ -448,7 +451,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.5).andThen(intake.stowWhileShooting()))));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting()))));
   }
 
   public Command shootWithAimStationary() {
@@ -463,7 +466,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.5).andThen(intake.stowWhileShooting()))));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting()))));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
@@ -509,7 +512,10 @@ public class RobotContainer {
 
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("Aim to Hub", );
-    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(2.5));
+    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary()
+        .until(()->hopper.isHopperEmpty())
+        .withTimeout(3.0));
+    // NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(3));
     NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());

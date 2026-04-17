@@ -14,6 +14,7 @@ V3 Integration:
             - hook back around to intake more on way to bump
             - New combined path to bump OR set goal end-state velocity
         - Reduce shooter timeout
+    - Test Warm Up Shooter named command to see if it is working now that we coast the shooter
 - Deploy
     - Log peak stator/supply current for
         - forward
@@ -25,6 +26,11 @@ V3 Integration:
         - current based and can range
 - Intake
     - Duty cycle intake rollers
+    - Check follower, if OK use velocity
+    - Increase duty cycle if velocity below threshold
+    - Test intaking at depot
+- Hood
+    - Run hood to 100, then run to zero to speed up zeroing
 READY TO TEST
     - implement CANRange - Jeff
 
