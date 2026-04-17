@@ -43,7 +43,8 @@ READY TO TEST
 
 ===============================================
 
--
+- Add status signals for all subsystems lacking
+
 - Hood:
     - Investigate why it either works or not at all between code deploys
     - Hood zero trigger
