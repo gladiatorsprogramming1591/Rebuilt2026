@@ -58,10 +58,10 @@ public final class IntakeConstants {
 
   // Angles
   public static final double UP = -17.08056640625;
-  public static final double DOWN = 0.0; // TODO: Find new DOWN angle after hard-stop cushioning
+  public static final double DOWN = 0.0;
   public static final double MIDDLE = DOWN / 2;
   public static final double BUMP = MIDDLE;
-  public static final double SHOOTING_STOP = UP * 0.75;
+  public static final double SHOOTING_STOP = UP * 0.60;
   // Points at which the slapdown succumbs to gravity
   public static final double TIPPING_POINT = MIDDLE;
   public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;
@@ -77,10 +77,7 @@ public final class IntakeConstants {
   // Amps
   public static final double DEPLOYING_TORQUE_CURRENT = 10.0;
   public static final double STOWING_TORQUE_CURRENT = -18.0;
-  private static final double m_rollerTorqueCurrent = 60.0;
-  
-  public static final double ROLLER_DELAY_SECONDS = 2.0; // placeholder until tested
-  
+  private static final double m_rollerTorqueCurrent = 60.0;  
   
   public static final String kintakeTableKey = "Intake/";
   public static final String kdeployTableKey = kintakeTableKey + "Deploy/";

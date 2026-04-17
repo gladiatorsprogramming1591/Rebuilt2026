@@ -254,7 +254,11 @@ public class RobotContainer {
     // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
     // TODO: Prevent driving to zero repeatedly after first successful iteraton. Ready to test.
     // TODO: Idea: "andThen" run "stopHood" indefinitely until interrupted (only if initially zeroed)
-    hood.setDefaultCommand(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()));
+    hood.setDefaultCommand(
+        hood.runHoodPosition(() -> 10.0)
+        .until(hood.isHoodAtAngle()).withTimeout(0.25)
+        .andThen(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()))
+        );
     // hood.setDefaultCommand(hood.stopHood());
     // drive base
 
@@ -392,7 +396,7 @@ public class RobotContainer {
 
   public void slowMode(boolean isSlow) {
     if (isSlow) {
-        driveSpeedMultiplier = 0.6;
+        driveSpeedMultiplier = 0.7;
     } else {
         driveSpeedMultiplier = 1.0;
     }
@@ -402,7 +406,7 @@ public class RobotContainer {
     return Commands.parallel(shooter.runShooterTarget(), hood.runHoodTarget());
   }
 
-  public Command shoot() {
+  public Command shoot() { // IS NOT USED
     return Commands.parallel(
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
@@ -427,7 +431,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.5).andThen(intake.stowWhileShooting()))));
   }
 
   public Command shootWithAim() {
@@ -444,7 +448,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.5).andThen(intake.stowWhileShooting()))));
   }
 
   public Command shootWithAimStationary() {
@@ -459,7 +463,7 @@ public class RobotContainer {
                 Commands.waitUntil(shooter.isShooterAtVelocity())
                     .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.5).andThen(intake.stowWhileShooting()))));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
