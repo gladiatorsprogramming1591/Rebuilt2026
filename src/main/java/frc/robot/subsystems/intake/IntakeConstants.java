@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import frc.robot.util.LoggedTunableBoolean;
 import frc.robot.util.LoggedTunableNumber;
 
 public final class IntakeConstants {
@@ -78,6 +79,7 @@ public final class IntakeConstants {
   public static final double DEPLOYING_TORQUE_CURRENT = 10.0;
   public static final double STOWING_TORQUE_CURRENT = -18.0;
   private static final double m_rollerTorqueCurrent = 60.0;  
+  private static final boolean m_isTorqueMode = true;  
   
   public static final String kintakeTableKey = "Intake/";
   public static final String kdeployTableKey = kintakeTableKey + "Deploy/";
@@ -87,6 +89,8 @@ public final class IntakeConstants {
   // Intake roller
   public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
       new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_rollerTorqueCurrent);
+  public static final LoggedTunableBoolean IS_TORQUE_MODE =
+      new LoggedTunableBoolean(kintakeTableKey + "Use Torque Mode?", m_isTorqueMode);
   // Deploy
   public static final LoggedTunableNumber deploySpeed =
       new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOYING_SPEED);
