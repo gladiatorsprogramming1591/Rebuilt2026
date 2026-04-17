@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -27,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RollerModeState;
 import frc.robot.util.PhoenixUtil;
 
 public class IntakeIOKraken implements IntakeIO {
@@ -47,8 +47,15 @@ public class IntakeIOKraken implements IntakeIO {
 
   private final StatusSignal<Angle> deployAngle = deployMotor.getPosition();
   private final StatusSignal<Current> deploySupplyCurrent = deployMotor.getSupplyCurrent();
+  private final StatusSignal<Current> deployStatorCurrent = deployMotor.getStatorCurrent();
   private final StatusSignal<Current> deployTorqueCurrent = deployMotor.getTorqueCurrent();
   private final StatusSignal<AngularVelocity> deployAngularVelocity = deployMotor.getVelocity();
+  private final StatusSignal<Current> intakeLeftSupplyCurrent = intakeLeft.getSupplyCurrent();
+  private final StatusSignal<Current> intakeRightSupplyCurrent = intakeRight.getSupplyCurrent();
+  private final StatusSignal<Current> intakeLeftStatorCurrent = intakeLeft.getStatorCurrent();
+  private final StatusSignal<Current> intakeRightStatorCurrent = intakeRight.getStatorCurrent();
+  private final StatusSignal<Current> intakeLeftTorqueCurrent = intakeLeft.getTorqueCurrent();
+  private final StatusSignal<Current> intakeRightTorqueCurrent = intakeRight.getTorqueCurrent();
   private final StatusSignal<Temperature> intakeLeftTemp = intakeLeft.getDeviceTemp();
   private final StatusSignal<Temperature> intakeRightTemp = intakeRight.getDeviceTemp();
   private final StatusSignal<AngularVelocity> intakeLeftAngularVelocity = intakeLeft.getVelocity();
@@ -139,7 +146,14 @@ public class IntakeIOKraken implements IntakeIO {
         deployAngle,
         deployAngularVelocity,
         deploySupplyCurrent,
+        deployStatorCurrent,
         deployTorqueCurrent,
+        intakeLeftSupplyCurrent,
+        intakeRightSupplyCurrent,
+        intakeLeftStatorCurrent,
+        intakeRightStatorCurrent,
+        intakeLeftTorqueCurrent,
+        intakeRightTorqueCurrent,
         intakeLeftTemp,
         intakeRightTemp,
         intakeLeftAngularVelocity,
@@ -156,7 +170,14 @@ public class IntakeIOKraken implements IntakeIO {
         deployAngle,
         deployAngularVelocity,
         deploySupplyCurrent,
+        deployStatorCurrent,
         deployTorqueCurrent,
+        intakeLeftSupplyCurrent,
+        intakeRightSupplyCurrent,
+        intakeLeftStatorCurrent,
+        intakeRightStatorCurrent,
+        intakeLeftTorqueCurrent,
+        intakeRightTorqueCurrent,
         intakeLeftTemp,
         intakeRightTemp,
         intakeLeftAngularVelocity,
@@ -165,10 +186,17 @@ public class IntakeIOKraken implements IntakeIO {
     inputs.slapdownSpeed = deployAngularVelocity.getValueAsDouble();
     inputs.slapdownTorqueCurrentFOC = deployTorqueCurrent.getValueAsDouble();
     inputs.slapdownSupplyCurrent = deploySupplyCurrent.getValueAsDouble();
-    inputs.rollerLeftSpeed = intakeLeftAngularVelocity.getValueAsDouble();
-    inputs.rollerRightSpeed = intakeRightAngularVelocity.getValueAsDouble();
-    inputs.rollerLeftTemp = intakeLeftTemp.getValueAsDouble();
-    inputs.rollerRightTemp = intakeRightTemp.getValueAsDouble();
+    inputs.slapdownStatorCurrent = deployStatorCurrent.getValueAsDouble();
+    inputs.RPS_RollerLeft = intakeLeftAngularVelocity.getValueAsDouble();
+    inputs.RPS_RollerRight = intakeRightAngularVelocity.getValueAsDouble();
+    inputs.motorTemp_RollerLeft = intakeLeftTemp.getValueAsDouble();
+    inputs.motorTemp_rollerRight = intakeRightTemp.getValueAsDouble();
+    inputs.supplyCurrent_RollerLeft = intakeLeftSupplyCurrent.getValueAsDouble();
+    inputs.supplyCurrent_RollerRight = intakeRightSupplyCurrent.getValueAsDouble();
+    inputs.statorCurrent_RollerLeft = intakeLeftStatorCurrent.getValueAsDouble();
+    inputs.statorCurrent_RollerRight = intakeRightStatorCurrent.getValueAsDouble();
+    inputs.torqueCurrent_RollerLeft = intakeLeftTorqueCurrent.getValueAsDouble();
+    inputs.torqueCurrent_RollerRight = intakeRightTorqueCurrent.getValueAsDouble();
     inputs.isSlapdownDown = bottomLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
     inputs.isSlapdownUp = topLimit.get() == false; // DIO value is true unless signal is detected/sensor in place
     // stowedTrigger.onTrue(new InstantCommand(() -> deployMotor.setPosition(IntakeConstants.UP)));
@@ -198,7 +226,8 @@ public class IntakeIOKraken implements IntakeIO {
       tuneDeployMotorConfigs(outputs);
     }
 
-    if (outputs.appliedRollerSpeed == IntakeConstants.ROLLER_PICKUP_SPEED)
+    if (outputs.appliedRollerSpeed == IntakeConstants.ROLLER_PICKUP_SPEED 
+            && RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT)
     {
       intakeLeft.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));
       intakeRight.setControl(torqueDutyCycleControl.withOutput(IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble()));

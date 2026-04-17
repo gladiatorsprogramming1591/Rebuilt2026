@@ -5,18 +5,27 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
+    // Slapdown
     public double slapdownSpeed = 0.0;
     public double slapdownTorqueCurrentFOC = 0.0;
     public double slapdownSupplyCurrent = 0.0;
-    public double rollerLeftSpeed = 0.0;
-    public double rollerRightSpeed = 0.0;
-    public double rollerLeftTemp = 0.0;
-    public double rollerRightTemp = 0.0;
+    public double slapdownStatorCurrent = 0.0;
     public boolean isSlapdownDown = false;
     public boolean isSlapdownUp = false;
     public double position = 0.0;
     public double rawPosition = 0.0;
     public double encoderOffset = 0.0;
+    // Roller
+    public double RPS_RollerLeft = 0.0;
+    public double RPS_RollerRight = 0.0;
+    public double motorTemp_RollerLeft = 0.0;
+    public double motorTemp_rollerRight = 0.0;
+    public double supplyCurrent_RollerRight = 0.0;
+    public double supplyCurrent_RollerLeft = 0.0;
+    public double statorCurrent_RollerRight = 0.0;
+    public double statorCurrent_RollerLeft = 0.0;
+    public double torqueCurrent_RollerRight = 0.0;
+    public double torqueCurrent_RollerLeft = 0.0;
   }
 
   @AutoLog

@@ -234,7 +234,7 @@ public class Intake extends SubsystemBase {
     // For testing, turn deploy motors off after hitting hard stop
     // TODO: Don't leave this in code as we will likely stop between bottom and top when hopper is full
     if (stopSlapdownWhenNotMoving) {
-      if (inputs.rollerLeftSpeed == 0) {
+      if (inputs.RPS_RollerLeft == 0) {
         slapdownStoppedLoopCount++;
       } else {
         slapdownStoppedLoopCount = 0;
