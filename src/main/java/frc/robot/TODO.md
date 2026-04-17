@@ -6,9 +6,12 @@ V3 Integration:
 GIO:
 - Duty cycle intake rollers
 - BooleanSupplier wrapper for tunable start delay
+- Second Pass Auto - swap BEAN to Figure 8
 
 JEFF:
 - 'Shooter at velocity' debug
+- Deploy/Stow Peak Current Limits
+- Hopper empty while shooting - test while empty; suspect it might still be taking 3 seconds
 
 ===============================================
 
