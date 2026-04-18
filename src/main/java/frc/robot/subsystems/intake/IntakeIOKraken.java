@@ -293,10 +293,14 @@ public class IntakeIOKraken implements IntakeIO {
       Slot1Configs slot1 = tunedConfigs.Slot1;
       Slot2Configs slot2 = tunedConfigs.Slot2;
       MotionMagicConfigs mm = tunedConfigs.MotionMagic;
+      var slapdownTorqueCurrentConfigs = tunedConfigs.TorqueCurrent; 
+      slapdownTorqueCurrentConfigs.PeakForwardTorqueCurrent = IntakeConstants.peakForwardStatorCurrentLimit.get();
+      slapdownTorqueCurrentConfigs.PeakReverseTorqueCurrent = IntakeConstants.peakReverseStatorCurrentLimit.get();
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot0, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot1, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slot2, tunedConfigTimeout));
       PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(mm, tunedConfigTimeout));
+      PhoenixUtil.tryUntilOk(tunedConfigMaxAttempts, () -> deployMotor.getConfigurator().apply(slapdownTorqueCurrentConfigs, tunedConfigTimeout));
     }
   }
 

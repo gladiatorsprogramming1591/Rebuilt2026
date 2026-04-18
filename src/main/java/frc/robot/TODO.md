@@ -5,12 +5,15 @@ V3 Integration:
 ### On Deck
 GIO:
 - BooleanSupplier wrapper for tunable start delay
+- Second Pass Auto - swap BEAN to Figure 8
 
 JEFF:
 - Momentary stop facing april tag to localized during auto (ref 1796)
 - Remove goal end-state velocity
 - Consider slowing down while intaking
 - 'Shooter at velocity' debug
+- Deploy/Stow Peak Current Limits
+- Hopper empty while shooting - test while empty; suspect it might still be taking 3 seconds
 
 READY TO TEST:
 - Duty cycle intake rollers

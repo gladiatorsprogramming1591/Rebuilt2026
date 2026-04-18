@@ -18,8 +18,8 @@ public final class IntakeConstants {
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
   public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 30.0;
-  public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 20.0; 
-  public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -24.0; 
+  public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 22.0; 
+  public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -27.0; 
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
@@ -94,6 +94,10 @@ public final class IntakeConstants {
   // Deploy
   public static final LoggedTunableNumber deploySpeed =
       new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOYING_SPEED);
+  public static final LoggedTunableNumber peakForwardStatorCurrentLimit =
+      new LoggedTunableNumber(kdeployTableKey + "peakForwardStatorCurrentLimit", PEAK_FORWARD_STATOR_CURRENT_LIMIT);
+  public static final LoggedTunableNumber peakReverseStatorCurrentLimit =
+      new LoggedTunableNumber(kdeployTableKey + "peakReverseStatorCurrentLimit", PEAK_REVERSE_STATOR_CURRENT_LIMIT);
   public static final LoggedTunableNumber kdeployP =
       new LoggedTunableNumber(kdeployTableKey + "kdeployP", DeployConfigs.kP);
   public static final LoggedTunableNumber kdeployI =
