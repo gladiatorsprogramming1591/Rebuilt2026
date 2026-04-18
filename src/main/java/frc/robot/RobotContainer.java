@@ -258,9 +258,9 @@ public class RobotContainer {
     // TODO: Prevent driving to zero repeatedly after first successful iteraton. Ready to test.
     // TODO: Idea: "andThen" run "stopHood" indefinitely until interrupted (only if initially zeroed)
     hood.setDefaultCommand(
-        hood.runHoodPosition(() -> 10.0)
-        .until(hood.isHoodAtAngle()).withTimeout(0.25)
-        .andThen(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()))
+        hood.runHoodPosition(() -> 20.0)
+        // .until(hood.isHoodAtAngle()).until(Commands.waitSeconds(0.25))
+        // .andThen(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()))
         );
     // hood.setDefaultCommand(hood.stopHood());
     // drive base
