@@ -38,8 +38,10 @@ public class Intake extends SubsystemBase {
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean stopSlapdownWhenNotMoving = false;
   private boolean isSlapdownStopped = true;
+  private boolean overrideRollerSpeed = false;
 
   @AutoLogOutput private double manualAngle = 0.0;
+  @AutoLogOutput private double requestedRollerSpeed = 0.0;
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -130,26 +132,37 @@ public class Intake extends SubsystemBase {
   public Command runRollerWithoutRequirements() {
     return new RunCommand(
             () -> {
-              outputs.appliedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
+              requestedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
             });
   }
   
   public Command runRoller() {
     return runEnd(
             () -> {
-              outputs.appliedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
+              requestedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
             },
             () -> {
-              outputs.appliedRollerSpeed = 0.0;
+              requestedRollerSpeed = 0.0;
+            });
+  }
+  public Command overrideRollerSpeedCommand() {
+    return runEnd(
+            () -> {
+              requestedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
+              overrideRollerSpeed = true;
+            },
+            () -> {
+              requestedRollerSpeed = 0.0;
+              overrideRollerSpeed = false;
             });
   }
   public Command reverseRoller() {
     return runEnd(
             () -> {
-              outputs.appliedRollerSpeed = IntakeConstants.ROLLER_REVERSE_SPEED;
+              requestedRollerSpeed = IntakeConstants.ROLLER_REVERSE_SPEED;
             },
             () -> {
-              outputs.appliedRollerSpeed = 0.0;
+              requestedRollerSpeed = 0.0;
             });
   }
 
@@ -160,7 +173,7 @@ public class Intake extends SubsystemBase {
   public Command stopIntake() {
     return run(
         () -> {
-          outputs.appliedRollerSpeed = 0;
+          requestedRollerSpeed = 0;
           outputs.appliedSlapdownSpeed = 0;
           RobotState.setSlapdownMode(SlapdownModeState.OFF);
         });
@@ -176,7 +189,7 @@ public class Intake extends SubsystemBase {
   public Command stopIntakeInstant() {
     return new InstantCommand(
         () -> {
-          outputs.appliedRollerSpeed = 0;
+          requestedRollerSpeed = 0;
         });
   }
 
@@ -203,6 +216,12 @@ public class Intake extends SubsystemBase {
     outputs.kstowFullD = IntakeConstants.kstowFullD.getAsDouble();
     outputs.kstowFullFF = IntakeConstants.kstowFullFF.getAsDouble();
     outputs.kstowFullG = IntakeConstants.kstowFullG.getAsDouble();
+
+    if (inputs.position < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
+      outputs.appliedRollerSpeed = 0.0;
+    } else {
+      outputs.appliedRollerSpeed = requestedRollerSpeed;
+    }
 
     Logger.recordOutput(kintakeTableKey + "Slapdown Mode", RobotState.getSlapdownMode().toString());
     Logger.recordOutput(kintakeTableKey + "Roller Mode", RobotState.getRollerMode().toString());

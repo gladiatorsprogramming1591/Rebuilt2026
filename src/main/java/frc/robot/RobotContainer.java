@@ -353,7 +353,8 @@ public class RobotContainer {
     operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
     operator_controller.povRight().onTrue(hood.ZeroHood());
     operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
-
+    operator_controller.leftStick().whileTrue(intake.overrideRollerSpeedCommand());
+    
     // Reset hub shift timer when enabling
     RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
     RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));

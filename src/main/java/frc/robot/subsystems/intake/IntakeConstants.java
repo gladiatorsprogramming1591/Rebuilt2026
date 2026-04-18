@@ -63,6 +63,7 @@ public final class IntakeConstants {
   public static final double MIDDLE = DOWN / 2;
   public static final double BUMP = MIDDLE;
   public static final double SHOOTING_STOP = UP * 0.60;
+  public static final double ROLLER_STOP_CONSTRAINT = UP * 0.60;
   // Points at which the slapdown succumbs to gravity
   public static final double TIPPING_POINT = MIDDLE;
   public static final double TIP_TOWARD_STOW = TIPPING_POINT - 2;
