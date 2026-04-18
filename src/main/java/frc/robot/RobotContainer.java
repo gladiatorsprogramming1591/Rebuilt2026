@@ -409,7 +409,11 @@ public class RobotContainer {
   }
 
   public Command warmUpShooterCommand() {
-    return Commands.parallel(shooter.runShooterTarget(), hood.runHoodTarget());
+    return Commands.parallel(
+        shooter.runShooterTarget(), 
+        hood.runHoodTarget(), 
+        DriveCommands.joystickDriveWhileLaunching(
+            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()));
   }
 
   public Command shoot() { // IS NOT USED
