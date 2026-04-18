@@ -26,6 +26,7 @@ public class AutoManager {
   private String rightSideWigglesTrenchWithDelay = "MORE WIGGLES but trench with delay";
   private String rightSafeBeanTag = "SAFE BEAN Tag";
   private String rightFigure8Tag = "Figure 8 Tag";
+  private String rightFigure8TagAggressive = "Figure 8 Tag Aggressive Hub";
   private String middleBumpTest = "Straight ln auto";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
@@ -58,6 +59,8 @@ public class AutoManager {
     autos.addOption("Left SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag, true)));
     autos.addOption("Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag)));
     autos.addOption("Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag, true)));
+    autos.addOption("AGGRES Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive)));
+    autos.addOption("AGGRES Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive, true)));
     autos.addOption("Test: Bump", wrapAutoWithPose(new PathPlannerAuto(middleBumpTest)));
   }
 

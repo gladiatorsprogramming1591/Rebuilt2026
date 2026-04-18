@@ -136,6 +136,19 @@
         "nominalVoltage": 12.0,
         "unlimited": false
       }
+    },
+    {
+      "name": "Initial fuel contact",
+      "minWaypointRelativePos": 1.3319755600814485,
+      "maxWaypointRelativePos": 3.1812627291242848,
+      "constraints": {
+        "maxVelocity": 1.9,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
     }
   ],
   "pointTowardsZones": [],
