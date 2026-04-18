@@ -3,6 +3,9 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
+- Momentary stop facing april tag to localized during auto (ref 1796)
+- Remove goal end-state velocity
+- Consider slowing down while intaking
 - Make hood go down faster after shooting
 - timeout for slapdown curl while shooting
 - increase slow speed for drive
