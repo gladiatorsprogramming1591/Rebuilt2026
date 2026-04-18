@@ -27,6 +27,7 @@ public class AutoManager {
   private String rightSafeBeanTag = "SAFE BEAN Tag";
   private String rightFigure8Tag = "Figure 8 Tag";
   private String rightFigure8TagAggressive = "Figure 8 Tag Aggressive Hub";
+  private String rightFigure8AggressiveBoth = "Figure 8 Aggressive Both";
   private String middleBumpTest = "Straight ln auto";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
@@ -43,25 +44,27 @@ public class AutoManager {
     // autos.addOption("Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
     // autos.addOption(
     //     "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
-    autos.addOption("Left Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles, true)));
-    autos.addOption(
-        "Right Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles)));
-    autos.addOption("Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench, true)));
-    autos.addOption(
-      "Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench)));
-      autos.addOption(
-        "Delayed Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay, true)));
-    autos.addOption(
-      "Delayed Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay)));
-    autos.addOption("Center Back up and shoot", wrapAutoWithPose(new PathPlannerAuto(middleShoot)));
-    autos.addOption("Center Outpost", wrapAutoWithPose(new PathPlannerAuto(middleOutpost)));
-    autos.addOption("Right SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag)));
-    autos.addOption("Left SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag, true)));
-    autos.addOption("Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag)));
-    autos.addOption("Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag, true)));
-    autos.addOption("AGGRES Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive)));
-    autos.addOption("AGGRES Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive, true)));
-    autos.addOption("Test: Bump", wrapAutoWithPose(new PathPlannerAuto(middleBumpTest)));
+    // autos.addOption("Left Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles, true)));
+    // autos.addOption(
+    //     "Right Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles)));
+    // autos.addOption("Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench, true)));
+    // autos.addOption(
+    //   "Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench)));
+    //   autos.addOption(
+    //     "Delayed Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay, true)));
+    // autos.addOption(
+    //   "Delayed Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay)));
+    // autos.addOption("Center Back up and shoot", wrapAutoWithPose(new PathPlannerAuto(middleShoot)));
+    // autos.addOption("Center Outpost", wrapAutoWithPose(new PathPlannerAuto(middleOutpost)));
+    // autos.addOption("Right SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag)));
+    // autos.addOption("Left SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag, true)));
+    // autos.addOption("Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag)));
+    // autos.addOption("Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag, true)));
+    // autos.addOption("AGGRES Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive)));
+    // autos.addOption("AGGRES Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive, true)));
+    // autos.addOption("Test: Bump", wrapAutoWithPose(new PathPlannerAuto(middleBumpTest)));
+    autos.addOption("Right Figure 8 Aggressive Both", wrapAutoWithPose(new PathPlannerAuto(rightFigure8AggressiveBoth)));
+    autos.addOption("Left Figure 8 Aggressive Both", wrapAutoWithPose(new PathPlannerAuto(rightFigure8AggressiveBoth, true)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {
