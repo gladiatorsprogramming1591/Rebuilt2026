@@ -90,10 +90,6 @@
       "rotationDegrees": 114.10093100420085
     },
     {
-      "waypointRelativePos": 2.6522821576763596,
-      "rotationDegrees": -21.866145138326296
-    },
-    {
       "waypointRelativePos": 3.448962655601652,
       "rotationDegrees": -38.41
     },
@@ -102,8 +98,46 @@
       "rotationDegrees": -38.41
     }
   ],
-  "constraintZones": [],
-  "pointTowardsZones": [],
+  "constraintZones": [
+    {
+      "name": "Localize",
+      "minWaypointRelativePos": 3.3490884537474512,
+      "maxWaypointRelativePos": 3.41,
+      "constraints": {
+        "maxVelocity": 0.1,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Pre-bump",
+      "minWaypointRelativePos": 3.413909520594198,
+      "maxWaypointRelativePos": 3.5651586765698817,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.626,
+        "y": 4.034536
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 2.6684672518568675,
+      "maxWaypointRelativePos": 3.4139095205941827,
+      "name": "Point Towards Hub"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "Lower Hood And Stop Shooting",
@@ -129,7 +163,7 @@
     },
     {
       "name": "Stow For Bump",
-      "waypointRelativePos": 2.3,
+      "waypointRelativePos": 3.521944632005394,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
