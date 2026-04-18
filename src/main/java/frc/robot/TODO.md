@@ -6,6 +6,7 @@ V3 Integration:
 GIO:
 - BooleanSupplier wrapper for tunable start delay
 - Second Pass Auto - swap BEAN to Figure 8
+- Temporary removal of loop overrun warnings so we can see real issues
 
 JEFF:
 - Consider slowing down while intaking (momentary stop for AprilTags might take care of this)
