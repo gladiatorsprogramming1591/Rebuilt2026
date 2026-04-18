@@ -4,11 +4,14 @@ V3 Integration:
 --------------
 ### On Deck
 GIO:
-- Duty cycle intake rollers
 - BooleanSupplier wrapper for tunable start delay
 
 JEFF:
 - 'Shooter at velocity' debug
+
+READY TO TEST:
+- Duty cycle intake rollers
+- Test increased supply current
 
 ===============================================
 
@@ -31,7 +34,7 @@ JEFF:
     - Hopper empty detection
         - current based and can ranges
             - graph kicker current, see min amps while shooting, see average amps coasting
-READY TO TEST
+TEST TO DIAGNOSE
 - Hood zeroing between code reboots
 
 ===============================================
