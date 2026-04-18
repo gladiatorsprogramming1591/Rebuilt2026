@@ -5,23 +5,19 @@ V3 Integration:
 ### On Deck
 GIO:
 - BooleanSupplier wrapper for tunable start delay
-- Second Pass Auto - swap BEAN to Figure 8
-- Temporary removal of loop overrun warnings so we can see real issues
+- Temporary supression of loop overrun warnings so we can see real issues
 
 JEFF:
-- Consider slowing down while intaking (momentary stop for AprilTags might take care of this)
-- 'Shooter at velocity' debug
-- Hopper empty while shooting - test while empty; suspect it might still be taking 3 seconds
+- Hopper empty while shooting - test while empty; suspect it might still be taking 3 seconds (is CANRange actually reducing auto shoot time)
 
 READY TO TEST:
-- Remove goal end-state velocity (Done for BEAN Tag)
-- Momentary stop facing april tag to localized during auto (ref 1796)
 - Duty cycle intake rollers
-- Test increased supply current
 
 ===============================================
 
-### TVR
+### Post-TVR
+- ***'Shooter at velocity' debug***
+- ***X wheels when at target launching angle***
 - Shooter turnToTarget PID increase
 - Auto
     - Shooter accuracy either overshoots or to far left/right only in auto
@@ -150,6 +146,10 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Remove goal end-state velocity (Done for BEAN Tag)
+- Test increased supply current (rollers)
+- Momentary stop facing april tag to localized during auto (ref 1796)
+- Second Pass Auto - swap BEAN to Figure 8
 - Deploy/Stow Peak Current Limits
     - implement CANRange - Jeff
     - Run hood to 100, then run to zero to speed up zeroing
