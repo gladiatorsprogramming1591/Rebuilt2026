@@ -14,19 +14,19 @@ public final class IntakeConstants {
   public static final double ROLLER_MOTOR_REDUCTION = 1.0; // placeholder until tested
   public static final double SLAPDOWN_MOTOR_REDUCTION = 1.0; // placeholder until tested
 
-  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 40.0;
+  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 60.0;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
   public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 30.0;
   public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 22.0; 
-  public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -27.0; 
+  public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -35.0; 
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
 
   public class DeployConfigs
   {
-    public static final double kP = 10.0;
+    public static final double kP = 2.5;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kG = 10.0;
@@ -37,7 +37,7 @@ public final class IntakeConstants {
 
   public class StowConfigs
   {
-    public static final double kP = 10.0;
+    public static final double kP = 3.5;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kG = 10.0;
@@ -48,7 +48,7 @@ public final class IntakeConstants {
 
   public class StowFullConfigs
   {
-    public static final double kP = 10.0;
+    public static final double kP = 5.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
     public static final double kG = 10.0;

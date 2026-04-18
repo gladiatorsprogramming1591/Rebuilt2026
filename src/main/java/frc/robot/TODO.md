@@ -8,14 +8,13 @@ GIO:
 - Second Pass Auto - swap BEAN to Figure 8
 
 JEFF:
-- Momentary stop facing april tag to localized during auto (ref 1796)
-- Remove goal end-state velocity
-- Consider slowing down while intaking
+- Consider slowing down while intaking (momentary stop for AprilTags might take care of this)
 - 'Shooter at velocity' debug
-- Deploy/Stow Peak Current Limits
 - Hopper empty while shooting - test while empty; suspect it might still be taking 3 seconds
 
 READY TO TEST:
+- Remove goal end-state velocity (Done for BEAN Tag)
+- Momentary stop facing april tag to localized during auto (ref 1796)
 - Duty cycle intake rollers
 - Test increased supply current
 
@@ -28,7 +27,7 @@ READY TO TEST:
     - 2.5 cycle auto
     - Test Warm Up Shooter named command to see if it is working now that we coast the shooter
 - Deploy
-    - Log peak stator/supply current for: 
+    - Log peak stator/supply current for:
         forward, reverse, andStow while shooting state
     - Improve stow with balls
         - Higher power needed
@@ -150,6 +149,7 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Deploy/Stow Peak Current Limits
     - implement CANRange - Jeff
     - Run hood to 100, then run to zero to speed up zeroing
 - Make hood go down faster after shooting
