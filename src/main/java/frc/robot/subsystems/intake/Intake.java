@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RollerModeState;
 import frc.robot.RobotState.SlapdownModeState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -203,7 +204,8 @@ public class Intake extends SubsystemBase {
     outputs.kstowFullFF = IntakeConstants.kstowFullFF.getAsDouble();
     outputs.kstowFullG = IntakeConstants.kstowFullG.getAsDouble();
 
-    Logger.recordOutput(kintakeTableKey + "Mode", RobotState.getSlapdownMode().toString());
+    Logger.recordOutput(kintakeTableKey + "Slapdown Mode", RobotState.getSlapdownMode().toString());
+    Logger.recordOutput(kintakeTableKey + "Roller Mode", RobotState.getRollerMode().toString());
     Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedRollerSpeed);
     Logger.recordOutput(kintakeTableKey + "Applied Slapdown Speed", outputs.appliedSlapdownSpeed);
     Logger.recordOutput(kintakeTableKey + "Applied Slapdown Current", outputs.appliedSlapdownCurrent); // ?: Not updated
@@ -241,6 +243,12 @@ public class Intake extends SubsystemBase {
       }
       if (slapdownStoppedLoopCount > SLAPDOWN_STOPPED_LOOP_COUNT_NEEDED) {
         deployStop();
+      }
+
+      if (IntakeConstants.IS_TORQUE_MODE.get()) {
+        RobotState.setRollerMode(RollerModeState.TORQUE_CURRENT);
+      } else {
+        RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
       }
     }
 

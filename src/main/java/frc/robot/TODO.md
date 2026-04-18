@@ -3,46 +3,42 @@ High Priority:
 V3 Integration:
 --------------
 ### On Deck
+GIO:
+- BooleanSupplier wrapper for tunable start delay
+
+JEFF:
 - Momentary stop facing april tag to localized during auto (ref 1796)
 - Remove goal end-state velocity
 - Consider slowing down while intaking
-- Make hood go down faster after shooting
-- timeout for slapdown curl while shooting
-- increase slow speed for drive
-- Save Limelight pipeline
+- 'Shooter at velocity' debug
+
+READY TO TEST:
+- Duty cycle intake rollers
+- Test increased supply current
+
+===============================================
+
+### TVR
 - Shooter turnToTarget PID increase
 - Auto
-    - 2.5 cycle auto (with can range)
-        - First Pass:
-            - hook back around to intake more on way to bump (P-shape)
-            - New combined path to bump OR set goal end-state velocity
-        - Second Pass:
-            - Combine NZ and Bump paths
-        - Reduce shooter timeout and/or use CANrange
+    - Shooter accuracy either overshoots or to far left/right only in auto
+    - 2.5 cycle auto
     - Test Warm Up Shooter named command to see if it is working now that we coast the shooter
 - Deploy
-    - Log peak stator/supply current for
-        - forward
-        - reverse
-        - add current graph tab in Elastic
-        - Stow while shooting state
+    - Log peak stator/supply current for: 
+        forward, reverse, andStow while shooting state
     - Improve stow with balls
         - Higher power needed
-        - Perhaps delay start of this by 1 second to conserve energy
+- Intake
+    - Check follower, if OK use velocity
+    - Increase duty cycle if velocity below threshold
+    - Test intaking at depot
 - Hopper
     - Hopper empty detection
         - current based and can ranges
             - graph kicker current, see min amps while shooting, see average amps coasting
-- Intake
-    - Duty cycle intake rollers
-    - Check follower, if OK use velocity
-    - Increase duty cycle if velocity below threshold
-    - Test intaking at depot
-- Hood
-    - Run hood to 100, then run to zero to speed up zeroing
-READY TO TEST
-    - implement CANRange - Jeff
-
+TEST TO DIAGNOSE
+- Hood zeroing between code reboots
 
 ===============================================
 
@@ -53,7 +49,7 @@ READY TO TEST
     - Hood zero trigger
 - Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
     - Tune motor configs to prep to shoot faster
-
+- Save Limelight pipeline
 - Intake
     - Ideas for smoother slapdown functions
         - See if kG is suitable: kG increase as angle approaches deploy intake to slow down
@@ -151,6 +147,20 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+    - implement CANRange - Jeff
+    - Run hood to 100, then run to zero to speed up zeroing
+- Make hood go down faster after shooting
+- timeout for slapdown curl while shooting
+- increase slow speed for drive
+    - 2.5 cycle auto (with can range)
+        - First Pass:
+            - hook back around to intake more on way to bump (P-shape)
+            - New combined path to bump OR set goal end-state velocity
+        - Second Pass:
+            - Combine NZ and Bump paths
+        - Reduce shooter timeout and/or use CANrange
+- Deploy:
+        - add current graph tab in Elastic
  - look at peak forward/rev torque current slapdown
 - shorten fuel launching arc at pose where auto shoots
 - Test if deploy seed pos if down with triggers
