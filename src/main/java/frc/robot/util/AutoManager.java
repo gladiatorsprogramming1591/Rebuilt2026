@@ -24,6 +24,7 @@ public class AutoManager {
   private String middleShoot = "Middle shoot";
   private String middleOutpost = "Middle outpost";
   private String rightSideWigglesTrenchWithDelay = "MORE WIGGLES but trench with delay";
+  private String rightSafeBeanTag = "SAFE BEAN Tag";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -51,6 +52,8 @@ public class AutoManager {
       "Delayed Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay)));
     autos.addOption("Center Back up and shoot", wrapAutoWithPose(new PathPlannerAuto(middleShoot)));
     autos.addOption("Center Outpost", wrapAutoWithPose(new PathPlannerAuto(middleOutpost)));
+    autos.addOption("Right SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag)));
+    autos.addOption("Left SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag, true)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

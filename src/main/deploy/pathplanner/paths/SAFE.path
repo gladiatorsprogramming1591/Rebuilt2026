@@ -16,16 +16,32 @@
     },
     {
       "anchor": {
-        "x": 7.700217948717951,
-        "y": 1.5349358974358984
+        "x": 7.099337209302327,
+        "y": 1.1874418604651158
       },
       "prevControl": {
-        "x": 7.477510415086358,
-        "y": 0.8839446452820059
+        "x": 6.42436046511628,
+        "y": 0.4808255813953485
       },
       "nextControl": {
-        "x": 7.851384615384616,
-        "y": 1.976807692307692
+        "x": 7.557817933299207,
+        "y": 1.6674138683993496
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.668848837209303,
+        "y": 2.400290697674418
+      },
+      "prevControl": {
+        "x": 7.6692862250940905,
+        "y": 2.134183908569492
+      },
+      "nextControl": {
+        "x": 7.6681483429244715,
+        "y": 2.8264714205659844
       },
       "isLocked": false,
       "linkedName": null
@@ -36,31 +52,31 @@
         "y": 3.2545581395348835
       },
       "prevControl": {
-        "x": 7.4909791901301634,
-        "y": 2.569706208140202
+        "x": 7.684761009024115,
+        "y": 2.948401588500984
       },
       "nextControl": {
-        "x": 7.5898852116875375,
-        "y": 4.231327370304113
+        "x": 7.373546511627908,
+        "y": 3.5710805547772475
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
     },
     {
       "anchor": {
-        "x": 6.037384615384616,
-        "y": 2.936
+        "x": 6.550918604651164,
+        "y": 3.2545581395348835
       },
       "prevControl": {
-        "x": 6.002500000000001,
-        "y": 5.128051282051283
+        "x": 6.930593023255813,
+        "y": 3.4338488372093012
       },
       "nextControl": {
-        "x": 6.0534558368554725,
-        "y": 1.926129567406412
+        "x": 5.7649096195756115,
+        "y": 2.8833872299158725
       },
       "isLocked": false,
-      "linkedName": "First bump"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -68,8 +84,8 @@
         "y": 2.723674698795181
       },
       "prevControl": {
-        "x": 4.949833333333334,
-        "y": 2.357520852641335
+        "x": 5.206214650327414,
+        "y": 2.1653637660485026
       },
       "nextControl": null,
       "isLocked": false,
@@ -78,20 +94,20 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.6491228070175434,
-      "rotationDegrees": 91.0
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 75.0
     },
     {
-      "waypointRelativePos": 1.9859649122806748,
-      "rotationDegrees": 100.0
+      "waypointRelativePos": 2.3443983402489685,
+      "rotationDegrees": 59.99999999999999
     },
     {
-      "waypointRelativePos": 2.8421052631578947,
-      "rotationDegrees": -100.0
+      "waypointRelativePos": 4.3245614035087865,
+      "rotationDegrees": -50.0
     },
     {
-      "waypointRelativePos": 3.157894736842085,
-      "rotationDegrees": -138.41
+      "waypointRelativePos": 4.925311203319504,
+      "rotationDegrees": -50.0
     }
   ],
   "constraintZones": [],
@@ -110,7 +126,7 @@
     },
     {
       "name": "Stow For Bump",
-      "waypointRelativePos": 3.37541528239204,
+      "waypointRelativePos": 4.1860465116279295,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

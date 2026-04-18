@@ -16,35 +16,51 @@
     },
     {
       "anchor": {
-        "x": 7.723614457831324,
-        "y": 1.9696626506024084
+        "x": 6.466546511627907,
+        "y": 1.8624186046511624
       },
       "prevControl": {
-        "x": 6.910711612508587,
-        "y": -0.45531083366455594
+        "x": 7.415732558139536,
+        "y": -0.08868604651162726
       },
       "nextControl": {
-        "x": 8.153552068473608,
-        "y": 3.2522111269614835
+        "x": 6.016358273236746,
+        "y": 2.78780553912188
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.055232558139535,
-        "y": 2.843244186046511
+        "x": 5.7704767441860465,
+        "y": 3.0541744186046516
       },
       "prevControl": {
-        "x": 7.433694103066593,
-        "y": 3.715026710049665
+        "x": 5.949767441860465,
+        "y": 2.43193023255814
       },
       "nextControl": {
-        "x": 5.5609645188744565,
-        "y": 2.530653500879881
+        "x": 5.541851216742314,
+        "y": 3.8476394844387793
       },
       "isLocked": false,
-      "linkedName": "bean"
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.521197674418605,
+        "y": 3.0541744186046516
+      },
+      "prevControl": {
+        "x": 7.679395348837209,
+        "y": 3.665872093023256
+      },
+      "nextControl": {
+        "x": 7.411202118021095,
+        "y": 2.628858267200946
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -70,16 +86,20 @@
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 0.859649122807019,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.9327800829875472,
+      "rotationDegrees": 114.10093100420085
     },
     {
-      "waypointRelativePos": 1.2,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 2.6522821576763596,
+      "rotationDegrees": -21.866145138326296
     },
     {
-      "waypointRelativePos": 1.8783542039356036,
-      "rotationDegrees": -138.41
+      "waypointRelativePos": 3.448962655601652,
+      "rotationDegrees": -38.41
+    },
+    {
+      "waypointRelativePos": 3.9070539419087087,
+      "rotationDegrees": -38.41
     }
   ],
   "constraintZones": [],
@@ -109,7 +129,7 @@
     },
     {
       "name": "Stow For Bump",
-      "waypointRelativePos": 2.1539313399778846,
+      "waypointRelativePos": 2.3,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
