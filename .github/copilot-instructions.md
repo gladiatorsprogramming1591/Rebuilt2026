@@ -5,10 +5,10 @@ Short, actionable guidance for an AI code assistant working in this repository (
 ## Big-picture architecture (what to know first)
 - Command-based WPILib robot using AdvantageKit logging. Entry points: `frc.robot.Robot`, `frc.robot.RobotContainer`, and `frc.robot.Main`.
 - Subsystems follow an "IO interface + implementations" pattern. Each subsystem (example: `src/main/java/frc/robot/subsystems/shooter`) provides:
-  - `ShooterIO` (interface with `updateInputs(...)` and `runShooter(...)`)
+  - `ShooterIO` (interface with `updateInputs(...)` and `runShooterVoltage(...)`)
   - hardware implementation: `ShooterIOKraken` (real robot / CTRE Phoenix 6)
   - sim implementation: `ShooterIOSim` (physics sim)
-  - subsystem wrapper: `Shooter` (calls `io.updateInputs` in `periodic()` and uses `io.runShooter(...)`)
+  - subsystem wrapper: `Shooter` (calls `io.updateInputs` in `periodic()` and uses `io.runShooterVoltage(...)`)
 - `RobotContainer` wires implementations based on `Constants.currentMode` (REAL / SIM / REPLAY). Follow this pattern when adding new hardware.
 
 ## Key files and directories (quick map)

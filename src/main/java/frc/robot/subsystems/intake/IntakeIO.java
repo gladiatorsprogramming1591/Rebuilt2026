@@ -5,17 +5,52 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
-    public double deploySpeed = 0.0;
-    public double deployTorqueCurrentFOC = 0.0;
-    public double deploySupplyCurrent = 0.0;
-    public double intakeSpeed = 0.0;
+    // Slapdown
+    public double slapdownSpeed = 0.0;
+    public double slapdownTorqueCurrentFOC = 0.0;
+    public double slapdownSupplyCurrent = 0.0;
+    public double slapdownStatorCurrent = 0.0;
+    public boolean isSlapdownDown = false;
+    public boolean isSlapdownUp = false;
+    public double position = 0.0;
+    public double rawPosition = 0.0;
+    public double encoderOffset = 0.0;
+    // Roller
+    public double RPS_RollerLeft = 0.0;
+    public double RPS_RollerRight = 0.0;
+    public double motorTemp_RollerLeft = 0.0;
+    public double motorTemp_rollerRight = 0.0;
+    public double supplyCurrent_RollerRight = 0.0;
+    public double supplyCurrent_RollerLeft = 0.0;
+    public double statorCurrent_RollerRight = 0.0;
+    public double statorCurrent_RollerLeft = 0.0;
+    public double torqueCurrent_RollerRight = 0.0;
+    public double torqueCurrent_RollerLeft = 0.0;
   }
 
   @AutoLog
   public static class IntakeIOOutputs {
-    public double appliedIntakeSpeed = 0.0;
-    public double appliedDeploySpeed = 0.0;
-    public double appliedDeployCurrent = 0.0;
+    public double appliedRollerSpeed = 0.0;
+    public double appliedSlapdownSpeed = 0.0;
+    public double appliedSlapdownCurrent = 0.0;
+    public double kdeployP = 0.0;
+    public double kdeployI = 0.0;
+    public double kdeployD = 0.0;
+    public double kdeployG = 0.0;
+    public double kdeployFF = 0.0;
+    public double kstowP = 0.0;
+    public double kstowI = 0.0;
+    public double kstowD = 0.0;
+    public double kstowG = 0.0;
+    public double kstowFF = 0.0;
+    public double kstowMMAcceleration = 0.0;
+    public double kstowMMJerk = 0.0;
+    public double kstowFullP = 0.0;
+    public double kstowFullI = 0.0;
+    public double kstowFullD = 0.0;
+    public double kstowFullG = 0.0;
+    public double kstowFullFF = 0.0;
+    public double desiredPosition = 0.0;
   }
 
   /**
@@ -28,6 +63,17 @@ public interface IntakeIO {
   public default void applyOutputs(IntakeIOOutputs outputs) {}
 
   /**
+   * Applies the latest tunable TalonFX configurations to the <b>deploy motor</b>.
+   * <p>
+   * Only applies the configuration when the Smartdashboard boolean {@value #updateDeployConfigName} is changed from false to true (i.e. rising edge).
+   * 
+   * @param outputs Intake outputs where the tunable configurations are accessable
+   * @see {@link #createTunedDeployMotorConfig(frc.robot.subsystems.intake.IntakeIO.IntakeIOOutputs) createTunedDeployMotorConfig()}
+   * @see frc.robot.util.LoggedTunableNumber LoggedTunableNumber
+   */
+  public default void tuneDeployMotorConfigs(IntakeIOOutputs outputs) {}
+
+  /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.
    *
    * @param inputs latest inputs
@@ -36,26 +82,4 @@ public interface IntakeIO {
   public default boolean getIsConnected(IntakeIOInputs inputs) {
     return false;
   }
-  /**
-   * sets the deployment motor's duty cycle
-   *
-   * @param speed duty cycle value from -1 to 1
-   */
-  public default void setDeploySpeed(double speed) {}
-  /**
-   * sets the deploy motor's torque current (FOC)
-   *
-   * @param current current value (in Amps)
-   */
-  public default void setDeployTorqueCurrentFOC(double current) {}
-  /**
-   * sets the intake motor's duty cycle
-   *
-   * @param speed duty cycle value from -1 to 1
-   */
-  public default void setIntakeSpeed(double speed) {}
-  /** stops the deploy motor */
-  public default void stopDeployMotor() {}
-  /** stops the intake motor */
-  public default void stopIntakeMotor() {}
 }

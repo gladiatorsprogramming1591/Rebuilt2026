@@ -176,6 +176,14 @@ public interface CameraIO {
   }
 
   /**
+   * @return Network table key (e.g., {@code "Vision/Cameras/limelight-left"})
+   * @see edu.wpi.first.wpilibj.smartdashboard.SmartDashboard SmartDashboard
+   */
+  public default String getTableKey() {
+    return "";
+  }
+
+  /**
    * @return configured camera type for this IO
    */
   public default CameraType getCameraType() {

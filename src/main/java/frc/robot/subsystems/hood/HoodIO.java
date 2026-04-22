@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hood;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface HoodIO {
@@ -13,6 +15,7 @@ public interface HoodIO {
     double hoodSpeed = 0.0;
     double hoodAngle = 0.0;
     double hoodSupplyCurrent = 0.0;
+    double hoodStatorCurrent = 0.0;
     double hoodTorqueCurrent = 0.0;
     double hoodTemperature = 0.0;
     boolean hoodLimitSet = false;
@@ -47,15 +50,27 @@ public interface HoodIO {
 
   public default void setHoodPosition(double angle) {}
 
-  public default void stopHood() {}
+  /**
+   * Sets a supply current limit to the hood motor.
+   * 
+   * @param supplyLimitAmps Supply current limit in Amps to set to the motor.
+   */
+  public default void setSupplyCurrentLimit(double supplyLimitAmps) {}
 
-  public default void setHoodCurrentLimit(double currentLimit) {}
+  /**
+   * Sets a stator current limit to the hood motor.
+   * 
+   * @param statorLimitAmps Stator current limit in Amps to set to the motor.
+   */
+  public default void setStatorCurrentLimit(double statorLimitAmps) {}
 
   public default void zeroHood() {}
 
-  public default void applyCurrentLimit(double currentLimit) {}
-
   public default void runHoodToZero() {}
+
+  public default BooleanSupplier isHoodWithinZeroTolerance() {
+    return () -> false;
+  }
 
   public default boolean hasHoodStoppedOverTime(double minStationaryDuration) {
     return false;

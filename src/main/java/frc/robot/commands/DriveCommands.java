@@ -54,7 +54,7 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   private static final LoggedTunableNumber driveLaunchKp =
-      new LoggedTunableNumber("DriveCommands/Launching/kP", 8.0);
+      new LoggedTunableNumber("DriveCommands/Launching/kP", 10.0);
   private static final LoggedTunableNumber driveLaunchKd =
       new LoggedTunableNumber("DriveCommands/Launching/kD", 0.5);
   private static final LoggedTunableNumber driveYawLaunchToleranceDeg =

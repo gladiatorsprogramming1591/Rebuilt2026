@@ -1,11 +1,70 @@
 High Priority:
 --------------
-- Adjust autos for V3 new cam/shooter locations
-    - Auto "Bottom Rush to Hub" is still hitting wall, worsening after each trench pass. Odometry loss is likely aggravated due to camara not seeing April Tags at all through auto. Path must be edited to work for V3 cam placement/shooter reorientation.
+V3 Integration:
+--------------
+### On Deck
+GIO:
+- BooleanSupplier wrapper for tunable start delay
+- Temporary supression of loop overrun warnings so we can see real issues
+
+JEFF:
+- Hopper empty while shooting - test while empty; suspect it might still be taking 3 seconds (is CANRange actually reducing auto shoot time)
+
+READY TO TEST:
+- Duty cycle intake rollers
+
+===============================================
+
+### Post-TVR
+- ***'Shooter at velocity' debug***
+- ***X wheels when at target launching angle***
+- Shooter turnToTarget PID increase
+- Auto
+    - Shooter accuracy either overshoots or to far left/right only in auto
+    - 2.5 cycle auto
+    - Test Warm Up Shooter named command to see if it is working now that we coast the shooter
+- Deploy
+    - Log peak stator/supply current for:
+        forward, reverse, andStow while shooting state
+    - Improve stow with balls
+        - Higher power needed
+- Intake
+    - Check follower, if OK use velocity
+    - Increase duty cycle if velocity below threshold
+    - Test intaking at depot
+- Hopper
+    - Hopper empty detection
+        - current based and can ranges
+            - graph kicker current, see min amps while shooting, see average amps coasting
+TEST TO DIAGNOSE
+- Hood zeroing between code reboots
+
+===============================================
+
+- Add status signals for all subsystems lacking
+
+- Hood:
+    - Investigate why it either works or not at all between code deploys
+    - Hood zero trigger
+- Limit ramp-rate from OFF to IDLE speed, but not from IDLE to ON
+    - Tune motor configs to prep to shoot faster
+- Save Limelight pipeline
+- Intake
+    - Ideas for smoother slapdown functions
+        - See if kG is suitable: kG increase as angle approaches deploy intake to slow down
+        - Simplest: Only apply output up until angle exceeds pre-defined drop-point angle; let gravity do the rest
+    - Handle chain skipping on deploy. since it pushes 0 (stow) out more, it prevents reaching DIO limit which prevents 0'ing
+        - Idea: constant unsubstantial output in appropiate direction until DIO triggered. (Above tasks may fix this anyway)
+        - Idea: clamp angle to never fall outside of 0.0 and DOWN range (by manipulating offset)
+    - Verify zeroing only happens when slapdown is up.
+
+- Autos
     - First rush to NZ should have rotation slightly biased towards AZ to protect intake in event of bot-to-bot collision
-- Investigate shoot from NZ passing map (can test via sim)
-    - Investigate why shoot named command is causing odd rotation during bottom bump auto? is it v2 or v3?
+
+- Loop overruns: look up in "Visual VM" tool in WPILib track down issue
+
 #### Code Refactor:
+- Consider renaming rollers and deploy to better reflect V3
 - Ensure inputs/outputs are being used/updated/logged properly across subsystems' IO, Real, and Sim
     - Consider using outputs when applying control requests to motors (where not already used)
 - Command structure & organization:
@@ -13,6 +72,7 @@ High Priority:
 - Mark unused/outdated commands or methods for removal within the subsystems & robotContainer
 - find and resolve inconsistencies across subsystems & robotContainer
 - Consider integrating toward state-based
+
 #### Battery Draw Management
 - Turn off all idling motors (shooter, intake, hood, etc.) if a brownout is detected near the end of a match (where we're unlikely to shoot)
 - investigate loss of power of intake when attempting fuel pick up before at speed (Potential fix: run intake automatically when hopper extended [if state-based; while not in intaking state])
@@ -86,6 +146,50 @@ Albany Robot Changes:
 <br><br><br><br><br><br><br><br>
 Completed
 ---------
+- Remove goal end-state velocity (Done for BEAN Tag)
+- Test increased supply current (rollers)
+- Momentary stop facing april tag to localized during auto (ref 1796)
+- Second Pass Auto - swap BEAN to Figure 8
+- Deploy/Stow Peak Current Limits
+    - implement CANRange - Jeff
+    - Run hood to 100, then run to zero to speed up zeroing
+- Make hood go down faster after shooting
+- timeout for slapdown curl while shooting
+- increase slow speed for drive
+    - 2.5 cycle auto (with can range)
+        - First Pass:
+            - hook back around to intake more on way to bump (P-shape)
+            - New combined path to bump OR set goal end-state velocity
+        - Second Pass:
+            - Combine NZ and Bump paths
+        - Reduce shooter timeout and/or use CANrange
+- Deploy:
+        - add current graph tab in Elastic
+ - look at peak forward/rev torque current slapdown
+- shorten fuel launching arc at pose where auto shoots
+- Test if deploy seed pos if down with triggers
+    - A: zero encoder works, but not seeding non-zero position. Is this a trigger issue or encoder-side issue?
+- Shooter coast to idle
+    - Shooter modes in applyOutputs
+- V3 Intake:
+    - Deploy function without up/down sensors
+    - Consider adding DIO invertion (refer to ShooterIOKraken)
+    - Deploy: negative output stows intake up
+        - Limit Extent: DIO <?>
+        - Limit Stow: DIO <?>
+        - Stator: 20
+        - Supply: 12
+        - Idle: Coeast
+
+    - Intake: only right is inverted (clockwise positive)
+        - Stator: 120
+        - Supply: 40
+        - Idle: Coast
+- Autos:
+    - Auto "Bottom Rush to Hub" is still hitting wall, worsening after each trench pass. Odometry loss is likely aggravated due to camara not seeing April Tags at all through auto. Path must be edited to work for V3 cam placement/shooter reorientation.
+    - Investigate shoot from NZ passing map (can test via sim)
+    - Investigate why shoot named command is causing odd rotation during bottom bump auto? is it v2 or v3?
+
 - Investigate why Operator intake only buttons (POV up/down) were not working
     - A: Intake idle was an instant command, so its default command (set to stop intake) was likely running directly after. Since some command groups rely on it being an instant command (ends instantly), we wrapped it in a RepeatCommand only where Op' POV up calls it.
 - "driveCurrentLimit": 15.0 in pathplanner?

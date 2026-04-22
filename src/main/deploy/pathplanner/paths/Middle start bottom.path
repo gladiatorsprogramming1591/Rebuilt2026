@@ -12,7 +12,7 @@
         "y": 3.8666719801220264
       },
       "isLocked": false,
-      "linkedName": "middle start"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "middle start shoot b"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

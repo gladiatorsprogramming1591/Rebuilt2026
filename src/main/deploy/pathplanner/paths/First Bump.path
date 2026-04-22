@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.804871794871797,
-        "y": 3.5815
+        "x": 7.570626506024096,
+        "y": 3.805518072289157
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.630397435897437,
-        "y": 2.267512820512822
+        "x": 5.331574967928333,
+        "y": 2.8681122235017114
       },
       "isLocked": false,
       "linkedName": "NZ bottom"
     },
     {
       "anchor": {
-        "x": 3.348,
-        "y": 2.936
+        "x": 2.9,
+        "y": 2.723674698795181
       },
       "prevControl": {
-        "x": 4.804794871794872,
-        "y": 2.174487179487179
+        "x": 4.302684736091297,
+        "y": 2.250627623188905
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,19 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.3277962347729792,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 3.0,

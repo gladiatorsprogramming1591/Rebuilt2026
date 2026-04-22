@@ -1,0 +1,158 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.421064102564103,
+        "y": 0.4535128205128208
+      },
+      "isLocked": false,
+      "linkedName": "bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 8.281628205128206,
+        "y": 1.4186538461538465
+      },
+      "prevControl": {
+        "x": 8.058920671496612,
+        "y": 0.767662593999954
+      },
+      "nextControl": {
+        "x": 8.43279487179487,
+        "y": 1.86052564102564
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.281628205128206,
+        "y": 2.516048192771084
+      },
+      "prevControl": {
+        "x": 8.282065593012993,
+        "y": 2.249941403666158
+      },
+      "nextControl": {
+        "x": 8.280927710843374,
+        "y": 2.9422289156626507
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.570626506024096,
+        "y": 3.805518072289157
+      },
+      "prevControl": {
+        "x": 7.7073244336447875,
+        "y": 3.4917352517917015
+      },
+      "nextControl": {
+        "x": 7.113221525187768,
+        "y": 4.855466871766667
+      },
+      "isLocked": false,
+      "linkedName": "NZ bottom"
+    },
+    {
+      "anchor": {
+        "x": 6.43271041369472,
+        "y": 3.729024096385543
+      },
+      "prevControl": {
+        "x": 6.756176890156918,
+        "y": 4.209671897289586
+      },
+      "nextControl": {
+        "x": 5.896761462741672,
+        "y": 2.9326426985669767
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 5.206214650327414,
+        "y": 2.1653637660485026
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 105.00000000000001
+    },
+    {
+      "waypointRelativePos": 3.1491228070175445,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 3.9122807017543817,
+      "rotationDegrees": -91.0
+    },
+    {
+      "waypointRelativePos": 4.3245614035087865,
+      "rotationDegrees": -138.41
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 4.1860465116279295,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

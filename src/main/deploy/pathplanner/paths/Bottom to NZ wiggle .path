@@ -12,7 +12,7 @@
         "y": 0.4535128205128208
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "bottom start rush"
     },
     {
       "anchor": {
@@ -32,32 +32,32 @@
     },
     {
       "anchor": {
-        "x": 7.805,
-        "y": 2.7
+        "x": 8.281628205128206,
+        "y": 2.516048192771084
       },
       "prevControl": {
-        "x": 7.805,
-        "y": 2.3790000000000004
+        "x": 8.281938353109352,
+        "y": 2.2499412249477575
       },
       "nextControl": {
-        "x": 7.805,
-        "y": 2.95
+        "x": 8.280927710843374,
+        "y": 3.1170722891566265
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.804871794871797,
-        "y": 3.5815
+        "x": 7.570626506024096,
+        "y": 3.805518072289157
       },
       "prevControl": {
-        "x": 7.804871794871797,
-        "y": 3.3315
+        "x": 7.570626506024096,
+        "y": 3.555518072289157
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "NZ bottom"
     }
   ],
   "rotationTargets": [
@@ -73,7 +73,12 @@
       "name": "Prepare Intake",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
     }
   ],
   "globalConstraints": {

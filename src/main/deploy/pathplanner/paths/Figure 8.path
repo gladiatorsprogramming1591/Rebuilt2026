@@ -1,0 +1,195 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.0577469879518075,
+        "y": -0.13315662650602356
+      },
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    },
+    {
+      "anchor": {
+        "x": 6.466546511627907,
+        "y": 1.8624186046511624
+      },
+      "prevControl": {
+        "x": 7.415732558139536,
+        "y": -0.08868604651162726
+      },
+      "nextControl": {
+        "x": 6.016358273236746,
+        "y": 2.78780553912188
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.7704767441860465,
+        "y": 3.0541744186046516
+      },
+      "prevControl": {
+        "x": 5.949767441860465,
+        "y": 2.43193023255814
+      },
+      "nextControl": {
+        "x": 5.541851216742314,
+        "y": 3.8476394844387793
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.521197674418605,
+        "y": 3.0541744186046516
+      },
+      "prevControl": {
+        "x": 7.679395348837209,
+        "y": 3.665872093023256
+      },
+      "nextControl": {
+        "x": 7.411202118021095,
+        "y": 2.628858267200946
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 4.97308974358393,
+        "y": 2.276123416738085
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.5768421052631574,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.9327800829875472,
+      "rotationDegrees": 114.10093100420085
+    },
+    {
+      "waypointRelativePos": 3.448962655601652,
+      "rotationDegrees": -38.41
+    },
+    {
+      "waypointRelativePos": 3.9070539419087087,
+      "rotationDegrees": -38.41
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Localize",
+      "minWaypointRelativePos": 3.3490884537474512,
+      "maxWaypointRelativePos": 3.41,
+      "constraints": {
+        "maxVelocity": 0.1,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Pre-bump",
+      "minWaypointRelativePos": 3.413909520594198,
+      "maxWaypointRelativePos": 3.5651586765698817,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.626,
+        "y": 4.034536
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 2.6684672518568675,
+      "maxWaypointRelativePos": 3.4139095205941827,
+      "name": "Point Towards Hub"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Lower Hood And Stop Shooting",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Hood And Stop Shooting"
+        }
+      }
+    },
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.6112956810631257,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 3.521944632005394,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "useDefaultConstraints": true
+}

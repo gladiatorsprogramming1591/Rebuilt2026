@@ -1,0 +1,198 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.421064102564103,
+        "y": 0.4535128205128208
+      },
+      "isLocked": false,
+      "linkedName": "bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 7.099337209302327,
+        "y": 1.1874418604651158
+      },
+      "prevControl": {
+        "x": 6.42436046511628,
+        "y": 0.4808255813953485
+      },
+      "nextControl": {
+        "x": 7.557817933299207,
+        "y": 1.6674138683993496
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.668848837209303,
+        "y": 2.400290697674418
+      },
+      "prevControl": {
+        "x": 7.6692862250940905,
+        "y": 2.134183908569492
+      },
+      "nextControl": {
+        "x": 7.6681483429244715,
+        "y": 2.8264714205659844
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.570626506024096,
+        "y": 3.805518072289157
+      },
+      "prevControl": {
+        "x": 7.723643329001698,
+        "y": 3.4993615212552576
+      },
+      "nextControl": {
+        "x": 7.412428831605491,
+        "y": 4.122040487531521
+      },
+      "isLocked": false,
+      "linkedName": "NZ bottom"
+    },
+    {
+      "anchor": {
+        "x": 6.550918604651164,
+        "y": 3.2545581395348835
+      },
+      "prevControl": {
+        "x": 6.930593023255813,
+        "y": 3.4338488372093012
+      },
+      "nextControl": {
+        "x": 5.7649096195756115,
+        "y": 2.8833872299158725
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 5.206214650327414,
+        "y": 2.1653637660485026
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 75.0
+    },
+    {
+      "waypointRelativePos": 2.3443983402489685,
+      "rotationDegrees": 59.99999999999999
+    },
+    {
+      "waypointRelativePos": 4.3245614035087865,
+      "rotationDegrees": -50.0
+    },
+    {
+      "waypointRelativePos": 4.925311203319504,
+      "rotationDegrees": -50.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 3.5315682281059058,
+      "maxWaypointRelativePos": 3.6782077393075365,
+      "constraints": {
+        "maxVelocity": 0.1,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 3.6782077393075365,
+      "maxWaypointRelativePos": 4.525458248472502,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Initial fuel contact",
+      "minWaypointRelativePos": 1.3319755600814485,
+      "maxWaypointRelativePos": 3.1812627291242848,
+      "constraints": {
+        "maxVelocity": 1.9,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 4.1860465116279295,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

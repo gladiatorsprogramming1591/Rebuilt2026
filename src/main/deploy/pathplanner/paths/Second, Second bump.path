@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.691483594864478,
+        "y": 3.3039657631954356
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.723986244762629,
+        "y": 3.0560876121824867
+      },
+      "isLocked": false,
+      "linkedName": "Second Bump"
+    },
+    {
+      "anchor": {
+        "x": 6.0057346647646215,
+        "y": 2.566462196861627
+      },
+      "prevControl": {
+        "x": 6.24290548927725,
+        "y": 2.6455191383658354
+      },
+      "nextControl": {
+        "x": 5.768563840251993,
+        "y": 2.4874052553574186
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 4.936679029957203,
+        "y": 2.548216781534126
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.8106312292358867,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": -138.41
+  },
+  "useDefaultConstraints": true
+}

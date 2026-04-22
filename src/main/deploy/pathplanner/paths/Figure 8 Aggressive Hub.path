@@ -1,0 +1,207 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.0577469879518075,
+        "y": -0.13315662650602356
+      },
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    },
+    {
+      "anchor": {
+        "x": 6.466546511627907,
+        "y": 1.8624186046511624
+      },
+      "prevControl": {
+        "x": 7.415732558139536,
+        "y": -0.08868604651162726
+      },
+      "nextControl": {
+        "x": 6.016358273236746,
+        "y": 2.78780553912188
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.822192771084336,
+        "y": 3.0541744186046516
+      },
+      "prevControl": {
+        "x": 5.8669156853931375,
+        "y": 2.4081613829180712
+      },
+      "nextControl": {
+        "x": 5.699065424488651,
+        "y": 4.832722891566265
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.521197674418605,
+        "y": 3.0541744186046516
+      },
+      "prevControl": {
+        "x": 7.690831325301204,
+        "y": 5.105915662650602
+      },
+      "nextControl": {
+        "x": 7.484999993917779,
+        "y": 2.6163587279328597
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 4.97308974358393,
+        "y": 2.276123416738085
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.5768421052631574,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.9327800829875472,
+      "rotationDegrees": 130.525
+    },
+    {
+      "waypointRelativePos": 2.0968421052631423,
+      "rotationDegrees": 106.34495485395334
+    },
+    {
+      "waypointRelativePos": 2.719999999999981,
+      "rotationDegrees": -69.70370660150849
+    },
+    {
+      "waypointRelativePos": 3.1185964912280726,
+      "rotationDegrees": -87.17599004272807
+    },
+    {
+      "waypointRelativePos": 3.4947368421052634,
+      "rotationDegrees": -38.41
+    },
+    {
+      "waypointRelativePos": 3.9070539419087087,
+      "rotationDegrees": -38.41
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Localize",
+      "minWaypointRelativePos": 3.35,
+      "maxWaypointRelativePos": 3.4052953156822827,
+      "constraints": {
+        "maxVelocity": 0.1,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Pre-bump",
+      "minWaypointRelativePos": 3.413909520594198,
+      "maxWaypointRelativePos": 3.61,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.626,
+        "y": 4.034536
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 3.3075356415478616,
+      "maxWaypointRelativePos": 3.4509164969450095,
+      "name": "Point Towards Hub"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Lower Hood And Stop Shooting",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Hood And Stop Shooting"
+        }
+      }
+    },
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.6112956810631257,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 3.521944632005394,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "Competiton",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "useDefaultConstraints": true
+}

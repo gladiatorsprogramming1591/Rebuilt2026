@@ -15,6 +15,7 @@ import java.util.Optional;
  */
 public class CameraIOLimelight implements CameraIO {
   private final String name;
+  private final String tableKey;
   private final CameraType cameraType;
   private final double horizontalFOV;
   private final double verticalFOV;
@@ -30,6 +31,7 @@ public class CameraIOLimelight implements CameraIO {
    */
   public CameraIOLimelight(String name, CameraType cameraType) {
     this.name = "limelight-" + name;
+    this.tableKey = "Vision/Cameras/" + this.name + "/";
     this.cameraType = cameraType;
     this.horizontalFOV = cameraType.horizontalFOV;
     this.verticalFOV = cameraType.verticalFOV;
@@ -95,11 +97,20 @@ public class CameraIOLimelight implements CameraIO {
   }
 
   /**
-   * @return Limelight table name (e.g., {@code "limelight-left"})
+   * @return Limelight table name of device only (e.g., {@code "limelight-left"})
    */
   @Override
   public String getName() {
     return name;
+  }
+
+  /**
+   * @return Limelight table key (e.g., {@code "Vision/Cameras/limelight-left"})
+   * @see edu.wpi.first.wpilibj.smartdashboard.SmartDashboard SmartDashboard
+   */
+  @Override
+  public String getTableKey() {
+    return tableKey;
   }
 
   @Override

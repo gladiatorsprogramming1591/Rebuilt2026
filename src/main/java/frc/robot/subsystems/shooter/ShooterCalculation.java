@@ -15,6 +15,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.AllianceFlipUtil;
@@ -39,6 +40,11 @@ public class ShooterCalculation {
 
   private double lastHoodAngle;
   private Rotation2d lastDriveAngle;
+
+  private static String updateHoodMapKey = "ShooterCalculation/UpdateMaps/HoodAngleMap/Update Hood Angles";
+  private static String updateFlywheelMapKey = "ShooterCalculation/UpdateMaps/FlyWheelSpeedMap/Update Flywheel Speeds";
+  private static String updatePassingHoodMapKey = "ShooterCalculation/UpdateMaps/PassingHoodMap/Update Passing Hood Angles";
+  private static String updatePassingFlywheelMapKey = "ShooterCalculation/UpdateMaps/PassingFlywheelMap/Update Passing Flywheel Speeds";
 
   public static ShooterCalculation getInstance() {
     if (instance == null) instance = new ShooterCalculation();
@@ -75,8 +81,8 @@ public class ShooterCalculation {
       new InterpolatingDoubleTreeMap();
 
   // Passing Maps
-  private static final InterpolatingTreeMap<Double, Rotation2d> passingHoodAngleMap =
-      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Rotation2d::interpolate);
+  private static final InterpolatingTreeMap<Double, Double> passingHoodAngleMap =
+      new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Interpolator.forDouble());
   private static final InterpolatingDoubleTreeMap passingFlywheelSpeedMap =
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap passingTimeOfFlightMap =
@@ -132,6 +138,111 @@ public class ShooterCalculation {
           FieldConstants.LinesHorizontal.rightBumpStart,
           FieldConstants.LinesHorizontal.leftBumpEnd);
 
+  private static final LoggedTunableNumber hoodAngle1 =
+      new LoggedTunableNumber("HoodAngleMap/0.0", 50.0);
+  private static final LoggedTunableNumber hoodAngle2 =
+      new LoggedTunableNumber("HoodAngleMap/1.46", 70.0); // 50
+  private static final LoggedTunableNumber hoodAngle3 =
+      new LoggedTunableNumber("HoodAngleMap/1.73", 70.0); // 60
+  private static final LoggedTunableNumber hoodAngle4 =
+      new LoggedTunableNumber("HoodAngleMap/2.18", 100.0);
+  private static final LoggedTunableNumber hoodAngle5 =
+      new LoggedTunableNumber("HoodAngleMap/2.47", 120.0);
+  private static final LoggedTunableNumber hoodAngle6 =
+      new LoggedTunableNumber("HoodAngleMap/2.70", 315.0); // 0.0
+  private static final LoggedTunableNumber hoodAngle7 =
+      new LoggedTunableNumber("HoodAngleMap/2.94", 330.0);
+  private static final LoggedTunableNumber hoodAngle8 =
+      new LoggedTunableNumber("HoodAngleMap/3.48", 450.0);
+  private static final LoggedTunableNumber hoodAngle9 =
+      new LoggedTunableNumber("HoodAngleMap/3.92", 550.0);
+  private static final LoggedTunableNumber hoodAngle10 =
+      new LoggedTunableNumber("HoodAngleMap/4.35", 660.0);
+  private static final LoggedTunableNumber hoodAngle11 =
+      new LoggedTunableNumber("HoodAngleMap/4.84", 750.0); 
+  private static final LoggedTunableNumber hoodAngle12 =
+      new LoggedTunableNumber("HoodAngleMap/5.46", 800.0); // we noticed that 750 was reaching the max for the hood, after is a deadspot.
+
+  private static final LoggedTunableNumber flywheelSpeed1 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/0.0", 1450.0);
+  private static final LoggedTunableNumber flywheelSpeed2 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/0.96", 1450.0);
+  private static final LoggedTunableNumber flywheelSpeed3 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/1.46", 1650.0); // 1600
+  private static final LoggedTunableNumber flywheelSpeed4 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/1.73", 1750.0); // 1650
+  private static final LoggedTunableNumber flywheelSpeed5 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.18", 1900.0);
+  private static final LoggedTunableNumber flywheelSpeed6 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.47", 1950.0);
+  private static final LoggedTunableNumber flywheelSpeed7 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.70", 1950.0);
+  private static final LoggedTunableNumber flywheelSpeed8 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/2.94", 1950.0);
+  private static final LoggedTunableNumber flywheelSpeed9 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/3.48", 2024.0);
+  private static final LoggedTunableNumber flywheelSpeed10 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/3.92", 2050.0);
+  private static final LoggedTunableNumber flywheelSpeed11 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/4.35", 2125.0);
+  private static final LoggedTunableNumber flywheelSpeed12 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/4.84", 2200.0);
+  private static final LoggedTunableNumber flywheelSpeed13 =
+      new LoggedTunableNumber("FlyWheelSpeedMap/5.46", 2350.0);
+
+  private static final LoggedTunableNumber passingHoodAngle1 =
+      new LoggedTunableNumber("PassingHoodMap/3.4", 700.0);
+  private static final LoggedTunableNumber passingHoodAngle2 =
+      new LoggedTunableNumber("PassingHoodMap/4.275", 700.0); // Bumper against bump 
+  private static final LoggedTunableNumber passingHoodAngle3 =
+      new LoggedTunableNumber("PassingHoodMap/5.46", 800.0); // 240
+  private static final LoggedTunableNumber passingHoodAngle4 =
+      new LoggedTunableNumber("PassingHoodMap/6.62", 800.0); // 400
+  private static final LoggedTunableNumber passingHoodAngle5 =
+      new LoggedTunableNumber("PassingHoodMap/7.8", 800.0); // 500
+  private static final LoggedTunableNumber passingHoodAngle6 =
+      new LoggedTunableNumber("PassingHoodMap/8.67", 800.0); // 3/4 into NZ
+  private static final LoggedTunableNumber passingHoodAngle7 =
+      new LoggedTunableNumber("PassingHoodMap/9.65", 800.0); // NZ opposing bump
+  private static final LoggedTunableNumber passingHoodAngle8 =
+      new LoggedTunableNumber("PassingHoodMap/10.16", 800.0); // NZ opposing trench
+// Within opposing AZ
+//   private static final LoggedTunableNumber passingHoodAngle9 =
+//       new LoggedTunableNumber("PassingHoodMap/11.68", 2250.0); // Opposing AZ bump
+//   private static final LoggedTunableNumber passingHoodAngle10 =
+//       new LoggedTunableNumber("PassingHoodMap/13.29", 2250.0); // Opposing AZ 1/2
+//   private static final LoggedTunableNumber passingHoodAngle11 =
+//       new LoggedTunableNumber("PassingHoodMap/14.81", 2250.0); // Opposing AZ wall
+  private static final LoggedTunableNumber passingHoodAngleLast =
+      new LoggedTunableNumber("PassingHoodMap/17.16", 800.0); // 500 1009 is approx max
+
+  private static final LoggedTunableNumber passingFlywheelSpeed1 =
+      new LoggedTunableNumber("PassingFlywheelMap/3.4", 1700.0); // 800
+  private static final LoggedTunableNumber passingFlywheelSpeed2 =
+      new LoggedTunableNumber("PassingFlywheelMap/4.275", 1700.0); // Bumper against bump
+  private static final LoggedTunableNumber passingFlywheelSpeed3 =
+      new LoggedTunableNumber("PassingFlywheelMap/5.46", 2000.0); // 1008
+  private static final LoggedTunableNumber passingFlywheelSpeed4 =
+      new LoggedTunableNumber("PassingFlywheelMap/6.62", 2150.0); // 1134
+  private static final LoggedTunableNumber passingFlywheelSpeed5 =
+      new LoggedTunableNumber("PassingFlywheelMap/7.8", 2250.0); // 1260
+  private static final LoggedTunableNumber passingFlywheelSpeed6 =
+      new LoggedTunableNumber("PassingFlywheelMap/8.67", 2325.0); // 3/4 into NZ
+  private static final LoggedTunableNumber passingFlywheelSpeed7 =
+      new LoggedTunableNumber("PassingFlywheelMap/9.65", 2425.0); // NZ opposing bump
+  private static final LoggedTunableNumber passingFlywheelSpeed8 =
+      new LoggedTunableNumber("PassingFlywheelMap/10.16", 2475.0); // NZ opposing trench
+// Within opposing AZ
+//   private static final LoggedTunableNumber passingFlywheelSpeed6 =
+//       new LoggedTunableNumber("PassingFlywheelMap/11.68", 2250.0); // Opposing AZ bump
+//   private static final LoggedTunableNumber passingFlywheelSpeed6 =
+//       new LoggedTunableNumber("PassingFlywheelMap/13.29", 2250.0); // Opposing AZ 1/2
+//   private static final LoggedTunableNumber passingFlywheelSpeed6 =
+//       new LoggedTunableNumber("PassingFlywheelMap/14.81", 2250.0); // Opposing AZ wall
+  private static final LoggedTunableNumber passingFlywheelSpeedLast =
+      new LoggedTunableNumber("PassingFlywheelMap/17.16", 4000.0); // 2300
+
+
   static {
     minDistance = 0.9;
     maxDistance = 4.9;
@@ -139,32 +250,32 @@ public class ShooterCalculation {
     passingMaxDistance = 17.16;
     phaseDelay = 0.03;
 
-    hoodAngleMap.put(0.0, 0.0);
-    hoodAngleMap.put(1.46, 30.0);
-    hoodAngleMap.put(1.73, 60.0);
-    hoodAngleMap.put(2.18, 90.0);
-    hoodAngleMap.put(2.47, 120.0);
-    hoodAngleMap.put(2.70, 150.0); // 0.0
-    hoodAngleMap.put(2.94, 180.0);
-    hoodAngleMap.put(3.48, 210.0);
-    hoodAngleMap.put(3.92, 240.0);
-    hoodAngleMap.put(4.35, 350.0);
-    hoodAngleMap.put(4.84, 400.0);
-    hoodAngleMap.put(5.46, 500.0);
+    hoodAngleMap.put(0.0, hoodAngle1.get());
+    hoodAngleMap.put(1.46, hoodAngle2.get());
+    hoodAngleMap.put(1.73, hoodAngle3.get());
+    hoodAngleMap.put(2.18, hoodAngle4.get());
+    hoodAngleMap.put(2.47, hoodAngle5.get());
+    hoodAngleMap.put(2.70, hoodAngle6.get());
+    hoodAngleMap.put(2.94, hoodAngle7.get());
+    hoodAngleMap.put(3.48, hoodAngle8.get());
+    hoodAngleMap.put(3.92, hoodAngle9.get());
+    hoodAngleMap.put(4.35, hoodAngle10.get());
+    hoodAngleMap.put(4.84, hoodAngle11.get());
+    hoodAngleMap.put(5.46, hoodAngle12.get());
 
-    flywheelSpeedMap.put(0.0, 1500.0);
-    flywheelSpeedMap.put(0.96, 1500.0);
-    flywheelSpeedMap.put(1.46, 1600.0); // 1500
-    flywheelSpeedMap.put(1.73, 1650.0); // 1650
-    flywheelSpeedMap.put(2.18, 1700.0);
-    flywheelSpeedMap.put(2.47, 1750.0);
-    flywheelSpeedMap.put(2.70, 1800.0);
-    flywheelSpeedMap.put(2.94, 1850.0);
-    flywheelSpeedMap.put(3.48, 1900.0);
-    flywheelSpeedMap.put(3.92, 2000.0);
-    flywheelSpeedMap.put(4.35, 2000.0);
-    flywheelSpeedMap.put(4.84, 2000.0);
-    flywheelSpeedMap.put(5.46, 2000.0);
+    flywheelSpeedMap.put(0.0, flywheelSpeed1.get());
+    flywheelSpeedMap.put(0.96, flywheelSpeed2.get());
+    flywheelSpeedMap.put(1.46, flywheelSpeed3.get());
+    flywheelSpeedMap.put(1.73, flywheelSpeed4.get());
+    flywheelSpeedMap.put(2.18, flywheelSpeed5.get());
+    flywheelSpeedMap.put(2.47, flywheelSpeed6.get());
+    flywheelSpeedMap.put(2.70, flywheelSpeed7.get());
+    flywheelSpeedMap.put(2.94, flywheelSpeed8.get());
+    flywheelSpeedMap.put(3.48, flywheelSpeed9.get());
+    flywheelSpeedMap.put(3.92, flywheelSpeed10.get());
+    flywheelSpeedMap.put(4.35, flywheelSpeed11.get());
+    flywheelSpeedMap.put(4.84, flywheelSpeed12.get());
+    flywheelSpeedMap.put(5.46, flywheelSpeed13.get());
 
     timeOfFlightMap.put(5.68, 1.16);
     timeOfFlightMap.put(4.55, 1.12);
@@ -172,16 +283,27 @@ public class ShooterCalculation {
     timeOfFlightMap.put(1.88, 1.09);
     timeOfFlightMap.put(1.38, 0.90);
 
-    passingHoodAngleMap.put(5.46, Rotation2d.fromDegrees(38.0));
-    passingHoodAngleMap.put(6.62, Rotation2d.fromDegrees(38.0));
-    passingHoodAngleMap.put(7.80, Rotation2d.fromDegrees(38.0));
-    passingHoodAngleMap.put(17.16, Rotation2d.fromDegrees(38.0));
+    passingHoodAngleMap.put(3.40, passingHoodAngle1.get());
+    passingHoodAngleMap.put(4.275, passingHoodAngle2.get());
+    passingHoodAngleMap.put(5.46, passingHoodAngle3.get());
+    passingHoodAngleMap.put(6.62, passingHoodAngle4.get());
+    passingHoodAngleMap.put(7.80, passingHoodAngle5.get());
+    passingHoodAngleMap.put(8.67, passingHoodAngle6.get());
+    passingHoodAngleMap.put(9.65, passingHoodAngle7.get());
+    passingHoodAngleMap.put(10.16, passingHoodAngle8.get());
+    passingHoodAngleMap.put(17.16, passingHoodAngleLast.get());
 
-    passingFlywheelSpeedMap.put(5.46, 1008.0);
-    passingFlywheelSpeedMap.put(6.62, 1134.0);
-    passingFlywheelSpeedMap.put(7.80, 1260.0);
-    passingFlywheelSpeedMap.put(17.16, 2300.0);
+    passingFlywheelSpeedMap.put(3.40, passingFlywheelSpeed1.get());
+    passingFlywheelSpeedMap.put(4.275, passingFlywheelSpeed2.get());
+    passingFlywheelSpeedMap.put(5.46, passingFlywheelSpeed3.get());
+    passingFlywheelSpeedMap.put(6.62, passingFlywheelSpeed4.get());
+    passingFlywheelSpeedMap.put(7.80, passingFlywheelSpeed5.get());
+    passingFlywheelSpeedMap.put(8.67, passingFlywheelSpeed6.get());
+    passingFlywheelSpeedMap.put(9.65, passingFlywheelSpeed7.get());
+    passingFlywheelSpeedMap.put(10.16, passingFlywheelSpeed8.get());
+    passingFlywheelSpeedMap.put(17.16, passingFlywheelSpeedLast.get());
 
+    passingTimeOfFlightMap.put(3.40, 1.10);
     passingTimeOfFlightMap.put(5.46, 1.27);
     passingTimeOfFlightMap.put(6.62, 1.39);
     passingTimeOfFlightMap.put(7.8, 1.49);
@@ -238,7 +360,73 @@ public class ShooterCalculation {
     return timeOfFlightMap.get(maxDistance);
   }
 
+  public void updateMaps() {
+    if (SmartDashboard.getBoolean(updateHoodMapKey, true)) {
+        SmartDashboard.putBoolean(updateHoodMapKey, false);
+        hoodAngleMap.put(0.0, hoodAngle1.get());
+        hoodAngleMap.put(1.46, hoodAngle2.get()); // 50
+        hoodAngleMap.put(1.73, hoodAngle3.get()); // 60
+        hoodAngleMap.put(2.18, hoodAngle4.get());
+        hoodAngleMap.put(2.47, hoodAngle5.get());
+        hoodAngleMap.put(2.70, hoodAngle6.get()); // 0.0
+        hoodAngleMap.put(2.94, hoodAngle7.get());
+        hoodAngleMap.put(3.48, hoodAngle8.get());
+        hoodAngleMap.put(3.92, hoodAngle9.get());
+        hoodAngleMap.put(4.35, hoodAngle10.get());
+        hoodAngleMap.put(4.84, hoodAngle11.get());
+        hoodAngleMap.put(5.46, hoodAngle12.get());
+    }
+
+    if (SmartDashboard.getBoolean(updateFlywheelMapKey, true)) {
+        SmartDashboard.putBoolean(updateFlywheelMapKey, false);
+        flywheelSpeedMap.clear();
+        flywheelSpeedMap.put(0.0, flywheelSpeed1.get());
+        flywheelSpeedMap.put(0.96, flywheelSpeed2.get());
+        flywheelSpeedMap.put(1.46, flywheelSpeed3.get()); 
+        flywheelSpeedMap.put(1.73, flywheelSpeed4.get()); 
+        flywheelSpeedMap.put(2.18, flywheelSpeed5.get());
+        flywheelSpeedMap.put(2.47, flywheelSpeed6.get());
+        flywheelSpeedMap.put(2.70, flywheelSpeed7.get());
+        flywheelSpeedMap.put(2.94, flywheelSpeed8.get());
+        flywheelSpeedMap.put(3.48, flywheelSpeed9.get());
+        flywheelSpeedMap.put(3.92, flywheelSpeed10.get());
+        flywheelSpeedMap.put(4.35, flywheelSpeed11.get());
+        flywheelSpeedMap.put(4.84, flywheelSpeed12.get());
+        flywheelSpeedMap.put(5.46, flywheelSpeed13.get());
+    }
+
+    if (SmartDashboard.getBoolean(updatePassingHoodMapKey, true)) {
+        SmartDashboard.putBoolean(updatePassingHoodMapKey, false);
+        passingHoodAngleMap.put(3.40, passingHoodAngle1.get());
+        passingHoodAngleMap.put(4.275, passingHoodAngle2.get()); 
+        passingHoodAngleMap.put(5.46, passingHoodAngle3.get()); 
+        passingHoodAngleMap.put(6.62, passingHoodAngle4.get()); 
+        passingHoodAngleMap.put(7.80, passingHoodAngle5.get());
+        passingHoodAngleMap.put(8.67, passingHoodAngle6.get());
+        passingHoodAngleMap.put(9.65, passingHoodAngle7.get());
+        passingHoodAngleMap.put(10.16, passingHoodAngle8.get()); 
+        passingHoodAngleMap.put(17.16, passingHoodAngleLast.get()); 
+    }
+
+    if (SmartDashboard.getBoolean(updatePassingFlywheelMapKey, true)) {
+        SmartDashboard.putBoolean(updatePassingFlywheelMapKey, false);
+        passingFlywheelSpeedMap.put(3.40, passingFlywheelSpeed1.get());
+        passingFlywheelSpeedMap.put(4.275, passingFlywheelSpeed2.get());
+        passingFlywheelSpeedMap.put(5.46, passingFlywheelSpeed3.get());
+        passingFlywheelSpeedMap.put(6.62, passingFlywheelSpeed4.get());
+        passingFlywheelSpeedMap.put(7.80, passingFlywheelSpeed5.get());
+        passingFlywheelSpeedMap.put(8.67, passingFlywheelSpeed6.get());
+        passingFlywheelSpeedMap.put(9.65, passingFlywheelSpeed7.get());
+        passingFlywheelSpeedMap.put(10.16, passingFlywheelSpeed8.get());
+        passingFlywheelSpeedMap.put(17.16, passingFlywheelSpeedLast.get()); 
+    }
+  }
+
   public LaunchingParameters getParameters() {
+    if (Constants.tuningMode) {
+        updateMaps();
+    }
+
     boolean passing =
         AllianceFlipUtil.applyX(RobotState.getInstance().getRobotPoseField().getX())
             > FieldConstants.LinesVertical.hubCenter;
@@ -306,7 +494,7 @@ public class ShooterCalculation {
     // Calculate remaining parameters
     double hoodAngle =
         passing
-            ? passingHoodAngleMap.get(lookaheadLauncherToTargetDistance).getRotations()
+            ? passingHoodAngleMap.get(lookaheadLauncherToTargetDistance)
             : hoodAngleMap.get(lookaheadLauncherToTargetDistance);
     if (lastDriveAngle == null) lastDriveAngle = driveAngle;
     if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle;
@@ -350,6 +538,8 @@ public class ShooterCalculation {
     // Log calculated values
     Logger.recordOutput(
         "ShooterCalculation/HoodAngle", hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg));
+    Logger.recordOutput("ShooterCalculation/Passing", passing);
+    Logger.recordOutput("ShooterCalculation/Target", target);
     Logger.recordOutput("ShooterCalculation/HoodVelocity", hoodVelocity);
     Logger.recordOutput("ShooterCalculation/FlywheelVelocity", flywheelVelocity);
     Logger.recordOutput("ShooterCalculation/TargetPose", new Pose2d(target, Rotation2d.kZero));
@@ -393,7 +583,7 @@ public class ShooterCalculation {
     Translation2d flippedGoalTranslation =
         AllianceFlipUtil.apply(
             new Translation2d(
-                xPassTarget, mirror ? FieldConstants.fieldWidth - yPassTarget : yPassTarget));
+                xPassTarget, flippedY));
 
     return flippedGoalTranslation;
   }

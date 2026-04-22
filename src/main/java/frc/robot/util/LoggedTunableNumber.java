@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
@@ -105,14 +107,20 @@ public class LoggedTunableNumber implements DoubleSupplier {
    * @param tunableNumbers All tunable numbers to check
    */
   public static void ifChanged(
-      int id, Consumer<double[]> action, LoggedTunableNumber... tunableNumbers) {
-    if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
-      action.accept(Arrays.stream(tunableNumbers).mapToDouble(LoggedTunableNumber::get).toArray());
+      int id, Consumer<double[]> action, LoggedTunableNumber... tunableNumbers)
+  {
+    if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id)))
+    {
+      Stream<LoggedTunableNumber> stream = Arrays.stream(tunableNumbers);
+      DoubleStream doubleStream = stream.mapToDouble(LoggedTunableNumber::get);
+      double[] doubleArray = doubleStream.toArray();
+      action.accept(doubleArray);
     }
   }
 
   /** Runs action if any of the tunableNumbers have changed */
-  public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) {
+  public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) 
+  {
     ifChanged(id, values -> action.run(), tunableNumbers);
   }
 

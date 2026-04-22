@@ -49,8 +49,8 @@ public class CameraConstants {
 
   /** Factory for robot cameras. Edit transforms and duties to match your robot configuration. */
   public static class RobotCameras {
-    /** Left-side Limelight configuration including physical transform and duties. */
-    public static final Camera LEFT = // Practice Bot
+    /** Practice bot Limelight configuration including physical transform and duties. */
+    public static final Camera PBOT_CAMERA = // Practice Bot
         new Camera(
             new CameraIOLimelight("one", CameraType.LIMELIGHT_4),
             Limelight4Constants.HORIZONTAL_FOV,
@@ -66,10 +66,13 @@ public class CameraConstants {
                 0.3429,
                 -0.0127,
                 0.22225,
-                new Rotation3d(0, Units.degreesToRadians(37.8), Units.degreesToRadians(0.0))));
+                new Rotation3d(
+                    Units.degreesToRadians(0.0),
+                    Units.degreesToRadians(37.8),
+                    Units.degreesToRadians(0.0))));
 
     /** Right-side Limelight configuration including physical transform and duties. */
-    public static final Camera RIGHT = // Comp Bot
+    public static final Camera LEFT = // Comp Bot
         new Camera(
             new CameraIOLimelight("two", CameraType.LIMELIGHT_4),
             Limelight4Constants.HORIZONTAL_FOV,
@@ -82,10 +85,35 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION),
             new Transform3d(
-                -0.15534, // forward + /backward -
-                -0.2794, // side right + /left -
-                0.42926, // up + / down -
-                new Rotation3d(0, Units.degreesToRadians(-27.1), Units.degreesToRadians(0.0))));
+                -0.33, // forward + /backward -
+                -0.089, // side right + /left -
+                0.419, // up + / down -
+                new Rotation3d(
+                    Units.degreesToRadians(3.45), // TODO: revisit these measurements with script results
+                    Units.degreesToRadians(23.98),// consider spliting the difference between left and right in the meantime
+                    Units.degreesToRadians(170.0))));
+
+    /** Right-side Limelight configuration including physical transform and duties. */
+    public static final Camera RIGHT = // Comp Bot
+        new Camera(
+            new CameraIOLimelight("three", CameraType.LIMELIGHT_4),
+            Limelight4Constants.HORIZONTAL_FOV,
+            Limelight4Constants.VERTICAL_FOV,
+            Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-three")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION),
+            new Transform3d(
+                -0.33, // forward + /backward -
+                0.089, // side right + /left -
+                0.419, // up + / down -
+                new Rotation3d(
+                    Units.degreesToRadians(-4.97),
+                    Units.degreesToRadians(24.77),
+                    Units.degreesToRadians(190.0))));
     /*
         private static final Camera LEFT_SIM =
             new Camera(

@@ -126,6 +126,25 @@ public final class RobotState {
 
   @Getter @Setter private static ShooterModeState shooterMode = ShooterModeState.OFF;
 
+  public enum SlapdownModeState {
+    DEPLOY_POSITION,
+    STOW_POSITION,
+    BUMP_POSITION,
+    STOW_WHILE_SHOOTING,
+    SPEED,
+    OFF
+  }
+
+  @Getter @Setter private static SlapdownModeState slapdownMode = SlapdownModeState.OFF;
+
+  public enum RollerModeState {
+    DUTYCYCLE,
+    TORQUE_CURRENT,
+    VELOCITY
+  }
+
+  @Getter @Setter private static RollerModeState rollerMode = RollerModeState.TORQUE_CURRENT;
+
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);
   }
@@ -173,11 +192,9 @@ public final class RobotState {
   }
 
   public synchronized void addFieldVisionMeasurement(
-      Pose2d visionPose, double timestampSeconds, double xyStdDev) {
+      Pose2d visionPose, double timestampSeconds, double xyStdDev, double rotStdDev) {
     fieldLocalizer.addVisionMeasurement(
-        visionPose,
-        timestampSeconds,
-        VecBuilder.fill(xyStdDev, xyStdDev, Double.POSITIVE_INFINITY));
+        visionPose, timestampSeconds, VecBuilder.fill(xyStdDev, xyStdDev, rotStdDev));
   }
 
   // ============================================================

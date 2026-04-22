@@ -16,7 +16,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.robotInitConstants;
 import frc.robot.subsystems.shooter.ShooterCalculation;
+import frc.robot.util.HubShiftUtil;
+import frc.robot.util.HubShiftUtil.ShiftInfo;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -123,6 +126,21 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
 
+    ShiftInfo official = HubShiftUtil.getOfficialShiftInfo();
+
+    // Official shift info
+    SmartDashboard.putString(
+        "Shift/Official/CurrentShift",
+        HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+    SmartDashboard.putNumber(
+        "Shift/Official/Remaining", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+    SmartDashboard.putNumber(
+        "Shift/Official/RemainingTime", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+
+    SmartDashboard.putNumber(
+        "Shift/Official/ElapsedTime", Math.round(official.elapsedTime() * 10) / 10.0);
+    SmartDashboard.putBoolean("Shift/Official/Active", official.active());
+
     // Update RobotContainer dashboard outputs
     robotContainer.updateDashboardOutputs();
 
@@ -154,7 +172,21 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(200);
+    if (robotInitConstants.isCompBot) {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-two")
+          .getEntry("throttle_set")
+          .setNumber(100);
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-three")
+          .getEntry("throttle_set")
+          .setNumber(100);
+    } else {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-one")
+          .getEntry("throttle_set")
+          .setNumber(100);
+    }
   }
 
   /** This function is called periodically when disabled. */
@@ -165,7 +197,21 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(0);
+    if (robotInitConstants.isCompBot) {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-two")
+          .getEntry("throttle_set")
+          .setNumber(0);
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-three")
+          .getEntry("throttle_set")
+          .setNumber(0);
+    } else {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-one")
+          .getEntry("throttle_set")
+          .setNumber(0);
+    }
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -187,7 +233,21 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(0);
+    if (robotInitConstants.isCompBot) {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-two")
+          .getEntry("throttle_set")
+          .setNumber(0);
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-three")
+          .getEntry("throttle_set")
+          .setNumber(0);
+    } else {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-one")
+          .getEntry("throttle_set")
+          .setNumber(0);
+    }
   }
 
   /** This function is called periodically during operator control. */
@@ -199,7 +259,21 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("throttle_set").setNumber(0);
+    if (robotInitConstants.isCompBot) {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-two")
+          .getEntry("throttle_set")
+          .setNumber(0);
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-three")
+          .getEntry("throttle_set")
+          .setNumber(0);
+    } else {
+      NetworkTableInstance.getDefault()
+          .getTable("limelight-one")
+          .getEntry("throttle_set")
+          .setNumber(0);
+    }
   }
 
   /** This function is called periodically during test mode. */

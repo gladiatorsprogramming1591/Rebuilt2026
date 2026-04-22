@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.348,
-        "y": 2.936
+        "x": 2.9,
+        "y": 2.723674698795181
       },
       "prevControl": {
-        "x": 2.769858974358976,
-        "y": 2.221
+        "x": 2.321858974358976,
+        "y": 2.0086746987951813
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,19 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.11613774476704553,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 3.0,

@@ -1,30 +1,30 @@
-package frc.robot.subsystems.roller;
+package frc.robot.subsystems.hopper;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface RollerIO {
+public interface HopperIO {
   @AutoLog
-  public static class RollerIOInputs {
-    double bottomRollerCurrent = 0.0;
-    double topRollerCurrent = 0.0;
+  public static class HopperIOInputs {
+    double beltCurrent = 0.0;
+    boolean hopperEmpty = false;
+    double hopperEmptyDistance = 1.0; // Iniitalized to some value beyond the far hopper wall
   }
 
   @AutoLog
-  public static class RollerIOOutputs {
-    double bottomRollerSpeed = 0.0;
-    double topRollerSpeed = 0.0;
-    boolean useRollerWhileIntakeCurrent = false;
+  public static class HopperIOOutputs {
+    double beltSpeed = 0.0;
+    boolean useBeltWhileIntakeCurrent = false;
     boolean usingLowerCurrent = false;
   }
 
   /**
-   * Refreshes the {@link RollerIOInputs} object with the latest sensor readings and derived values.
+   * Refreshes the {@link HopperIOInputs} object with the latest sensor readings and derived values.
    *
    * @param inputs container to populate
    */
-  public default void updateInputs(RollerIOInputs inputs) {}
+  public default void updateInputs(HopperIOInputs inputs) {}
 
-  public default void applyOutputs(RollerIOOutputs outputs) {}
+  public default void applyOutputs(HopperIOOutputs outputs) {}
 
   /**
    * Convenience connection check if an implementation prefers reading from {@code inputs}.
@@ -32,7 +32,7 @@ public interface RollerIO {
    * @param inputs latest inputs
    * @return true if connected
    */
-  public default boolean getIsConnected(RollerIOInputs inputs) {
+  public default boolean getIsConnected(HopperIOInputs inputs) {
     return false;
   }
 

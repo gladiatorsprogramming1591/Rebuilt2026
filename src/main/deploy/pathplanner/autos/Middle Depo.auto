@@ -7,37 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle start top"
+            "pathName": "Move Back Middle"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot from depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot to NZ"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot after NZ lt"
+            "pathName": "depo"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "ALSO STUFF",
+  "folder": "Center auto",
   "choreoAuto": false
 }
