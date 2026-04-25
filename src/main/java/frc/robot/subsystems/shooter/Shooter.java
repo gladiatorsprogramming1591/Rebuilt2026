@@ -105,7 +105,7 @@ public class Shooter extends SubsystemBase {
   public Command runShooterTarget() {
     return run(
         () -> {
-          if (RobotState.getShooterMode() != ShooterModeState.IDLE) {
+          if (RobotState.getShooterMode() != ShooterModeState.ON) {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.ON);
@@ -137,6 +137,18 @@ public class Shooter extends SubsystemBase {
       conditionalCommand.addRequirements(this);
     return conditionalCommand;
   }
+
+  public boolean getRawShooterAtVelocityForDebug() {
+  return inputs.shooterAtVelocity;
+}
+
+public boolean getHasSpeedTargetChangedForDebug() {
+  return hasSpeedTargetChanged;
+}
+
+public double getDesiredVelocityRPMForDebug() {
+  return outputs.desiredVelocityRPM;
+}
 
   public BooleanSupplier isShooterAtVelocity() {
     return (() -> {

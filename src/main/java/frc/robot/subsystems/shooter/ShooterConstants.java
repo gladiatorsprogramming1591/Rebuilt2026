@@ -14,11 +14,10 @@ public class ShooterConstants {
   public static final int RIGHT_SHOOTER_FOLLOWER_MOTOR_ID = 37;
 
   public static final double SHOOTER_MOTOR_REDUCTION = 1.0; // Currently only used in Sim. TODO: Find and assign reduction to SensorToMechanismRatio
-  public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 70;
+  public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 40;
   public static final double MAX_FLYWHEEL_RPM = 5200.0; // Unused. TODO: Find max RPM at 12 V
-  public static final double FLYWHEEL_TOLERANCE_RPS = 3.0; // +/- 60 RPM
+  public static final double FLYWHEEL_TOLERANCE_RPS = 2; // +/- 60 RPM
 
-  public static final double SHOOTER_AT_SPEED_TIMEOUT = 0.75; // 0.5. increased for now to better test "isShooterAtVelocity"
   public static final double MAX_FLYWHEEL_CALCULATED_RPM = 4000.0;
   public static final double MAX_FLYWHEEL_LOW_CEILING_RPM = 2000.0;
   
@@ -27,7 +26,7 @@ public class ShooterConstants {
   public static final double FLYWHEEL_LOW_CEILING_SCALER = 2 / 3;
   
   private static final double m_ShootFixedRPM = 2000.0;
-  private static final double m_CoastRPM = 600.0; // 750
+  private static final double m_CoastRPM = 1000.0; // 750
 
   private static final double m_P = 0.45; // An error of 1 rps results in <0.45> V output. P above 0.50 causes oscillation
   private static final double m_I = 0.0; // no output for integrated error

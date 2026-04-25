@@ -14,10 +14,10 @@ public final class IntakeConstants {
   public static final double ROLLER_MOTOR_REDUCTION = 1.0; // placeholder until tested
   public static final double SLAPDOWN_MOTOR_REDUCTION = 1.0; // placeholder until tested
 
-  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 60.0;
-  public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
-  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
-  public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 30.0;
+  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_STATOR_CURRENT_LIMIT = 150.0;
+  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 50.0;
+  public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 50.0;
   public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 40.0; 
   public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -38.0; 
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;

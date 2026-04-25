@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public final class HopperConstants {
   // public static final double ROLLER_MAX_SPEED = 1.0;
-  public static final double BELT_CURRENT_LIMIT = 40.0;
+  public static final double BELT_CURRENT_LIMIT = 60.0;
   public static final double BELT_INTAKE_CURRENT_LIMIT = 10.0;
   public static final LoggedTunableNumber HOPPER_EMPTY_DISTANCE_LIMIT =
       new LoggedTunableNumber("Hopper/Hopper Empty Distance Limit", 0.475);

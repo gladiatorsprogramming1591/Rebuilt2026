@@ -100,10 +100,8 @@ public class DriveCommands {
 
   // TODO: Add velocity angle, see 6238 DriveCommands.java
   private static Rotation2d getHubDriveAngle() {
-    Rotation2d hubAngle =
-        AllianceFlipUtil.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d())
-            .minus(RobotState.getInstance().getRobotPoseField().getTranslation())
-            .getAngle();
+    Rotation2d hubAngle = ShooterCalculation.getInstance().getParameters().driveAngle();
+
     SmartDashboard.putNumber("Hub Drive Angle", hubAngle.getDegrees());
     return hubAngle;
   }

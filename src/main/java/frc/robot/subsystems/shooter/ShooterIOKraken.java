@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.StrictFollower;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -30,7 +31,7 @@ import java.util.function.DoubleSupplier;
 
 // spotless:off
 public class ShooterIOKraken implements ShooterIO {
-  private final VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
+  private final VelocityTorqueCurrentFOC velocityControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
   private final MotionMagicVelocityVoltage mmVelocityControl = new MotionMagicVelocityVoltage(0).withSlot(0);
 
   private final StatusSignal<AngularVelocity> RL_RPS;
@@ -235,7 +236,7 @@ public class ShooterIOKraken implements ShooterIO {
   @Override
   public BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetRPS) {
     return (() ->
-        RL_RPS.getValueAsDouble() > (targetRPS.getAsDouble() - ShooterConstants.FLYWHEEL_TOLERANCE_RPS));
+        (Math.abs(RL_RPS.getValueAsDouble() - targetRPS.getAsDouble()) < ShooterConstants.FLYWHEEL_TOLERANCE_RPS));
   }
 
   @Override

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RollerModeState;
 import frc.robot.RobotState.SlapdownModeState;
@@ -54,36 +55,64 @@ public class Intake extends SubsystemBase {
 
   // TODO: Change from runEnd to let applyOutputs check for down and stop motor. Probably need new
   // states.
-  public Command deploy() {
-    return runEnd(
-            () -> {
-              isSlapdownStopped = false;
-              outputs.desiredPosition = IntakeConstants.DOWN;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.DEPLOY_POSITION);
-              stopSlapdownOnCurrentSpike = true;
-            },
-            () -> {
-              outputs.appliedSlapdownSpeed = 0;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-            })
-        .until(() -> isSlapdownStopped);
-  }
+  // public Command deploy() {
+  //   return runEnd(
+  //           () -> {
+  //             isSlapdownStopped = false;
+  //             outputs.desiredPosition = IntakeConstants.DOWN;
+  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.DEPLOY_POSITION);
+  //             stopSlapdownOnCurrentSpike = true;
+  //           },
+  //           () -> {
+  //             outputs.appliedSlapdownSpeed = 0;
+  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
+  //           })
+  //       .until(() -> isSlapdownStopped);
+  // }
 
-  // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new states.
-  public Command stow() {
-    return runEnd(
-            () -> {
-              isSlapdownStopped = false;
-              outputs.desiredPosition = IntakeConstants.UP;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.STOW_POSITION);
-              stopSlapdownOnCurrentSpike = true;
-            },
-            () -> {
-              outputs.appliedSlapdownSpeed = 0;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-            })
-        .until(() -> isSlapdownStopped);
-  }
+  // // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new states.
+  // public Command stow() {
+  //   return runEnd(
+  //           () -> {
+  //             isSlapdownStopped = false;
+  //             outputs.desiredPosition = IntakeConstants.UP;
+  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.STOW_POSITION);
+  //             stopSlapdownOnCurrentSpike = true;
+  //           },
+  //           () -> {
+  //             outputs.appliedSlapdownSpeed = 0;
+  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
+  //           })
+  //       .until(() -> isSlapdownStopped);
+  // }
+
+  public Command deploy() {
+  return runOnce(
+          () -> {
+            isSlapdownStopped = false;
+            outputs.desiredPosition = IntakeConstants.DOWN;
+            RobotState.setSlapdownMode(RobotState.SlapdownModeState.DEPLOY_POSITION);
+            stopSlapdownOnCurrentSpike = true;
+          })
+      .andThen(run(() -> {}).until(() -> isSlapdownStopped));
+}
+
+public Command stow() {
+  return runOnce(
+          () -> {
+            isSlapdownStopped = false;
+            outputs.desiredPosition = IntakeConstants.UP;
+            RobotState.setSlapdownMode(RobotState.SlapdownModeState.STOW_POSITION);
+            stopSlapdownOnCurrentSpike = true;
+          })
+      .andThen(run(() -> {}).until(() -> isSlapdownStopped));
+}
+
+public Command deployAndRunRoller() {
+  return deploy()
+      .andThen(new WaitUntilCommand(() -> inputs.isSlapdownDown))
+      .andThen(runRoller());
+}
 
   public Command stowBump() {
     return runEnd(
@@ -106,9 +135,11 @@ public class Intake extends SubsystemBase {
               outputs.desiredPosition = IntakeConstants.SHOOTING_STOP;
               RobotState.setSlapdownMode(RobotState.SlapdownModeState.BUMP_POSITION);
               stopSlapdownOnCurrentSpike = false;
+              requestedRollerSpeed = 0.0;
             },
             () -> {
               outputs.appliedSlapdownSpeed = 0;
+              requestedRollerSpeed = 0.0;
               RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
             });
   }
@@ -145,6 +176,7 @@ public class Intake extends SubsystemBase {
               requestedRollerSpeed = 0.0;
             });
   }
+
   public Command overrideRollerSpeedCommand() {
     return runEnd(
             () -> {

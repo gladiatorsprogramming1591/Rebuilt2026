@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -278,7 +280,7 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
+    // Reset gyro to 0° when B button is pressed
     driver_controller
         .b()
         .onTrue(
@@ -295,7 +297,7 @@ public class RobotContainer {
     // driver_controller //TODO: TEMPORARY
     //     .leftTrigger()
     //     .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
-    driver_controller.leftTrigger().whileTrue(intake.runRoller());
+    driver_controller.leftTrigger().whileTrue(intake.deployAndRunRoller());
     // driver_controller // // TODO: TEMPORARY and broken?
     //     .rightBumper()
     //     .whileTrue(
@@ -304,9 +306,9 @@ public class RobotContainer {
         .leftBumper()
         // TODO: Kiley RIT request: undeployed
         // .leftBumper().or(operator_controller.rightTrigger())
-        .whileTrue(
+        .onTrue(
             intake.stow()); // TODO: needs to be a toggle eventually that runs until a certain angle
-    driver_controller.rightBumper().whileTrue(intake.deploy());
+    driver_controller.rightBumper().onTrue(intake.deploy());
     // roller
     // driver_controller.x().whileTrue(roller.runTopRollerMotor());
     // hood
@@ -321,6 +323,10 @@ public class RobotContainer {
         .whileTrue(Commands.runEnd(
                     () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.8),
                     () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0)));    
+                    driver_controller
+    .rightTrigger()
+    .and(driver_controller.leftTrigger().negate())
+    .whileTrue(intake.stowWhileShooting());
     driver_controller
         .rightTrigger()
         .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
@@ -383,9 +389,6 @@ public class RobotContainer {
     //              .onlyIf(() -> !HubShiftUtil.getOfficialShiftInfo().active())
     //              .onlyIf(inLaunchingTolerance));
         
-
-    
-    
     // End-of-shift warning
     for (int i = 1; i <= 5; i++) {
       double time = i;
@@ -426,10 +429,9 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
                     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity())
-                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity()),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting())));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting()))));
   }
 
   public Command shootFixed() {
@@ -440,28 +442,29 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
                     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity())
-                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity()),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting()))));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting())))));
   }
 
   public Command shootWithAim() {
-    // var shooterCalculation = ShooterCalculation.getInstance();
-    return Commands.parallel(
-        shooter.runShooterTarget(),
-        hood.runHoodTarget(),
-        DriveCommands.joystickDriveWhileLaunching(
-            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
-        Commands.sequence(
-            Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity())
-                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
-            Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting()))));
-  }
+  // var shooterCalculation = ShooterCalculation.getInstance();
+  return Commands.parallel(
+      shooter.runShooterTarget(),
+      hood.runHoodTarget(),
+      DriveCommands.joystickDriveWhileLaunching(
+          drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
+      Commands.sequence(
+          Commands.parallel(
+              Commands.waitUntil(hood.isHoodAtAngle())
+                  .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+              Commands.waitUntil(shooter.isShooterAtVelocity()),
+              Commands.waitUntil(() -> DriveCommands.atLaunchGoal()),
+              new WaitCommand(0.5)),
+          Commands.parallel(
+              hopper.startBeltMotors(),
+              kicker.runKickerMotor())));
+}
 
   public Command shootWithAimStationary() {
     return Commands.parallel(
@@ -472,10 +475,9 @@ public class RobotContainer {
             Commands.parallel(
                 Commands.waitUntil(hood.isHoodAtAngle())
                     .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity())
-                    .withTimeout(ShooterConstants.SHOOTER_AT_SPEED_TIMEOUT)),
+                Commands.waitUntil(shooter.isShooterAtVelocity()),
             Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(0.75).andThen(intake.stowWhileShooting()))));
+                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(0.75).andThen(intake.stowWhileShooting())))));
   }
 
   // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome

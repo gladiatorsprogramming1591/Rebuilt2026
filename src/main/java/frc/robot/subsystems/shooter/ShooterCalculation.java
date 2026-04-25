@@ -37,7 +37,8 @@ public class ShooterCalculation {
       LinearFilter.movingAverage((int) (0.1 / Constants.loopPeriodSecs));
   private final LinearFilter driveAngleFilter =
       LinearFilter.movingAverage((int) (0.1 / Constants.loopPeriodSecs));
-
+private static final LoggedTunableNumber velocityCompensationScalar =
+    new LoggedTunableNumber("ShooterCalculation/VelocityCompensationScalar", 1.0);
   private double lastHoodAngle;
   private Rotation2d lastDriveAngle;
 
@@ -476,8 +477,15 @@ public class ShooterCalculation {
             passing
                 ? passingTimeOfFlightMap.get(lookaheadLauncherToTargetDistance)
                 : timeOfFlightMap.get(lookaheadLauncherToTargetDistance);
-        double offsetX = launcherVelocity.vxMetersPerSecond * timeOfFlight;
-        double offsetY = launcherVelocity.vyMetersPerSecond * timeOfFlight;
+        double offsetX =
+    launcherVelocity.vxMetersPerSecond
+        * timeOfFlight
+        * velocityCompensationScalar.get();
+
+double offsetY =
+    launcherVelocity.vyMetersPerSecond
+        * timeOfFlight
+        * velocityCompensationScalar.get();
         lookaheadPose =
             new Pose2d(
                 launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),

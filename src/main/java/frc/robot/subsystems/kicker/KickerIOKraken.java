@@ -24,7 +24,7 @@ public class KickerIOKraken implements KickerIO {
     PhoenixUtil.tryUntilOk(5, () -> kickerMotor.getConfigurator().apply(kickerConfig, 0.25));
     kickerMotor
         .getConfigurator()
-        .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(5.0));
+        .apply(new ClosedLoopRampsConfigs().withDutyCycleClosedLoopRampPeriod(0.25));
     if (twoKickerMotors == true) {
       secondKickerMotor = new TalonFX(KickerConstants.KICKER_2_CAN_ID);
       PhoenixUtil.tryUntilOk(
