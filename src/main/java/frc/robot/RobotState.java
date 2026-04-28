@@ -115,6 +115,20 @@ public final class RobotState {
   private final AtomicReference<ChassisSpeeds> desiredFieldRelSpeeds =
       new AtomicReference<>(new ChassisSpeeds());
 
+  private final AtomicReference<ChassisSpeeds> measuredRobotRelAcceleration =
+      new AtomicReference<>(new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> measuredFieldRelAcceleration =
+      new AtomicReference<>(new ChassisSpeeds());
+
+  private final AtomicReference<ChassisSpeeds> measuredRobotRelImuAcceleration =
+      new AtomicReference<>(new ChassisSpeeds());
+  private final AtomicReference<ChassisSpeeds> measuredFieldRelImuAcceleration =
+      new AtomicReference<>(new ChassisSpeeds());
+
+  private ChassisSpeeds lastMeasuredFieldRelSpeeds = new ChassisSpeeds();
+  private double lastMeasuredSpeedTimestamp = Timer.getTimestamp();
+  private boolean hasMeasuredAccelerationSample = false;
+
   @Getter @Setter private static RobotMode mode = RobotMode.DISABLED;
 
   public enum ShooterModeState {
@@ -202,15 +216,21 @@ public final class RobotState {
   // ============================================================
 
   public void setMeasuredRobotRelativeSpeeds(ChassisSpeeds speeds) {
+    ChassisSpeeds fieldSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getRobotPoseField().getRotation());
+
     measuredRobotRelSpeeds.set(speeds);
-    measuredFieldRelSpeeds.set(
-        ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getRobotPoseField().getRotation()));
+    measuredFieldRelSpeeds.set(fieldSpeeds);
+    updateMeasuredAccelerationFromFieldSpeeds(fieldSpeeds);
   }
 
   public void setMeasuredFieldRelativeSpeeds(ChassisSpeeds speeds) {
+    ChassisSpeeds robotSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getRobotPoseField().getRotation());
+
     measuredFieldRelSpeeds.set(speeds);
-    measuredRobotRelSpeeds.set(
-        ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getRobotPoseField().getRotation()));
+    measuredRobotRelSpeeds.set(robotSpeeds);
+    updateMeasuredAccelerationFromFieldSpeeds(speeds);
   }
 
   public void setDesiredRobotRelativeSpeeds(ChassisSpeeds speeds) {
@@ -239,6 +259,79 @@ public final class RobotState {
 
   public ChassisSpeeds getDesiredFieldRelativeSpeeds() {
     return desiredFieldRelSpeeds.get();
+  }
+
+  private synchronized void updateMeasuredAccelerationFromFieldSpeeds(
+      ChassisSpeeds currentFieldRelSpeeds) {
+    double now = Timer.getTimestamp();
+
+    if (!hasMeasuredAccelerationSample) {
+      hasMeasuredAccelerationSample = true;
+      lastMeasuredFieldRelSpeeds = currentFieldRelSpeeds;
+      lastMeasuredSpeedTimestamp = now;
+      measuredFieldRelAcceleration.set(new ChassisSpeeds());
+      measuredRobotRelAcceleration.set(new ChassisSpeeds());
+      return;
+    }
+
+    double dt = now - lastMeasuredSpeedTimestamp;
+    if (dt <= 1e-6) {
+      return;
+    }
+
+    ChassisSpeeds fieldAcceleration =
+        new ChassisSpeeds(
+            (currentFieldRelSpeeds.vxMetersPerSecond - lastMeasuredFieldRelSpeeds.vxMetersPerSecond)
+                / dt,
+            (currentFieldRelSpeeds.vyMetersPerSecond - lastMeasuredFieldRelSpeeds.vyMetersPerSecond)
+                / dt,
+            (currentFieldRelSpeeds.omegaRadiansPerSecond
+                    - lastMeasuredFieldRelSpeeds.omegaRadiansPerSecond)
+                / dt);
+
+    measuredFieldRelAcceleration.set(fieldAcceleration);
+    measuredRobotRelAcceleration.set(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            fieldAcceleration, getRobotPoseField().getRotation()));
+
+    lastMeasuredFieldRelSpeeds = currentFieldRelSpeeds;
+    lastMeasuredSpeedTimestamp = now;
+  }
+
+  public void setMeasuredRobotRelativeImuAcceleration(ChassisSpeeds acceleration) {
+    measuredRobotRelImuAcceleration.set(acceleration);
+    measuredFieldRelImuAcceleration.set(
+        ChassisSpeeds.fromRobotRelativeSpeeds(acceleration, getRobotPoseField().getRotation()));
+  }
+
+  public void setMeasuredFieldRelativeImuAcceleration(ChassisSpeeds acceleration) {
+    measuredFieldRelImuAcceleration.set(acceleration);
+    measuredRobotRelImuAcceleration.set(
+        ChassisSpeeds.fromFieldRelativeSpeeds(acceleration, getRobotPoseField().getRotation()));
+  }
+
+  public ChassisSpeeds getMeasuredRobotRelativeAcceleration() {
+    return measuredRobotRelAcceleration.get();
+  }
+
+  public ChassisSpeeds getMeasuredFieldRelativeAcceleration() {
+    return measuredFieldRelAcceleration.get();
+  }
+
+  public ChassisSpeeds getMeasuredRobotRelativeImuAcceleration() {
+    return measuredRobotRelImuAcceleration.get();
+  }
+
+  public ChassisSpeeds getMeasuredFieldRelativeImuAcceleration() {
+    return measuredFieldRelImuAcceleration.get();
+  }
+
+  private synchronized void resetMeasuredAccelerationTracking() {
+    hasMeasuredAccelerationSample = false;
+    lastMeasuredFieldRelSpeeds = measuredFieldRelSpeeds.get();
+    lastMeasuredSpeedTimestamp = Timer.getTimestamp();
+    measuredRobotRelAcceleration.set(new ChassisSpeeds());
+    measuredFieldRelAcceleration.set(new ChassisSpeeds());
   }
 
   // ============================================================

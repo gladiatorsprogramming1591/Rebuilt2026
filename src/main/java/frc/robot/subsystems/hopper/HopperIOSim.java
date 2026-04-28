@@ -1,32 +1,45 @@
 package frc.robot.subsystems.hopper;
 
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.math.MathUtil;
 
+/**
+ * Simple simulated hopper IO implementation.
+ *
+ * <p>This is not intended to be a full physics simulation. It exists so the hopper subsystem can
+ * run in sim/replay without real hardware while following the same input/output structure as the
+ * real IO implementation.
+ */
 public class HopperIOSim implements HopperIO {
-  private double speed = 0.0;
+  private double beltSpeed = 0.0;
+  private boolean usingIntakeCurrentLimit = false;
 
-  private final DCMotorSim intakeSim;
-  private static final DCMotor INTAKE_GEARBOX = DCMotor.getKrakenX60Foc(1);
-  private static final double inertia = 1.0;
-  private static final double gearRatio = 1.0;
+  /**
+   * Creates a simple simulated hopper with the belt stopped and an empty-sensor reading present.
+   */
+  public HopperIOSim() {}
 
-  public HopperIOSim() {
-    intakeSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(INTAKE_GEARBOX, inertia, gearRatio), INTAKE_GEARBOX);
+  /**
+   * Updates the simulated hopper sensor values.
+   *
+   * @param inputs container updated with the latest simulated hopper state
+   */
+  @Override
+  public void updateInputs(HopperIOInputs inputs) {
+    inputs.beltCurrent = Math.abs(beltSpeed) * HopperConstants.BELT_CURRENT_LIMIT;
+    inputs.beltVelocity = beltSpeed;
+    inputs.hopperEmptySensorConnected = true;
+    inputs.hopperEmptyDistance = 1.0;
+    inputs.hopperEmpty = true;
   }
 
-  @Override
-  public void updateInputs(HopperIOInputs inputs) {}
-
+  /**
+   * Applies the requested hopper output to the simple simulation state.
+   *
+   * @param outputs latest requested hopper outputs from the subsystem
+   */
   @Override
   public void applyOutputs(HopperIOOutputs outputs) {
-    if (!outputs.usingLowerCurrent && outputs.useBeltWhileIntakeCurrent) {
-      outputs.usingLowerCurrent = true;
-    } else if (outputs.usingLowerCurrent && !outputs.useBeltWhileIntakeCurrent) {
-      outputs.usingLowerCurrent = false;
-    }
+    usingIntakeCurrentLimit = outputs.useBeltWhileIntakeCurrent;
+    beltSpeed = MathUtil.clamp(outputs.beltSpeed, -1.0, 1.0);
   }
 }

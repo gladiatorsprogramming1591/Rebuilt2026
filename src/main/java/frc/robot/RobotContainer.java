@@ -7,32 +7,19 @@
 
 package frc.robot;
 
-import java.util.Optional;
-
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.robotInitConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -60,7 +47,6 @@ import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOKraken;
 import frc.robot.subsystems.kicker.KickerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -69,16 +55,19 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutoManager;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.Optional;
+import java.util.Set;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * Declares the robot's subsystems, default commands, autonomous command chooser, and controller
+ * bindings.
+ *
+ * <p>RobotContainer should describe how the robot is wired together. Subsystem-specific behavior
+ * should stay inside subsystems, and larger multi-subsystem routines should eventually move into
+ * command factory classes.
  */
-// spotless:off
 public class RobotContainer {
-  // Subsystems
   private final Drive drive;
   private final Intake intake;
   private final Kicker kicker;
@@ -87,502 +76,761 @@ public class RobotContainer {
   private final Vision vision;
   private final Hood hood;
 
-  // Controller
-  private final CommandXboxController driver_controller = new CommandXboxController(0);
-  private final CommandXboxController operator_controller = new CommandXboxController(1);
+  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
-  // Drive Speeds
-  private double driveSpeedMultiplier = 1.0; // This will be squared, 0.4 is good for kids
-  private double rotationMultiplier = 1.0; // Use 0.4 for kids
-  
-  private LoggedTunableNumber autoStartDelay = new LoggedTunableNumber("Auto Start Delay", 1.0,  Constants.Tuning.AUTO);
+  private double driveSpeedMultiplier = 1.0;
+  private double rotationMultiplier = 1.0;
 
-  // Dashboard inputs
+  private final LoggedTunableNumber autoStartDelay =
+      new LoggedTunableNumber("Auto Start Delay", 1.0, Constants.Tuning.AUTO);
+
   private final LoggedDashboardChooser<Command> autoChooser;
   private final AutoManager autoManager;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private int dashboardUpdateCounter = 0;
+
+  /** Creates all subsystems, autonomous routines, default commands, and controller bindings. */
   public RobotContainer() {
-    // Start logging
-    DataLogManager.start();
-    SmartDashboard.putBoolean("isCompBot", robotInitConstants.isCompBot);
-    // Record DS control and joystick data
-    DriverStation.startDataLog(DataLogManager.getLog());
+    startLogging();
+
     switch (Constants.currentMode) {
       case REAL:
-        // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-        // a CANcoder
-        if (robotInitConstants.isCompBot) {
-            vision = new Vision(RobotCameras.LEFT, RobotCameras.RIGHT);
-        } else {
-            vision = new Vision(RobotCameras.PBOT_CAMERA);
-        }
-        if (robotInitConstants.isCompBot) {
-          intake = new Intake(new IntakeIOKraken());
-          kicker = new Kicker(new KickerIOKraken());
-          hopper = new Hopper(new HopperIOKraken());
-          shooter = new Shooter(new ShooterIOKraken());
-          hood = new Hood(new HoodIOKraken());
-        } else {
-          intake = new Intake(new IntakeIOSim());
-          kicker = new Kicker(new KickerIOSim());
-          hopper = new Hopper(new HopperIOSim());
-          shooter = new Shooter(new ShooterIOSim());
-          hood = new Hood(new HoodIOSim());
-        }
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        drive = createRealDrive();
+        vision = createRealVision();
+        intake = createRealIntake();
+        kicker = createRealKicker();
+        hopper = createRealHopper();
+        shooter = createRealShooter();
+        hood = createRealHood();
         break;
 
       case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-
-        intake = new Intake(new IntakeIOSim());
-        kicker = new Kicker(new KickerIOSim());
-        hopper = new Hopper(new HopperIOSim());
-        vision = new Vision();
-        shooter = new Shooter(new ShooterIOSim());
-        hood = new Hood(new HoodIOSim());
-
+        drive = createSimDrive();
+        vision = createSimVision();
+        intake = createSimIntake();
+        kicker = createSimKicker();
+        hopper = createSimHopper();
+        shooter = createSimShooter();
+        hood = createSimHood();
         break;
 
       default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-
-        intake = new Intake(new IntakeIO() {});
-        kicker = new Kicker(new KickerIO() {});
-        hopper = new Hopper(new HopperIO() {});
-        shooter = new Shooter(new ShooterIO() {});
-        vision = new Vision();
-        hood = new Hood(new HoodIO() {});
-
+        drive = createReplayDrive();
+        vision = createReplayVision();
+        intake = createReplayIntake();
+        kicker = createReplayKicker();
+        hopper = createReplayHopper();
+        shooter = createReplayShooter();
+        hood = createReplayHood();
         break;
     }
 
-    // Connect the gyro as the default vision yaw supplier
     vision.setYawSupplier(drive::getGyroRotation);
 
-    // Set up auto routines
     registerNamedCommands();
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoManager = new AutoManager(drive);
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
 
-    // Set up SysId routines
-    // autoChooser.addOption(
-    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Forward)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Reverse)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    // Configure the button bindings
+    configureDefaultCommands();
     configureButtonBindings();
   }
 
+  /** Starts WPILib data logging and records basic robot startup state. */
+  private void startLogging() {
+    DataLogManager.start();
+    SmartDashboard.putBoolean("isCompBot", robotInitConstants.isCompBot);
+    DriverStation.startDataLog(DataLogManager.getLog());
+  }
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Creates the real drivetrain hardware.
+   *
+   * @return real drivetrain subsystem
    */
-  private void configureButtonBindings() {
-    // ===================================== Driver Controls =====================================
+  private Drive createRealDrive() {
+    return new Drive(
+        new GyroIOPigeon2(),
+        new ModuleIOTalonFX(TunerConstants.FrontLeft),
+        new ModuleIOTalonFX(TunerConstants.FrontRight),
+        new ModuleIOTalonFX(TunerConstants.BackLeft),
+        new ModuleIOTalonFX(TunerConstants.BackRight));
+  }
 
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver_controller.getLeftY() * driveSpeedMultiplier,
-            () -> -driver_controller.getLeftX() * driveSpeedMultiplier,
-            () -> -driver_controller.getRightX() * rotationMultiplier));
+  /**
+   * Creates the simulated drivetrain hardware.
+   *
+   * @return simulated drivetrain subsystem
+   */
+  private Drive createSimDrive() {
+    return new Drive(
+        new GyroIO() {},
+        new ModuleIOSim(TunerConstants.FrontLeft),
+        new ModuleIOSim(TunerConstants.FrontRight),
+        new ModuleIOSim(TunerConstants.BackLeft),
+        new ModuleIOSim(TunerConstants.BackRight));
+  }
 
+  /**
+   * Creates replay drivetrain hardware with no real IO.
+   *
+   * @return replay drivetrain subsystem
+   */
+  private Drive createReplayDrive() {
+    return new Drive(
+        new GyroIO() {},
+        new ModuleIO() {},
+        new ModuleIO() {},
+        new ModuleIO() {},
+        new ModuleIO() {});
+  }
+
+  /**
+   * Creates the real-mode vision subsystem.
+   *
+   * @return vision subsystem for the selected robot
+   */
+  private Vision createRealVision() {
+    return robotInitConstants.isCompBot
+        ? new Vision(RobotCameras.LEFT, RobotCameras.RIGHT)
+        : new Vision(RobotCameras.PBOT_CAMERA);
+  }
+
+  /**
+   * Creates the simulated vision subsystem.
+   *
+   * @return simulated vision subsystem
+   */
+  private Vision createSimVision() {
+    return new Vision();
+  }
+
+  /**
+   * Creates replay vision with no real cameras.
+   *
+   * @return replay vision subsystem
+   */
+  private Vision createReplayVision() {
+    return new Vision();
+  }
+
+  /**
+   * Creates the intake subsystem for real mode.
+   *
+   * <p>The comp bot uses real IO. The non-comp real configuration uses sim IO because the mechanism
+   * is not present.
+   *
+   * @return intake subsystem
+   */
+  private Intake createRealIntake() {
+    return robotInitConstants.isCompBot
+        ? new Intake(new IntakeIOKraken())
+        : new Intake(new IntakeIOSim());
+  }
+
+  /**
+   * Creates the simulated intake subsystem.
+   *
+   * @return simulated intake subsystem
+   */
+  private Intake createSimIntake() {
+    return new Intake(new IntakeIOSim());
+  }
+
+  /**
+   * Creates replay intake with no real IO.
+   *
+   * @return replay intake subsystem
+   */
+  private Intake createReplayIntake() {
+    return new Intake(new IntakeIO() {});
+  }
+
+  /**
+   * Creates the kicker subsystem for real mode.
+   *
+   * @return kicker subsystem
+   */
+  private Kicker createRealKicker() {
+    return robotInitConstants.isCompBot
+        ? new Kicker(new KickerIOKraken())
+        : new Kicker(new KickerIOSim());
+  }
+
+  /**
+   * Creates the simulated kicker subsystem.
+   *
+   * @return simulated kicker subsystem
+   */
+  private Kicker createSimKicker() {
+    return new Kicker(new KickerIOSim());
+  }
+
+  /**
+   * Creates replay kicker with no real IO.
+   *
+   * @return replay kicker subsystem
+   */
+  private Kicker createReplayKicker() {
+    return new Kicker(new KickerIO() {});
+  }
+
+  /**
+   * Creates the hopper subsystem for real mode.
+   *
+   * @return hopper subsystem
+   */
+  private Hopper createRealHopper() {
+    return robotInitConstants.isCompBot
+        ? new Hopper(new HopperIOKraken())
+        : new Hopper(new HopperIOSim());
+  }
+
+  /**
+   * Creates the simulated hopper subsystem.
+   *
+   * @return simulated hopper subsystem
+   */
+  private Hopper createSimHopper() {
+    return new Hopper(new HopperIOSim());
+  }
+
+  /**
+   * Creates replay hopper with no real IO.
+   *
+   * @return replay hopper subsystem
+   */
+  private Hopper createReplayHopper() {
+    return new Hopper(new HopperIO() {});
+  }
+
+  /**
+   * Creates the shooter subsystem for real mode.
+   *
+   * @return shooter subsystem
+   */
+  private Shooter createRealShooter() {
+    return robotInitConstants.isCompBot
+        ? new Shooter(new ShooterIOKraken())
+        : new Shooter(new ShooterIOSim());
+  }
+
+  /**
+   * Creates the simulated shooter subsystem.
+   *
+   * @return simulated shooter subsystem
+   */
+  private Shooter createSimShooter() {
+    return new Shooter(new ShooterIOSim());
+  }
+
+  /**
+   * Creates replay shooter with no real IO.
+   *
+   * @return replay shooter subsystem
+   */
+  private Shooter createReplayShooter() {
+    return new Shooter(new ShooterIO() {});
+  }
+
+  /**
+   * Creates the hood subsystem for real mode.
+   *
+   * @return hood subsystem
+   */
+  private Hood createRealHood() {
+    return robotInitConstants.isCompBot
+        ? new Hood(new HoodIOKraken())
+        : new Hood(new HoodIOSim());
+  }
+
+  /**
+   * Creates the simulated hood subsystem.
+   *
+   * @return simulated hood subsystem
+   */
+  private Hood createSimHood() {
+    return new Hood(new HoodIOSim());
+  }
+
+  /**
+   * Creates replay hood with no real IO.
+   *
+   * @return replay hood subsystem
+   */
+  private Hood createReplayHood() {
+    return new Hood(new HoodIO() {});
+  }
+
+  /** Configures subsystem default commands. */
+  private void configureDefaultCommands() {
+    drive.setDefaultCommand(driverDriveCommand());
     hopper.setDefaultCommand(hopper.stopBeltMotors());
     kicker.setDefaultCommand(kicker.stopKickerMotor());
-    Trigger inLaunchingTolerance =
-        new Trigger(
-            () ->
-                hood.isHoodAtAngle().getAsBoolean()
-                && shooter.isShooterAtVelocity().getAsBoolean());
-
     intake.setDefaultCommand(intake.stopIntake());
-    shooter.setDefaultCommand(new ConditionalCommand(
-                shooter.runIdleCommand().withTimeout(Constants.loopPeriodSecs * 3), 
-                shooter.stopAndCoastShooter().withTimeout(Constants.loopPeriodSecs * 3), // Needs to be greater than 1
-                () -> shooter.isShooterBelowCoastRPM().getAsBoolean())); // Necessary redundancy (for some reason)
-    // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
-    // TODO: Prevent driving to zero repeatedly after first successful iteraton. Ready to test.
-    // TODO: Idea: "andThen" run "stopHood" indefinitely until interrupted (only if initially zeroed)
-    // hood.setDefaultCommand(
-    //     hood.runHoodPosition(() -> 20.0)
-        // .until(hood.isHoodAtAngle()).until(Commands.waitSeconds(0.25))
-        // .andThen(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()))
-        // );
-    // hood.setDefaultCommand(hood.stopHood());
-    // drive base
-
+    shooter.setDefaultCommand(shooterDefaultCommand());
     hood.setDefaultCommand(hood.runHoodToZero());
+  }
 
-    driver_controller.povLeft().whileTrue(new InstantCommand(() -> slowMode(true)))
-        .onFalse(new InstantCommand(() -> slowMode(false)));
+  /**
+   * Configures all driver, operator, and robot mode trigger bindings.
+   *
+   * <p>Bindings are split into smaller helpers so each section is easier to scan during events.
+   */
+  private void configureButtonBindings() {
+    configureDriverControls();
+    configureOperatorControls();
+    configureRobotModeTriggers();
+  }
 
-    // Lock to 0° when A button is held
-    driver_controller
-        .a()
-        .whileTrue(
-            DriveCommands.rotateToHub(
-                drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()));
+  /** Configures driver controller bindings. */
+  private void configureDriverControls() {
+    driverController.povLeft().onTrue(setSlowModeCommand(true));
+    driverController.povLeft().onFalse(setSlowModeCommand(false));
 
-    // Switch to X pattern when X button is pressed
-    driver_controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverController.a().whileTrue(rotateToHubCommand());
+    driverController.x().onTrue(stopWithXCommand());
+    driverController.b().onTrue(resetGyroCommand());
+    driverController.y().whileTrue(warmUpShooterCommand());
 
-    // Reset gyro to 0° when B button is pressed
-    driver_controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    driverController.leftTrigger().whileTrue(prepareIntake());
+    driverController.leftBumper().onTrue(intake.stow());
+    driverController.rightBumper().onTrue(intake.deploy());
 
-    // shooter
-    driver_controller.y().whileTrue(shooter.runShooterTarget().alongWith(hood.runHoodTarget()));
-    // intake
-    // driver_controller //TODO: TEMPORARY
-    //     .leftTrigger()
-    //     .toggleOnTrue(intake.deployAndIntake().alongWith(roller.runBottomRollerWhileIntaking()));
-    driver_controller.leftTrigger().whileTrue(intake.deployAndRunRoller());
-    // driver_controller // // TODO: TEMPORARY and broken?
-    //     .rightBumper()
-    //     .whileTrue(
-    //         intake.deployAndIntake()); // TODO: needs to be a toggle eventually that run until a certain angle
-    driver_controller
-        .leftBumper()
-        // TODO: Kiley RIT request: undeployed
-        // .leftBumper().or(operator_controller.rightTrigger())
-        .onTrue(
-            intake.stow()); // TODO: needs to be a toggle eventually that runs until a certain angle
-    driver_controller.rightBumper().onTrue(intake.deploy());
-    // roller
-    // driver_controller.x().whileTrue(roller.runTopRollerMotor());
-    // hood
-    driver_controller.back().whileTrue(hood.runHoodTarget());
-    driver_controller.povUp().whileTrue(hood.runHoodUp());
-    driver_controller.povDown().whileTrue(hood.runHoodDown());
-    driver_controller.start().whileTrue(hood.stopHoodContinuously()).debounce(1.5).onTrue(hood.runHoodToZero());
-    // kicker
-    driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
+    driverController.back().whileTrue(hood.runHoodTarget());
+    driverController.povUp().whileTrue(hood.runHoodUp());
+    driverController.povDown().whileTrue(hood.runHoodDown());
 
+    driverController.povRight().toggleOnTrue(kicker.runKickerMotor());
 
-    driver_controller.rightTrigger().whileTrue(shootWithAim());
-    driver_controller.rightTrigger().and(()->hopper.isHopperEmpty())
-        .whileTrue(Commands.runEnd(
-                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.8),
-                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0)));    
-                    driver_controller
-    .rightTrigger()
-    .and(driver_controller.leftTrigger().negate())
-    .whileTrue(intake.stowWhileShooting());
-    driver_controller
-        .rightTrigger()
+    Trigger shootTrigger = driverController.rightTrigger();
+
+    shootTrigger.whileTrue(shootWithAim());
+    shootTrigger.and(hopper::isHopperEmpty).whileTrue(driverRumbleCommand(0.8));
+
+    shootTrigger
+        .and(driverController.leftTrigger().negate())
+        .whileTrue(shootingIntakeStowCommand());
+
+    shootTrigger
         .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
-        .and(()-> DriverStation.isTeleop())
-        .onTrue(
-            Commands.runEnd(
-                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
-                    () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
-                .withTimeout(.5));
-
-    // ===================================== Operator Controls =====================================
-    // rollers
-    operator_controller.leftBumper().whileTrue(hopper.reverseBeltMotors());
-    operator_controller.rightBumper().toggleOnTrue(hopper.startBeltMotors());
-    // intake
-    operator_controller.povUp().whileTrue(new RepeatCommand(intake.stopIntake()));
-    // operator_controller.povDown().toggleOnTrue(intake.reverseRoller());
-    operator_controller.povDown().whileTrue(intake.deploy());
-    operator_controller.x().whileTrue(intake.deployWithSpeed());
-    operator_controller.y().whileTrue(intake.stowBump());
-    operator_controller.b().whileTrue(intake.stow());
-    operator_controller.a().whileTrue(intake.stowWhileShooting());
-    // TODO: Kiley request: undeployed
-    // operator_controller.start().whileTrue(intake.runIntakeMotor());
-    // shooter
-    // operator_controller.b().toggleOnTrue(shooter.stopAndCoastShooter());
-    operator_controller.leftTrigger().whileTrue(shootFixed());
-    // hood
-    // operator_controller.y().onTrue(shootWithAimStationary());
-    operator_controller.povLeft().whileTrue(hood.runHoodPosition(() -> 500.0));
-    operator_controller.povRight().onTrue(hood.ZeroHood());
-    operator_controller.start().debounce(1.0).onTrue(hood.runHoodToZero());
-    operator_controller.leftStick().whileTrue(intake.overrideRollerSpeedCommand());
-    operator_controller.rightStick().whileTrue(prepareIntake());
-    
-    // Reset hub shift timer when enabling
-    RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
-    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
-    RobotModeTriggers.disabled().onTrue(Commands.runOnce(HubShiftUtil::initialize));
-
-    HubShiftUtil.setAllianceWinOverride(
-    () -> {
-      if (!DriverStation.isJoystickConnected(1)) {
-        return Optional.empty();
-      }
-
-      if (operator_controller.back().getAsBoolean()) {
-        return Optional.of(true);
-      }
-
-      return Optional.empty();
-    });
-
-    // driver_controller
-    //     .rightTrigger()
-    //     // .and(() -> !ShooterCalculation.getnstance().getParameters().passing())
-    //     // .and(inLaunchingTolerance)
-    //     // .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
-    //     .onTrue(
-    //         Commands.run(
-    //             ()-> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
-    //             ()-> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
-    //             .withTimeout(0.5)
-    //              .onlyIf(() -> !ShooterCalculation.getInstance().getParameters().passing())
-    //              .onlyIf(() -> !HubShiftUtil.getOfficialShiftInfo().active())
-    //              .onlyIf(inLaunchingTolerance));
-        
-    // End-of-shift warning
-    // for (int i = 1; i <= 5; i++) {
-    //   double time = i;
-    //   Trigger shiftAboutToEnd =
-    //       new Trigger(() -> (HubShiftUtil.getShiftedShiftInfo().remainingTime() < time));
-    //   shiftAboutToEnd
-    //       .and(RobotModeTriggers.teleop())
-    //       .and(() -> !driver_controller.back().getAsBoolean())
-    //       .onTrue(
-    //           Commands.runEnd(
-    //                   () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
-    //                   () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
-    //               .withTimeout(0.25));
-    // }
+        .and(DriverStation::isTeleop)
+        .onTrue(driverRumbleCommand(1.0).withTimeout(0.5));
   }
 
-  public void slowMode(boolean isSlow) {
-    if (isSlow) {
-        driveSpeedMultiplier = 0.7;
-    } else {
-        driveSpeedMultiplier = 1.0;
-    }
+  /** Configures operator controller bindings. */
+  private void configureOperatorControls() {
+    operatorController.leftBumper().whileTrue(hopper.reverseBeltMotors());
+    operatorController.rightBumper().toggleOnTrue(hopper.startBeltMotors());
+
+    operatorController.povUp().whileTrue(intake.stopIntake());
+    operatorController.povDown().whileTrue(intake.deploy());
+    operatorController.x().whileTrue(intake.deployWithSpeed());
+    operatorController.y().whileTrue(intake.stowBump());
+    operatorController.b().whileTrue(intake.stow());
+    operatorController.a().whileTrue(shootingIntakeStowCommand());
+
+    operatorController.leftTrigger().whileTrue(shootFixed());
+
+    operatorController.povLeft().whileTrue(debugHoodPositionCommand());
+    operatorController.povRight().onTrue(hood.zeroHood());
+    operatorController.start().debounce(1.0).onTrue(hood.runHoodToZero());
+
+    operatorController.leftStick().whileTrue(intake.overrideRollerSpeedCommand());
+    operatorController.rightStick().whileTrue(prepareIntake());
   }
 
+  /** Configures robot mode triggers and field-management helpers. */
+  private void configureRobotModeTriggers() {
+    RobotModeTriggers.teleop().onTrue(initializeHubShiftCommand());
+    RobotModeTriggers.autonomous().onTrue(initializeHubShiftCommand());
+    RobotModeTriggers.disabled().onTrue(initializeHubShiftCommand());
+
+    HubShiftUtil.setAllianceWinOverride(this::getAllianceWinOverride);
+  }
+
+  /**
+   * Builds the normal driver field-relative drive command.
+   *
+   * @return default drive command
+   */
+  private Command driverDriveCommand() {
+    return DriveCommands.joystickDrive(
+        drive,
+        () -> -driverController.getLeftY() * driveSpeedMultiplier,
+        () -> -driverController.getLeftX() * driveSpeedMultiplier,
+        () -> -driverController.getRightX() * rotationMultiplier);
+  }
+
+  /**
+   * Builds the launch-aware drive command using driver translation input.
+   *
+   * @return launch-aware drive command
+   */
+  private Command launchingDriveCommand() {
+    return DriveCommands.joystickDriveWhileLaunching(
+        drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX());
+  }
+
+  /**
+   * Builds the launch-aware drive command with zero translation input.
+   *
+   * @return stationary launch-aware drive command
+   */
+  private Command stationaryLaunchingDriveCommand() {
+    return DriveCommands.joystickDriveWhileLaunching(drive, () -> 0.0, () -> 0.0);
+  }
+
+  /**
+   * Builds the rotate-to-hub command using driver translation input.
+   *
+   * @return rotate-to-hub command
+   */
+  private Command rotateToHubCommand() {
+    return DriveCommands.rotateToHub(
+        drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX());
+  }
+
+  /**
+   * Stops the drive in an X wheel pattern.
+   *
+   * @return command that applies X-lock to the drivetrain
+   */
+  private Command stopWithXCommand() {
+    return Commands.runOnce(drive::stopWithX, drive);
+  }
+
+  /**
+   * Resets the robot gyro heading to zero while preserving current translation.
+   *
+   * @return gyro reset command
+   */
+  private Command resetGyroCommand() {
+    return Commands.runOnce(
+            () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+            drive)
+        .ignoringDisable(true);
+  }
+
+  /**
+   * Creates a command that changes driver slow mode.
+   *
+   * @param isSlow true for slow mode, false for full speed
+   * @return slow mode update command
+   */
+  private Command setSlowModeCommand(boolean isSlow) {
+    return Commands.runOnce(() -> setSlowMode(isSlow));
+  }
+
+  /**
+   * Builds the shooter default command.
+   *
+   * @return shooter default command
+   */
+  private Command shooterDefaultCommand() {
+    return shooter.coastShooterDefaultCommand();
+  }
+
+  /**
+   * Builds a debug hood position command.
+   *
+   * @return command that moves the hood to a fixed debug position
+   */
+  private Command debugHoodPositionCommand() {
+    return hood.runHoodPosition(() -> 500.0);
+  }
+
+  /**
+   * Sets the driver translation speed mode.
+   *
+   * @param isSlow true to reduce driver translation speed, false for full speed
+   */
+  public void setSlowMode(boolean isSlow) {
+    driveSpeedMultiplier = isSlow ? 0.7 : 1.0;
+  }
+
+  /**
+   * Builds the shooter warmup command used before feeding fuel.
+   *
+   * <p>This spins the shooter, moves the hood to the target, and allows the driver to keep driving
+   * with the launch-aware drive command.
+   *
+   * @return command that warms up shooter and hood while driving
+   */
   public Command warmUpShooterCommand() {
-    return Commands.parallel(
-        shooter.runShooterTarget(), 
-        hood.runHoodTarget(), 
-        DriveCommands.joystickDriveWhileLaunching(
-            drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()));
+    return Commands.parallel(shooter.runShooterTarget(), hood.runHoodTarget(), launchingDriveCommand());
   }
 
-  public Command shoot() { // IS NOT USED
-    return Commands.parallel(
-        shooter.runShooterTarget(),
-        hood.runHoodTarget(),
-        Commands.sequence(
-            Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity()),
-            Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), intake.stowWhileShooting()))));
-  }
-
+  /**
+   * Shoots at the fixed tunable shooter speed.
+   *
+   * <p>This is primarily an operator/debug shooting command. It waits for the hood and shooter before
+   * feeding the hopper, kicker, and slow intake stow.
+   *
+   * @return fixed-speed shooting command
+   */
   public Command shootFixed() {
     return Commands.parallel(
         shooter.runFixedSpeedCommand(),
         hood.runHoodTarget(),
-        Commands.sequence(
-            Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity()),
-            Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(1.0).andThen(intake.stowWhileShooting())))));
+        waitUntilShooterAndHoodReady().andThen(feedShooterWithIntakeStow()));
   }
 
+  /**
+   * Shoots while aiming at the hub using driver translation input.
+   *
+   * <p>This is the primary teleop shooting command. It keeps updating shooter, hood, and drive aim
+   * while waiting until the hood, shooter, and drive angle are ready. Once ready, it feeds fuel with
+   * the hopper and kicker.
+   *
+   * <p>Driver intake stow/curl behavior is intentionally bound separately to right trigger plus not
+   * left trigger. This lets the driver keep intaking while shooting without the intake stow command
+   * fighting the intake command.
+   *
+   * @return aimed shooting command
+   */
   public Command shootWithAim() {
-  // var shooterCalculation = ShooterCalculation.getInstance();
-  return Commands.parallel(
-      shooter.runShooterTarget(),
-      hood.runHoodTarget(),
-      DriveCommands.joystickDriveWhileLaunching(
-          drive, () -> -driver_controller.getLeftY(), () -> -driver_controller.getLeftX()),
-      Commands.sequence(
-          Commands.parallel(
-              Commands.waitUntil(hood.isHoodAtAngle())
-                  .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-              Commands.waitUntil(shooter.isShooterAtVelocity()),
-              Commands.waitUntil(() -> DriveCommands.atLaunchGoal()),
-              new WaitCommand(0.5)),
-          Commands.parallel(
-              hopper.startBeltMotors(),
-              kicker.runKickerMotor())));
-}
+    return Commands.parallel(
+        shooter.runShooterTarget(),
+        hood.runHoodTarget(),
+        launchingDriveCommand(),
+        waitUntilReadyToLaunch().andThen(launchSettleDelayCommand()).andThen(feedShooter()));
+  }
 
+  /**
+   * Shoots while holding the drive translation command at zero.
+   *
+   * <p>This is used by autonomous named commands where the robot should aim and shoot from a fixed
+   * location.
+   *
+   * @return stationary aimed shooting command
+   */
   public Command shootWithAimStationary() {
     return Commands.parallel(
         shooter.runShooterTarget(),
         hood.runHoodTarget(),
-        DriveCommands.joystickDriveWhileLaunching(drive, () -> 0, () -> 0),
-        Commands.sequence(
-            Commands.parallel(
-                Commands.waitUntil(hood.isHoodAtAngle())
-                    .withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
-                Commands.waitUntil(shooter.isShooterAtVelocity()),
-            Commands.parallel(
-                hopper.startBeltMotors(), kicker.runKickerMotor(), Commands.waitSeconds(0.75).andThen(intake.stowWhileShooting())))));
+        stationaryLaunchingDriveCommand(),
+        waitUntilShooterAndHoodReady().andThen(feedShooterWithIntakeStow()));
   }
 
-  // public Command intakeAndKickerAndRollerAndStow() { //name suggestions not welcome
-  //   return intake.runIntakeMotor()
-  //   .andThen(Command.WaitCommand(5))
-  //   .andThen(intake.runStow());
-  // }
-
-  public Command intakePulseCommand() {
-    return intake
-        .stopIntakeInstant()
-        .andThen(
-            Commands.sequence(
-                intake.stow().withTimeout(0.5),
-                intake.deploy().withTimeout(0.2),
-                intake.stow().withTimeout(0.5),
-                intake.stow().withTimeout(0.2),
-                intake.deploy().withTimeout(0.5),
-                intake.stow().withTimeout(0.2),
-                intake.stow().withTimeout(0.5),
-                intake.deploy().withTimeout(0.2),
-                intake.stow().withTimeout(0.5),
-                intake.stow().withTimeout(0.2),
-                intake.stow().withTimeout(0.5),
-                intake.deploy().withTimeout(0.2),
-                intake.stow().withTimeout(0.5),
-                intake.stow().withTimeout(0.2)));
-  }
-
-  public Command intakeCommand() {
-    return intake.deploy().alongWith(hopper.runBeltWhileIntaking());
-  }
-
-  public Command prepareIntake() {
+  /**
+   * Waits until hood and shooter are ready.
+   *
+   * @return command that ends when the hood and shooter are ready
+   */
+  private Command waitUntilShooterAndHoodReady() {
     return Commands.parallel(
-        intake.deploy(),
-        intake.runRollerWithoutRequirements());
+        Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+        Commands.waitUntil(shooter.isShooterAtVelocity()));
   }
 
+  /**
+   * Waits until the robot is ready to launch while aiming.
+   *
+   * @return command that ends when hood, shooter, and launch angle are ready
+   */
+  private Command waitUntilReadyToLaunch() {
+    return Commands.parallel(
+        Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+        Commands.waitUntil(shooter.isShooterAtVelocity()),
+        Commands.waitUntil(DriveCommands::atLaunchGoal));
+  }
+
+  /**
+   * Adds a short settle delay after readiness checks before feeding.
+   *
+   * @return launch settle delay command
+   */
+  private Command launchSettleDelayCommand() {
+    return Commands.waitSeconds(0.5);
+  }
+
+  /**
+   * Runs the hopper and kicker to feed fuel into the shooter.
+   *
+   * @return fuel feed command without intake stow
+   */
+  private Command feedShooter() {
+    return Commands.parallel(hopper.startBeltMotors(), kicker.runKickerMotor());
+  }
+
+  /**
+   * Runs the hopper, kicker, and shooting intake stow together.
+   *
+   * <p>This is used for fixed and autonomous shooting where there is no driver intake-trigger
+   * conflict to protect.
+   *
+   * @return fuel feed command with intake stow
+   */
+  private Command feedShooterWithIntakeStow() {
+    return Commands.parallel(feedShooter(), shootingIntakeStowCommand());
+  }
+
+  /**
+   * Chooses the intake behavior used while shooting.
+   *
+   * <p>Currently this uses the constant-speed slow stow command. If the position-ramp version is
+   * added and tested later, this helper is the only place the shooting command needs to change.
+   *
+   * @return intake stow command used while shooting
+   */
+  private Command shootingIntakeStowCommand() {
+    return intake.curlInWhileShootingSlowSpeed();
+  }
+
+  /**
+   * Deploys the intake and gently runs the hopper belt while intaking.
+   *
+   * @return autonomous/intaking command
+   */
+  public Command intakeCommand() {
+    return Commands.parallel(intake.deploy(), hopper.runBeltWhileIntaking());
+  }
+
+  /**
+   * Deploys the intake and runs the intake rollers.
+   *
+   * <p>The roller command intentionally does not require the intake subsystem, which allows it to run
+   * alongside the deploy command.
+   *
+   * @return intake preparation command
+   */
+  public Command prepareIntake() {
+    return Commands.parallel(intake.deploy(), intake.runRollerWithoutRequirements());
+  }
+
+  /**
+   * Stows the intake.
+   *
+   * @return intake stow command
+   */
   public Command intakeIn() {
-    return Commands.parallel(intake.stow());
+    return intake.stow();
   }
 
+  /**
+   * Creates a rumble command for the driver controller.
+   *
+   * @param intensity rumble intensity from 0.0 to 1.0
+   * @return command that rumbles while scheduled
+   */
+  private Command driverRumbleCommand(double intensity) {
+    return Commands.runEnd(
+        () -> driverController.setRumble(RumbleType.kBothRumble, intensity),
+        () -> driverController.setRumble(RumbleType.kBothRumble, 0.0));
+  }
+
+  /**
+   * Creates a command that initializes hub shift tracking.
+   *
+   * @return hub shift initialization command
+   */
+  private Command initializeHubShiftCommand() {
+    return Commands.runOnce(HubShiftUtil::initialize);
+  }
+
+  /**
+   * Returns the optional operator override for the active alliance.
+   *
+   * @return optional alliance override
+   */
+  private Optional<Boolean> getAllianceWinOverride() {
+    if (!DriverStation.isJoystickConnected(1)) {
+      return Optional.empty();
+    }
+
+    if (operatorController.back().getAsBoolean()) {
+      return Optional.of(true);
+    }
+
+    return Optional.empty();
+  }
+
+  /** Registers commands used by PathPlanner autonomous routines. */
   public void registerNamedCommands() {
-    // NamedCommands.registerCommand("Aim to Hub", );
-    NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary()
-        .until(()->hopper.isHopperEmpty())
-        .withTimeout(3.0));
-    // NamedCommands.registerCommand("Shoot Hub", shootWithAimStationary().withTimeout(3));
+    NamedCommands.registerCommand("Shoot Hub", autoShootHubCommand());
     NamedCommands.registerCommand("Prepare Intake", prepareIntake());
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
     NamedCommands.registerCommand("Idle Intake", intake.stopIntakeInstant());
-    NamedCommands.registerCommand("Stow For Bump", intake.stowBump().alongWith(intake.stopIntakeInstant()));
+    NamedCommands.registerCommand("Stow For Bump", stowForBumpCommand());
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
-    NamedCommands.registerCommand("Tunable Wait", Commands.waitSeconds(autoStartDelay.get()));
-    NamedCommands.registerCommand(
-        "Lower Hood And Stop Shooting",
-        Commands.parallel(
-                hood.runHoodToZero(),
-                // This should be handled in the interrupt of startRollerMotors, but leaving here
-                // for redundancy
-                hopper.stopBeltMotors(),
-                kicker.stopKickerMotor())
-            .withTimeout(1.0));
+    NamedCommands.registerCommand("Tunable Wait", tunableAutoStartDelayCommand());
+    NamedCommands.registerCommand("Lower Hood And Stop Shooting", lowerHoodAndStopShootingCommand());
   }
-
-  private int dashboardUpdateCounter = 0;
-  /** Update dashboard outputs. */
-  public void updateDashboardOutputs() {
-  if (++dashboardUpdateCounter < 5) {
-    return;
-  }
-  dashboardUpdateCounter = 0;
-
-  SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-
-  SmartDashboard.putString(
-      "Shifts/Remaining Shift Time",
-      String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
-  SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
-  SmartDashboard.putString(
-      "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
-  SmartDashboard.putBoolean(
-      "Shifts/Active First?",
-      DriverStation.getAlliance().orElse(Alliance.Blue)
-          == HubShiftUtil.getFirstActiveAlliance());
-}
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
+   * Builds the autonomous hub shooting command.
    *
-   * @return the command to run in autonomous
+   * @return autonomous shoot-hub command
+   */
+  private Command autoShootHubCommand() {
+    return shootWithAimStationary().until(hopper::isHopperEmpty).withTimeout(3.0);
+  }
+
+  /**
+   * Builds the autonomous stow-for-bump command.
+   *
+   * @return stow-for-bump command
+   */
+  private Command stowForBumpCommand() {
+    return Commands.parallel(intake.stowBump(), intake.stopIntakeInstant());
+  }
+
+  /**
+   * Builds a wait command from the current tunable auto start delay.
+   *
+   * <p>This is deferred so the command reads the tunable delay when the autonomous routine schedules
+   * the command, not only once during robot startup.
+   *
+   * @return deferred tunable wait command
+   */
+  private Command tunableAutoStartDelayCommand() {
+    return Commands.defer(() -> Commands.waitSeconds(autoStartDelay.get()), Set.of());
+  }
+
+  /**
+   * Lowers the hood and stops feed mechanisms after shooting.
+   *
+   * @return command used by autonomous routines after shooting
+   */
+  private Command lowerHoodAndStopShootingCommand() {
+    return Commands.parallel(hood.runHoodToZero(), hopper.stopBeltMotors(), kicker.stopKickerMotor())
+        .withTimeout(1.0);
+  }
+
+  /** Updates low-rate dashboard outputs. */
+  public void updateDashboardOutputs() {
+    if (++dashboardUpdateCounter < 5) {
+      return;
+    }
+
+    dashboardUpdateCounter = 0;
+
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    updateShiftDashboardOutputs();
+  }
+
+  /** Updates hub shift dashboard outputs. */
+  private void updateShiftDashboardOutputs() {
+    SmartDashboard.putString(
+        "Shifts/Remaining Shift Time",
+        String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
+    SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
+    SmartDashboard.putString(
+        "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+    SmartDashboard.putBoolean(
+        "Shifts/Active First?",
+        DriverStation.getAlliance().orElse(Alliance.Blue)
+            == HubShiftUtil.getFirstActiveAlliance());
+  }
+
+  /**
+   * Returns the selected autonomous command.
+   *
+   * @return autonomous command selected on the dashboard
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
-  // spotless:on
 }

@@ -2,51 +2,69 @@ package frc.robot.subsystems.hopper;
 
 import org.littletonrobotics.junction.AutoLog;
 
+/**
+ * Hardware abstraction for the hopper subsystem.
+ *
+ * <p>The hopper subsystem owns belt behavior and writes desired outputs into {@link
+ * HopperIOOutputs}. Each IO implementation reads hardware sensors into {@link HopperIOInputs} and
+ * applies the requested outputs to real or simulated hardware.
+ */
 public interface HopperIO {
+  /** Sensor values read from the hopper hardware each loop. */
   @AutoLog
-  public static class HopperIOInputs {
+  class HopperIOInputs {
+    /** Belt motor supply current in amps. */
     double beltCurrent = 0.0;
+
+    /** Belt motor velocity in motor rotations per second. */
+    double beltVelocity = 0.0;
+
+    /** True when the hopper empty sensor is connected and reporting a valid empty condition. */
     boolean hopperEmpty = false;
-    double hopperEmptyDistance = 1.0; // Iniitalized to some value beyond the far hopper wall
+
+    /** True when the CANrange hopper empty sensor is connected. */
+    boolean hopperEmptySensorConnected = false;
+
+    /** Distance measured by the hopper empty CANrange in meters. */
+    double hopperEmptyDistance = 1.0;
   }
 
+  /** Desired outputs written by the hopper subsystem and applied by the IO implementation. */
   @AutoLog
-  public static class HopperIOOutputs {
+  class HopperIOOutputs {
+    /** Desired open-loop belt motor output. */
     double beltSpeed = 0.0;
+
+    /**
+     * True when the belt should use the lower current limit intended for intaking/agitation.
+     *
+     * <p>Reverse and normal shooting belt commands should leave this false so the full current
+     * limit is used.
+     */
     boolean useBeltWhileIntakeCurrent = false;
-    boolean usingLowerCurrent = false;
   }
 
   /**
-   * Refreshes the {@link HopperIOInputs} object with the latest sensor readings and derived values.
+   * Updates the latest hopper sensor inputs.
    *
-   * @param inputs container to populate
+   * @param inputs container updated with the latest hopper hardware state
    */
-  public default void updateInputs(HopperIOInputs inputs) {}
-
-  public default void applyOutputs(HopperIOOutputs outputs) {}
+  default void updateInputs(HopperIOInputs inputs) {}
 
   /**
-   * Convenience connection check if an implementation prefers reading from {@code inputs}.
+   * Applies the latest desired hopper outputs.
    *
-   * @param inputs latest inputs
-   * @return true if connected
+   * @param outputs latest requested hopper outputs from the subsystem
    */
-  public default boolean getIsConnected(HopperIOInputs inputs) {
+  default void applyOutputs(HopperIOOutputs outputs) {}
+
+  /**
+   * Optional connection check for hardware implementations.
+   *
+   * @param inputs latest hopper inputs
+   * @return true if the hopper hardware is connected
+   */
+  default boolean getIsConnected(HopperIOInputs inputs) {
     return false;
   }
-
-  /**
-   * Set the top motor speed to {@code speed}.
-   *
-   * @param speed speed to set motor to
-   */
-  // public default void setTopRollerSpeed(double speed) {}
-
-  /**
-   * Set the bottom motor speed to {@code speed}.
-   *
-   * @param speed speed to set motor to
-   */
-  // public default void setBottomRollerSpeed(double speed) {}
 }

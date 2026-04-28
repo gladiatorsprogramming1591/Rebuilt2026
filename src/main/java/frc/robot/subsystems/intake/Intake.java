@@ -1,317 +1,536 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.RobotState;
-import frc.robot.RobotState.RollerModeState;
-import frc.robot.RobotState.SlapdownModeState;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import static frc.robot.subsystems.intake.IntakeConstants.kdeployTableKey;
 import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
 import static frc.robot.subsystems.intake.IntakeConstants.kstowFullTableKey;
 import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.RobotState;
+import frc.robot.RobotState.SlapdownModeState;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 /**
- * Name conventions:
+ * Controls the intake rollers and slapdown arm.
+ *
+ * <p>Name conventions:
+ *
  * <ul>
- *  <li><b>Intake:</b> Whole subsystem
- *  <li><b>Slapdown:</b> Intake pivoting arm
- *    <ul>
- *      <li> <b>Deploy:</b> Full extension
- *      <li> <b>Stow:</b> Full retraction into frame perimeter
- *    </ul>
- *  <li><b>Rollers:</b> Rotating tubes that propel fuel into hopper
+ *   <li><b>Intake:</b> whole subsystem
+ *   <li><b>Slapdown:</b> pivoting intake arm
+ *   <li><b>Deploy:</b> full extension toward the floor
+ *   <li><b>Stow:</b> full retraction into the frame perimeter
+ *   <li><b>Rollers:</b> rotating tubes that move fuel into the hopper
  * </ul>
  */
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
-  
-  private int slapdownStoppedLoopCount = 0;
-  private static final int SLAPDOWN_STOPPED_LOOP_COUNT_NEEDED = 2;
+
   private boolean stopSlapdownOnCurrentSpike = false;
-  private boolean stopSlapdownWhenNotMoving = false;
   private boolean isSlapdownStopped = true;
   private boolean overrideRollerSpeed = false;
 
   @AutoLogOutput private double manualAngle = 0.0;
   @AutoLogOutput private double requestedRollerSpeed = 0.0;
 
+  /**
+   * Creates an intake subsystem using the provided hardware implementation.
+   *
+   * @param io intake hardware abstraction
+   */
   public Intake(IntakeIO io) {
     this.io = io;
   }
 
-  public void slapdownToPosition(double angle) {
-    manualAngle = angle;
-    outputs.desiredPosition = MathUtil.clamp(manualAngle, IntakeConstants.MIN_ANGLE, IntakeConstants.MAX_ANGLE);
-  }
-
-  // TODO: Change from runEnd to let applyOutputs check for down and stop motor. Probably need new
-  // states.
-  // public Command deploy() {
-  //   return runEnd(
-  //           () -> {
-  //             isSlapdownStopped = false;
-  //             outputs.desiredPosition = IntakeConstants.DOWN;
-  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.DEPLOY_POSITION);
-  //             stopSlapdownOnCurrentSpike = true;
-  //           },
-  //           () -> {
-  //             outputs.appliedSlapdownSpeed = 0;
-  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-  //           })
-  //       .until(() -> isSlapdownStopped);
-  // }
-
-  // // TODO: Change from runEnd to let applyOutputs check for up and stop motor. Probably need new states.
-  // public Command stow() {
-  //   return runEnd(
-  //           () -> {
-  //             isSlapdownStopped = false;
-  //             outputs.desiredPosition = IntakeConstants.UP;
-  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.STOW_POSITION);
-  //             stopSlapdownOnCurrentSpike = true;
-  //           },
-  //           () -> {
-  //             outputs.appliedSlapdownSpeed = 0;
-  //             RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-  //           })
-  //       .until(() -> isSlapdownStopped);
-  // }
-
-  public Command deploy() {
-  return runOnce(
-          () -> {
-            isSlapdownStopped = false;
-            outputs.desiredPosition = IntakeConstants.DOWN;
-            RobotState.setSlapdownMode(RobotState.SlapdownModeState.DEPLOY_POSITION);
-            stopSlapdownOnCurrentSpike = true;
-          })
-      .andThen(run(() -> {}).until(() -> isSlapdownStopped));
-}
-
-public Command stow() {
-  return runOnce(
-          () -> {
-            isSlapdownStopped = false;
-            outputs.desiredPosition = IntakeConstants.UP;
-            RobotState.setSlapdownMode(RobotState.SlapdownModeState.STOW_POSITION);
-            stopSlapdownOnCurrentSpike = true;
-          })
-      .andThen(run(() -> {}).until(() -> isSlapdownStopped));
-}
-
-public Command deployAndRunRoller() {
-  return deploy()
-      .andThen(new WaitUntilCommand(() -> inputs.isSlapdownDown))
-      .andThen(runRoller());
-}
-
-  public Command stowBump() {
-    return runEnd(
-            () -> {
-              isSlapdownStopped = false;
-              outputs.desiredPosition = IntakeConstants.BUMP;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.BUMP_POSITION);
-              stopSlapdownOnCurrentSpike = false;
-            },
-            () -> {
-              outputs.appliedSlapdownSpeed = 0;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-            });
-  }
-
-  public Command stowWhileShooting() {
-    return runEnd(
-            () -> {
-              isSlapdownStopped = false;
-              outputs.desiredPosition = IntakeConstants.SHOOTING_STOP;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.BUMP_POSITION);
-              stopSlapdownOnCurrentSpike = false;
-              requestedRollerSpeed = 0.0;
-            },
-            () -> {
-              outputs.appliedSlapdownSpeed = 0;
-              requestedRollerSpeed = 0.0;
-              RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-            });
-  }
-
-  public Command deployWithSpeed() {
-    return runEnd(
-        () -> {
-          isSlapdownStopped = false;
-          System.out.println("deployWithSpeed: " + IntakeConstants.deploySpeed.getAsDouble());
-          outputs.appliedSlapdownSpeed = IntakeConstants.deploySpeed.getAsDouble();
-          RobotState.setSlapdownMode(RobotState.SlapdownModeState.SPEED);
-          stopSlapdownOnCurrentSpike = true;
-        },
-        () -> {
-          System.out.println("deployWithSpeed: " + 0);
-          outputs.appliedSlapdownSpeed = 0;
-          RobotState.setSlapdownMode(RobotState.SlapdownModeState.OFF);
-        });
-  }
-
-  public Command runRollerWithoutRequirements() {
-    return new RunCommand(
-            () -> {
-              requestedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
-            });
-  }
-  
-  public Command runRoller() {
-    return runEnd(
-            () -> {
-              requestedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
-            },
-            () -> {
-              requestedRollerSpeed = 0.0;
-            });
-  }
-
-  public Command overrideRollerSpeedCommand() {
-    return runEnd(
-            () -> {
-              requestedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
-              overrideRollerSpeed = true;
-            },
-            () -> {
-              requestedRollerSpeed = 0.0;
-              overrideRollerSpeed = false;
-            });
-  }
-  public Command reverseRoller() {
-    return runEnd(
-            () -> {
-              requestedRollerSpeed = IntakeConstants.ROLLER_REVERSE_SPEED;
-            },
-            () -> {
-              requestedRollerSpeed = 0.0;
-            });
-  }
-
-  // public Command deployAndIntake() {
-  //   return deploy().alongWith(runIntake());
-  // }
-
-  public Command stopIntake() {
-    return run(
-        () -> {
-          requestedRollerSpeed = 0;
-          outputs.appliedSlapdownSpeed = 0;
-          RobotState.setSlapdownMode(SlapdownModeState.OFF);
-        });
-  }
-
-  public void deployStop() {
-    outputs.appliedSlapdownSpeed = 0;
-    RobotState.setSlapdownMode(SlapdownModeState.OFF);
-    isSlapdownStopped = true;
-  }
-
-  /** Returns a command that sets intake speed to 0. Doesn't impact deploy. */
-  public Command stopIntakeInstant() {
-    return new InstantCommand(
-        () -> {
-          requestedRollerSpeed = 0;
-        });
-  }
-
+  /**
+   * Updates intake inputs, updates tunable outputs, applies requested outputs, and stops the
+   * slapdown when a configured stop condition is reached.
+   */
+  @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
-    // Deploy configs
-    outputs.kdeployP = IntakeConstants.kdeployP.getAsDouble();
-    outputs.kdeployI = IntakeConstants.kdeployI.getAsDouble();
-    outputs.kdeployD = IntakeConstants.kdeployD.getAsDouble();
-    outputs.kdeployG = IntakeConstants.kdeployG.getAsDouble();
-    outputs.kdeployFF = IntakeConstants.kdeployFF.getAsDouble();
-    // Stow configs
-    outputs.kstowP = IntakeConstants.kstowP.getAsDouble();
-    outputs.kstowI = IntakeConstants.kstowI.getAsDouble();
-    outputs.kstowD = IntakeConstants.kstowD.getAsDouble();
-    outputs.kstowFF = IntakeConstants.kstowFF.getAsDouble();
-    outputs.kstowG = IntakeConstants.kstowG.getAsDouble();
-    outputs.kstowMMAcceleration = IntakeConstants.kMMAcceleration.getAsDouble();
-    outputs.kstowMMJerk = IntakeConstants.kMMJerk.getAsDouble();
-    // Stow full configs
-    outputs.kstowFullP = IntakeConstants.kstowFullP.getAsDouble();
-    outputs.kstowFullI = IntakeConstants.kstowFullI.getAsDouble();
-    outputs.kstowFullD = IntakeConstants.kstowFullD.getAsDouble();
-    outputs.kstowFullFF = IntakeConstants.kstowFullFF.getAsDouble();
-    outputs.kstowFullG = IntakeConstants.kstowFullG.getAsDouble();
 
-    if (inputs.position < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
-      outputs.appliedRollerSpeed = 0.0;
-    } else {
-      outputs.appliedRollerSpeed = requestedRollerSpeed;
-    }
+    updateTunableOutputs();
+    updateRollerOutput();
+    logOutputs();
 
-    Logger.recordOutput(kintakeTableKey + "Slapdown Mode", RobotState.getSlapdownMode().toString());
-    Logger.recordOutput(kintakeTableKey + "Roller Mode", RobotState.getRollerMode().toString());
-    Logger.recordOutput(kintakeTableKey + "Applied Roller Speed", outputs.appliedRollerSpeed);
-    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Speed", outputs.appliedSlapdownSpeed);
-    Logger.recordOutput(kintakeTableKey + "Applied Slapdown Current", outputs.appliedSlapdownCurrent); // ?: Not updated
-    // Deploy configs
-    Logger.recordOutput(kdeployTableKey + "kdeployP", outputs.kdeployP);
-    Logger.recordOutput(kdeployTableKey + "kdeployI", outputs.kdeployI);
-    Logger.recordOutput(kdeployTableKey + "kdeployD", outputs.kdeployD);
-    Logger.recordOutput(kdeployTableKey + "kdeployG", outputs.kdeployG);
-    Logger.recordOutput(kdeployTableKey + "kdeployFF", outputs.kdeployFF);
-    // Stow configs
-    Logger.recordOutput(kstowTableKey + "kstowP", outputs.kstowP);
-    Logger.recordOutput(kstowTableKey + "kstowI", outputs.kstowI);
-    Logger.recordOutput(kstowTableKey + "kstowD", outputs.kstowD);
-    Logger.recordOutput(kstowTableKey + "kstowG", outputs.kstowG);
-    Logger.recordOutput(kstowTableKey + "kstowFF", outputs.kstowFF);
-    Logger.recordOutput(kstowTableKey + "kstowMMAcceleration", outputs.kstowMMAcceleration);
-    Logger.recordOutput(kstowTableKey + "kstowMMJerk", outputs.kstowMMJerk);
-    // Stow Full configs
-    Logger.recordOutput(kstowFullTableKey + "kstowFullP", outputs.kstowFullP);
-    Logger.recordOutput(kstowFullTableKey + "kstowFullI", outputs.kstowFullI);
-    Logger.recordOutput(kstowFullTableKey + "kstowFullD", outputs.kstowFullD);
-    Logger.recordOutput(kstowFullTableKey + "kstowFullG", outputs.kstowFullG);
-    Logger.recordOutput(kstowFullTableKey + "kstowFullFF", outputs.kstowFullFF);
-
-    Logger.recordOutput(kintakeTableKey + "desiredPosition", outputs.desiredPosition);
     io.applyOutputs(outputs);
 
-    // For testing, turn deploy motors off after hitting hard stop
-    // TODO: Don't leave this in code as we will likely stop between bottom and top when hopper is full
-    if (stopSlapdownWhenNotMoving) {
-      if (inputs.RPS_RollerLeft == 0) {
-        slapdownStoppedLoopCount++;
-      } else {
-        slapdownStoppedLoopCount = 0;
-      }
-      if (slapdownStoppedLoopCount > SLAPDOWN_STOPPED_LOOP_COUNT_NEEDED) {
-        deployStop();
-      }
+    stopSlapdownIfNeeded();
+  }
 
-      if (IntakeConstants.IS_TORQUE_MODE.get()) {
-        RobotState.setRollerMode(RollerModeState.TORQUE_CURRENT);
-      } else {
-        RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
-      }
+  /**
+   * Deploys the slapdown to the down position.
+   *
+   * <p>The command finishes when {@link #deployStop()} marks the slapdown stopped. That happens when
+   * the deploy limit sensor trips or the slapdown current reaches the stop threshold.
+   *
+   * @return command that deploys the slapdown
+   */
+  public Command deploy() {
+    return runOnce(
+            () ->
+                requestSlapdownPosition(
+                    IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true))
+        .andThen(new WaitUntilCommand(() -> isSlapdownStopped));
+  }
+
+  /**
+   * Stows the slapdown to the up position.
+   *
+   * <p>The command finishes when {@link #deployStop()} marks the slapdown stopped. That happens when
+   * the stow limit sensor trips or the slapdown current reaches the stop threshold.
+   *
+   * @return command that stows the slapdown
+   */
+  public Command stow() {
+    return runOnce(
+            () -> requestSlapdownPosition(IntakeConstants.UP, SlapdownModeState.STOW_POSITION, true))
+        .andThen(new WaitUntilCommand(() -> isSlapdownStopped));
+  }
+
+  /**
+   * Deploys the slapdown and then runs the rollers once the deploy sensor reports down.
+   *
+   * @return command that deploys the intake and then runs the rollers
+   */
+  public Command deployAndRunRoller() {
+    return deploy().andThen(new WaitUntilCommand(() -> inputs.slapdownDown)).andThen(runRoller());
+  }
+
+  /**
+   * Moves the slapdown to the bump/intermediate position.
+   *
+   * @return command that holds the bump position while scheduled
+   */
+  public Command stowBump() {
+    return runEnd(
+        () -> requestSlapdownPosition(IntakeConstants.BUMP, SlapdownModeState.BUMP_POSITION, false),
+        this::stopSlapdown);
+  }
+
+  /**
+   * Moves the slapdown to the shooting stop position and stops the rollers.
+   *
+   * <p>This is the position-control shooting stow option. It commands the slapdown directly to
+   * {@link IntakeConstants#SHOOTING_STOP}.
+   *
+   * @return command that holds the shooting stop position while scheduled
+   */
+  public Command stowWhileShooting() {
+    return runEnd(
+        () -> {
+          requestSlapdownPosition(
+              IntakeConstants.SHOOTING_STOP, SlapdownModeState.BUMP_POSITION, false);
+          setRequestedRollerSpeed(0.0);
+        },
+        () -> {
+          setRequestedRollerSpeed(0.0);
+          stopSlapdown();
+        });
+  }
+
+  /**
+   * Slowly curls the slapdown inward while shooting using a tunable constant speed.
+   *
+   * <p>This is different from {@link #stowWhileShooting()}, which commands a position. This command
+   * keeps the slapdown moving inward slowly at a tunable speed and uses a lower tunable stator
+   * current limit for protection.
+   *
+   * <p>The command stops the slapdown once it reaches the shooting stop region, reaches the upper
+   * limit sensor, or hits the current stop threshold.
+   *
+   * @return command that slowly curls the intake inward while shooting
+   */
+  public Command curlInWhileShootingSlowSpeed() {
+    return runEnd(
+        () -> {
+          setRequestedRollerSpeed(0.0);
+          requestSlapdownSlowStowSpeed();
+        },
+        () -> {
+          setRequestedRollerSpeed(0.0);
+          stopSlapdown();
+        });
+  }
+
+  /**
+   * Slowly curls the slapdown inward while shooting by ramping the requested position.
+   *
+   * <p>This is different from {@link #curlInWhileShootingSlowSpeed()}, which uses constant open-loop
+   * speed. This command keeps closed-loop position control active, but moves the requested position
+   * gradually from the current slapdown position toward {@link IntakeConstants#SHOOTING_STOP}.
+   *
+   * @return command that slowly ramps the slapdown to the shooting stop position
+   */
+  public Command curlInWhileShootingPositionRamp() {
+    final Timer timer = new Timer();
+    final double[] startPosition = new double[1];
+
+    return runEnd(
+        () -> {
+          if (!timer.isRunning()) {
+            startPosition[0] = inputs.slapdownPosition;
+            timer.restart();
+          }
+
+          double progress =
+              MathUtil.clamp(
+                  timer.get() / IntakeConstants.shootingStowRampTimeSeconds.getAsDouble(),
+                  0.0,
+                  1.0);
+
+          double desiredPosition =
+              MathUtil.interpolate(startPosition[0], IntakeConstants.SHOOTING_STOP, progress);
+
+          setRequestedRollerSpeed(0.0);
+          requestSlapdownPosition(desiredPosition, SlapdownModeState.BUMP_POSITION, false);
+        },
+        () -> {
+          timer.stop();
+          timer.reset();
+          setRequestedRollerSpeed(0.0);
+          stopSlapdown();
+        });
+  }
+
+  /**
+   * Runs the intake rollers inward.
+   *
+   * @return command that runs the rollers until interrupted
+   */
+  public Command runRoller() {
+    return runEnd(
+        () -> setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED),
+        () -> setRequestedRollerSpeed(0.0));
+  }
+
+  /**
+   * Stops the rollers and slapdown continuously.
+   *
+   * <p>This is intended to be the intake default command.
+   *
+   * @return command that keeps the intake stopped
+   */
+  public Command stopIntake() {
+    return run(
+        () -> {
+          setRequestedRollerSpeed(0.0);
+          stopSlapdown();
+        });
+  }
+
+  /**
+   * Stops only the intake rollers once.
+   *
+   * <p>This does not stop or change the slapdown.
+   *
+   * @return instant command that sets requested roller speed to zero
+   */
+  public Command stopIntakeInstant() {
+    return runOnce(() -> setRequestedRollerSpeed(0.0));
+  }
+
+  /**
+   * Requests closed-loop slapdown position control.
+   *
+   * <p>This helper updates the desired slapdown position, selects the RobotState slapdown mode, and
+   * controls whether the periodic current-spike stop logic is allowed to stop the motion.
+   *
+   * <p>The normal slapdown current limit is restored because position commands should not inherit
+   * the lower current limit used by slow shooting stow.
+   *
+   * @param position requested slapdown position in current legacy slapdown units
+   * @param slapdownMode RobotState mode used by the IO layer to choose the TalonFX control slot
+   * @param stopOnCurrentSpike true when current-spike stop should end the slapdown motion
+   */
+  private void requestSlapdownPosition(
+      double position, SlapdownModeState slapdownMode, boolean stopOnCurrentSpike) {
+    isSlapdownStopped = false;
+    restoreSlapdownCurrentLimit();
+    outputs.desiredSlapdownPosition =
+        MathUtil.clamp(position, IntakeConstants.MIN_ANGLE, IntakeConstants.MAX_ANGLE);
+    RobotState.setSlapdownMode(slapdownMode);
+    stopSlapdownOnCurrentSpike = stopOnCurrentSpike;
+  }
+
+  /**
+   * Requests open-loop slapdown speed control.
+   *
+   * <p>This is used by manual/debug motion and the slow constant-speed shooting stow command.
+   *
+   * @param speed requested slapdown open-loop output
+   * @param stopOnCurrentSpike true when current-spike stop should end the slapdown motion
+   */
+  private void requestSlapdownSpeed(double speed, boolean stopOnCurrentSpike) {
+    isSlapdownStopped = false;
+    outputs.appliedSlapdownSpeed = speed;
+    RobotState.setSlapdownMode(SlapdownModeState.SPEED);
+    stopSlapdownOnCurrentSpike = stopOnCurrentSpike;
+  }
+
+  /**
+   * Requests slow inward slapdown motion for shooting.
+   *
+   * <p>This uses constant low speed instead of a position ramp. The lower current limit is applied
+   * through the IO layer.
+   *
+   * <p>If the slapdown is already at the upper limit or has already moved past the shooting stop
+   * position, the slapdown is stopped instead of continuing inward.
+   */
+  private void requestSlapdownSlowStowSpeed() {
+    outputs.slapdownStatorCurrentLimit =
+        IntakeConstants.shootingSlowStowStatorCurrentLimit.getAsDouble();
+
+    if (inputs.slapdownUp || inputs.slapdownPosition <= IntakeConstants.SHOOTING_STOP) {
+      stopSlapdown();
+      isSlapdownStopped = true;
+      return;
     }
 
+    requestSlapdownSpeed(IntakeConstants.shootingSlowStowSpeed.getAsDouble(), true);
+  }
+
+  /**
+   * Stops slapdown motion and restores the normal slapdown current limit.
+   *
+   * <p>This does not change roller request state. Roller commands should call
+   * {@link #setRequestedRollerSpeed(double)} separately.
+   */
+  private void stopSlapdown() {
+    outputs.appliedSlapdownSpeed = 0.0;
+    restoreSlapdownCurrentLimit();
+    RobotState.setSlapdownMode(SlapdownModeState.OFF);
+    stopSlapdownOnCurrentSpike = false;
+  }
+
+  /**
+   * Stores the roller speed requested by the currently scheduled command.
+   *
+   * <p>The final applied roller output is still filtered by {@link #updateRollerOutput()} so the
+   * slapdown position safety cutoff can stop the rollers when needed.
+   *
+   * @param speed requested roller output
+   */
+  private void setRequestedRollerSpeed(double speed) {
+    requestedRollerSpeed = speed;
+  }
+
+  /** Restores the normal slapdown stator current limit. */
+  private void restoreSlapdownCurrentLimit() {
+    outputs.slapdownStatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
+  }
+
+  /**
+   * Copies current tunable values into the output object used by the IO layer.
+   *
+   * <p>The IO layer owns deciding when to apply updated TalonFX configs. The subsystem simply keeps
+   * the output object synchronized with the current tunable values.
+   */
+  private void updateTunableOutputs() {
+    outputs.deployKP = IntakeConstants.kdeployP.getAsDouble();
+    outputs.deployKI = IntakeConstants.kdeployI.getAsDouble();
+    outputs.deployKD = IntakeConstants.kdeployD.getAsDouble();
+    outputs.deployKG = IntakeConstants.kdeployG.getAsDouble();
+    outputs.deployFF = IntakeConstants.kdeployFF.getAsDouble();
+
+    outputs.stowKP = IntakeConstants.kstowP.getAsDouble();
+    outputs.stowKI = IntakeConstants.kstowI.getAsDouble();
+    outputs.stowKD = IntakeConstants.kstowD.getAsDouble();
+    outputs.stowKG = IntakeConstants.kstowG.getAsDouble();
+    outputs.stowFF = IntakeConstants.kstowFF.getAsDouble();
+    outputs.stowMMAcceleration = IntakeConstants.kMMAcceleration.getAsDouble();
+    outputs.stowMMJerk = IntakeConstants.kMMJerk.getAsDouble();
+
+    outputs.stowFullKP = IntakeConstants.kstowFullP.getAsDouble();
+    outputs.stowFullKI = IntakeConstants.kstowFullI.getAsDouble();
+    outputs.stowFullKD = IntakeConstants.kstowFullD.getAsDouble();
+    outputs.stowFullKG = IntakeConstants.kstowFullG.getAsDouble();
+    outputs.stowFullFF = IntakeConstants.kstowFullFF.getAsDouble();
+  }
+
+  /**
+   * Converts the requested roller speed into the final applied roller output.
+   *
+   * <p>The rollers are stopped when the slapdown is above the configured safety cutoff unless roller
+   * override is active. This prevents the rollers from pulling fuel while the intake is mostly
+   * stowed.
+   */
+  private void updateRollerOutput() {
+    if (inputs.slapdownPosition < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
+      outputs.appliedRollerSpeed = 0.0;
+      return;
+    }
+
+    outputs.appliedRollerSpeed = requestedRollerSpeed;
+  }
+
+  /**
+   * Stops slapdown motion when a configured stop condition is reached.
+   *
+   * <p>For deploy/stow commands, the slapdown can stop from either current spike detection or the
+   * requested limit sensor. Commands that do not request current-spike stopping still stop when the
+   * requested hard-stop sensor becomes active.
+   */
+  private void stopSlapdownIfNeeded() {
     if (stopSlapdownOnCurrentSpike
         && inputs.slapdownSupplyCurrent >= IntakeConstants.SLAPDOWN_CURRENT_STOP_THRESHOLD) {
       deployStop();
+      return;
     }
 
-    // Stop the deploy motor if our sensors detect we are down or up
-    if ((outputs.desiredPosition == IntakeConstants.DOWN) && inputs.isSlapdownDown
-        || (outputs.desiredPosition == IntakeConstants.UP) && inputs.isSlapdownUp) {
+    if (isAtRequestedLimit()) {
       deployStop();
     }
+  }
+
+  /**
+   * Returns whether the slapdown has reached the hard-stop sensor for the requested full-travel
+   * position.
+   *
+   * <p>This only checks full deploy and full stow positions. Intermediate positions, such as bump or
+   * shooting stop, are not ended by this helper.
+   *
+   * @return true when the requested full-travel limit sensor is active
+   */
+  private boolean isAtRequestedLimit() {
+    return (outputs.desiredSlapdownPosition == IntakeConstants.DOWN && inputs.slapdownDown)
+        || (outputs.desiredSlapdownPosition == IntakeConstants.UP && inputs.slapdownUp);
+  }
+
+  /**
+   * Ends the current slapdown deploy/stow motion.
+   *
+   * <p>This is used when the slapdown reaches a limit sensor or hits the current threshold. It stops
+   * the motor, restores the normal current limit, clears current-spike stopping, and marks the
+   * slapdown command wait condition as complete.
+   */
+  private void deployStop() {
+    outputs.appliedSlapdownSpeed = 0.0;
+    restoreSlapdownCurrentLimit();
+    RobotState.setSlapdownMode(SlapdownModeState.OFF);
+    stopSlapdownOnCurrentSpike = false;
+    isSlapdownStopped = true;
+  }
+
+  /** Logs commanded intake state, tunables, and command helper state for debugging. */
+  private void logOutputs() {
+    Logger.recordOutput(kintakeTableKey + "SlapdownMode", RobotState.getSlapdownMode().toString());
+    Logger.recordOutput(kintakeTableKey + "RollerMode", RobotState.getRollerMode().toString());
+    Logger.recordOutput(kintakeTableKey + "RequestedRollerSpeed", requestedRollerSpeed);
+    Logger.recordOutput(kintakeTableKey + "AppliedRollerSpeed", outputs.appliedRollerSpeed);
+    Logger.recordOutput(kintakeTableKey + "AppliedSlapdownSpeed", outputs.appliedSlapdownSpeed);
+    Logger.recordOutput(
+        kintakeTableKey + "DesiredSlapdownPosition", outputs.desiredSlapdownPosition);
+    Logger.recordOutput(
+        kintakeTableKey + "SlapdownStatorCurrentLimit", outputs.slapdownStatorCurrentLimit);
+    Logger.recordOutput(kintakeTableKey + "OverrideRollerSpeed", overrideRollerSpeed);
+    Logger.recordOutput(kintakeTableKey + "IsSlapdownStopped", isSlapdownStopped);
+    Logger.recordOutput(kintakeTableKey + "StopSlapdownOnCurrentSpike", stopSlapdownOnCurrentSpike);
+
+    Logger.recordOutput(
+        kintakeTableKey + "ShootingSlowStowSpeed",
+        IntakeConstants.shootingSlowStowSpeed.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "ShootingSlowStowStatorCurrentLimit",
+        IntakeConstants.shootingSlowStowStatorCurrentLimit.getAsDouble());
+
+    Logger.recordOutput(kdeployTableKey + "kP", outputs.deployKP);
+    Logger.recordOutput(kdeployTableKey + "kI", outputs.deployKI);
+    Logger.recordOutput(kdeployTableKey + "kD", outputs.deployKD);
+    Logger.recordOutput(kdeployTableKey + "kG", outputs.deployKG);
+    Logger.recordOutput(kdeployTableKey + "kFF", outputs.deployFF);
+
+    Logger.recordOutput(kstowTableKey + "kP", outputs.stowKP);
+    Logger.recordOutput(kstowTableKey + "kI", outputs.stowKI);
+    Logger.recordOutput(kstowTableKey + "kD", outputs.stowKD);
+    Logger.recordOutput(kstowTableKey + "kG", outputs.stowKG);
+    Logger.recordOutput(kstowTableKey + "kFF", outputs.stowFF);
+    Logger.recordOutput(kstowTableKey + "MMAcceleration", outputs.stowMMAcceleration);
+    Logger.recordOutput(kstowTableKey + "MMJerk", outputs.stowMMJerk);
+
+    Logger.recordOutput(kstowFullTableKey + "kP", outputs.stowFullKP);
+    Logger.recordOutput(kstowFullTableKey + "kI", outputs.stowFullKI);
+    Logger.recordOutput(kstowFullTableKey + "kD", outputs.stowFullKD);
+    Logger.recordOutput(kstowFullTableKey + "kG", outputs.stowFullKG);
+    Logger.recordOutput(kstowFullTableKey + "kFF", outputs.stowFullFF);
+  }
+
+  /**
+   * Manually sets the slapdown target angle.
+   *
+   * <p>This method only updates the desired position. It does not change the RobotState slapdown
+   * mode, so it is kept for debugging only.
+   *
+   * @param angle requested slapdown angle
+   */
+  @Deprecated
+  public void slapdownToPosition(double angle) {
+    manualAngle = angle;
+    outputs.desiredSlapdownPosition =
+        MathUtil.clamp(manualAngle, IntakeConstants.MIN_ANGLE, IntakeConstants.MAX_ANGLE);
+  }
+
+  /**
+   * Runs the slapdown using a tunable open-loop speed.
+   *
+   * @return command that runs the slapdown at the tunable deploy speed until interrupted
+   */
+  public Command deployWithSpeed() {
+    return runEnd(
+        () -> requestSlapdownSpeed(IntakeConstants.deploySpeed.getAsDouble(), true),
+        this::stopSlapdown);
+  }
+
+  /**
+   * Runs the intake rollers without requiring the intake subsystem.
+   *
+   * <p>This is used by command groups that need to deploy the slapdown and run the rollers at the
+   * same time.
+   *
+   * @return command that requests roller pickup speed without subsystem requirements
+   */
+  public Command runRollerWithoutRequirements() {
+    return new RunCommand(() -> setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED));
+  }
+
+  /**
+   * Runs the rollers while bypassing the slapdown position safety cutoff.
+   *
+   * @return command that runs the rollers with the safety override enabled
+   */
+  public Command overrideRollerSpeedCommand() {
+    return runEnd(
+        () -> {
+          setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
+          overrideRollerSpeed = true;
+        },
+        () -> {
+          setRequestedRollerSpeed(0.0);
+          overrideRollerSpeed = false;
+        });
+  }
+
+  /**
+   * Reverses the intake rollers.
+   *
+   * <p>This is not currently bound in RobotContainer, but is kept as a debug/manual command.
+   *
+   * @return command that reverses the rollers until interrupted
+   */
+  @Deprecated
+  public Command reverseRoller() {
+    return runEnd(
+        () -> setRequestedRollerSpeed(IntakeConstants.ROLLER_REVERSE_SPEED),
+        () -> setRequestedRollerSpeed(0.0));
   }
 }

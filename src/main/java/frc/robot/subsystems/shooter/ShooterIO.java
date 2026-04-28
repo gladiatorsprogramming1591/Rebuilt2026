@@ -2,119 +2,122 @@ package frc.robot.subsystems.shooter;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
-import static frc.robot.subsystems.shooter.ShooterConstants.UPDATE_CONFIG_NAME;
-
 import org.littletonrobotics.junction.AutoLog;
 
+/**
+ * Hardware abstraction for the shooter subsystem.
+ *
+ * <p>The shooter subsystem owns behavior and writes desired outputs into {@link ShooterIOOutputs}.
+ * Each IO implementation reads hardware sensors into {@link ShooterIOInputs} and applies the
+ * requested outputs to real or simulated hardware.
+ */
 public interface ShooterIO {
+  /** Sensor values read from shooter hardware each loop. */
   @AutoLog
-  public static class ShooterIOInputs {
-    public double RPS_RL;
-    public double RPS_RF;
-    public double RPS_LL;
-    public double RPS_LF;
-    public double RPM_RL;
-    public double RPM_RF;
-    public double RPM_LL;
-    public double RPM_LF;
-    public double appliedVolts_RL;
-    public double appliedVolts_RF;
-    public double appliedVolts_LL;
-    public double appliedVolts_LF;
-    public double motorTemp_RL;
-    public double motorTemp_RF;
-    public double motorTemp_LL;
-    public double motorTemp_LF;
-    public double supplyCurrent_RL;
-    public double supplyCurrent_RF;
-    public double supplyCurrent_LL;
-    public double supplyCurrent_LF;
-    public double torqueCurrentAmps_RL;
-    public double torqueCurrentAmps_RF;
-    public double torqueCurrentAmps_LL;
-    public double torqueCurrentAmps_LF;
-    public boolean shooterAtVelocity;
+  class ShooterIOInputs {
+    public boolean rightLeaderConnected = false;
+    public boolean rightFollowerConnected = false;
+    public boolean leftLeaderConnected = false;
+    public boolean leftFollowerConnected = false;
+
+    public double rightLeaderVelocityRPM = 0.0;
+    public double rightFollowerVelocityRPM = 0.0;
+    public double leftLeaderVelocityRPM = 0.0;
+    public double leftFollowerVelocityRPM = 0.0;
+
+    public double rightLeaderAppliedVolts = 0.0;
+    public double rightFollowerAppliedVolts = 0.0;
+    public double leftLeaderAppliedVolts = 0.0;
+    public double leftFollowerAppliedVolts = 0.0;
+
+    public double rightLeaderTemperature = 0.0;
+    public double rightFollowerTemperature = 0.0;
+    public double leftLeaderTemperature = 0.0;
+    public double leftFollowerTemperature = 0.0;
+
+    public double rightLeaderSupplyCurrent = 0.0;
+    public double rightFollowerSupplyCurrent = 0.0;
+    public double leftLeaderSupplyCurrent = 0.0;
+    public double leftFollowerSupplyCurrent = 0.0;
+
+    public double rightLeaderStatorCurrent = 0.0;
+    public double rightFollowerStatorCurrent = 0.0;
+    public double leftLeaderStatorCurrent = 0.0;
+    public double leftFollowerStatorCurrent = 0.0;
+
+    public double rightLeaderTorqueCurrent = 0.0;
+    public double rightFollowerTorqueCurrent = 0.0;
+    public double leftLeaderTorqueCurrent = 0.0;
+    public double leftFollowerTorqueCurrent = 0.0;
+
+    /** True when the right leader is within tolerance of the current target. */
+    public boolean shooterAtVelocity = false;
   }
 
+  /** Desired outputs written by the shooter subsystem and applied by the IO implementation. */
   @AutoLog
-  public class ShooterIOOutputs {
+  class ShooterIOOutputs {
     public double desiredVelocityRPM = 0.0;
     public double desiredDutyCycle = 0.0;
-    public double kP;
-    public double kI;
-    public double kD;
-    public double kS;
-    public double kV;
-    public double kA;
-    public double kMMAcceleration;
-    public double kMMJerk;
+
+    public double kP = 0.0;
+    public double kI = 0.0;
+    public double kD = 0.0;
+    public double kS = 0.0;
+    public double kV = 0.0;
+    public double kA = 0.0;
+    public double kMMAcceleration = 0.0;
+    public double kMMJerk = 0.0;
+
     public boolean useMotionMagic = false;
   }
 
-  public default void updateInputs(ShooterIOInputs inputs) {}
-
-  public default void applyOutputs(ShooterIOOutputs outputs) {}
-
   /**
-   * setting the shooter motor voltage
+   * Updates the latest shooter sensor inputs.
    *
-   * @param voltage voltage to set from -12 to 12
+   * @param inputs container updated with the latest shooter hardware state
    */
-  public default void runShooterVoltage(double voltage) {}
-
-  public default void runShooterDutyCycle(double shooterVelocity) {}
+  default void updateInputs(ShooterIOInputs inputs) {}
 
   /**
-   * Checks if the velocity of the right leader motor is within tolerance of the target velocity.
-   * <p>
-   * IOKraken: Only works with positive (i.e. shooting) velocity targets, not negative.
+   * Applies the latest desired shooter outputs.
    *
-   * @return Boolean supplier of whether right leader motor velocity is at target
+   * @param outputs latest requested shooter outputs from the subsystem
    */
-  public default BooleanSupplier rightShooterAtVelocity() {
-    return () -> false;
-  }
+  default void applyOutputs(ShooterIOOutputs outputs) {}
 
   /**
-   * Checks if the velocity of the right leader motor is within tolerance of the target velocity.
-   * <p>
-   * IOKraken: Only works with positive (i.e. shooting) velocity targets, not negative.
+   * Returns whether the right leader is at the most recently commanded shooter target.
    *
-   * @param targetRPS
-   * @return Boolean supplier of whether right leader motor velocity is at target
+   * @return true when the right leader is within the configured RPM tolerance
    */
-  public default BooleanSupplier rightShooterAtVelocity(DoubleSupplier targetRPS) {
+  default BooleanSupplier rightShooterAtVelocity() {
     return () -> false;
   }
 
   /**
-   * Checks if the velocity of the right leader motor is below coast RPM + tolerance.
+   * Returns whether the right leader is at a provided RPM target.
    *
-   * @return Boolean supplier of whether right leader motor velocity is below coast RPM
+   * @param targetRPM target flywheel velocity in RPM
+   * @return true when the right leader is within the configured RPM tolerance
    */
-  public default BooleanSupplier rightShooterBelowCoastRPM() {
+  default BooleanSupplier rightShooterAtVelocityRPM(DoubleSupplier targetRPM) {
     return () -> false;
   }
-
-  public default BooleanSupplier leftShooterAtVelocity() {
-    return () -> false;
-  }
-
-  public default BooleanSupplier bothShootersAtVelocity() {
-    return () -> false;
-  }
-
-  public default void setShooterMotorRPM(double rpm) {}
 
   /**
-   * Applies the latest tunable TalonFX configurations to <b>all shooter motors</b>.
-   * <p>
-   * Only applies the configuration when the Smartdashboard boolean {@value #UPDATE_CONFIG_NAME} is changed from false to true (i.e. rising edge).
-   * 
-   * @param outputs Shooter outputs where the tunable configurations are accessable
-   * @see {@link #createTunedMotorConfig(frc.robot.subsystems.shooter.ShooterIO.ShooterIOOutputs) createTunedMotorConfig()}
-   * @see frc.robot.util.LoggedTunableNumber LoggedTunableNumber
+   * Returns whether the right leader is below the configured coast RPM plus tolerance.
+   *
+   * @return true when the shooter has slowed below coast speed
    */
-  public default void tuneMotorConfigs(ShooterIOOutputs outputs) {}
+  default BooleanSupplier rightShooterBelowCoastRPM() {
+    return () -> false;
+  }
+
+  /**
+   * Applies the latest tunable motor configuration values.
+   *
+   * @param outputs latest requested shooter outputs containing tunable values
+   */
+  default void tuneMotorConfigs(ShooterIOOutputs outputs) {}
 }
