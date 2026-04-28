@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hopper;
 
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -8,7 +9,7 @@ public final class HopperConstants {
   public static final double BELT_CURRENT_LIMIT = 60.0;
   public static final double BELT_INTAKE_CURRENT_LIMIT = 10.0;
   public static final LoggedTunableNumber HOPPER_EMPTY_DISTANCE_LIMIT =
-      new LoggedTunableNumber("Hopper/Hopper Empty Distance Limit", 0.475);
+      new LoggedTunableNumber("Hopper/Hopper Empty Distance Limit", 0.475, Constants.Tuning.HOPPER);
   public static final double MIN_EMPTY_DURATION = 0.2;
 
   public static final LoggedNetworkNumber beltMotorSpeed =

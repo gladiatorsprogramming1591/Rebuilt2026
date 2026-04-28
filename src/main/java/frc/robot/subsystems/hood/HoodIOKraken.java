@@ -8,6 +8,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -44,6 +45,7 @@ public class HoodIOKraken implements HoodIO {
   private final boolean isLimitSensorOutputInverted = bottomLimitSensor instanceof DigitalInput ? true : false;
   private final Timer timer = new Timer();
   private final Slot0Configs slot0 = new Slot0Configs();
+  private final Slot1Configs slot1 = new Slot1Configs();
   private final PositionTorqueCurrentFOC positionTorqueControl =
   new PositionTorqueCurrentFOC(0.0).withUpdateFreqHz(0.0);
   
@@ -65,16 +67,25 @@ public class HoodIOKraken implements HoodIO {
     hoodConfig.CurrentLimits.SupplyCurrentLimit = HoodConstants.HOOD_SUPPLY_CURRENT_LIMIT;
     hoodConfig.CurrentLimits.StatorCurrentLimit = HoodConstants.HOOD_STATOR_CURRENT_LIMIT;
     hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    hoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     hoodConfig.Feedback.SensorToMechanismRatio = HoodConstants.HOOD_MOTOR_REDUCTION;
     hoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // i.e. inverted
     PhoenixUtil.tryUntilOk(5, () -> hoodMotor.getConfigurator().apply(hoodConfig, 0.25));
 
-    slot0.kP = HoodConstants.kP;
-    slot0.kD = HoodConstants.kD;
-    slot0.kS = HoodConstants.kS;
+    slot0.kP = HoodConstants.HOOD_UP_KP;
+    slot0.kI = HoodConstants.HOOD_UP_KI;
+    slot0.kD = HoodConstants.HOOD_UP_KD;
+    slot0.kS = HoodConstants.HOOD_UP_KS;
     slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     hoodMotor.getConfigurator().apply(slot0);
+
+    slot1.kP = HoodConstants.HOOD_DOWN_KP;
+    slot1.kI = HoodConstants.HOOD_DOWN_KI;
+    slot1.kD = HoodConstants.HOOD_DOWN_KD;
+    slot1.kS = HoodConstants.HOOD_DOWN_KS;
+    slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    hoodMotor.getConfigurator().apply(slot1);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50,
@@ -98,6 +109,54 @@ public class HoodIOKraken implements HoodIO {
     SmartDashboard.putNumber(SD_APPLIED_STATOR_CURRENT, HoodConstants.HOOD_STATOR_CURRENT_LIMIT);
     SmartDashboard.putBoolean(SD_LIMIT_SENSOR_INVERTED, isLimitSensorOutputInverted);
   }
+
+  private void applyTunableSlotConfigs(HoodIOOutputs outputs) {
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot0 Up kP Output", outputs.upKP);
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot0 Up kI Output", outputs.upKI);
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot0 Up kD Output", outputs.upKD);
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot0 Up kS Output", outputs.upKS);
+
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot1 Down kP Output", outputs.downKP);
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot1 Down kI Output", outputs.downKI);
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot1 Down kD Output", outputs.downKD);
+  SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot1 Down kS Output", outputs.downKS);
+
+  boolean slot0Changed =
+      slot0.kP != outputs.upKP
+          || slot0.kI != outputs.upKI
+          || slot0.kD != outputs.upKD
+          || slot0.kS != outputs.upKS;
+
+  if (slot0Changed) {
+    slot0.kP = outputs.upKP;
+    slot0.kI = outputs.upKI;
+    slot0.kD = outputs.upKD;
+    slot0.kS = outputs.upKS;
+
+    var status = hoodMotor.getConfigurator().apply(slot0);
+    SmartDashboard.putString(HOOD_TABLE_KEY + "Slot0 Apply Status", status.toString());
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot0 Applied Count",
+        SmartDashboard.getNumber(HOOD_TABLE_KEY + "Slot0 Applied Count", 0) + 1);
+  }
+
+  boolean slot1Changed =
+      slot1.kP != outputs.downKP
+          || slot1.kI != outputs.downKI
+          || slot1.kD != outputs.downKD
+          || slot1.kS != outputs.downKS;
+
+  if (slot1Changed) {
+    slot1.kP = outputs.downKP;
+    slot1.kI = outputs.downKI;
+    slot1.kD = outputs.downKD;
+    slot1.kS = outputs.downKS;
+
+    var status = hoodMotor.getConfigurator().apply(slot1);
+    SmartDashboard.putString(HOOD_TABLE_KEY + "Slot1 Apply Status", status.toString());
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Slot1 Applied Count",
+        SmartDashboard.getNumber(HOOD_TABLE_KEY + "Slot1 Applied Count", 0) + 1);
+  }
+}
 
   @Override
   public void updateInputs(HoodIOInputs inputs) {
@@ -123,22 +182,15 @@ public class HoodIOKraken implements HoodIO {
   public void zeroHood() {
     double hoodPosition = hoodAngle.getValueAsDouble();
     angleBeforeAppliedZero = hoodPosition;
-    if (!isHoodWithinZeroTolerance().getAsBoolean())
-    {
-      hoodMotor.setPosition(0.0);
-      SmartDashboard.putNumber(SD_ACCEPTED_ZERO_COUNT, ++acceptedZeroCounter);
-    } else
-    {
-      SmartDashboard.putNumber(SD_REJECTED_ZERO_COUNT, ++rejectedZeroCounter);
-    }
+    hoodMotor.setPosition(0.0);
+    SmartDashboard.putNumber(SD_ACCEPTED_ZERO_COUNT, ++acceptedZeroCounter);
     SmartDashboard.putNumber(SD_ANGLE_BEFORE_APPLIED_ZERO, angleBeforeAppliedZero);
   }
 
   @Override
   public BooleanSupplier isHoodWithinZeroTolerance()
   {
-    double hoodPosition = hoodAngle.getValueAsDouble();
-    return () -> Math.abs(hoodPosition) < HoodConstants.HOOD_ANGLE_TOLERANCE;
+    return () -> Math.abs(hoodAngle.getValueAsDouble()) < HoodConstants.HOOD_ANGLE_TOLERANCE;
   }
 
   @Override
@@ -147,10 +199,17 @@ public class HoodIOKraken implements HoodIO {
   }
 
   @Override
-  public boolean isHoodAtTrueZero() {
-    return bottomLimitSensorDebouncer.calculate(isBottomLimitSensorTripped().getAsBoolean()) && hasHoodStopped()
-        || hasHoodStoppedOverTime(HoodConstants.MIN_STATIONARY_DURATION);
+public boolean isHoodAtTrueZero() {
+  boolean zeroSensorTripped =
+      bottomLimitSensorDebouncer.calculate(isBottomLimitSensorTripped().getAsBoolean());
+
+  if (zeroSensorTripped) {
+    resetHoodTimer();
+    return true;
   }
+
+  return hasHoodStoppedOverTime(HoodConstants.MIN_STATIONARY_DURATION);
+}
 
   @Override
   public void setSupplyCurrentLimit(double supplyLimitAmps) {
@@ -203,11 +262,12 @@ public class HoodIOKraken implements HoodIO {
   // }
   
   private boolean hasHoodStopped() {
-    boolean retVal =
-        hoodAngularVelocity.getValueAsDouble() < HoodConstants.HOOD_ZEROING_VELOCITY_THRESHOLD;
-    SmartDashboard.putBoolean(SD_STOPPED, retVal);
-    return retVal;
-  }
+  boolean retVal =
+      Math.abs(hoodAngularVelocity.getValueAsDouble())
+          < HoodConstants.HOOD_ZEROING_VELOCITY_THRESHOLD;
+  SmartDashboard.putBoolean(SD_STOPPED, retVal);
+  return retVal;
+}
 
   @Override
   public void resetHoodTimer() {
@@ -238,17 +298,22 @@ public class HoodIOKraken implements HoodIO {
     SmartDashboard.putNumber(HOOD_TABLE_KEY + "Desired Hood Speed", outputs.desiredHoodSpeed);
     if (outputs.mode == HoodMode.POSITION) {
       if (Constants.tuningMode) {
-        slot0.kP = outputs.kP;
-        slot0.kD = outputs.kD;
-        slot0.kS = outputs.kS;
-        // hoodMotor.getConfigurator().apply(hoodSlot0);
+        applyTunableSlotConfigs(outputs);
       }
+
+      double currentAngle = hoodAngle.getValueAsDouble();
+      boolean movingDown = outputs.desiredHoodAngle < currentAngle;
+      int selectedSlot = movingDown ? 1 : 0;
+
+      SmartDashboard.putNumber(HOOD_TABLE_KEY + "Selected PID Slot", selectedSlot);
+      SmartDashboard.putNumber(HOOD_TABLE_KEY + "Position Current Angle", currentAngle);
+      SmartDashboard.putNumber(HOOD_TABLE_KEY + "Position Desired Angle", outputs.desiredHoodAngle);
+      SmartDashboard.putBoolean(HOOD_TABLE_KEY + "Position Moving Down", movingDown);
 
       hoodMotor.setControl(
           positionTorqueControl
               .withPosition(outputs.desiredHoodAngle)
-              .withSlot(0)
-              .withFeedForward(outputs.kS));
+              .withSlot(selectedSlot));
     } else if (outputs.mode == HoodMode.SPEED) {
       hoodMotor.set(outputs.desiredHoodSpeed);
     }

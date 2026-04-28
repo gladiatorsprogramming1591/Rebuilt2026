@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableBoolean;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -89,52 +90,52 @@ public final class IntakeConstants {
   // Tunables
   // Intake roller
   public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
-      new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_rollerTorqueCurrent);
+      new LoggedTunableNumber(kintakeTableKey + "Intake roller torque", m_rollerTorqueCurrent, Constants.Tuning.INTAKE);
   public static final LoggedTunableBoolean IS_TORQUE_MODE =
-      new LoggedTunableBoolean(kintakeTableKey + "Use Torque Mode?", m_isTorqueMode);
+      new LoggedTunableBoolean(kintakeTableKey + "Use Torque Mode?", m_isTorqueMode, Constants.Tuning.INTAKE);
   // Deploy
   public static final LoggedTunableNumber deploySpeed =
-      new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOYING_SPEED);
+      new LoggedTunableNumber(kdeployTableKey + "DeploySpeed", DEPLOYING_SPEED, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber peakForwardStatorCurrentLimit =
-      new LoggedTunableNumber(kdeployTableKey + "peakForwardStatorCurrentLimit", PEAK_FORWARD_STATOR_CURRENT_LIMIT);
+      new LoggedTunableNumber(kdeployTableKey + "peakForwardStatorCurrentLimit", PEAK_FORWARD_STATOR_CURRENT_LIMIT, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber peakReverseStatorCurrentLimit =
-      new LoggedTunableNumber(kdeployTableKey + "peakReverseStatorCurrentLimit", PEAK_REVERSE_STATOR_CURRENT_LIMIT);
+      new LoggedTunableNumber(kdeployTableKey + "peakReverseStatorCurrentLimit", PEAK_REVERSE_STATOR_CURRENT_LIMIT, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kdeployP =
-      new LoggedTunableNumber(kdeployTableKey + "kdeployP", DeployConfigs.kP);
+      new LoggedTunableNumber(kdeployTableKey + "kdeployP", DeployConfigs.kP, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kdeployI =
-      new LoggedTunableNumber(kdeployTableKey + "kdeployI", DeployConfigs.kI);
+      new LoggedTunableNumber(kdeployTableKey + "kdeployI", DeployConfigs.kI, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kdeployD =
-      new LoggedTunableNumber(kdeployTableKey + "kdeployD", DeployConfigs.kD);
+      new LoggedTunableNumber(kdeployTableKey + "kdeployD", DeployConfigs.kD, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kdeployG =
-      new LoggedTunableNumber(kdeployTableKey + "kdeployG", DeployConfigs.kG);
+      new LoggedTunableNumber(kdeployTableKey + "kdeployG", DeployConfigs.kG, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kdeployFF =
-      new LoggedTunableNumber(kdeployTableKey + "kdeployFF", DeployConfigs.kFF);
+      new LoggedTunableNumber(kdeployTableKey + "kdeployFF", DeployConfigs.kFF, Constants.Tuning.INTAKE);
   // Stow - Empty
   public static final LoggedTunableNumber kstowP =
-      new LoggedTunableNumber(kstowTableKey + "kstowP", StowConfigs.kP);
+      new LoggedTunableNumber(kstowTableKey + "kstowP", StowConfigs.kP, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowI =
-      new LoggedTunableNumber(kstowTableKey + "kstowI", StowConfigs.kI);
+      new LoggedTunableNumber(kstowTableKey + "kstowI", StowConfigs.kI, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowD =
-      new LoggedTunableNumber(kstowTableKey + "kstowD", StowConfigs.kD);
+      new LoggedTunableNumber(kstowTableKey + "kstowD", StowConfigs.kD, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowG =
-      new LoggedTunableNumber(kstowTableKey + "kstowG", StowConfigs.kG);
+      new LoggedTunableNumber(kstowTableKey + "kstowG", StowConfigs.kG, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowFF =
-      new LoggedTunableNumber(kstowTableKey + "kstowFF", StowConfigs.kFF);
+      new LoggedTunableNumber(kstowTableKey + "kstowFF", StowConfigs.kFF, Constants.Tuning.INTAKE);
   // Stow - Full
   public static final LoggedTunableNumber kstowFullP =
-      new LoggedTunableNumber(kstowFullTableKey + "kstowFullP", StowFullConfigs.kP);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullP", StowFullConfigs.kP, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowFullI =
-      new LoggedTunableNumber(kstowFullTableKey + "kstowFullI", StowFullConfigs.kI);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullI", StowFullConfigs.kI, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowFullD =
-      new LoggedTunableNumber(kstowFullTableKey + "kstowFullD", StowFullConfigs.kD);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullD", StowFullConfigs.kD, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowFullG =
-      new LoggedTunableNumber(kstowFullTableKey + "kstowFullG", StowFullConfigs.kG);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullG", StowFullConfigs.kG, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kstowFullFF =
-      new LoggedTunableNumber(kstowFullTableKey + "kstowFullFF", StowFullConfigs.kFF);
+      new LoggedTunableNumber(kstowFullTableKey + "kstowFullFF", StowFullConfigs.kFF, Constants.Tuning.INTAKE);
 
   public static final LoggedTunableNumber kMMAcceleration =
-      new LoggedTunableNumber(kstowTableKey + "kMMAcceleration", StowConfigs.kmmAcceleration);
+      new LoggedTunableNumber(kstowTableKey + "kMMAcceleration", StowConfigs.kmmAcceleration, Constants.Tuning.INTAKE);
   public static final LoggedTunableNumber kMMJerk =
-      new LoggedTunableNumber(kstowTableKey + "kMMJerk", StowConfigs.kmmJerk);
+      new LoggedTunableNumber(kstowTableKey + "kMMJerk", StowConfigs.kmmJerk, Constants.Tuning.INTAKE);
 
 }

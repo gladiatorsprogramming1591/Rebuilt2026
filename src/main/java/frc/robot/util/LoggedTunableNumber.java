@@ -1,10 +1,4 @@
 package frc.robot.util;
-// Copyright (c) 2025-2026 Littleton Robotics
-// http://github.com/Mechanical-Advantage
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
 
 import frc.robot.Constants;
 import java.util.Arrays;
@@ -16,101 +10,79 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-/**
- * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
- * value not in dashboard.
- */
 @SuppressWarnings("unused")
 public class LoggedTunableNumber implements DoubleSupplier {
-  private static final String tableKey = "/Tuning";
+  private static final String TABLE_KEY = "/Tuning";
 
+  private final boolean tuningEnabled;
   private final String key;
+
   private boolean hasDefault = false;
   private double defaultValue;
   private LoggedNetworkNumber dashboardNumber;
-  private Map<Integer, Double> lastHasChangedValues = new HashMap<>();
+  private Map<Integer, Double> lastHasChangedValues;
 
-  /**
-   * Create a new LoggedTunableNumber
-   *
-   * @param dashboardKey Key on dashboard
-   */
   public LoggedTunableNumber(String dashboardKey) {
-    this.key = tableKey + "/" + dashboardKey;
+    this(dashboardKey, Constants.tuningMode && !Constants.disableHAL);
   }
 
-  /**
-   * Create a new LoggedTunableNumber with the default value
-   *
-   * @param dashboardKey Key on dashboard
-   * @param defaultValue Default value
-   */
+  public LoggedTunableNumber(String dashboardKey, boolean tuningEnabled) {
+    this.tuningEnabled = tuningEnabled;
+    this.key = tuningEnabled ? TABLE_KEY + "/" + dashboardKey : null;
+  }
+
   public LoggedTunableNumber(String dashboardKey, double defaultValue) {
-    this(dashboardKey);
+    this(dashboardKey, defaultValue, Constants.tuningMode && !Constants.disableHAL);
+  }
+
+  public LoggedTunableNumber(String dashboardKey, double defaultValue, boolean tuningEnabled) {
+    this(dashboardKey, tuningEnabled);
     initDefault(defaultValue);
   }
 
-  /**
-   * Set the default value of the number. The default value can only be set once.
-   *
-   * @param defaultValue The default value
-   */
   public void initDefault(double defaultValue) {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.tuningMode && !Constants.disableHAL) {
+
+      if (tuningEnabled) {
         dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
       }
     }
   }
 
-  /**
-   * Get the current value, from dashboard if available and in tuning mode.
-   *
-   * @return The current value
-   */
   public double get() {
     if (!hasDefault) {
       return 0.0;
-    } else {
-      return Constants.tuningMode && !Constants.disableHAL ? dashboardNumber.get() : defaultValue;
     }
+
+    return tuningEnabled ? dashboardNumber.get() : defaultValue;
   }
 
-  /**
-   * Checks whether the number has changed since our last check
-   *
-   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
-   *     objects. Recommended approach is to pass the result of "hashCode()"
-   * @return True if the number has changed since the last time this method was called, false
-   *     otherwise.
-   */
   public boolean hasChanged(int id) {
     double currentValue = get();
-    Double lastValue = lastHasChangedValues.get(id);
+    Map<Integer, Double> lastValues = getLastHasChangedValues();
+
+    Double lastValue = lastValues.get(id);
     if (lastValue == null || currentValue != lastValue) {
-      lastHasChangedValues.put(id, currentValue);
+      lastValues.put(id, currentValue);
       return true;
     }
 
     return false;
   }
 
-  /**
-   * Runs action if any of the tunableNumbers have changed
-   *
-   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple *
-   *     objects. Recommended approach is to pass the result of "hashCode()"
-   * @param action Callback to run when any of the tunable numbers have changed. Access tunable
-   *     numbers in order inputted in method
-   * @param tunableNumbers All tunable numbers to check
-   */
+  private Map<Integer, Double> getLastHasChangedValues() {
+    if (lastHasChangedValues == null) {
+      lastHasChangedValues = new HashMap<>();
+    }
+
+    return lastHasChangedValues;
+  }
+
   public static void ifChanged(
-      int id, Consumer<double[]> action, LoggedTunableNumber... tunableNumbers)
-  {
-    if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id)))
-    {
+      int id, Consumer<double[]> action, LoggedTunableNumber... tunableNumbers) {
+    if (Arrays.stream(tunableNumbers).anyMatch(tunableNumber -> tunableNumber.hasChanged(id))) {
       Stream<LoggedTunableNumber> stream = Arrays.stream(tunableNumbers);
       DoubleStream doubleStream = stream.mapToDouble(LoggedTunableNumber::get);
       double[] doubleArray = doubleStream.toArray();
@@ -118,9 +90,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     }
   }
 
-  /** Runs action if any of the tunableNumbers have changed */
-  public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) 
-  {
+  public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) {
     ifChanged(id, values -> action.run(), tunableNumbers);
   }
 

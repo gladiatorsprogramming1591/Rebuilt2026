@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,6 +28,8 @@ import lombok.Getter;
 import lombok.experimental.ExtensionMethod;
 import org.littletonrobotics.junction.Logger;
 
+
+
 @ExtensionMethod({GeomUtil.class})
 public class ShooterCalculation {
   private static ShooterCalculation instance;
@@ -38,7 +41,7 @@ public class ShooterCalculation {
   private final LinearFilter driveAngleFilter =
       LinearFilter.movingAverage((int) (0.1 / Constants.loopPeriodSecs));
 private static final LoggedTunableNumber velocityCompensationScalar =
-    new LoggedTunableNumber("ShooterCalculation/VelocityCompensationScalar", 1.0);
+    shooterCalcTunable("ShooterCalculation/VelocityCompensationScalar", 1.0);
   private double lastHoodAngle;
   private Rotation2d lastDriveAngle;
 
@@ -51,7 +54,9 @@ private static final LoggedTunableNumber velocityCompensationScalar =
     if (instance == null) instance = new ShooterCalculation();
     return instance;
   }
-
+private static LoggedTunableNumber shooterCalcTunable(String key, double defaultValue) {
+  return new LoggedTunableNumber(key, defaultValue, Constants.Tuning.SHOOTER_CALCULATION);
+}
   public record LaunchingParameters(
       boolean isValid,
       Rotation2d driveAngle,
@@ -102,17 +107,17 @@ private static final LoggedTunableNumber velocityCompensationScalar =
   public static final LaunchPreset outpostPreset;
   public static final LaunchPreset hoodMinPreset =
       new LaunchPreset(
-          new LoggedTunableNumber(
+          shooterCalcTunable(
               "ShooterCalculation/Presets/HoodMin/HoodAngle", Units.radiansToDegrees(0)),
-          new LoggedTunableNumber("ShooterCalculation/Presets/HoodMin/FlywheelSpeed", 2000));
+          shooterCalcTunable("ShooterCalculation/Presets/HoodMin/FlywheelSpeed", 2000));
   public static final LaunchPreset hoodMaxPreset =
       new LaunchPreset(
-          new LoggedTunableNumber(
+          shooterCalcTunable(
               "ShooterCalculation/Presets/HoodMax/HoodAngle", Units.radiansToDegrees(700)),
-          new LoggedTunableNumber("ShooterCalculation/Presets/HoodMax/FlywheelSpeed", 2000));
+          shooterCalcTunable("ShooterCalculation/Presets/HoodMax/FlywheelSpeed", 2000));
 
   public static final LoggedTunableNumber passingIdleSpeed =
-      new LoggedTunableNumber("ShooterCalculation/PassingIdleSpeed", 2000);
+      shooterCalcTunable("ShooterCalculation/PassingIdleSpeed", 2000);
 
   public static record LaunchPreset(
       LoggedTunableNumber hoodAngleDeg, LoggedTunableNumber flywheelSpeed) {}
@@ -140,108 +145,108 @@ private static final LoggedTunableNumber velocityCompensationScalar =
           FieldConstants.LinesHorizontal.leftBumpEnd);
 
   private static final LoggedTunableNumber hoodAngle1 =
-      new LoggedTunableNumber("HoodAngleMap/0.0", 50.0);
+      shooterCalcTunable("HoodAngleMap/0.0", 50.0);
   private static final LoggedTunableNumber hoodAngle2 =
-      new LoggedTunableNumber("HoodAngleMap/1.46", 70.0); // 50
+      shooterCalcTunable("HoodAngleMap/1.46", 70.0); // 50
   private static final LoggedTunableNumber hoodAngle3 =
-      new LoggedTunableNumber("HoodAngleMap/1.73", 70.0); // 60
+      shooterCalcTunable("HoodAngleMap/1.73", 70.0); // 60
   private static final LoggedTunableNumber hoodAngle4 =
-      new LoggedTunableNumber("HoodAngleMap/2.18", 100.0);
+      shooterCalcTunable("HoodAngleMap/2.18", 100.0);
   private static final LoggedTunableNumber hoodAngle5 =
-      new LoggedTunableNumber("HoodAngleMap/2.47", 120.0);
+      shooterCalcTunable("HoodAngleMap/2.47", 120.0);
   private static final LoggedTunableNumber hoodAngle6 =
-      new LoggedTunableNumber("HoodAngleMap/2.70", 315.0); // 0.0
+      shooterCalcTunable("HoodAngleMap/2.70", 315.0); // 0.0
   private static final LoggedTunableNumber hoodAngle7 =
-      new LoggedTunableNumber("HoodAngleMap/2.94", 330.0);
+      shooterCalcTunable("HoodAngleMap/2.94", 330.0);
   private static final LoggedTunableNumber hoodAngle8 =
-      new LoggedTunableNumber("HoodAngleMap/3.48", 450.0);
+      shooterCalcTunable("HoodAngleMap/3.48", 450.0);
   private static final LoggedTunableNumber hoodAngle9 =
-      new LoggedTunableNumber("HoodAngleMap/3.92", 550.0);
+      shooterCalcTunable("HoodAngleMap/3.92", 550.0);
   private static final LoggedTunableNumber hoodAngle10 =
-      new LoggedTunableNumber("HoodAngleMap/4.35", 660.0);
+      shooterCalcTunable("HoodAngleMap/4.35", 660.0);
   private static final LoggedTunableNumber hoodAngle11 =
-      new LoggedTunableNumber("HoodAngleMap/4.84", 750.0); 
+      shooterCalcTunable("HoodAngleMap/4.84", 750.0); 
   private static final LoggedTunableNumber hoodAngle12 =
-      new LoggedTunableNumber("HoodAngleMap/5.46", 800.0); // we noticed that 750 was reaching the max for the hood, after is a deadspot.
+      shooterCalcTunable("HoodAngleMap/5.46", 800.0); // we noticed that 750 was reaching the max for the hood, after is a deadspot.
 
   private static final LoggedTunableNumber flywheelSpeed1 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/0.0", 1450.0);
+      shooterCalcTunable("FlyWheelSpeedMap/0.0", 1450.0);
   private static final LoggedTunableNumber flywheelSpeed2 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/0.96", 1450.0);
+      shooterCalcTunable("FlyWheelSpeedMap/0.96", 1450.0);
   private static final LoggedTunableNumber flywheelSpeed3 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/1.46", 1650.0); // 1600
+      shooterCalcTunable("FlyWheelSpeedMap/1.46", 1650.0); // 1600
   private static final LoggedTunableNumber flywheelSpeed4 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/1.73", 1750.0); // 1650
+      shooterCalcTunable("FlyWheelSpeedMap/1.73", 1750.0); // 1650
   private static final LoggedTunableNumber flywheelSpeed5 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.18", 1900.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.18", 1900.0);
   private static final LoggedTunableNumber flywheelSpeed6 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.47", 1950.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.47", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed7 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.70", 1950.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.70", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed8 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/2.94", 1950.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.94", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed9 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/3.48", 2024.0);
+      shooterCalcTunable("FlyWheelSpeedMap/3.48", 2024.0);
   private static final LoggedTunableNumber flywheelSpeed10 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/3.92", 2050.0);
+      shooterCalcTunable("FlyWheelSpeedMap/3.92", 2050.0);
   private static final LoggedTunableNumber flywheelSpeed11 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/4.35", 2125.0);
+      shooterCalcTunable("FlyWheelSpeedMap/4.35", 2125.0);
   private static final LoggedTunableNumber flywheelSpeed12 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/4.84", 2200.0);
+      shooterCalcTunable("FlyWheelSpeedMap/4.84", 2200.0);
   private static final LoggedTunableNumber flywheelSpeed13 =
-      new LoggedTunableNumber("FlyWheelSpeedMap/5.46", 2350.0);
+      shooterCalcTunable("FlyWheelSpeedMap/5.46", 2350.0);
 
   private static final LoggedTunableNumber passingHoodAngle1 =
-      new LoggedTunableNumber("PassingHoodMap/3.4", 700.0);
+      shooterCalcTunable("PassingHoodMap/3.4", 900.0);
   private static final LoggedTunableNumber passingHoodAngle2 =
-      new LoggedTunableNumber("PassingHoodMap/4.275", 700.0); // Bumper against bump 
+      shooterCalcTunable("PassingHoodMap/4.275", 900.0); // Bumper against bump 
   private static final LoggedTunableNumber passingHoodAngle3 =
-      new LoggedTunableNumber("PassingHoodMap/5.46", 800.0); // 240
+      shooterCalcTunable("PassingHoodMap/5.46", 900.0); // 240
   private static final LoggedTunableNumber passingHoodAngle4 =
-      new LoggedTunableNumber("PassingHoodMap/6.62", 800.0); // 400
+      shooterCalcTunable("PassingHoodMap/6.62", 900.0); // 400
   private static final LoggedTunableNumber passingHoodAngle5 =
-      new LoggedTunableNumber("PassingHoodMap/7.8", 800.0); // 500
+      shooterCalcTunable("PassingHoodMap/7.8", 900.0); // 500
   private static final LoggedTunableNumber passingHoodAngle6 =
-      new LoggedTunableNumber("PassingHoodMap/8.67", 800.0); // 3/4 into NZ
+      shooterCalcTunable("PassingHoodMap/8.67", 900.0); // 3/4 into NZ
   private static final LoggedTunableNumber passingHoodAngle7 =
-      new LoggedTunableNumber("PassingHoodMap/9.65", 800.0); // NZ opposing bump
+      shooterCalcTunable("PassingHoodMap/9.65", 900.0); // NZ opposing bump
   private static final LoggedTunableNumber passingHoodAngle8 =
-      new LoggedTunableNumber("PassingHoodMap/10.16", 800.0); // NZ opposing trench
+      shooterCalcTunable("PassingHoodMap/10.16", 900.0); // NZ opposing trench
 // Within opposing AZ
 //   private static final LoggedTunableNumber passingHoodAngle9 =
-//       new LoggedTunableNumber("PassingHoodMap/11.68", 2250.0); // Opposing AZ bump
+//       shooterCalcTunable("PassingHoodMap/11.68", 2250.0); // Opposing AZ bump
 //   private static final LoggedTunableNumber passingHoodAngle10 =
-//       new LoggedTunableNumber("PassingHoodMap/13.29", 2250.0); // Opposing AZ 1/2
+//       shooterCalcTunable("PassingHoodMap/13.29", 2250.0); // Opposing AZ 1/2
 //   private static final LoggedTunableNumber passingHoodAngle11 =
-//       new LoggedTunableNumber("PassingHoodMap/14.81", 2250.0); // Opposing AZ wall
+//       shooterCalcTunable("PassingHoodMap/14.81", 2250.0); // Opposing AZ wall
   private static final LoggedTunableNumber passingHoodAngleLast =
-      new LoggedTunableNumber("PassingHoodMap/17.16", 800.0); // 500 1009 is approx max
+      shooterCalcTunable("PassingHoodMap/17.16", 900.0); // 500 1009 is approx max
 
   private static final LoggedTunableNumber passingFlywheelSpeed1 =
-      new LoggedTunableNumber("PassingFlywheelMap/3.4", 1700.0); // 800
+      shooterCalcTunable("PassingFlywheelMap/3.4", 2500.0); // 800
   private static final LoggedTunableNumber passingFlywheelSpeed2 =
-      new LoggedTunableNumber("PassingFlywheelMap/4.275", 1700.0); // Bumper against bump
+      shooterCalcTunable("PassingFlywheelMap/4.275", 2500.0); // Bumper against bump
   private static final LoggedTunableNumber passingFlywheelSpeed3 =
-      new LoggedTunableNumber("PassingFlywheelMap/5.46", 2000.0); // 1008
+      shooterCalcTunable("PassingFlywheelMap/5.46", 2500.0); // 1008
   private static final LoggedTunableNumber passingFlywheelSpeed4 =
-      new LoggedTunableNumber("PassingFlywheelMap/6.62", 2150.0); // 1134
+      shooterCalcTunable("PassingFlywheelMap/6.62", 2500.0); // 1134
   private static final LoggedTunableNumber passingFlywheelSpeed5 =
-      new LoggedTunableNumber("PassingFlywheelMap/7.8", 2250.0); // 1260
+      shooterCalcTunable("PassingFlywheelMap/7.8", 2500.0); // 1260
   private static final LoggedTunableNumber passingFlywheelSpeed6 =
-      new LoggedTunableNumber("PassingFlywheelMap/8.67", 2325.0); // 3/4 into NZ
+      shooterCalcTunable("PassingFlywheelMap/8.67", 2750.0); // 3/4 into NZ
   private static final LoggedTunableNumber passingFlywheelSpeed7 =
-      new LoggedTunableNumber("PassingFlywheelMap/9.65", 2425.0); // NZ opposing bump
+      shooterCalcTunable("PassingFlywheelMap/9.65", 3000.0); // NZ opposing bump
   private static final LoggedTunableNumber passingFlywheelSpeed8 =
-      new LoggedTunableNumber("PassingFlywheelMap/10.16", 2475.0); // NZ opposing trench
+      shooterCalcTunable("PassingFlywheelMap/10.16", 3000.0); // NZ opposing trench
 // Within opposing AZ
 //   private static final LoggedTunableNumber passingFlywheelSpeed6 =
-//       new LoggedTunableNumber("PassingFlywheelMap/11.68", 2250.0); // Opposing AZ bump
+//       shooterCalcTunable("PassingFlywheelMap/11.68", 2250.0); // Opposing AZ bump
 //   private static final LoggedTunableNumber passingFlywheelSpeed6 =
-//       new LoggedTunableNumber("PassingFlywheelMap/13.29", 2250.0); // Opposing AZ 1/2
+//       shooterCalcTunable("PassingFlywheelMap/13.29", 2250.0); // Opposing AZ 1/2
 //   private static final LoggedTunableNumber passingFlywheelSpeed6 =
-//       new LoggedTunableNumber("PassingFlywheelMap/14.81", 2250.0); // Opposing AZ wall
+//       shooterCalcTunable("PassingFlywheelMap/14.81", 2250.0); // Opposing AZ wall
   private static final LoggedTunableNumber passingFlywheelSpeedLast =
-      new LoggedTunableNumber("PassingFlywheelMap/17.16", 4000.0); // 2300
+      shooterCalcTunable("PassingFlywheelMap/17.16", 4000.0); // 2300
 
 
   static {
@@ -314,41 +319,41 @@ private static final LoggedTunableNumber velocityCompensationScalar =
 
     passingPreset =
         new LaunchPreset(
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Passing/HoodAngle",
                 hoodAngleMap.get(passingPresetDistance)),
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Passing/FlywheelSpeed",
                 flywheelSpeedMap.get(passingPresetDistance)));
     hubPreset =
         new LaunchPreset(
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Hub/HoodAngle", hoodAngleMap.get(hubPresetDistance)),
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Hub/FlywheelSpeed",
                 flywheelSpeedMap.get(hubPresetDistance)));
     towerPreset =
         new LaunchPreset(
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Tower/HoodAngle",
                 hoodAngleMap.get(towerPresetDistance)),
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Tower/FlywheelSpeed",
                 flywheelSpeedMap.get(towerPresetDistance)));
     trenchPreset =
         new LaunchPreset(
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Trench/HoodAngle",
                 hoodAngleMap.get(trenchPresetDistance)),
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Trench/FlywheelSpeed",
                 flywheelSpeedMap.get(trenchPresetDistance)));
     outpostPreset =
         new LaunchPreset(
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Outpost/HoodAngle",
                 hoodAngleMap.get(outpostPresetDistance)),
-            new LoggedTunableNumber(
+            shooterCalcTunable(
                 "ShooterCalculation/Presets/Outpost/FlywheelSpeed",
                 flywheelSpeedMap.get(outpostPresetDistance)));
   }

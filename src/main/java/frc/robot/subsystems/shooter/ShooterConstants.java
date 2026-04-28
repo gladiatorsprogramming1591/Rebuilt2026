@@ -1,5 +1,5 @@
 package frc.robot.subsystems.shooter;
-
+import frc.robot.Constants;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.util.LoggedTunableBoolean;
@@ -47,18 +47,18 @@ public class ShooterConstants {
    */
   public static final String SHOOTER_TABLE_KEY = "Shooter/";
   
-  public static final LoggedTunableBoolean useMotionMagic = new LoggedTunableBoolean(SHOOTER_TABLE_KEY + "Use Motion Magic?", m_useMotionMagic);
-  public static final LoggedTunableNumber kP = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kP", m_P);
-  public static final LoggedTunableNumber kI = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kI", m_I);
-  public static final LoggedTunableNumber kD = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kD", m_D);
-  public static final LoggedTunableNumber kS = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kS", m_S);
-  public static final LoggedTunableNumber kV = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kV", m_V);
-  public static final LoggedTunableNumber kA = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kA", m_A);
-  public static final LoggedTunableNumber kMMAcceleration = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kMMAcceleration", m_MMAcceleration);
-  public static final LoggedTunableNumber kMMJerk = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kMMJerk", m_MMJerk);
+  public static final LoggedTunableBoolean useMotionMagic = new LoggedTunableBoolean(SHOOTER_TABLE_KEY + "Use Motion Magic?", m_useMotionMagic, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kP = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kP", m_P, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kI = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kI", m_I, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kD = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kD", m_D, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kS = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kS", m_S, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kV = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kV", m_V, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kA = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kA", m_A, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kMMAcceleration = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kMMAcceleration", m_MMAcceleration, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber kMMJerk = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kMMJerk", m_MMJerk, Constants.Tuning.SHOOTER);
   
-  public static final LoggedTunableNumber shootFixedRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Shoot Fixed RPM", m_ShootFixedRPM);
-  public static final LoggedTunableNumber coastRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Coast RPM", m_CoastRPM);
+  public static final LoggedTunableNumber shootFixedRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Shoot Fixed RPM", m_ShootFixedRPM, Constants.Tuning.SHOOTER);
+  public static final LoggedTunableNumber coastRPM = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "Coast RPM", m_CoastRPM, Constants.Tuning.SHOOTER);
 
   // Smart Dashboard keys
     public static final String UPDATE_CONFIG_NAME = "Update Shooter Configs";

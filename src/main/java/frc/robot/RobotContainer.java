@@ -95,7 +95,7 @@ public class RobotContainer {
   private double driveSpeedMultiplier = 1.0; // This will be squared, 0.4 is good for kids
   private double rotationMultiplier = 1.0; // Use 0.4 for kids
   
-  private LoggedTunableNumber autoStartDelay = new LoggedTunableNumber("Auto Start Delay", 1.0);
+  private LoggedTunableNumber autoStartDelay = new LoggedTunableNumber("Auto Start Delay", 1.0,  Constants.Tuning.AUTO);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -259,13 +259,15 @@ public class RobotContainer {
     // TODO: Changing this to use runHoodPosition(()->0.0) causes running up/down to be much faster. Why?
     // TODO: Prevent driving to zero repeatedly after first successful iteraton. Ready to test.
     // TODO: Idea: "andThen" run "stopHood" indefinitely until interrupted (only if initially zeroed)
-    hood.setDefaultCommand(
-        hood.runHoodPosition(() -> 20.0)
+    // hood.setDefaultCommand(
+    //     hood.runHoodPosition(() -> 20.0)
         // .until(hood.isHoodAtAngle()).until(Commands.waitSeconds(0.25))
         // .andThen(hood.runHoodToZero().onlyIf(hood.getHasInitiallyBeenZeroed()))
-        );
+        // );
     // hood.setDefaultCommand(hood.stopHood());
     // drive base
+
+    hood.setDefaultCommand(hood.runHoodToZero());
 
     driver_controller.povLeft().whileTrue(new InstantCommand(() -> slowMode(true)))
         .onFalse(new InstantCommand(() -> slowMode(false)));
@@ -318,6 +320,8 @@ public class RobotContainer {
     driver_controller.start().whileTrue(hood.stopHoodContinuously()).debounce(1.5).onTrue(hood.runHoodToZero());
     // kicker
     driver_controller.povRight().toggleOnTrue(kicker.runKickerMotor());
+
+
     driver_controller.rightTrigger().whileTrue(shootWithAim());
     driver_controller.rightTrigger().and(()->hopper.isHopperEmpty())
         .whileTrue(Commands.runEnd(
@@ -368,12 +372,17 @@ public class RobotContainer {
     RobotModeTriggers.disabled().onTrue(Commands.runOnce(HubShiftUtil::initialize));
 
     HubShiftUtil.setAllianceWinOverride(
-        () -> {
-          if (operator_controller.back().getAsBoolean()) {
-            return Optional.of(true);
-          }
-          return Optional.empty();
-        });
+    () -> {
+      if (!DriverStation.isJoystickConnected(1)) {
+        return Optional.empty();
+      }
+
+      if (operator_controller.back().getAsBoolean()) {
+        return Optional.of(true);
+      }
+
+      return Optional.empty();
+    });
 
     // driver_controller
     //     .rightTrigger()
@@ -390,19 +399,19 @@ public class RobotContainer {
     //              .onlyIf(inLaunchingTolerance));
         
     // End-of-shift warning
-    for (int i = 1; i <= 5; i++) {
-      double time = i;
-      Trigger shiftAboutToEnd =
-          new Trigger(() -> (HubShiftUtil.getShiftedShiftInfo().remainingTime() < time));
-      shiftAboutToEnd
-          .and(RobotModeTriggers.teleop())
-          .and(() -> !driver_controller.back().getAsBoolean())
-          .onTrue(
-              Commands.runEnd(
-                      () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
-                      () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
-                  .withTimeout(0.25));
-    }
+    // for (int i = 1; i <= 5; i++) {
+    //   double time = i;
+    //   Trigger shiftAboutToEnd =
+    //       new Trigger(() -> (HubShiftUtil.getShiftedShiftInfo().remainingTime() < time));
+    //   shiftAboutToEnd
+    //       .and(RobotModeTriggers.teleop())
+    //       .and(() -> !driver_controller.back().getAsBoolean())
+    //       .onTrue(
+    //           Commands.runEnd(
+    //                   () -> driver_controller.setRumble(RumbleType.kBothRumble, 1.0),
+    //                   () -> driver_controller.setRumble(RumbleType.kBothRumble, 0.0))
+    //               .withTimeout(0.25));
+    // }
   }
 
   public void slowMode(boolean isSlow) {
@@ -545,22 +554,27 @@ public class RobotContainer {
             .withTimeout(1.0));
   }
 
+  private int dashboardUpdateCounter = 0;
   /** Update dashboard outputs. */
   public void updateDashboardOutputs() {
-    // Publish match time
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-
-    // Update from HubShiftUtil
-    SmartDashboard.putString(
-        "Shifts/Remaining Shift Time",
-        String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
-    SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
-    SmartDashboard.putString(
-        "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
-    SmartDashboard.putBoolean(
-        "Shifts/Active First?",
-        DriverStation.getAlliance().orElse(Alliance.Blue) == HubShiftUtil.getFirstActiveAlliance());
+  if (++dashboardUpdateCounter < 5) {
+    return;
   }
+  dashboardUpdateCounter = 0;
+
+  SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+
+  SmartDashboard.putString(
+      "Shifts/Remaining Shift Time",
+      String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
+  SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
+  SmartDashboard.putString(
+      "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+  SmartDashboard.putBoolean(
+      "Shifts/Active First?",
+      DriverStation.getAlliance().orElse(Alliance.Blue)
+          == HubShiftUtil.getFirstActiveAlliance());
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

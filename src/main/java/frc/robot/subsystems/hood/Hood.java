@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.hood.HoodIO.HoodMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
@@ -24,17 +25,29 @@ public class Hood extends SubsystemBase {
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
   private final HoodIOOutputsAutoLogged outputs = new HoodIOOutputsAutoLogged();
 
-  private boolean hasInitiallyBeenZeroed = true; // TODO: set to false when fixed. Currently not beeing updated.
+  private boolean hasInitiallyBeenZeroed = false; // TODO: set to false when fixed. Currently not beeing updated.
   private boolean hasReducedCurrentLimit = false;
+  private boolean hasAppliedZeroAtCurrentHardStop = false;
 
   private static final LoggedTunableNumber goalPosition =
-      new LoggedTunableNumber("Hood/GoalPosition", 100.0);
-  private static final LoggedTunableNumber kP =
-      new LoggedTunableNumber("Hood/kP", HoodConstants.kP);
-  private static final LoggedTunableNumber kD =
-      new LoggedTunableNumber("Hood/kD", HoodConstants.kD);
-  private static final LoggedTunableNumber kS =
-      new LoggedTunableNumber("Hood/kS", HoodConstants.kS);
+      new LoggedTunableNumber("Hood/GoalPosition", 100.0, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber upKP =
+    new LoggedTunableNumber("Hood/Up/kP", HoodConstants.HOOD_UP_KP, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber upKI =
+      new LoggedTunableNumber("Hood/Up/kI", HoodConstants.HOOD_UP_KI, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber upKD =
+      new LoggedTunableNumber("Hood/Up/kD", HoodConstants.HOOD_UP_KD, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber upKS =
+      new LoggedTunableNumber("Hood/Up/kS", HoodConstants.HOOD_UP_KS, Constants.Tuning.HOOD);
+
+  private static final LoggedTunableNumber downKP =
+      new LoggedTunableNumber("Hood/Down/kP", HoodConstants.HOOD_DOWN_KP, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber downKI =
+      new LoggedTunableNumber("Hood/Down/kI", HoodConstants.HOOD_DOWN_KI, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber downKD =
+      new LoggedTunableNumber("Hood/Down/kD", HoodConstants.HOOD_DOWN_KD, Constants.Tuning.HOOD);
+  private static final LoggedTunableNumber downKS =
+      new LoggedTunableNumber("Hood/Down/kS", HoodConstants.HOOD_DOWN_KS, Constants.Tuning.HOOD);
   private static final LoggedTunableNumber toleranceDeg =
       new LoggedTunableNumber("Hood/ToleranceDeg");
 
@@ -113,39 +126,81 @@ public class Hood extends SubsystemBase {
         });
   }
 
+  // public Command runHoodToZero() {
+  //   return new ConditionalCommand(
+  //     // On true
+  //     // stopHoodContinuously(), // Indefinitely stops hood until inturrupted
+  //     stopHoodOnce(),
+  //     // On false
+  //     new SequentialCommandGroup(
+  //       runOnce(() -> 
+  //         {
+  //           outputs.mode = HoodMode.SPEED;
+  //           setReducedStatorCurrentLimit();
+  //           outputs.desiredHoodAngle = 0;
+  //           outputs.desiredHoodSpeed = HoodConstants.HOOD_ZEROING_SPEED;
+  //         }
+  //       ),
+  //       idle() // Waits as desiredHoodSpeed set above lowers hood
+  //         .until(() -> io.isHoodAtTrueZero())
+  //         .andThen(() -> io.zeroHood())
+  //     ).finallyDo(() ->
+  //       {
+  //         stopHoodOnce();
+  //         setDefaultStatorCurrentLimit();
+  //         io.resetHoodTimer();
+  //       }
+  //     ),
+  //     // Condition
+  //     io.isHoodWithinZeroTolerance());
+  // }
+
   public Command runHoodToZero() {
-    return new ConditionalCommand(
-      // On true
-      // stopHoodContinuously(), // Indefinitely stops hood until inturrupted
-      stopHoodOnce(),
-      // On false
-      new SequentialCommandGroup(
-        runOnce(() -> 
-          {
-            outputs.mode = HoodMode.SPEED;
-            setReducedStatorCurrentLimit();
-            outputs.desiredHoodAngle = 0;
-            outputs.desiredHoodSpeed = HoodConstants.HOOD_ZEROING_SPEED;
-          }
-        ),
-        idle() // Waits as desiredHoodSpeed set above lowers hood
-          .until(() -> io.isHoodAtTrueZero())
-          .andThen(() -> io.zeroHood())
-      ).finallyDo(() ->
-        {
-          stopHoodOnce();
-          setDefaultStatorCurrentLimit();
-          io.resetHoodTimer();
-        }
-      ),
-      // Condition
-      io.isHoodWithinZeroTolerance());
+    return run(
+            () -> {
+              if (io.isHoodAtTrueZero()) {
+                outputs.mode = HoodMode.SPEED;
+                outputs.desiredHoodSpeed = 0.0;
+                hasInitiallyBeenZeroed = true;
+                setDefaultStatorCurrentLimit();
+                io.resetHoodTimer();
+                io.zeroHood();
+                return;
+              }
+
+              if (hasInitiallyBeenZeroed
+                  && inputs.hoodAngle
+                      > HoodConstants.HOOD_ZEROING_APPROACH_ANGLE
+                          + HoodConstants.HOOD_ZEROING_APPROACH_TOLERANCE) {
+                setDefaultStatorCurrentLimit();
+                outputs.mode = HoodMode.POSITION;
+                outputs.desiredHoodAngle = HoodConstants.HOOD_ZEROING_APPROACH_ANGLE;
+                outputs.desiredHoodSpeed = 0.0;
+                return;
+              }
+
+              setReducedStatorCurrentLimit();
+              outputs.mode = HoodMode.SPEED;
+              outputs.desiredHoodAngle = HoodConstants.HOOD_ZEROING_APPROACH_ANGLE;
+              outputs.desiredHoodSpeed = HoodConstants.HOOD_ZEROING_SPEED;
+            })
+        .finallyDo(
+            () -> {
+              outputs.mode = HoodMode.SPEED;
+              outputs.desiredHoodSpeed = 0.0;
+              setDefaultStatorCurrentLimit();
+              io.resetHoodTimer();
+            });
   }
 
   public BooleanSupplier isHoodAtAngle() {
-    boolean atAngle = (outputs.desiredHoodAngle - inputs.hoodAngle) < HoodConstants.HOOD_ANGLE_TOLERANCE;
-    Logger.recordOutput(HOOD_TABLE_KEY + "atAngle", atAngle);
-    return () -> atAngle;
+    return () -> {
+      boolean atAngle =
+          Math.abs(outputs.desiredHoodAngle - inputs.hoodAngle)
+              < HoodConstants.HOOD_ANGLE_TOLERANCE;
+      Logger.recordOutput(HOOD_TABLE_KEY + "atAngle", atAngle);
+      return atAngle;
+    };
   }
 
   public Command ZeroHood() {
@@ -184,9 +239,22 @@ public class Hood extends SubsystemBase {
     io.updateInputs(inputs);
     hasInitiallyBeenZeroed = hasInitiallyBeenZeroed || DriverStation.isEnabled() && io.isHoodAtTrueZero();
     Logger.processInputs("Hood", inputs);
-    outputs.kP = kP.get();
-    outputs.kD = kD.get();
-    outputs.kS = kS.get();
+    outputs.upKP = upKP.get();
+    outputs.upKI = upKI.get();
+    outputs.upKD = upKD.get();
+    outputs.upKS = upKS.get();
+
+    outputs.downKP = downKP.get();
+    outputs.downKI = downKI.get();
+    outputs.downKD = downKD.get();
+    outputs.downKS = downKS.get();
+
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Output Up kP", outputs.upKP);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Output Up kD", outputs.upKD);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Output Up kS", outputs.upKS);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Output Down kP", outputs.downKP);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Output Down kD", outputs.downKD);
+    SmartDashboard.putNumber(HOOD_TABLE_KEY + "Output Down kS", outputs.downKS);
 
     Logger.recordOutput(HOOD_TABLE_KEY + "Desired Angle", outputs.desiredHoodAngle);
     Logger.recordOutput(HOOD_TABLE_KEY + "Has Been Zeroed", hasInitiallyBeenZeroed);
@@ -196,12 +264,6 @@ public class Hood extends SubsystemBase {
     SmartDashboard.putBoolean(HOOD_TABLE_KEY + "hasReducedCurrentLimit", hasReducedCurrentLimit);
     SmartDashboard.putBoolean(HOOD_TABLE_KEY + "isHoodWithinZeroTolerance", io.isHoodWithinZeroTolerance().getAsBoolean());
 
-    if (hasInitiallyBeenZeroed) {
-      runOnce(() -> setDefaultStatorCurrentLimit());
-      io.applyOutputs(outputs);
-    } else {
-      runOnce(() -> setReducedStatorCurrentLimit());
-      io.runHoodToZero();
-    }
+    io.applyOutputs(outputs);
   }
 }

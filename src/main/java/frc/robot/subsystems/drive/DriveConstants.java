@@ -10,6 +10,7 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.Builder;
 
@@ -140,29 +141,51 @@ public class DriveConstants {
     ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =
         new AlignRobotToAprilTagConstants(
             new PIDControllerConstants(
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kP", 3),
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kD", 0.15),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/X Constants/tolerance", 0.03),
+                    "Drive/Align Robot To April Tag/X Constants/kP", 3, Constants.Tuning.DRIVE),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 2.5)),
+                    "Drive/Align Robot To April Tag/X Constants/kD", 0.15, Constants.Tuning.DRIVE),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/X Constants/tolerance",
+                    0.03,
+                    Constants.Tuning.DRIVE),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/X Constants/maxVelocity",
+                    2.5,
+                    Constants.Tuning.DRIVE)),
             new PIDControllerConstants(
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kP", 3),
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kD", 0.15),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Y Constants/tolerance", 0.03),
+                    "Drive/Align Robot To April Tag/Y Constants/kP", 3, Constants.Tuning.DRIVE),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 2.5)),
+                    "Drive/Align Robot To April Tag/Y Constants/kD", 0.15, Constants.Tuning.DRIVE),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Y Constants/tolerance",
+                    0.03,
+                    Constants.Tuning.DRIVE),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity",
+                    2.5,
+                    Constants.Tuning.DRIVE)),
             new PIDControllerConstants(
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
+                    "Drive/Align Robot To April Tag/Omega Constants/kP",
+                    2 * Math.PI,
+                    Constants.Tuning.DRIVE),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/kD",
+                    0.05,
+                    Constants.Tuning.DRIVE),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/tolerance",
-                    Units.degreesToRadians(0.25)),
+                    Units.degreesToRadians(0.25),
+                    Constants.Tuning.DRIVE),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
+                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity",
+                    Math.PI,
+                    Constants.Tuning.DRIVE)),
             new LoggedTunableNumber(
-                "Drive/Align Robot To April Tag/positionThresholdDegrees", 0.03));
+                "Drive/Align Robot To April Tag/positionThresholdDegrees",
+                0.03,
+                Constants.Tuning.DRIVE));
   }
 }

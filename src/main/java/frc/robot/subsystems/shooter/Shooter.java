@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
 
   public Shooter(ShooterIO io) {
     this.io = io;
-    if (Constants.tuningMode) {
+    if (Constants.Tuning.SHOOTER) {
       SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);
     }
     SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + "below coast RPM", true);
@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
     outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
     outputs.kMMJerk = ShooterConstants.kMMJerk.getAsDouble();
 
-    if (Constants.tuningMode) {
+    if (Constants.Tuning.SHOOTER) {
       io.tuneMotorConfigs(outputs);
     }
 
@@ -61,12 +61,34 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(ShooterConstants.SHOOTER_TABLE_KEY + "Desired Velocity RPM", outputs.desiredVelocityRPM);
     Logger.recordOutput(ShooterConstants.SHOOTER_TABLE_KEY + "Desired Duty-Cycle", outputs.desiredDutyCycle);
     SmartDashboard.putString(ShooterConstants.SHOOTER_TABLE_KEY + "Shooter Mode", RobotState.getShooterMode().toString());
-    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "isShooterAtVelocity", isShooterAtVelocity().getAsBoolean());
-    SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "below coast RPM", isShooterBelowCoastRPM().getAsBoolean());
+    boolean rawAtCurrentTarget = rawShooterAtCurrentTarget();
+
+    SmartDashboard.putBoolean(
+        ShooterConstants.SHOOTER_TABLE_KEY + "rawShooterAtCurrentTarget",
+        rawAtCurrentTarget);
+    SmartDashboard.putBoolean(
+        ShooterConstants.SHOOTER_TABLE_KEY + "isShooterReadyFiltered",
+        !hasSpeedTargetChanged && rawAtCurrentTarget);
+    SmartDashboard.putBoolean(
+        ShooterConstants.SHOOTER_TABLE_KEY + "below coast RPM",
+        io.rightShooterBelowCoastRPM().getAsBoolean());
     SmartDashboard.putBoolean(ShooterConstants.SHOOTER_TABLE_KEY + "hasSpeedTargetChanged", hasSpeedTargetChanged);
 
     io.applyOutputs(outputs);
   }
+
+  private void setDesiredVelocityRPM(double rpm) {
+  if (Math.abs(rpm - outputs.desiredVelocityRPM)
+      > ShooterConstants.FLYWHEEL_TOLERANCE_RPS * 60.0) {
+    hasSpeedTargetChanged = true;
+  }
+
+  outputs.desiredVelocityRPM = rpm;
+}
+
+private boolean rawShooterAtCurrentTarget() {
+  return io.rightShooterAtVelocity(() -> outputs.desiredVelocityRPM / 60.0).getAsBoolean();
+}
 
   public Command runIdleCommand() {
     return run(
@@ -75,7 +97,7 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.IDLE);
-          outputs.desiredVelocityRPM = ShooterConstants.coastRPM.getAsDouble();
+          setDesiredVelocityRPM(ShooterConstants.coastRPM.getAsDouble());
         });
   }
 
@@ -86,7 +108,7 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.ON);
-          outputs.desiredVelocityRPM = ShooterConstants.shootFixedRPM.getAsDouble();
+          setDesiredVelocityRPM(ShooterConstants.shootFixedRPM.getAsDouble());
         });
   }
 
@@ -97,7 +119,7 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.OFF);
-          outputs.desiredVelocityRPM = 0.0;
+          setDesiredVelocityRPM(0.0);
           outputs.desiredDutyCycle = 0.0;
         });
   }
@@ -109,8 +131,19 @@ public class Shooter extends SubsystemBase {
             hasSpeedTargetChanged = true;
           }
           RobotState.setShooterMode(ShooterModeState.ON);
-          double flywheelRPM = ShooterCalculation.getInstance().getParameters().flywheelSpeed();
-          outputs.desiredVelocityRPM = MathUtil.clamp(flywheelRPM, 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
+          var params = ShooterCalculation.getInstance().getParameters();
+          double flywheelRPM =
+              MathUtil.clamp(
+                  params.flywheelSpeed(), 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
+
+          setDesiredVelocityRPM(flywheelRPM);
+
+          Logger.recordOutput(SHOOTER_TABLE_KEY + "Target Passing", params.passing());
+          Logger.recordOutput(SHOOTER_TABLE_KEY + "Target Flywheel RPM", params.flywheelSpeed());
+          Logger.recordOutput(SHOOTER_TABLE_KEY + "Commanded Flywheel RPM", outputs.desiredVelocityRPM);
+          SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + "Target Passing", params.passing());
+          SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Target Flywheel RPM", params.flywheelSpeed());
+          SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Commanded Flywheel RPM", outputs.desiredVelocityRPM);
         });
   }
 
@@ -151,13 +184,14 @@ public double getDesiredVelocityRPMForDebug() {
 }
 
   public BooleanSupplier isShooterAtVelocity() {
-    return (() -> {
+    return () -> {
       if (hasSpeedTargetChanged) {
         hasSpeedTargetChanged = false;
         return false;
       }
-      return inputs.shooterAtVelocity;
-    });
+
+      return rawShooterAtCurrentTarget();
+    };
   }
   
   public BooleanSupplier isShooterBelowCoastRPM() {

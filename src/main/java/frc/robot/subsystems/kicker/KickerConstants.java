@@ -1,5 +1,6 @@
 package frc.robot.subsystems.kicker;
 
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
 public final class KickerConstants {
@@ -9,7 +10,7 @@ public final class KickerConstants {
   public static final double KICKER_CURRENT_LIMIT = 20.0; // placeholder until tested
 
   private static final LoggedTunableNumber kickerSpeed =
-      new LoggedTunableNumber("KickerSpeed/Tuning", -.6);
+      new LoggedTunableNumber("KickerSpeed/Tuning", -.6, Constants.Tuning.KICKER);
   public static final double KICKER_MOTOR_SPEED = kickerSpeed.get();
 
   public static final int KICKER_2_CAN_ID = 48;

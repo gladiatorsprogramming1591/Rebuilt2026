@@ -4,6 +4,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -28,7 +29,7 @@ public class IntakeIOSim implements IntakeIO {
   private boolean isTimerRunning = false;
 
   // 0 = down, 1 = up, 2 = in between
-  private LoggedTunableNumber deployState = new LoggedTunableNumber("Intake/Deploy State Sim", 0);
+  private LoggedTunableNumber deployState = new LoggedTunableNumber("Intake/Deploy State Sim", 0, Constants.Tuning.INTAKE);
 
   public IntakeIOSim() {
     deployAppliedSpeed = 0.0;

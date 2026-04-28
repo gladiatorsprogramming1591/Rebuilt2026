@@ -29,9 +29,15 @@ public interface HoodIO {
     double desiredHoodAngle = 0.0;
     double desiredHoodSpeed = 0.0;
     HoodMode mode;
-    double kP = 0.0;
-    double kD = 0.0;
-    double kS = 0.0;
+    double upKP = 0.0;
+    double upKI = 0.0;
+    double upKD = 0.0;
+    double upKS = 0.0;
+
+    double downKP = 0.0;
+    double downKI = 0.0;
+    double downKD = 0.0;
+    double downKS = 0.0;
   }
 
   public default void updateInputs(HoodIOInputs inputs) {}
