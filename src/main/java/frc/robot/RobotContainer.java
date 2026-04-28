@@ -53,6 +53,7 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutoManager;
+import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.Optional;
@@ -445,6 +446,18 @@ public class RobotContainer {
     RobotModeTriggers.teleop().onTrue(initializeHubShiftCommand());
     RobotModeTriggers.autonomous().onTrue(initializeHubShiftCommand());
     RobotModeTriggers.disabled().onTrue(initializeHubShiftCommand());
+
+    RobotModeTriggers.autonomous()
+        .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
+
+    RobotModeTriggers.teleop()
+        .onTrue(Commands.runOnce(() -> Elastic.selectTab("Teleoperated")));
+
+    RobotModeTriggers.test()
+        .onTrue(Commands.runOnce(() -> Elastic.selectTab("Teleoperated")));
+
+    RobotModeTriggers.disabled()
+        .onTrue(Commands.runOnce(() -> Elastic.selectTab("Autonomous")));
 
     HubShiftUtil.setAllianceWinOverride(this::getAllianceWinOverride);
   }
