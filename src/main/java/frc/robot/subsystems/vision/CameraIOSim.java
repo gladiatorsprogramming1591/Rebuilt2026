@@ -24,29 +24,18 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 /**
  * {@link CameraIO} simulation using PhotonVision's {@link VisionSystemSim}.
  *
- * <p>This class mirrors the behavior and data contract of {@link CameraIOLimelight} so the rest of
- * the vision stack (modes MT1/MT2/tx-ty-ta and logging) can run unchanged in simulation.
- *
- * <p>Design notes:
- *
- * <ul>
- *   <li>Populates {@link CameraIOInputs#data} exactly like {@code CameraIOLimelight} does.
- *   <li>Provides {@link #readMT1(boolean)} / {@link #readMT2(boolean)} by fabricating {@link
- *       LimelightHelpers.PoseEstimate} objects from Photon results.
- *   <li>Provides {@link #readTxTyTa()} using the best target's yaw/pitch/area.
- *   <li>{@link #setRobotYawDegrees(double)} is a no-op in sim (Photon doesn't need it).
- * </ul>
- *
- * <p>Implementation reference: Team 254's public 2025 code sim pattern with PhotonVision.
+ * <p>This mirrors the real Limelight IO contract closely enough that the rest of the vision stack can
+ * run unchanged in simulation.
  */
 public class CameraIOSim implements CameraIO {
-  /** Single shared Photon vision "world" for all simulated cameras. */
+  /** Single shared Photon vision world for all simulated cameras. */
   private static VisionSystemSim sharedVisionSystem = null;
 
   private final PhotonCamera camera;
   private final PhotonCameraSim cameraSim;
 
-  private final String nameLl; // "limelight-<name>" to match logging & helpers
+  private final String nameLl;
+
   @Getter private final String tableKey;
   @Getter private final CameraType cameraType;
   @Getter private final double horizontalFOV;
@@ -56,25 +45,15 @@ public class CameraIOSim implements CameraIO {
 
   private final Transform3d robotToCamera;
   private final Supplier<Pose2d> fieldToRobotSupplier;
-
-  // Cache latest batch so readMT1/readMT2/readTxTyTa can reuse without refetching
-  private List<PhotonPipelineResult> latestResults = List.of();
-
   private final AprilTagFieldLayout tagLayout;
+
+  private List<PhotonPipelineResult> latestResults = List.of();
 
   /**
    * Computes the diagonal field of view from horizontal and vertical FOVs.
    *
-   * <p>PhotonVision's {@link org.photonvision.simulation.SimCameraProperties#setCalibration(int,
-   * int, edu.wpi.first.math.geometry.Rotation2d)} expects a <em>diagonal</em> FOV. Given horizontal
-   * and vertical FOVs in radians, this method derives the diagonal using:
-   *
-   * <pre>
-   * diag = 2 * atan( sqrt( tan(h/2)^2 + tan(v/2)^2 ) )
-   * </pre>
-   *
-   * @param horizFovRad horizontal FOV in radians (from {@code CameraType.horizontalFOV})
-   * @param vertFovRad vertical FOV in radians (from {@code CameraType.verticalFOV})
+   * @param horizFovRad horizontal FOV in radians
+   * @param vertFovRad vertical FOV in radians
    * @return diagonal FOV in radians for PhotonVision calibration
    */
   private static double diagonalFovRad(double horizFovRad, double vertFovRad) {
@@ -83,45 +62,30 @@ public class CameraIOSim implements CameraIO {
     return 2.0 * Math.atan(Math.sqrt(th * th + tv * tv));
   }
 
-  /**
-   * Simple container describing a reasonable simulation preset for a given camera model.
-   *
-   * <p>These values are not strict hardware specs—just practical defaults that make the
-   * PhotonVision simulator behave similarly to the physical device (resolution, FPS, latency,
-   * exposure, and a minimum target area threshold to reduce noise).
-   */
+  /** Simulation preset for a camera model. */
   private static class SimPreset {
-    /** Image width in pixels. */
     final int width;
-    /** Image height in pixels. */
     final int height;
-    /** Simulated frames per second. */
     final int fps;
-    /** Mean pipeline latency in milliseconds. */
     final double avgLatencyMs;
-    /** Latency standard deviation in milliseconds. */
     final double latencyStdMs;
-    /** Exposure time in milliseconds. */
     final double exposureMs;
-    /** Minimum target area in pixels before a detection is considered valid. */
     final double minAreaPx;
 
-    /**
-     * @param w image width (px)
-     * @param h image height (px)
-     * @param fps frames per second
-     * @param avg mean latency (ms)
-     * @param std latency standard deviation (ms)
-     * @param exp exposure time (ms)
-     * @param minAreaPx minimum pixel area for a valid target
-     */
-    SimPreset(int w, int h, int fps, double avg, double std, double exp, double minAreaPx) {
-      this.width = w;
-      this.height = h;
+    SimPreset(
+        int width,
+        int height,
+        int fps,
+        double avgLatencyMs,
+        double latencyStdMs,
+        double exposureMs,
+        double minAreaPx) {
+      this.width = width;
+      this.height = height;
       this.fps = fps;
-      this.avgLatencyMs = avg;
-      this.latencyStdMs = std;
-      this.exposureMs = exp;
+      this.avgLatencyMs = avgLatencyMs;
+      this.latencyStdMs = latencyStdMs;
+      this.exposureMs = exposureMs;
       this.minAreaPx = minAreaPx;
     }
   }
@@ -129,11 +93,8 @@ public class CameraIOSim implements CameraIO {
   /**
    * Returns a reasonable PhotonVision simulation preset for a given {@link CameraType}.
    *
-   * <p>Values are conservative and intended to be tweaked. They keep sim behavior aligned with the
-   * physical device class (Limelight 2+, 3/3G, 4).
-   *
-   * @param type the physical camera model used on the robot
-   * @return a {@link SimPreset} describing recommended sim calibration and timing
+   * @param type camera type
+   * @return sim preset
    */
   private static SimPreset presetFor(CameraType type) {
     return switch (type) {
@@ -147,12 +108,11 @@ public class CameraIOSim implements CameraIO {
   /**
    * Constructs a simulated camera.
    *
-   * @param name logical camera name, e.g. {@code "left"} (full name becomes {@code
-   *     "limelight-left"})
-   * @param cameraType camera model (FOV + std-dev coefficients)
+   * @param name logical camera name
+   * @param cameraType camera model
    * @param robotToCamera transform from robot frame to this camera
-   * @param fieldLayout AprilTag field layout to add to the shared sim world (only added once)
-   * @param fieldToRobotSupplier supplier of the current field→robot pose for updating the sim world
+   * @param fieldLayout AprilTag field layout
+   * @param fieldToRobotSupplier supplier for current robot pose
    */
   public CameraIOSim(
       String name,
@@ -169,72 +129,58 @@ public class CameraIOSim implements CameraIO {
     this.primaryXYStandardDeviationCoefficient = cameraType.primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient =
         cameraType.secondaryXYStandardDeviationCoefficient;
-
     this.robotToCamera = robotToCamera;
     this.fieldToRobotSupplier = fieldToRobotSupplier;
+    this.tagLayout = fieldLayout;
 
-    // Build / reuse world
     if (sharedVisionSystem == null) {
       sharedVisionSystem = new VisionSystemSim("vision-world");
+
       if (fieldLayout != null) {
         sharedVisionSystem.addAprilTags(fieldLayout);
       }
     }
 
-    this.tagLayout = fieldLayout;
+    camera = new PhotonCamera(name);
 
-    // Create Photon camera + sim properties using your CameraType
-    this.camera = new PhotonCamera(name);
+    SimPreset preset = presetFor(cameraType);
+    double diagFovRad = diagonalFovRad(horizontalFOV, verticalFOV);
 
-    double diagFovRad = diagonalFovRad(this.horizontalFOV, this.verticalFOV);
-    SimPreset preset = presetFor(this.cameraType);
+    SimCameraProperties properties = new SimCameraProperties();
+    properties.setCalibration(preset.width, preset.height, Rotation2d.fromRadians(diagFovRad));
+    properties.setCalibError(0.35, 0.5);
+    properties.setFPS(preset.fps);
+    properties.setAvgLatencyMs(preset.avgLatencyMs);
+    properties.setLatencyStdDevMs(preset.latencyStdMs);
+    properties.setExposureTimeMs(preset.exposureMs);
 
-    SimCameraProperties props = new SimCameraProperties();
-    props.setCalibration(preset.width, preset.height, Rotation2d.fromRadians(diagFovRad));
-    props.setCalibError(0.35, 0.5);
-    props.setFPS(preset.fps);
-    props.setAvgLatencyMs(preset.avgLatencyMs);
-    props.setLatencyStdDevMs(preset.latencyStdMs);
-    props.setExposureTimeMs(preset.exposureMs);
+    cameraSim = new PhotonCameraSim(camera, properties);
+    cameraSim.setMinTargetAreaPixels((int) preset.minAreaPx);
+    cameraSim.enableRawStream(false);
+    cameraSim.enableProcessedStream(false);
+    cameraSim.enableDrawWireframe(false);
 
-    this.cameraSim = new PhotonCameraSim(this.camera, props);
-    this.cameraSim.setMinTargetAreaPixels((int) preset.minAreaPx);
-    this.cameraSim.enableRawStream(false);
-    this.cameraSim.enableProcessedStream(false);
-    this.cameraSim.enableDrawWireframe(false);
-
-    sharedVisionSystem.addCamera(this.cameraSim, robotToCamera);
+    sharedVisionSystem.addCamera(cameraSim, robotToCamera);
   }
 
   /**
    * Refreshes the {@link CameraIOInputs} snapshot from PhotonVision simulation.
-   *
-   * <p>Behavior matches {@link CameraIOLimelight#updateInputs(CameraIOInputs)}:
-   *
-   * <ul>
-   *   <li>Heartbeat is non -1 when connected (sim uses current FPGA time).
-   *   <li>Primary pose prefers multi-tag (MT2-like). Secondary pose is single-tag (MT1-like).
-   *   <li>tx/ty/ta come from the best target when available.
-   *   <li>Timestamps approximate capture time using result latency.
-   * </ul>
    *
    * @param inputs mutable container to fill for logging/telemetry
    */
   @Override
   public void updateInputs(CameraIOInputs inputs) {
     LoggedTracer.record("VisionInputs");
-    // Update world from latest robot pose
+
     Pose2d fieldToRobot = fieldToRobotSupplier.get();
     if (fieldToRobot != null) {
       sharedVisionSystem.update(fieldToRobot);
       Logger.recordOutput("Vision/Sim/RobotPose", fieldToRobot);
     }
 
-    // Grab unread results
     latestResults = camera.getAllUnreadResults();
 
-    // Synthesize snapshot (matches CameraIOLimelight fields)
-    double heartbeat = Timer.getFPGATimestamp(); // non -1 => connected
+    double heartbeat = Timer.getFPGATimestamp();
     boolean isConnected = true;
 
     Rotation2d xOffset = new Rotation2d();
@@ -247,8 +193,7 @@ public class CameraIOSim implements CameraIO {
     Pose2d secondaryPose = new Pose2d();
     double tagID = -1.0;
 
-    PhotonPipelineResult latest =
-        latestResults.isEmpty() ? null : latestResults.get(latestResults.size() - 1);
+    PhotonPipelineResult latest = getLatestResult().orElse(null);
 
     if (latest != null && latest.hasTargets()) {
       targetAquired = true;
@@ -258,16 +203,11 @@ public class CameraIOSim implements CameraIO {
       xOffset = Rotation2d.fromDegrees(best.getYaw());
       yOffset = Rotation2d.fromDegrees(best.getPitch());
       tagID = best.getFiducialId();
-
       averageDistance = best.getBestCameraToTarget().getTranslation().getNorm();
 
-      // Primary (MT2-like, multi-tag preferred)
-      primaryPose = estimateFieldPose(latest, /*preferMultiTag=*/ true).orElse(primaryPose);
+      primaryPose = estimateFieldPose(latest, true).orElse(primaryPose);
+      secondaryPose = estimateFieldPose(latest, false).orElse(secondaryPose);
 
-      // Secondary (MT1-like, single-tag)
-      secondaryPose = estimateFieldPose(latest, /*preferMultiTag=*/ false).orElse(secondaryPose);
-
-      // Approx capture time
       frameTimestamp = latest.getTimestampSeconds();
     }
 
@@ -287,71 +227,62 @@ public class CameraIOSim implements CameraIO {
   }
 
   /**
-   * @return {@code "limelight-<name>"} to match hardware naming and logging.
+   * @return {@code limelight-<name>} to match hardware naming and logging
    */
   @Override
   public String getName() {
     return nameLl;
   }
 
-  // -----------------------------
-  // Optional helpers for Vision modes
-  // -----------------------------
-
   /**
    * Reads a Megatag1-style pose estimate generated from sim data.
    *
-   * @return optional fabricated {@link LimelightHelpers.PoseEstimate}
+   * @return optional fabricated pose estimate
    */
   @Override
   public Optional<LimelightHelpers.PoseEstimate> readMT1() {
-    PhotonPipelineResult latest =
-        latestResults.isEmpty() ? null : latestResults.get(latestResults.size() - 1);
-    if (latest == null || !latest.hasTargets()) return Optional.empty();
-    return Optional.ofNullable(buildPoseEstimate(latest, /*treatAsMT2=*/ false));
+    return getLatestResult()
+        .filter(PhotonPipelineResult::hasTargets)
+        .map(result -> buildPoseEstimate(result, false));
   }
 
   /**
    * Reads a Megatag2-style pose estimate generated from sim data.
    *
-   * @return optional fabricated {@link LimelightHelpers.PoseEstimate}
+   * @return optional fabricated pose estimate
    */
   @Override
   public Optional<LimelightHelpers.PoseEstimate> readMT2() {
-    PhotonPipelineResult latest =
-        latestResults.isEmpty() ? null : latestResults.get(latestResults.size() - 1);
-    if (latest == null || !latest.hasTargets()) return Optional.empty();
-    return Optional.ofNullable(buildPoseEstimate(latest, /*treatAsMT2=*/ true));
+    return getLatestResult()
+        .filter(PhotonPipelineResult::hasTargets)
+        .map(result -> buildPoseEstimate(result, true));
   }
 
   /**
-   * Reads raw 2D alignment info (tx/ty/ta) from the best target, if present.
+   * Reads raw 2D alignment info from the best target.
    *
-   * @return {@link Target2D} or {@link Optional#empty()}
+   * @return tx/ty/ta data, or empty if no target is available
    */
   @Override
   public Optional<Target2D> readTxTyTa() {
-    PhotonPipelineResult latest =
-        latestResults.isEmpty() ? null : latestResults.get(latestResults.size() - 1);
-    if (latest == null || !latest.hasTargets()) return Optional.empty();
-
-    PhotonTrackedTarget best = latest.getBestTarget();
-    return Optional.of(new Target2D(best.getYaw(), best.getPitch(), best.getArea()));
+    return getLatestResult()
+        .filter(PhotonPipelineResult::hasTargets)
+        .map(
+            result -> {
+              PhotonTrackedTarget best = result.getBestTarget();
+              return new Target2D(best.getYaw(), best.getPitch(), best.getArea());
+            });
   }
 
   /**
-   * No-op in simulation (PhotonVision doesn't need robot yaw injection).
+   * No-op in simulation.
    *
    * @param yawDeg robot yaw in degrees
    */
   @Override
   public void setRobotYawDegrees(double yawDeg) {
-    // Intentionally empty in sim
+    // PhotonVision sim does not need Limelight robot orientation injection.
   }
-
-  // -----------------------------
-  // Configuration helpers (no-ops in sim, kept for parity with hardware class)
-  // -----------------------------
 
   /** No-op in sim. */
   @Override
@@ -361,99 +292,117 @@ public class CameraIOSim implements CameraIO {
   @Override
   public void setValidTags(int... validIds) {}
 
-  /**
-   * In sim, the camera transform is set at construction time when registering with the world. This
-   * method is a no-op to keep parity with {@link CameraIOLimelight}.
-   */
+  /** No-op in sim. The transform is provided at construction time. */
   @Override
   public void setCameraOffset(Transform3d cameraOffset) {}
 
-  // -----------------------------
-  // Internal helpers
-  // -----------------------------
+  /**
+   * Returns the most recent unread result from the latest update.
+   *
+   * @return latest result, if available
+   */
+  private Optional<PhotonPipelineResult> getLatestResult() {
+    if (latestResults.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(latestResults.get(latestResults.size() - 1));
+  }
 
   /**
-   * Builds a Limelight-like PoseEstimate from a Photon result.
+   * Builds a Limelight-like pose estimate from a Photon result.
    *
-   * @param result the latest Photon pipeline result
-   * @param treatAsMT2 if true, marks the estimate as "MT2" and prefers multi-tag data
-   * @return fabricated {@link LimelightHelpers.PoseEstimate}, or {@code null} if unavailable
+   * @param result latest Photon result
+   * @param treatAsMT2 true when this should mimic MT2
+   * @return fabricated pose estimate
    */
   private LimelightHelpers.PoseEstimate buildPoseEstimate(
       PhotonPipelineResult result, boolean treatAsMT2) {
 
-    Optional<Pose2d> pose2d = estimateFieldPose(result, /*preferMultiTag=*/ treatAsMT2);
-    if (pose2d.isEmpty()) return null;
+    Optional<Pose2d> pose2d = estimateFieldPose(result, treatAsMT2);
+    if (pose2d.isEmpty()) {
+      return null;
+    }
 
-    // Tag stats + raw fiducials
     int tagCount = result.getTargets().size();
     double avgDist = 0.0;
     double avgArea = 0.0;
-    List<LimelightHelpers.RawFiducial> raws = new ArrayList<>();
-    for (PhotonTrackedTarget t : result.getTargets()) {
-      double distCamToTag = t.getBestCameraToTarget().getTranslation().getNorm();
+    List<LimelightHelpers.RawFiducial> rawFiducials = new ArrayList<>();
+
+    for (PhotonTrackedTarget target : result.getTargets()) {
+      double distCamToTag = target.getBestCameraToTarget().getTranslation().getNorm();
       avgDist += distCamToTag;
-      avgArea += t.getArea();
-      Logger.recordOutput(
-          "Vision/Camera/" + getName() + "/TagFound/" + t.fiducialId,
-          tagLayout.getTagPose(t.fiducialId).get().toPose2d());
-      raws.add(
+      avgArea += target.getArea();
+
+      logTagPoseIfAvailable(target);
+
+      rawFiducials.add(
           new LimelightHelpers.RawFiducial(
-              t.getFiducialId(),
-              t.getYaw(), // txnc (deg)
-              t.getPitch(), // tync (deg)
-              t.getArea(), // ta (% image)
-              distCamToTag, // distToCamera (m)
-              Math.max(
-                  0.0,
-                  distCamToTag - robotToCamera.getTranslation().getNorm()), // approx distToRobot
-              t.getPoseAmbiguity()));
+              target.getFiducialId(),
+              target.getYaw(),
+              target.getPitch(),
+              target.getArea(),
+              distCamToTag,
+              Math.max(0.0, distCamToTag - robotToCamera.getTranslation().getNorm()),
+              target.getPoseAmbiguity()));
     }
+
     if (tagCount > 0) {
       avgDist /= tagCount;
       avgArea /= tagCount;
     }
 
-    double tsCapture = result.getTimestampSeconds();
-
     return new LimelightHelpers.PoseEstimate(
         pose2d.get(),
-        tsCapture,
-        0,
+        result.getTimestampSeconds(),
+        0.0,
         tagCount,
-        /*tagSpan=*/ 0.0,
+        0.0,
         avgDist,
         avgArea,
-        raws.toArray(new LimelightHelpers.RawFiducial[0]),
-        /*isMegaTag2=*/ treatAsMT2);
+        rawFiducials.toArray(new LimelightHelpers.RawFiducial[0]),
+        treatAsMT2);
   }
 
   /**
-   * Estimates field→robot pose from a Photon result.
+   * Logs a tag pose only when the layout contains that tag ID.
    *
-   * <p>If a multi-tag solution exists (and preferred), uses the multi-tag field→camera pose and
-   * composes it with {@code camera→robot}. Otherwise, falls back to single-tag back-projection
-   * using the best target and its fiducial pose.
+   * @param target tracked target
+   */
+  private void logTagPoseIfAvailable(PhotonTrackedTarget target) {
+    if (tagLayout == null) {
+      return;
+    }
+
+    tagLayout
+        .getTagPose(target.getFiducialId())
+        .ifPresent(
+            tagPose ->
+                Logger.recordOutput(
+                    "Vision/Camera/" + getName() + "/TagFound/" + target.getFiducialId(),
+                    tagPose.toPose2d()));
+  }
+
+  /**
+   * Estimates field-to-robot pose from a Photon result.
    *
    * @param result photon pipeline result
    * @param preferMultiTag whether to use multi-tag when available
-   * @return field→robot {@link Pose2d}, if resolvable
+   * @return field-to-robot pose, if resolvable
    */
   private Optional<Pose2d> estimateFieldPose(PhotonPipelineResult result, boolean preferMultiTag) {
     Pose3d fieldToRobot = null;
-    preferMultiTag = true;
 
     if (preferMultiTag && result.getMultiTagResult().isPresent()) {
-      // field->camera from multi-tag
       Transform3d fieldToCamera = result.getMultiTagResult().get().estimatedPose.best;
       fieldToRobot =
           new Pose3d(fieldToCamera.getTranslation(), fieldToCamera.getRotation())
               .transformBy(robotToCamera.inverse());
     } else if (result.hasTargets()) {
       PhotonTrackedTarget best = result.getBestTarget();
-
       Optional<Pose3d> fieldToTag =
-          (tagLayout != null) ? tagLayout.getTagPose(best.getFiducialId()) : Optional.empty();
+          tagLayout != null ? tagLayout.getTagPose(best.getFiducialId()) : Optional.empty();
+
       if (fieldToTag.isPresent()) {
         Transform3d cameraToTarget = best.getBestCameraToTarget();
         Pose3d fieldToCamera = fieldToTag.get().transformBy(cameraToTarget.inverse());
@@ -461,6 +410,6 @@ public class CameraIOSim implements CameraIO {
       }
     }
 
-    return (fieldToRobot == null) ? Optional.empty() : Optional.of(fieldToRobot.toPose2d());
+    return fieldToRobot == null ? Optional.empty() : Optional.of(fieldToRobot.toPose2d());
   }
 }
