@@ -17,7 +17,7 @@ public final class ShooterConstants {
   public static final int RIGHT_SHOOTER_FOLLOWER_MOTOR_ID = 37;
 
   // Motor configuration
-  public static final double SHOOTER_MOTOR_REDUCTION = 1.0; // TODO: verify and apply to CTRE feedback
+  public static final double SHOOTER_MOTOR_REDUCTION = 1.0; // TODO: verify CTRE feedback ratio
   public static final double SHOOTER_MOTOR_CURRENT_LIMIT = 40.0;
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
 
@@ -26,8 +26,17 @@ public final class ShooterConstants {
   public static final double MAX_FLYWHEEL_CALCULATED_RPM = 4000.0;
   public static final double MAX_FLYWHEEL_LOW_CEILING_RPM = 2000.0;
 
-  /** Shooter is considered ready when the measured velocity is within this RPM of the target. */
+  /** Allowed flywheel speed error when checking whether the shooter is ready. */
   public static final double FLYWHEEL_TOLERANCE_RPM = 60.0;
+
+  /**
+   * Above idle by this much, the default command lets the shooter coast down instead of forcing
+   * closed-loop deceleration.
+   */
+  public static final double IDLE_COAST_ENTER_MARGIN_RPM = 180.0;
+
+  /** Once within this margin of idle, the default command resumes closed-loop idle control. */
+  public static final double IDLE_COAST_EXIT_MARGIN_RPM = 60.0;
 
   /**
    * Change this to true to scale down and limit flywheel speed when ceiling clearance is low.
@@ -36,7 +45,7 @@ public final class ShooterConstants {
    */
   public static boolean isLowCeiling = false;
 
-  /** Low-ceiling speed scale. Must use floating point division. Was 2 / 3 before which gets truncated to 0. */
+  /** Low-ceiling speed scale. Must use floating point division. */
   public static final double FLYWHEEL_LOW_CEILING_SCALER = 2.0 / 3.0;
 
   // Default tunable values
@@ -73,14 +82,19 @@ public final class ShooterConstants {
 
   public static final LoggedTunableNumber kP =
       new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kP", DEFAULT_KP, Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber kI =
       new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kI", DEFAULT_KI, Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber kD =
       new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kD", DEFAULT_KD, Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber kS =
       new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kS", DEFAULT_KS, Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber kV =
       new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kV", DEFAULT_KV, Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber kA =
       new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kA", DEFAULT_KA, Constants.Tuning.SHOOTER);
 
@@ -89,6 +103,7 @@ public final class ShooterConstants {
           SHOOTER_TABLE_KEY + "kMMAcceleration",
           DEFAULT_MM_ACCELERATION,
           Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber kMMJerk =
       new LoggedTunableNumber(
           SHOOTER_TABLE_KEY + "kMMJerk", DEFAULT_MM_JERK, Constants.Tuning.SHOOTER);
@@ -98,6 +113,7 @@ public final class ShooterConstants {
           SHOOTER_TABLE_KEY + "Shoot Fixed RPM",
           DEFAULT_SHOOT_FIXED_RPM,
           Constants.Tuning.SHOOTER);
+
   public static final LoggedTunableNumber coastRPM =
       new LoggedTunableNumber(
           SHOOTER_TABLE_KEY + "Coast RPM", DEFAULT_COAST_RPM, Constants.Tuning.SHOOTER);

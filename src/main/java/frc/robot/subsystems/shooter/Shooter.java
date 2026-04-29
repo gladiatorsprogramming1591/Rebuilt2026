@@ -6,7 +6,6 @@ import static frc.robot.subsystems.shooter.ShooterConstants.UPDATE_CONFIG_NAME;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
@@ -26,6 +25,7 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOOutputsAutoLogged outputs = new ShooterIOOutputsAutoLogged();
 
   private boolean hasSpeedTargetChanged = true;
+  private boolean defaultShouldCoast = true;
 
   /**
    * Creates a shooter subsystem using the provided hardware implementation.
@@ -59,16 +59,41 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Runs the shooter at the configured idle/coast RPM.
+   * Default shooter behavior that safely returns the flywheel to idle.
    *
-   * @return command that idles the shooter while scheduled
+   * <p>When the flywheel is well above idle, the shooter output is turned off so the flywheel coasts
+   * down naturally. Once the measured speed is close to idle, closed-loop idle control resumes.
+   *
+   * <p>The enter and exit thresholds intentionally use hysteresis so the shooter does not chatter
+   * between OFF and IDLE near the idle RPM.
+   *
+   * @return default shooter command
+   */
+  public Command coastShooterDefaultCommand() {
+    return run(
+        () -> {
+          updateDefaultCoastState();
+
+          if (defaultShouldCoast) {
+            requestShooterOff();
+          } else {
+            requestShooterVelocity(ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble());
+          }
+        });
+  }
+
+  /**
+   * Holds the shooter at the configured idle RPM.
+   *
+   * <p>This is kept as a direct command for testing, but the normal default command should be
+   * {@link #coastShooterDefaultCommand()} so high-speed flywheel coast-down is protected.
+   *
+   * @return command that holds shooter idle speed while scheduled
    */
   public Command runIdleCommand() {
     return run(
-        () -> {
-          setShooterMode(ShooterModeState.IDLE);
-          setDesiredVelocityRPM(ShooterConstants.coastRPM.getAsDouble());
-        });
+        () -> requestShooterVelocity(
+            ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble()));
   }
 
   /**
@@ -78,10 +103,8 @@ public class Shooter extends SubsystemBase {
    */
   public Command runFixedSpeedCommand() {
     return run(
-        () -> {
-          setShooterMode(ShooterModeState.ON);
-          setDesiredVelocityRPM(ShooterConstants.shootFixedRPM.getAsDouble());
-        });
+        () -> requestShooterVelocity(
+            ShooterModeState.ON, ShooterConstants.shootFixedRPM.getAsDouble()));
   }
 
   /**
@@ -92,18 +115,17 @@ public class Shooter extends SubsystemBase {
   public Command runShooterTarget() {
     return run(
         () -> {
-          setShooterMode(ShooterModeState.ON);
-
           var params = ShooterCalculation.getInstance().getParameters();
           double flywheelRPM =
               MathUtil.clamp(
                   params.flywheelSpeed(), 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
 
-          setDesiredVelocityRPM(flywheelRPM);
+          requestShooterVelocity(ShooterModeState.ON, flywheelRPM);
 
           Logger.recordOutput(SHOOTER_TABLE_KEY + "Target/Passing", params.passing());
           Logger.recordOutput(SHOOTER_TABLE_KEY + "Target/FlywheelRPM", params.flywheelSpeed());
-          Logger.recordOutput(SHOOTER_TABLE_KEY + "Target/CommandedFlywheelRPM", outputs.desiredVelocityRPM);
+          Logger.recordOutput(
+              SHOOTER_TABLE_KEY + "Target/CommandedFlywheelRPM", outputs.desiredVelocityRPM);
         });
   }
 
@@ -117,36 +139,18 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           setShooterMode(ShooterModeState.DUTYCYCLE);
+          outputs.desiredVelocityRPM = 0.0;
           outputs.desiredDutyCycle = MathUtil.clamp(dutyCycle, -1.0, 1.0);
         });
   }
 
   /**
-   * Stops the shooter motor output and lets the flywheel coast.
+   * Stops shooter output and lets the flywheel coast.
    *
    * @return command that keeps the shooter off while scheduled
    */
   public Command stopAndCoastShooter() {
-    return run(
-        () -> {
-          setShooterMode(ShooterModeState.OFF);
-          setDesiredVelocityRPM(0.0);
-          outputs.desiredDutyCycle = 0.0;
-        });
-  }
-
-  /**
-   * Chooses the default shooter behavior based on current flywheel speed.
-   *
-   * <p>If the shooter is below coast speed, it idles. Otherwise, it turns off and coasts down.
-   *
-   * @return conditional default command for the shooter
-   */
-  public ConditionalCommand coastShooterDefaultCommand() {
-    ConditionalCommand command =
-        new ConditionalCommand(runIdleCommand(), stopAndCoastShooter(), isShooterBelowCoastRPM());
-    command.addRequirements(this);
-    return command;
+    return run(this::requestShooterOff);
   }
 
   /**
@@ -168,19 +172,57 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Returns whether the shooter is below coast RPM.
+   * Returns whether the shooter is close enough to idle for closed-loop idle control.
    *
-   * @return true when the right leader is below coast RPM plus tolerance
+   * @return true when the measured shooter speed is within the idle coast exit threshold
    */
   public BooleanSupplier isShooterBelowCoastRPM() {
-    return () -> {
-      if (hasSpeedTargetChanged) {
-        hasSpeedTargetChanged = false;
-        return false;
-      }
+    return () ->
+        getMeasuredShooterRPM()
+            <= ShooterConstants.coastRPM.getAsDouble()
+                + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM;
+  }
 
-      return io.rightShooterBelowCoastRPM().getAsBoolean();
-    };
+  /**
+   * Updates whether the default command should coast or hold idle.
+   *
+   * <p>This small hysteresis state machine replaces the old timed {@code ConditionalCommand}.
+   */
+  private void updateDefaultCoastState() {
+    double measuredRPM = getMeasuredShooterRPM();
+    double idleRPM = ShooterConstants.coastRPM.getAsDouble();
+
+    double coastEnterRPM = idleRPM + ShooterConstants.IDLE_COAST_ENTER_MARGIN_RPM;
+    double coastExitRPM = idleRPM + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM;
+
+    if (defaultShouldCoast && measuredRPM <= coastExitRPM) {
+      defaultShouldCoast = false;
+    } else if (!defaultShouldCoast && measuredRPM >= coastEnterRPM) {
+      defaultShouldCoast = true;
+    }
+
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Default/ShouldCoast", defaultShouldCoast);
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Default/CoastEnterRPM", coastEnterRPM);
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Default/CoastExitRPM", coastExitRPM);
+  }
+
+  /**
+   * Requests a closed-loop shooter velocity.
+   *
+   * @param mode shooter mode to use
+   * @param rpm requested shooter speed in RPM
+   */
+  private void requestShooterVelocity(ShooterModeState mode, double rpm) {
+    setShooterMode(mode);
+    setDesiredVelocityRPM(rpm);
+    outputs.desiredDutyCycle = 0.0;
+  }
+
+  /** Requests shooter OFF so the flywheel can coast naturally. */
+  private void requestShooterOff() {
+    setShooterMode(ShooterModeState.OFF);
+    setDesiredVelocityRPM(0.0);
+    outputs.desiredDutyCycle = 0.0;
   }
 
   /** Copies current tunable values into the output object used by the IO layer. */
@@ -235,8 +277,23 @@ public class Shooter extends SubsystemBase {
     outputs.desiredVelocityRPM = rpm;
   }
 
+  /**
+   * Returns the measured shooter RPM used for readiness and default idle/coast logic.
+   *
+   * @return measured right leader shooter speed in RPM
+   */
+  private double getMeasuredShooterRPM() {
+    return inputs.rightLeaderVelocityRPM;
+  }
+
+  /**
+   * Returns whether the shooter is at the currently requested target.
+   *
+   * @return true when measured speed is within tolerance of desired speed
+   */
   private boolean rawShooterAtCurrentTarget() {
-    return io.rightShooterAtVelocityRPM(() -> outputs.desiredVelocityRPM).getAsBoolean();
+    return Math.abs(getMeasuredShooterRPM() - outputs.desiredVelocityRPM)
+        <= ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
   }
 
   /** Logs requested shooter state and readiness values. */
@@ -245,6 +302,10 @@ public class Shooter extends SubsystemBase {
 
     Logger.recordOutput(SHOOTER_TABLE_KEY + "ShooterMode", RobotState.getShooterMode().toString());
     Logger.recordOutput(SHOOTER_TABLE_KEY + "DesiredVelocityRPM", outputs.desiredVelocityRPM);
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "MeasuredVelocityRPM", getMeasuredShooterRPM());
+    Logger.recordOutput(
+        SHOOTER_TABLE_KEY + "VelocityErrorRPM",
+        outputs.desiredVelocityRPM - getMeasuredShooterRPM());
     Logger.recordOutput(SHOOTER_TABLE_KEY + "DesiredDutyCycle", outputs.desiredDutyCycle);
     Logger.recordOutput(SHOOTER_TABLE_KEY + "UseMotionMagic", outputs.useMotionMagic);
     Logger.recordOutput(SHOOTER_TABLE_KEY + "RawShooterAtCurrentTarget", rawAtCurrentTarget);
@@ -252,7 +313,7 @@ public class Shooter extends SubsystemBase {
         SHOOTER_TABLE_KEY + "IsShooterReadyFiltered",
         !hasSpeedTargetChanged && rawAtCurrentTarget);
     Logger.recordOutput(
-        SHOOTER_TABLE_KEY + "BelowCoastRPM", io.rightShooterBelowCoastRPM().getAsBoolean());
+        SHOOTER_TABLE_KEY + "BelowCoastRPM", isShooterBelowCoastRPM().getAsBoolean());
     Logger.recordOutput(SHOOTER_TABLE_KEY + "HasSpeedTargetChanged", hasSpeedTargetChanged);
 
     Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kP", outputs.kP);

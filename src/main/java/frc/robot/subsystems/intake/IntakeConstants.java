@@ -229,7 +229,7 @@ public final class IntakeConstants {
    */
   public static final LoggedTunableNumber shootingSlowStowSpeed =
       new LoggedTunableNumber(
-          kintakeTableKey + "ShootingSlowStowSpeed", -0.10, Constants.Tuning.INTAKE);
+          kintakeTableKey + "ShootingSlowStowSpeed", -0.20, Constants.Tuning.INTAKE);
 
   /**
    * Tunable slapdown stator current limit used during slow shooting stow.
@@ -238,7 +238,7 @@ public final class IntakeConstants {
    */
   public static final LoggedTunableNumber shootingSlowStowStatorCurrentLimit =
       new LoggedTunableNumber(
-          kintakeTableKey + "ShootingSlowStowStatorCurrentLimit", 15.0, Constants.Tuning.INTAKE);
+          kintakeTableKey + "ShootingSlowStowStatorCurrentLimit", 80.0, Constants.Tuning.INTAKE);
 
   /**
    * Time used by the position-ramp shooting stow command.

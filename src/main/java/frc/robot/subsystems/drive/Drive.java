@@ -224,6 +224,16 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
     m_field.setRobotPose(robotPose);
 
+    ChassisSpeeds measuredRobotRelativeSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+
+    RobotState.getInstance().setRobotVelocity(measuredRobotRelativeSpeeds);
+    RobotState.getInstance().setMeasuredRobotRelativeSpeeds(measuredRobotRelativeSpeeds);
+
+    Logger.recordOutput("SwerveChassisSpeeds/MeasuredRobotRelative", measuredRobotRelativeSpeeds);
+    Logger.recordOutput(
+        "SwerveChassisSpeeds/MeasuredFieldRelative",
+        RobotState.getInstance().getMeasuredFieldRelativeSpeeds());
+
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
   }

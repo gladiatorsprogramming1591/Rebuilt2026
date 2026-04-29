@@ -52,7 +52,7 @@ public class ShooterCalculation {
    * <p>Tune this when left/right SOTM shots are off but in/out distance compensation looks correct.
    */
   private static final LoggedTunableNumber aimVelocityCompensationScalar =
-      shooterCalcTunable(TABLE_KEY + "AimVelocityCompensationScalar", 1.0);
+      new LoggedTunableNumber(TABLE_KEY + "AimVelocityCompensationScalar", 1.5, Constants.Tuning.SOTM);
 
   /**
    * Scales velocity compensation used for hood and flywheel distance lookup.
@@ -60,7 +60,7 @@ public class ShooterCalculation {
    * <p>Tune this when driving toward/away from the goal causes shots to miss long or short.
    */
   private static final LoggedTunableNumber distanceVelocityCompensationScalar =
-      shooterCalcTunable(TABLE_KEY + "DistanceVelocityCompensationScalar", 1.0);
+      new LoggedTunableNumber(TABLE_KEY + "DistanceVelocityCompensationScalar", 1.5, Constants.Tuning.SOTM);
 
   /**
    * Scales acceleration compensation used for robot aiming.

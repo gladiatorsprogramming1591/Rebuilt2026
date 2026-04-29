@@ -1,8 +1,10 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.math.MathUtil;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 /**
  * Simple simulated shooter IO implementation.
@@ -12,6 +14,9 @@ import java.util.function.BooleanSupplier;
  * implementation.
  */
 public class ShooterIOSim implements ShooterIO {
+  private static final double CLOSED_LOOP_ACCEL_RPM_PER_SECOND = 12000.0;
+  private static final double COAST_DECEL_RPM_PER_SECOND = 2500.0;
+
   private double velocityRPM = 0.0;
   private double dutyCycle = 0.0;
   private double desiredVelocityRPM = 0.0;
@@ -36,7 +41,8 @@ public class ShooterIOSim implements ShooterIO {
     inputs.leftLeaderAppliedVolts = dutyCycle * 12.0;
     inputs.leftFollowerAppliedVolts = dutyCycle * 12.0;
 
-    inputs.rightLeaderSupplyCurrent = Math.abs(dutyCycle) * ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
+    inputs.rightLeaderSupplyCurrent =
+        Math.abs(dutyCycle) * ShooterConstants.SHOOTER_MOTOR_CURRENT_LIMIT;
     inputs.rightFollowerSupplyCurrent = inputs.rightLeaderSupplyCurrent;
     inputs.leftLeaderSupplyCurrent = inputs.rightLeaderSupplyCurrent;
     inputs.leftFollowerSupplyCurrent = inputs.rightLeaderSupplyCurrent;
@@ -66,8 +72,7 @@ public class ShooterIOSim implements ShooterIO {
     switch (RobotState.getShooterMode()) {
       case ON:
       case IDLE:
-        velocityRPM = desiredVelocityRPM;
-        dutyCycle = MathUtil.clamp(velocityRPM / ShooterConstants.MAX_FLYWHEEL_RPM, -1.0, 1.0);
+        updateClosedLoopVelocity(desiredVelocityRPM);
         break;
 
       case DUTYCYCLE:
@@ -76,13 +81,12 @@ public class ShooterIOSim implements ShooterIO {
         break;
 
       case OFF:
-        dutyCycle = 0.0;
-        velocityRPM = 0.0;
+        updateCoastVelocity();
         break;
 
       default:
         dutyCycle = 0.0;
-        velocityRPM = 0.0;
+        updateCoastVelocity();
         break;
     }
   }
@@ -93,12 +97,41 @@ public class ShooterIOSim implements ShooterIO {
   }
 
   @Override
-  public BooleanSupplier rightShooterAtVelocityRPM(java.util.function.DoubleSupplier targetRPM) {
-    return () -> Math.abs(velocityRPM - targetRPM.getAsDouble()) < ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
+  public BooleanSupplier rightShooterAtVelocityRPM(DoubleSupplier targetRPM) {
+    return () ->
+        Math.abs(velocityRPM - targetRPM.getAsDouble())
+            <= ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
   }
 
   @Override
   public BooleanSupplier rightShooterBelowCoastRPM() {
-    return () -> velocityRPM < ShooterConstants.coastRPM.getAsDouble() + ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
+    return () ->
+        velocityRPM
+            <= ShooterConstants.coastRPM.getAsDouble()
+                + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM;
+  }
+
+  /**
+   * Moves the simulated flywheel toward the closed-loop target at a limited acceleration rate.
+   *
+   * @param targetRPM requested closed-loop target in RPM
+   */
+  private void updateClosedLoopVelocity(double targetRPM) {
+    double maxDelta = CLOSED_LOOP_ACCEL_RPM_PER_SECOND * Constants.loopPeriodSecs;
+    velocityRPM = MathUtil.clamp(targetRPM, velocityRPM - maxDelta, velocityRPM + maxDelta);
+    dutyCycle = MathUtil.clamp(velocityRPM / ShooterConstants.MAX_FLYWHEEL_RPM, -1.0, 1.0);
+  }
+
+  /** Lets the simulated flywheel coast down instead of instantly stopping. */
+  private void updateCoastVelocity() {
+    double maxDelta = COAST_DECEL_RPM_PER_SECOND * Constants.loopPeriodSecs;
+
+    if (velocityRPM > 0.0) {
+      velocityRPM = Math.max(0.0, velocityRPM - maxDelta);
+    } else if (velocityRPM < 0.0) {
+      velocityRPM = Math.min(0.0, velocityRPM + maxDelta);
+    }
+
+    dutyCycle = 0.0;
   }
 }

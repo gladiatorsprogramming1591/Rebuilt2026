@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -410,10 +411,6 @@ public class RobotContainer {
     shootTrigger.and(hopper::isHopperEmpty).whileTrue(driverRumbleCommand(0.8));
 
     shootTrigger
-        .and(driverController.leftTrigger().negate())
-        .whileTrue(shootingIntakeStowCommand());
-
-    shootTrigger
         .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
         .and(DriverStation::isTeleop)
         .onTrue(driverRumbleCommand(1.0).withTimeout(0.5));
@@ -538,6 +535,9 @@ public class RobotContainer {
   /**
    * Builds the shooter default command.
    *
+   * <p>The timeout is intentional. It forces the conditional command to finish and re-check whether
+   * the shooter should coast down or hold idle speed.
+   *
    * @return shooter default command
    */
   private Command shooterDefaultCommand() {
@@ -603,12 +603,13 @@ public class RobotContainer {
    * @return aimed shooting command
    */
   public Command shootWithAim() {
-    return Commands.parallel(
-        shooter.runShooterTarget(),
-        hood.runHoodTarget(),
-        launchingDriveCommand(),
-        waitUntilReadyToLaunch().andThen(launchSettleDelayCommand()).andThen(feedShooter()));
-  }
+  return Commands.parallel(
+      shooter.runShooterTarget(),
+      hood.runHoodTarget(),
+      launchingDriveCommand(),
+      waitUntilReadyToLaunch()
+          .andThen(feedShooterWithDriverIntakeStow()));
+}
 
   /**
    * Shoots while holding the drive translation command at zero.
@@ -644,7 +645,7 @@ public class RobotContainer {
    */
   private Command waitUntilReadyToLaunch() {
     return Commands.parallel(
-        Commands.waitUntil(hood.isHoodAtAngle()).withTimeout(HoodConstants.HOOD_SET_TIMEOUT),
+        Commands.waitUntil(hood.isHoodAtAngle()),
         Commands.waitUntil(shooter.isShooterAtVelocity()),
         Commands.waitUntil(DriveCommands::atLaunchGoal));
   }
@@ -677,6 +678,22 @@ public class RobotContainer {
    */
   private Command feedShooterWithIntakeStow() {
     return Commands.parallel(feedShooter(), shootingIntakeStowCommand());
+  }
+
+  /**
+   * Runs the hopper and kicker, then curls the intake only when the driver is not actively intaking.
+   *
+   * <p>This keeps the intake stow/curl behavior aligned with the actual feed phase. If the driver is
+   * holding intake when feeding starts, the hopper and kicker still run, but the intake waits until the
+   * driver releases intake before curling inward.
+   *
+   * @return driver-controlled fuel feed command with gated intake stow
+   */
+  private Command feedShooterWithDriverIntakeStow() {
+  return Commands.parallel(
+      feedShooter(),
+      Commands.waitUntil(() -> !driverController.leftTrigger().getAsBoolean())
+          .andThen(shootingIntakeStowCommand()));
   }
 
   /**
@@ -787,7 +804,7 @@ public class RobotContainer {
    * @return stow-for-bump command
    */
   private Command stowForBumpCommand() {
-    return Commands.parallel(intake.stowBump(), intake.stopIntakeInstant());
+    return intake.stopIntakeInstant().andThen(intake.stowBump());
   }
 
   /**
