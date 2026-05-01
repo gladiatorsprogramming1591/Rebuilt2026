@@ -235,6 +235,7 @@ public class Shooter extends SubsystemBase {
     outputs.kV = ShooterConstants.kV.getAsDouble();
     outputs.kA = ShooterConstants.kA.getAsDouble();
     outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
+    outputs.kMMShootAcceleration = ShooterConstants.kMMShootAcceleration.getAsDouble();
     outputs.kMMJerk = ShooterConstants.kMMJerk.getAsDouble();
   }
 

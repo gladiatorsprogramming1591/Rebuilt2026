@@ -20,16 +20,16 @@ public final class KickerConstants {
   public static final boolean HAS_SECOND_KICKER_MOTOR = true;
 
   /** Kicker motor supply current limit in amps. */
-  public static final double KICKER_SUPPLY_CURRENT_LIMIT = 20.0;
+  public static final double KICKER_SUPPLY_CURRENT_LIMIT = 30.0;
 
   /** Kicker motor duty-cycle closed-loop ramp period in seconds. */
-  public static final double KICKER_DUTY_CYCLE_RAMP_PERIOD = 0.25;
+  public static final double KICKER_DUTY_CYCLE_RAMP_PERIOD = 0.1;
 
   /** Status signal update frequency in hertz. */
   public static final int STATUS_SIGNAL_UPDATE_FREQUENCY = 50;
 
   private static final LoggedTunableNumber kickerSpeed =
-      new LoggedTunableNumber(KICKER_TABLE_KEY + "Speed", -0.6, Constants.Tuning.KICKER);
+      new LoggedTunableNumber(KICKER_TABLE_KEY + "Speed", -1.0, Constants.Tuning.KICKER);
 
   /**
    * Returns the current tunable kicker motor speed.

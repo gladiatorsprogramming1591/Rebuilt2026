@@ -157,7 +157,7 @@ public final class RobotState {
     VELOCITY
   }
 
-  @Getter @Setter private static RollerModeState rollerMode = RollerModeState.TORQUE_CURRENT;
+  @Getter @Setter private static RollerModeState rollerMode = RollerModeState.DUTYCYCLE;
 
   private RobotState() {
     fusedPoseBuffer.addSample(Timer.getTimestamp(), Pose2d.kZero);

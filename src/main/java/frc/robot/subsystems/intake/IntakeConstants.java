@@ -29,7 +29,7 @@ public final class IntakeConstants {
 
   // Current limits
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 80.0;
-  public static final double ROLLER_STATOR_CURRENT_LIMIT = 150.0;
+  public static final double ROLLER_STATOR_CURRENT_LIMIT = 80.0;
 
   public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 50.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 50.0;
@@ -116,7 +116,7 @@ public final class IntakeConstants {
   public static final double MAX_ANGLE = DOWN;
 
   // Roller speeds
-  public static final double ROLLER_PICKUP_SPEED = 0.60;
+  public static final double ROLLER_PICKUP_SPEED = 0.40;
   public static final double ROLLER_REVERSE_SPEED = -0.40;
 
   // Manual slapdown speeds
@@ -127,27 +127,65 @@ public final class IntakeConstants {
   public static final double DEPLOYING_TORQUE_CURRENT = 10.0;
   public static final double STOWING_TORQUE_CURRENT = -18.0;
 
-  private static final double DEFAULT_ROLLER_TORQUE_CURRENT = 60.0;
-  private static final boolean DEFAULT_IS_TORQUE_MODE = true;
-
   // Logging table keys
   public static final String kintakeTableKey = "Intake/";
   public static final String kdeployTableKey = kintakeTableKey + "Deploy/";
   public static final String kstowTableKey = kintakeTableKey + "Stow/";
   public static final String kstowFullTableKey = kintakeTableKey + "StowFull/";
 
-  // Roller tunables
-  public static final LoggedTunableNumber MAX_TORQUE_DUTYCYCLE =
-      new LoggedTunableNumber(
-          kintakeTableKey + "Intake roller torque",
-          DEFAULT_ROLLER_TORQUE_CURRENT,
-          Constants.Tuning.INTAKE);
 
-  public static final LoggedTunableBoolean IS_TORQUE_MODE =
-      new LoggedTunableBoolean(
-          kintakeTableKey + "Use Torque Mode?",
-          DEFAULT_IS_TORQUE_MODE,
-          Constants.Tuning.INTAKE);
+  //MAKING A MESS, NEEDS TO BE CLEANED AFTER TESTING/TUNING
+
+  private static final double DEFAULT_ROLLER_NORMAL_DUTY = 0.35;
+private static final double DEFAULT_ROLLER_BOOST_TORQUE_CURRENT = 60.0;
+private static final double DEFAULT_ROLLER_BOOST_ENTER_CURRENT = 25.0;
+private static final double DEFAULT_ROLLER_BOOST_EXIT_CURRENT = 15.0;
+private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
+
+private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
+private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
+
+public static final LoggedTunableNumber rollerBoostIgnoreSeconds =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerBoostIgnoreSeconds",
+        DEFAULT_ROLLER_BOOST_IGNORE_SECONDS,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber rollerBoostDebounceSeconds =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerBoostDebounceSeconds",
+        DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber rollerNormalDuty =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerNormalDuty",
+        DEFAULT_ROLLER_NORMAL_DUTY,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber rollerBoostTorqueCurrent =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerBoostTorqueCurrent",
+        DEFAULT_ROLLER_BOOST_TORQUE_CURRENT,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber rollerBoostEnterCurrent =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerBoostEnterCurrent",
+        DEFAULT_ROLLER_BOOST_ENTER_CURRENT,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber rollerBoostExitCurrent =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerBoostExitCurrent",
+        DEFAULT_ROLLER_BOOST_EXIT_CURRENT,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber rollerBoostHoldSeconds =
+    new LoggedTunableNumber(
+        kintakeTableKey + "RollerBoostHoldSeconds",
+        DEFAULT_ROLLER_BOOST_HOLD_SECONDS,
+        Constants.Tuning.INTAKE);
 
   // Deploy tunables
   public static final LoggedTunableNumber deploySpeed =
@@ -229,7 +267,7 @@ public final class IntakeConstants {
    */
   public static final LoggedTunableNumber shootingSlowStowSpeed =
       new LoggedTunableNumber(
-          kintakeTableKey + "ShootingSlowStowSpeed", -0.20, Constants.Tuning.INTAKE);
+          kintakeTableKey + "ShootingSlowStowSpeed", -0.25, Constants.Tuning.INTAKE);
 
   /**
    * Tunable slapdown stator current limit used during slow shooting stow.
@@ -238,7 +276,7 @@ public final class IntakeConstants {
    */
   public static final LoggedTunableNumber shootingSlowStowStatorCurrentLimit =
       new LoggedTunableNumber(
-          kintakeTableKey + "ShootingSlowStowStatorCurrentLimit", 80.0, Constants.Tuning.INTAKE);
+          kintakeTableKey + "ShootingSlowStowStatorCurrentLimit", 120.0, Constants.Tuning.INTAKE);
 
   /**
    * Time used by the position-ramp shooting stow command.

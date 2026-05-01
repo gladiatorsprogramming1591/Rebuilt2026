@@ -65,8 +65,6 @@ public class IntakeIOKraken implements IntakeIO {
   private final StatusSignal<Current> deployStatorCurrent = deployMotor.getStatorCurrent();
   private final StatusSignal<Current> deployTorqueCurrent = deployMotor.getTorqueCurrent();
 
-  private final StatusSignal<AngularVelocity> intakeLeftAngularVelocity = intakeLeft.getVelocity();
-  private final StatusSignal<AngularVelocity> intakeRightAngularVelocity = intakeRight.getVelocity();
   private final StatusSignal<Current> intakeLeftSupplyCurrent = intakeLeft.getSupplyCurrent();
   private final StatusSignal<Current> intakeRightSupplyCurrent = intakeRight.getSupplyCurrent();
   private final StatusSignal<Current> intakeLeftStatorCurrent = intakeLeft.getStatorCurrent();
@@ -194,10 +192,7 @@ public class IntakeIOKraken implements IntakeIO {
         intakeLeftTorqueCurrent,
         intakeRightTorqueCurrent,
         intakeLeftTemp,
-        intakeRightTemp,
-        intakeLeftAngularVelocity,
-        intakeRightAngularVelocity);
-
+        intakeRightTemp);
     deployMotor.optimizeBusUtilization();
     intakeLeft.optimizeBusUtilization();
     intakeRight.optimizeBusUtilization();
@@ -226,17 +221,15 @@ public class IntakeIOKraken implements IntakeIO {
         intakeLeftTorqueCurrent,
         intakeRightTorqueCurrent,
         intakeLeftTemp,
-        intakeRightTemp,
-        intakeLeftAngularVelocity,
-        intakeRightAngularVelocity);
+        intakeRightTemp);
 
     inputs.slapdownVelocity = deployAngularVelocity.getValueAsDouble();
     inputs.slapdownTorqueCurrent = deployTorqueCurrent.getValueAsDouble();
     inputs.slapdownSupplyCurrent = deploySupplyCurrent.getValueAsDouble();
     inputs.slapdownStatorCurrent = deployStatorCurrent.getValueAsDouble();
 
-    inputs.rollerLeftVelocity = intakeLeftAngularVelocity.getValueAsDouble();
-    inputs.rollerRightVelocity = intakeRightAngularVelocity.getValueAsDouble();
+    inputs.rollerLeftDutyCycle = intakeLeft.get();
+    inputs.rollerRightDutyCycle = intakeRight.get();
     inputs.rollerLeftTemperature = intakeLeftTemp.getValueAsDouble();
     inputs.rollerRightTemperature = intakeRightTemp.getValueAsDouble();
     inputs.rollerLeftSupplyCurrent = intakeLeftSupplyCurrent.getValueAsDouble();
@@ -279,11 +272,10 @@ public class IntakeIOKraken implements IntakeIO {
    */
   private void applyRollerOutput(double rollerSpeed) {
     boolean useTorqueMode =
-        rollerSpeed == IntakeConstants.ROLLER_PICKUP_SPEED
-            && RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT;
+      rollerSpeed > 0.0 && RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT;
 
     if (useTorqueMode) {
-      double torqueOutput = IntakeConstants.MAX_TORQUE_DUTYCYCLE.getAsDouble();
+      double torqueOutput = IntakeConstants.rollerBoostTorqueCurrent.getAsDouble();
       intakeLeft.setControl(torqueRollerControl.withOutput(torqueOutput));
       intakeRight.setControl(torqueRollerControl.withOutput(torqueOutput));
       return;

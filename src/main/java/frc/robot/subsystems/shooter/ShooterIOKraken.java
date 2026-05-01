@@ -305,8 +305,11 @@ public class ShooterIOKraken implements ShooterIO {
 
     switch (RobotState.getShooterMode()) {
       case ON:
+        applyVelocityOutput(outputs, outputs.kMMShootAcceleration);
+        break;
+
       case IDLE:
-        applyVelocityOutput(outputs);
+        applyVelocityOutput(outputs, outputs.kMMAcceleration);
         break;
 
       case DUTYCYCLE:
@@ -326,21 +329,27 @@ public class ShooterIOKraken implements ShooterIO {
   }
 
   /** Applies closed-loop velocity control to the shooter leader motor. */
-  private void applyVelocityOutput(ShooterIOOutputs outputs) {
+  private void applyVelocityOutput(ShooterIOOutputs outputs, double motionMagicAcceleration) {
     double desiredRps = rpmToRps(outputs.desiredVelocityRPM);
 
     Logger.recordOutput(SHOOTER_TABLE_KEY + "DesiredRPSInternal", desiredRps);
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "ActiveMMAcceleration", motionMagicAcceleration);
 
     if (outputs.useMotionMagic) {
-      rightShooterLeader.setControl(motionMagicVelocityControl.withVelocity(desiredRps));
+      rightShooterLeader.setControl(
+          motionMagicVelocityControl
+              .withVelocity(desiredRps)
+              .withAcceleration(motionMagicAcceleration));
       Logger.recordOutput(
-          SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, MotionMagicVelocityVoltage.class.getSimpleName());
+          SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE,
+          MotionMagicVelocityVoltage.class.getSimpleName());
       return;
     }
 
     rightShooterLeader.setControl(velocityControl.withVelocity(desiredRps));
     Logger.recordOutput(
-        SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, VelocityTorqueCurrentFOC.class.getSimpleName());
+        SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE,
+        VelocityTorqueCurrentFOC.class.getSimpleName());
   }
 
   /** Applies open-loop duty-cycle control to the shooter leader motor. */

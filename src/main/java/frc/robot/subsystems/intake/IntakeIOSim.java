@@ -40,8 +40,8 @@ public class IntakeIOSim implements IntakeIO {
     inputs.slapdownRawPosition = slapdownPosition - slapdownEncoderOffset;
     inputs.slapdownEncoderOffset = slapdownEncoderOffset;
 
-    inputs.rollerLeftVelocity = rollerSpeed;
-    inputs.rollerRightVelocity = rollerSpeed;
+    inputs.rollerLeftDutyCycle = rollerSpeed;
+    inputs.rollerRightDutyCycle = rollerSpeed;
     inputs.rollerLeftSupplyCurrent = Math.abs(rollerSpeed) * 10.0;
     inputs.rollerRightSupplyCurrent = Math.abs(rollerSpeed) * 10.0;
     inputs.rollerLeftStatorCurrent = inputs.rollerLeftSupplyCurrent;

@@ -317,16 +317,16 @@ public class DriveCommands {
                   RobotState.getInstance().getRotation());
 
           // Apply O-lock
-          boolean oLock =
+          boolean xLock =
               Math.hypot(
                           fieldRelativeSpeedsWithOffset.vxMetersPerSecond,
                           fieldRelativeSpeedsWithOffset.vyMetersPerSecond)
                       < lockMetersPerSecondThreshold.get()
                   && Math.abs(fieldRelativeSpeedsWithOffset.omegaRadiansPerSecond)
                       < lockOmegaRadsPerSecThreshold.get();
-          Logger.recordOutput("DriveCommands/Launching/OLock", oLock);
-          if (oLock) {
-            drive.stopWithO();
+          Logger.recordOutput("DriveCommands/Launching/XLock", xLock);
+          if (xLock) {
+            drive.stopWithX();
           } else {
             drive.runVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(

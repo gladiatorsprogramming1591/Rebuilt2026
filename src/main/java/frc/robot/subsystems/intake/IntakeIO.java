@@ -40,11 +40,11 @@ public interface IntakeIO {
     /** Offset applied to the raw slapdown encoder position. */
     public double slapdownEncoderOffset = 0.0;
 
-    /** Left roller velocity in motor rotations per second. */
-    public double rollerLeftVelocity = 0.0;
+    /** Left roller duty cycle output. */
+    public double rollerLeftDutyCycle = 0.0;
 
-    /** Right roller velocity in motor rotations per second. */
-    public double rollerRightVelocity = 0.0;
+    /** Right roller duty cycle output. */
+    public double rollerRightDutyCycle = 0.0;
 
     /** Left roller motor temperature in Celsius. */
     public double rollerLeftTemperature = 0.0;

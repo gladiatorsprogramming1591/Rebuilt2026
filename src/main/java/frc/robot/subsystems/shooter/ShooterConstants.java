@@ -60,10 +60,12 @@ public final class ShooterConstants {
   private static final double DEFAULT_KA = 0.0;
 
   /** Conservative Motion Magic velocity acceleration until ramping is fully tuned. */
-  private static final double DEFAULT_MM_ACCELERATION = 200.0;
+  private static final double DEFAULT_IDLE_MM_ACCELERATION = 200.0;
 
-  /** Conservative Motion Magic velocity jerk until ramping is fully tuned. */
-  private static final double DEFAULT_MM_JERK = 2000.0;
+  private static final double DEFAULT_SHOOT_MM_ACCELERATION  = 4000.0;
+
+
+  private static final double DEFAULT_MM_JERK = 8000.0;
 
   private static final boolean DEFAULT_USE_MOTION_MAGIC = true;
 
@@ -101,7 +103,13 @@ public final class ShooterConstants {
   public static final LoggedTunableNumber kMMAcceleration =
       new LoggedTunableNumber(
           SHOOTER_TABLE_KEY + "kMMAcceleration",
-          DEFAULT_MM_ACCELERATION,
+          DEFAULT_IDLE_MM_ACCELERATION,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber kMMShootAcceleration =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "kMMShootAcceleration",
+          DEFAULT_SHOOT_MM_ACCELERATION,
           Constants.Tuning.SHOOTER);
 
   public static final LoggedTunableNumber kMMJerk =

@@ -67,6 +67,7 @@ public interface ShooterIO {
     public double kV = 0.0;
     public double kA = 0.0;
     public double kMMAcceleration = 0.0;
+    public double kMMShootAcceleration = 0.0;
     public double kMMJerk = 0.0;
 
     public boolean useMotionMagic = false;

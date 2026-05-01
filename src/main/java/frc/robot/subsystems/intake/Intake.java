@@ -8,10 +8,11 @@ import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RollerModeState;
 import frc.robot.RobotState.SlapdownModeState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -37,6 +38,12 @@ public class Intake extends SubsystemBase {
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
   private boolean overrideRollerSpeed = false;
+
+  private boolean rollerBoostActive = false;
+  private boolean rollerWasRequested = false;
+  private double rollerRequestStartTimestamp = 0.0;
+  private double rollerHighCurrentStartTimestamp = Double.NaN;
+  private double rollerBoostUntilTimestamp = 0.0;
 
   @AutoLogOutput private double manualAngle = 0.0;
   @AutoLogOutput private double requestedRollerSpeed = 0.0;
@@ -66,6 +73,19 @@ public class Intake extends SubsystemBase {
     io.applyOutputs(outputs);
 
     stopSlapdownIfNeeded();
+  }
+
+  /**
+   * Returns the larger roller stator current.
+   *
+   * <p>Using max current is more useful than average current because one jammed roller should be
+   * enough to request boost.
+   *
+   * @return max absolute roller stator current
+   */
+  private double getMaxRollerStatorCurrent() {
+    return Math.max(
+        Math.abs(inputs.rollerLeftStatorCurrent), Math.abs(inputs.rollerRightStatorCurrent));
   }
 
   /**
@@ -325,6 +345,15 @@ public class Intake extends SubsystemBase {
     requestedRollerSpeed = speed;
   }
 
+  /** Resets all auto-boost state. */
+  private void resetRollerBoostState() {
+    rollerBoostActive = false;
+    rollerWasRequested = false;
+    rollerRequestStartTimestamp = 0.0;
+    rollerHighCurrentStartTimestamp = Double.NaN;
+    rollerBoostUntilTimestamp = 0.0;
+  }
+
   /** Restores the normal slapdown stator current limit. */
   private void restoreSlapdownCurrentLimit() {
     outputs.slapdownStatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
@@ -361,17 +390,103 @@ public class Intake extends SubsystemBase {
   /**
    * Converts the requested roller speed into the final applied roller output.
    *
-   * <p>The rollers are stopped when the slapdown is above the configured safety cutoff unless roller
-   * override is active. This prevents the rollers from pulling fuel while the intake is mostly
-   * stowed.
+   * <p>Normal forward intake starts in duty-cycle mode. Auto boost can switch to torque-current mode
+   * only after the roller has been requested for a short spin-up ignore period and high current has
+   * persisted through a debounce window.
    */
   private void updateRollerOutput() {
     if (inputs.slapdownPosition < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
       outputs.appliedRollerSpeed = 0.0;
+      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+      resetRollerBoostState();
+      logRollerBoostState(0.0, false);
       return;
     }
 
-    outputs.appliedRollerSpeed = requestedRollerSpeed;
+    if (requestedRollerSpeed == 0.0) {
+      outputs.appliedRollerSpeed = 0.0;
+      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+      resetRollerBoostState();
+      logRollerBoostState(0.0, false);
+      return;
+    }
+
+    // Preserve reverse/manual roller behavior. Boost is only for forward pickup.
+    if (requestedRollerSpeed < 0.0) {
+      outputs.appliedRollerSpeed = requestedRollerSpeed;
+      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+      resetRollerBoostState();
+      logRollerBoostState(getMaxRollerStatorCurrent(), false);
+      return;
+    }
+
+    double now = Timer.getTimestamp();
+    double rollerCurrent = getMaxRollerStatorCurrent();
+
+    if (!rollerWasRequested) {
+      rollerWasRequested = true;
+      rollerRequestStartTimestamp = now;
+      rollerHighCurrentStartTimestamp = Double.NaN;
+      rollerBoostActive = false;
+      rollerBoostUntilTimestamp = 0.0;
+    }
+
+    boolean spinupComplete =
+        now - rollerRequestStartTimestamp >= IntakeConstants.rollerBoostIgnoreSeconds.getAsDouble();
+
+    if (spinupComplete && rollerCurrent >= IntakeConstants.rollerBoostEnterCurrent.getAsDouble()) {
+      if (Double.isNaN(rollerHighCurrentStartTimestamp)) {
+        rollerHighCurrentStartTimestamp = now;
+      }
+
+      if (now - rollerHighCurrentStartTimestamp
+          >= IntakeConstants.rollerBoostDebounceSeconds.getAsDouble()) {
+        rollerBoostActive = true;
+        rollerBoostUntilTimestamp = now + IntakeConstants.rollerBoostHoldSeconds.getAsDouble();
+      }
+    } else {
+      rollerHighCurrentStartTimestamp = Double.NaN;
+    }
+
+    if (rollerBoostActive
+        && rollerCurrent <= IntakeConstants.rollerBoostExitCurrent.getAsDouble()
+        && now >= rollerBoostUntilTimestamp) {
+      rollerBoostActive = false;
+      rollerHighCurrentStartTimestamp = Double.NaN;
+    }
+
+    if (rollerBoostActive) {
+      outputs.appliedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
+      RobotState.setRollerMode(RollerModeState.TORQUE_CURRENT);
+    } else {
+      outputs.appliedRollerSpeed = IntakeConstants.rollerNormalDuty.getAsDouble();
+      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+    }
+
+    logRollerBoostState(rollerCurrent, spinupComplete);
+  }
+
+  /**
+   * Logs auto-boost state for tuning and debugging.
+   *
+   * @param rollerCurrent max roller stator current
+   * @param spinupComplete whether startup ignore time has elapsed
+   */
+  private void logRollerBoostState(double rollerCurrent, boolean spinupComplete) {
+    Logger.recordOutput(kintakeTableKey + "RollerBoostActive", rollerBoostActive);
+    Logger.recordOutput(kintakeTableKey + "RollerMaxStatorCurrent", rollerCurrent);
+    Logger.recordOutput(kintakeTableKey + "RollerSpinupComplete", spinupComplete);
+    Logger.recordOutput(kintakeTableKey + "RollerWasRequested", rollerWasRequested);
+    Logger.recordOutput(kintakeTableKey + "RollerRequestStartTimestamp", rollerRequestStartTimestamp);
+    Logger.recordOutput(
+        kintakeTableKey + "RollerHighCurrentStartTimestamp", rollerHighCurrentStartTimestamp);
+    Logger.recordOutput(kintakeTableKey + "RollerBoostUntilTimestamp", rollerBoostUntilTimestamp);
+    Logger.recordOutput(
+        kintakeTableKey + "RollerBoostIgnoreSeconds",
+        IntakeConstants.rollerBoostIgnoreSeconds.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerBoostDebounceSeconds",
+        IntakeConstants.rollerBoostDebounceSeconds.getAsDouble());
   }
 
   /**
@@ -438,6 +553,21 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "StopSlapdownOnCurrentSpike", stopSlapdownOnCurrentSpike);
 
     Logger.recordOutput(
+        kintakeTableKey + "RollerNormalDuty", IntakeConstants.rollerNormalDuty.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerBoostTorqueCurrent",
+        IntakeConstants.rollerBoostTorqueCurrent.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerBoostEnterCurrent",
+        IntakeConstants.rollerBoostEnterCurrent.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerBoostExitCurrent",
+        IntakeConstants.rollerBoostExitCurrent.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerBoostHoldSeconds",
+        IntakeConstants.rollerBoostHoldSeconds.getAsDouble());
+
+    Logger.recordOutput(
         kintakeTableKey + "ShootingSlowStowSpeed",
         IntakeConstants.shootingSlowStowSpeed.getAsDouble());
     Logger.recordOutput(
@@ -500,7 +630,9 @@ public class Intake extends SubsystemBase {
    * @return command that requests roller pickup speed without subsystem requirements
    */
   public Command runRollerWithoutRequirements() {
-    return new RunCommand(() -> setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED));
+    return Commands.runEnd(
+        () -> setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED),
+        () -> setRequestedRollerSpeed(0.0));
   }
 
   /**
