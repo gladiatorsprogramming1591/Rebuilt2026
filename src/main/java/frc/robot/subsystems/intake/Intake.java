@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RollerModeState;
 import frc.robot.RobotState.SlapdownModeState;
+import java.util.Set;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -566,6 +567,12 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(
         kintakeTableKey + "RollerBoostHoldSeconds",
         IntakeConstants.rollerBoostHoldSeconds.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "PrepareUnjamReverseSpeed",
+        IntakeConstants.prepareUnjamReverseSpeed.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "PrepareUnjamReverseSeconds",
+        IntakeConstants.prepareUnjamReverseSeconds.getAsDouble());
 
     Logger.recordOutput(
         kintakeTableKey + "ShootingSlowStowSpeed",
@@ -633,6 +640,46 @@ public class Intake extends SubsystemBase {
     return Commands.runEnd(
         () -> setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED),
         () -> setRequestedRollerSpeed(0.0));
+  }
+
+  /**
+   * Briefly reverses the rollers to clear a pinch, then runs the rollers forward.
+   *
+   * <p>This command intentionally has no intake subsystem requirement so it can run alongside
+   * {@link #deploy()}. During the reverse pulse, the roller safety override is enabled so the
+   * rollers can move even while the slapdown is still above the normal roller cutoff position.
+   *
+   * @return command that unjams the rollers during prepare-intake, then runs them forward
+   */
+  public Command runRollerWithPrepareUnjamWithoutRequirements() {
+    return Commands.defer(
+        () ->
+            Commands.sequence(
+                runRollerReverseWithOverrideWithoutRequirements()
+                    .until(() -> inputs.slapdownDown)
+                    .withTimeout(
+                        Math.max(
+                            0.0, IntakeConstants.prepareUnjamReverseSeconds.getAsDouble())),
+                runRollerWithoutRequirements()),
+        Set.of());
+  }
+
+  /**
+   * Runs the rollers in reverse while bypassing the slapdown position safety cutoff.
+   *
+   * @return command that reverse-runs the rollers until interrupted
+   */
+  private Command runRollerReverseWithOverrideWithoutRequirements() {
+    return Commands.runEnd(
+        () -> {
+          setRequestedRollerSpeed(
+              -Math.abs(IntakeConstants.prepareUnjamReverseSpeed.getAsDouble()));
+          overrideRollerSpeed = true;
+        },
+        () -> {
+          setRequestedRollerSpeed(0.0);
+          overrideRollerSpeed = false;
+        });
   }
 
   /**

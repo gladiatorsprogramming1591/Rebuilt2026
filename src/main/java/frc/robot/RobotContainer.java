@@ -726,7 +726,7 @@ public class RobotContainer {
    * @return intake preparation command
    */
   public Command prepareIntake() {
-    return Commands.parallel(intake.deploy(), intake.runRollerWithoutRequirements());
+    return Commands.parallel(intake.deploy(), intake.runRollerWithPrepareUnjamWithoutRequirements());
   }
 
   /**

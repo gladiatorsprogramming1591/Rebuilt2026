@@ -29,7 +29,7 @@ public final class IntakeConstants {
 
   // Current limits
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 80.0;
-  public static final double ROLLER_STATOR_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
 
   public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 50.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 50.0;
@@ -119,6 +119,9 @@ public final class IntakeConstants {
   public static final double ROLLER_PICKUP_SPEED = 0.40;
   public static final double ROLLER_REVERSE_SPEED = -0.40;
 
+  private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SPEED = ROLLER_REVERSE_SPEED;
+  private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS = 0.18;
+
   // Manual slapdown speeds
   public static final double DEPLOYING_SPEED = 0.5;
   public static final double STOWING_SPEED = -0.25;
@@ -136,8 +139,8 @@ public final class IntakeConstants {
 
   //MAKING A MESS, NEEDS TO BE CLEANED AFTER TESTING/TUNING
 
-  private static final double DEFAULT_ROLLER_NORMAL_DUTY = 0.35;
-private static final double DEFAULT_ROLLER_BOOST_TORQUE_CURRENT = 60.0;
+  private static final double DEFAULT_ROLLER_NORMAL_DUTY = 1.0;
+private static final double DEFAULT_ROLLER_BOOST_TORQUE_CURRENT = 120.0;
 private static final double DEFAULT_ROLLER_BOOST_ENTER_CURRENT = 25.0;
 private static final double DEFAULT_ROLLER_BOOST_EXIT_CURRENT = 15.0;
 private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
@@ -145,6 +148,18 @@ private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
 private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
 private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
 
+public static final LoggedTunableNumber prepareUnjamReverseSpeed =
+    new LoggedTunableNumber(
+        kintakeTableKey + "PrepareUnjamReverseSpeed",
+        DEFAULT_PREPARE_UNJAM_REVERSE_SPEED,
+        Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber prepareUnjamReverseSeconds =
+    new LoggedTunableNumber(
+        kintakeTableKey + "PrepareUnjamReverseSeconds",
+        DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS,
+        Constants.Tuning.INTAKE);
+        
 public static final LoggedTunableNumber rollerBoostIgnoreSeconds =
     new LoggedTunableNumber(
         kintakeTableKey + "RollerBoostIgnoreSeconds",
