@@ -152,7 +152,7 @@ public class Intake extends SubsystemBase {
         () -> {
           requestSlapdownPosition(
               IntakeConstants.SHOOTING_STOP, SlapdownModeState.BUMP_POSITION, false);
-          setRequestedRollerSpeed(0.0);
+          setRequestedRollerSpeed(0.8);
         },
         () -> {
           setRequestedRollerSpeed(0.0);
@@ -175,7 +175,7 @@ public class Intake extends SubsystemBase {
   public Command curlInWhileShootingSlowSpeed() {
     return runEnd(
         () -> {
-          setRequestedRollerSpeed(0.0);
+          setRequestedRollerSpeed(0.8);
           requestSlapdownSlowStowSpeed();
         },
         () -> {
@@ -396,13 +396,13 @@ public class Intake extends SubsystemBase {
    * persisted through a debounce window.
    */
   private void updateRollerOutput() {
-    if (inputs.slapdownPosition < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
-      outputs.appliedRollerSpeed = 0.0;
-      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
-      resetRollerBoostState();
-      logRollerBoostState(0.0, false);
-      return;
-    }
+    // if (inputs.slapdownPosition < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
+    //   outputs.appliedRollerSpeed = 0.0;
+    //   RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+    //   resetRollerBoostState();
+    //   logRollerBoostState(0.0, false);
+    //   return;
+    // }
 
     if (requestedRollerSpeed == 0.0) {
       outputs.appliedRollerSpeed = 0.0;

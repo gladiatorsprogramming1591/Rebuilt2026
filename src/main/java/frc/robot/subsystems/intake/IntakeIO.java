@@ -46,6 +46,12 @@ public interface IntakeIO {
     /** Right roller duty cycle output. */
     public double rollerRightDutyCycle = 0.0;
 
+    /** Left roller RPS output. */
+    public double rollerLeftRPS = 0.0;
+
+    /** Right roller RPS output. */
+    public double rollerRightRPS = 0.0;
+
     /** Left roller motor temperature in Celsius. */
     public double rollerLeftTemperature = 0.0;
 
