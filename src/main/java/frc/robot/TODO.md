@@ -20,6 +20,10 @@ READY TO TEST:
 - Test increased supply current
 
 ===============================================
+### BattleCry
+- Shooter coast map
+- Test intake back to torque
+===============================================
 
 ### TVR
 - Shooter turnToTarget PID increase

@@ -20,7 +20,7 @@ public final class KickerConstants {
   public static final boolean HAS_SECOND_KICKER_MOTOR = true;
 
   /** Kicker motor supply current limit in amps. */
-  public static final double KICKER_SUPPLY_CURRENT_LIMIT = 80.0;
+  public static final double KICKER_SUPPLY_CURRENT_LIMIT = 80.0; // TODO: Consider reducing this (Pulls 45-60A on average)
 
   /** Kicker motor duty-cycle closed-loop ramp period in seconds. */
   public static final double KICKER_DUTY_CYCLE_RAMP_PERIOD = 0.0;

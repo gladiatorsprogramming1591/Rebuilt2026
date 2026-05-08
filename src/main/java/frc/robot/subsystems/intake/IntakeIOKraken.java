@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -140,6 +141,7 @@ public class IntakeIOKraken implements IntakeIO {
     PhoenixUtil.tryUntilOk(
         INIT_CONFIG_MAX_ATTEMPTS,
         () -> intakeLeft.getConfigurator().apply(intakeLeftConfig, INIT_CONFIG_TIMEOUT));
+    intakeRight.setControl(new StrictFollower(intakeLeft.getDeviceID()));
   }
 
   /**
@@ -285,12 +287,10 @@ public class IntakeIOKraken implements IntakeIO {
     if (useTorqueMode) {
       double torqueOutput = IntakeConstants.rollerBoostTorqueCurrent.getAsDouble();
       intakeLeft.setControl(torqueRollerControl.withOutput(torqueOutput));
-      intakeRight.setControl(torqueRollerControl.withOutput(torqueOutput));
       return;
     }
 
     intakeLeft.set(rollerSpeed);
-    intakeRight.set(rollerSpeed);
   }
 
   /**
