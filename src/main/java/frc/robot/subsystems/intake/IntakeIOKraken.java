@@ -290,7 +290,14 @@ public class IntakeIOKraken implements IntakeIO {
       return;
     }
 
-    intakeLeft.set(rollerSpeed);
+    if (rollerSpeed > 0)
+    {
+      rollerSpeed = 70;
+    }
+    
+      intakeLeft.setControl(torqueRollerControl.withOutput(rollerSpeed)); // idk needs to be changes idk if i like torque more or duty cycle more..
+
+    // intakeLeft.set(rollerSpeed);
   }
 
   /**

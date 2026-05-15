@@ -18,7 +18,7 @@ public final class HopperConstants {
   public static final int HOPPER_EMPTY_CANRANGE_CAN_ID = 32;
 
   /** Normal belt motor supply current limit in amps. */
-  public static final double BELT_CURRENT_LIMIT = 60.0;
+  public static final double BELT_CURRENT_LIMIT = 30.0;
 
   /**
    * Lower belt motor supply current limit used while intaking.
@@ -42,7 +42,7 @@ public final class HopperConstants {
   public static final double MIN_EMPTY_DURATION = 0.2;
 
   private static final LoggedNetworkNumber beltMotorSpeed =
-      new LoggedNetworkNumber("/Tuning/beltMotorSpeed", 1.00);
+      new LoggedNetworkNumber("/Tuning/beltMotorSpeed", 0.70);
 
   /**
    * Returns the current tunable belt motor speed.

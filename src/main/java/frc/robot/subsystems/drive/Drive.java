@@ -245,13 +245,21 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, Constants.loopPeriodSecs);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
+
+    // This is the actual achievable chassis speed after wheel-speed desaturation.
+    ChassisSpeeds desaturatedSpeeds = kinematics.toChassisSpeeds(setpointStates);
+
+    // Publish desired/setpoint speeds for shooter lookahead and diagnostics.
+    RobotState.getInstance().setDesiredRobotRelativeSpeeds(desaturatedSpeeds);
+    RobotState.getInstance().setRobotSetpointVelocity(desaturatedSpeeds);
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    Logger.recordOutput("SwerveChassisSpeeds/SetpointsDesaturated", desaturatedSpeeds);
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {

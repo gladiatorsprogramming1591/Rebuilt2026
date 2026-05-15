@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.robotInitConstants;
@@ -399,7 +400,7 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(intake.stow());
     driverController.rightBumper().onTrue(intake.deploy());
 
-    driverController.back().whileTrue(hood.runHoodTarget());
+    // driverController.().whileTrue(hood.runHoodTarget());
     driverController.povUp().whileTrue(hood.runHoodUp());
     driverController.povDown().whileTrue(hood.runHoodDown());
 
@@ -705,7 +706,7 @@ public class RobotContainer {
    * @return intake stow command used while shooting
    */
   private Command shootingIntakeStowCommand() {
-    return intake.curlInWhileShootingSlowSpeed();
+    return intake.agitateWhileShooting();
   }
 
   /**

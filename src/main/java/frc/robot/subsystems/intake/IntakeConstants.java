@@ -148,6 +148,22 @@ private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
 private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
 private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
 
+public static final LoggedTunableNumber shootingAgitateCurlCount =
+    new LoggedTunableNumber(
+        kintakeTableKey + "ShootingAgitateCurlCount", 3.0, Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber shootingAgitateCurlSeconds =
+    new LoggedTunableNumber(
+        kintakeTableKey + "ShootingAgitateCurlSeconds", 0.18, Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber shootingAgitateReliefSeconds =
+    new LoggedTunableNumber(
+        kintakeTableKey + "ShootingAgitateReliefSeconds", 0.10, Constants.Tuning.INTAKE);
+
+public static final LoggedTunableNumber shootingAgitateReliefSpeedScalar =
+    new LoggedTunableNumber(
+        kintakeTableKey + "ShootingAgitateReliefSpeedScalar", 0.65, Constants.Tuning.INTAKE);
+
 public static final LoggedTunableNumber prepareUnjamReverseSpeed =
     new LoggedTunableNumber(
         kintakeTableKey + "PrepareUnjamReverseSpeed",

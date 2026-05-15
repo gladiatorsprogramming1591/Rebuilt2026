@@ -54,9 +54,9 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   private static final LoggedTunableNumber driveLaunchKp =
-      new LoggedTunableNumber("DriveCommands/Launching/kP", 17.0);
+      new LoggedTunableNumber("DriveCommands/Launching/kP", 4.0);
   private static final LoggedTunableNumber driveLaunchKd =
-      new LoggedTunableNumber("DriveCommands/Launching/kD", 0.02);
+      new LoggedTunableNumber("DriveCommands/Launching/kD", 0.03);
   private static final LoggedTunableNumber driveYawLaunchToleranceDeg =
       new LoggedTunableNumber("DriveCommands/Launching/YawToleranceDeg", 10.0);
   private static final LoggedTunableNumber drivePitchLaunchToleranceDeg =
@@ -82,6 +82,18 @@ public class DriveCommands {
   private static final LoggedTunableNumber driveLauncherCORMaxErrorDeg =
       new LoggedTunableNumber("DriveCommands/Launching/DriveLauncherCORMaxErrorDeg", 30.0);
 
+  private static final LoggedTunableNumber driveLaunchVelocityFeedforwardScalar =
+      new LoggedTunableNumber("DriveCommands/Launching/VelocityFeedforwardScalar", 1);
+
+  private static final LoggedTunableNumber driveLaunchTargetJumpRejectRad =
+      new LoggedTunableNumber("DriveCommands/Launching/TargetJumpRejectRad", 0.75);
+
+  private static final LoggedTunableNumber driveLaunchTargetJumpAcceptCycles =
+      new LoggedTunableNumber("DriveCommands/Launching/TargetJumpAcceptCycles", 10.0);
+
+  private static final LoggedTunableNumber driveLaunchTargetMaxRateRadPerSec =
+      new LoggedTunableNumber("DriveCommands/Launching/TargetMaxRateRadPerSec", 6.0);
+
   private DriveCommands() {}
 
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
@@ -90,7 +102,7 @@ public class DriveCommands {
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
+    linearMagnitude = linearMagnitude * linearMagnitude * linearMagnitude;
 
     // Return new linear velocity
     return new Pose2d(Translation2d.kZero, linearDirection)
@@ -240,7 +252,7 @@ public class DriveCommands {
           // Run PID controller
           final var parameters = ShooterCalculation.getInstance().getParameters();
           double omegaOutput =
-              parameters.driveVelocity()
+              parameters.driveVelocity() * driveLaunchVelocityFeedforwardScalar.get()
                   + (parameters
                           .driveAngle()
                           .minus(RobotState.getInstance().getRotation())
@@ -316,7 +328,7 @@ public class DriveCommands {
                   launcherToRobot.times(1.0 - corScalar),
                   RobotState.getInstance().getRotation());
 
-          // Apply O-lock
+          // Apply X-lock
           boolean xLock =
               Math.hypot(
                           fieldRelativeSpeedsWithOffset.vxMetersPerSecond,

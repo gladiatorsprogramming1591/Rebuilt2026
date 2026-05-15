@@ -52,7 +52,7 @@ public class ShooterCalculation {
    * <p>Tune this when left/right SOTM shots are off but in/out distance compensation looks correct.
    */
   private static final LoggedTunableNumber aimVelocityCompensationScalar =
-      new LoggedTunableNumber(TABLE_KEY + "AimVelocityCompensationScalar", 1.5, Constants.Tuning.SOTM);
+      new LoggedTunableNumber(TABLE_KEY + "AimVelocityCompensationScalar", 0, Constants.Tuning.SOTM);
 
   /**
    * Scales velocity compensation used for hood and flywheel distance lookup.
@@ -60,7 +60,7 @@ public class ShooterCalculation {
    * <p>Tune this when driving toward/away from the goal causes shots to miss long or short.
    */
   private static final LoggedTunableNumber distanceVelocityCompensationScalar =
-      new LoggedTunableNumber(TABLE_KEY + "DistanceVelocityCompensationScalar", 1.5, Constants.Tuning.SOTM);
+      new LoggedTunableNumber(TABLE_KEY + "DistanceVelocityCompensationScalar", 0, Constants.Tuning.SOTM);
 
   /**
    * Scales acceleration compensation used for robot aiming.
@@ -432,9 +432,19 @@ public class ShooterCalculation {
     Pose2d launcherPosition = estimatedPose.transformBy(robotToLauncher.toTransform2d());
     double rawLauncherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
 
-    ChassisSpeeds robotVelocity = RobotState.getInstance().getMeasuredFieldRelativeSpeeds();
+    ChassisSpeeds robotVelocity = RobotState.getInstance().getDesiredFieldRelativeSpeeds();
     Rotation2d robotAngle = RobotState.getInstance().getYawForVision();
-    ChassisSpeeds launcherVelocity = getFieldRelativeLauncherVelocity(robotVelocity, robotAngle);
+
+    // Use full velocity for logging / distance if you want, but not for aim heading compensation.
+    // Translational velocity is the part that matters for strafe SOTM lead.
+    // Robot omega during aiming creates a feedback loop because the target moves while the robot turns.
+    ChassisSpeeds aimRobotVelocity =
+        new ChassisSpeeds(
+            robotVelocity.vxMetersPerSecond,
+            robotVelocity.vyMetersPerSecond,
+            0.0);
+
+    ChassisSpeeds launcherVelocity = getFieldRelativeLauncherVelocity(aimRobotVelocity, robotAngle);
 
     ChassisSpeeds velocityDerivedAcceleration =
         RobotState.getInstance().getMeasuredFieldRelativeAcceleration();

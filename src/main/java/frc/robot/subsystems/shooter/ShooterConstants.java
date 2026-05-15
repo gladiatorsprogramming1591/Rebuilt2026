@@ -50,7 +50,7 @@ public final class ShooterConstants {
 
   // Default tunable values
   private static final double DEFAULT_SHOOT_FIXED_RPM = 2000.0;
-  private static final double DEFAULT_COAST_RPM = 1000.0;
+  private static final double DEFAULT_COAST_RPM = 2000.0;
 
   private static final double DEFAULT_KP = 0.45;
   private static final double DEFAULT_KI = 0.0;

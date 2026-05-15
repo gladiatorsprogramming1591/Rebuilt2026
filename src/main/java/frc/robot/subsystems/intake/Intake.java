@@ -160,6 +160,93 @@ public class Intake extends SubsystemBase {
         });
   }
 
+    /**
+   * Pulses the slapdown while shooting, then falls back to the normal slow shooting curl.
+   *
+   * <p>The inward part of each pulse uses the existing shooting slow-stow speed. The short outward
+   * relief pulse backs pressure off the hopper so fuel can settle instead of staying constantly
+   * compressed. After the configured number of pulses, this behaves like the normal slow shooting
+   * curl so the intake still ends in the normal shooting position.
+   *
+   * @return command that agitates the intake briefly while shooting
+   */
+  public Command agitateWhileShooting() {
+    final Timer timer = new Timer();
+    final int[] completedCurls = new int[1];
+    final boolean[] curlingIn = new boolean[1];
+
+    return runEnd(
+        () -> {
+          if (!timer.isRunning()) {
+            completedCurls[0] = 0;
+            curlingIn[0] = true;
+            timer.restart();
+          }
+
+          setRequestedRollerSpeed(0.8);
+
+          int requestedCurls =
+              Math.max(0, (int) Math.round(IntakeConstants.shootingAgitateCurlCount.getAsDouble()));
+
+          if (completedCurls[0] >= requestedCurls) {
+            requestSlapdownSlowStowSpeed();
+            return;
+          }
+
+          if (curlingIn[0]) {
+            requestSlapdownSlowStowSpeed();
+
+            if (timer.hasElapsed(IntakeConstants.shootingAgitateCurlSeconds.getAsDouble())
+                || inputs.slapdownUp
+                || inputs.slapdownPosition <= IntakeConstants.SHOOTING_STOP) {
+              curlingIn[0] = false;
+              timer.restart();
+            }
+
+            return;
+          }
+
+          requestShootingAgitateRelief();
+
+          if (timer.hasElapsed(IntakeConstants.shootingAgitateReliefSeconds.getAsDouble())
+              || inputs.slapdownDown) {
+            completedCurls[0]++;
+            curlingIn[0] = true;
+            timer.restart();
+          }
+        },
+        () -> {
+          timer.stop();
+          timer.reset();
+          setRequestedRollerSpeed(0.0);
+          stopSlapdown();
+        });
+  }
+
+    /**
+   * Briefly backs the slapdown away from the hopper during shooting agitation.
+   *
+   * <p>The relief speed is based on the existing shooting curl speed so tuning the curl speed keeps
+   * the pulse behavior proportional.
+   */
+  private void requestShootingAgitateRelief() {
+    outputs.slapdownStatorCurrentLimit =
+        IntakeConstants.shootingSlowStowStatorCurrentLimit.getAsDouble();
+
+    if (inputs.slapdownDown) {
+      stopSlapdown();
+      isSlapdownStopped = true;
+      return;
+    }
+
+    double reliefSpeed =
+        -IntakeConstants.shootingSlowStowSpeed.getAsDouble()
+            * MathUtil.clamp(
+                IntakeConstants.shootingAgitateReliefSpeedScalar.getAsDouble(), 0.0, 1.0);
+
+    requestSlapdownSpeed(reliefSpeed, true);
+  }
+
   /**
    * Slowly curls the slapdown inward while shooting using a tunable constant speed.
    *
@@ -600,6 +687,19 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kstowFullTableKey + "kD", outputs.stowFullKD);
     Logger.recordOutput(kstowFullTableKey + "kG", outputs.stowFullKG);
     Logger.recordOutput(kstowFullTableKey + "kFF", outputs.stowFullFF);
+
+        Logger.recordOutput(
+        kintakeTableKey + "ShootingAgitateCurlCount",
+        IntakeConstants.shootingAgitateCurlCount.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "ShootingAgitateCurlSeconds",
+        IntakeConstants.shootingAgitateCurlSeconds.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "ShootingAgitateReliefSeconds",
+        IntakeConstants.shootingAgitateReliefSeconds.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "ShootingAgitateReliefSpeedScalar",
+        IntakeConstants.shootingAgitateReliefSpeedScalar.getAsDouble());
   }
 
   /**
