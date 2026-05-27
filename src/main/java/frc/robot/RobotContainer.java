@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -55,11 +56,15 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.AutoManager;
+import frc.robot.util.DriverController;
+import frc.robot.util.DriverController.ControllerType;
 import frc.robot.util.Elastic;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -79,8 +84,14 @@ public class RobotContainer {
   private final Vision vision;
   private final Hood hood;
 
-  private final CommandXboxController driverController = new CommandXboxController(0);
+  private final SendableChooser<ControllerType> driverControllerTypeChooser =
+    new SendableChooser<>();
+
+  private final LoggedDashboardChooser<ControllerType> driverControllerChooser;
+  private final DriverController driverController;
+
   private final CommandXboxController operatorController = new CommandXboxController(1);
+
 
   private double driveSpeedMultiplier = 1.0;
   private double rotationMultiplier = 1.0;
@@ -135,9 +146,26 @@ public class RobotContainer {
     autoManager = new AutoManager(drive);
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
 
+    configureDriverControllerChooser();
+    driverControllerChooser =
+        new LoggedDashboardChooser<>("Driver Controller Type", driverControllerTypeChooser);
+    driverController = new DriverController(0, this::getDriverControllerType);
+
     configureDefaultCommands();
     configureButtonBindings();
   }
+
+      /** Configures the dashboard chooser for the driver controller type. */
+    private void configureDriverControllerChooser() {
+      driverControllerTypeChooser.setDefaultOption("Xbox", ControllerType.XBOX);
+      driverControllerTypeChooser.addOption("PS4", ControllerType.PS4);
+    }
+
+    /** Returns the selected driver controller type. */
+    private ControllerType getDriverControllerType() {
+      ControllerType selectedType = driverControllerChooser.get();
+      return selectedType != null ? selectedType : ControllerType.XBOX;
+    }
 
   /** Starts WPILib data logging and records basic robot startup state. */
   private void startLogging() {
@@ -400,7 +428,6 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(intake.stow());
     driverController.rightBumper().onTrue(intake.deploy());
 
-    // driverController.().whileTrue(hood.runHoodTarget());
     driverController.povUp().whileTrue(hood.runHoodUp());
     driverController.povDown().whileTrue(hood.runHoodDown());
 

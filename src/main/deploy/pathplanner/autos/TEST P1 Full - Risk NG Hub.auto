@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Risk_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Risk_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_RiskHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Hood And Stop Shooting"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "91 - Test First Pass",
+  "choreoAuto": false
+}

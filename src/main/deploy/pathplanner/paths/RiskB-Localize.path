@@ -1,0 +1,115 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.5,
+        "y": 1.487
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.525416666666665,
+        "y": -0.0093201754385972
+      },
+      "isLocked": false,
+      "linkedName": "Pass2_RiskSweepB"
+    },
+    {
+      "anchor": {
+        "x": 5.730964912280701,
+        "y": 2.448511363636363
+      },
+      "prevControl": {
+        "x": 6.572530296080135,
+        "y": 2.1422066137445563
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Pass2_StartLocalize_Return"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Localize",
+      "minWaypointRelativePos": 0.752244165170557,
+      "maxWaypointRelativePos": 0.9030520646319574,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 8.5,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Anti Slip",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.338,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 0.5,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.62,
+        "y": 3.3
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 0.36445242369838415,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.2,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.22,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -40.0
+  },
+  "reversed": false,
+  "folder": "4 - BC Second Pass Connectors",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

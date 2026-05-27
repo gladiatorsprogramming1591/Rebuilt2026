@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.9,
+        "y": 2.75
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.9,
+        "y": 5.75
+      },
+      "isLocked": false,
+      "linkedName": "Pass2_FarSweepA"
+    },
+    {
+      "anchor": {
+        "x": 5.9,
+        "y": 4.987767622647428
+      },
+      "prevControl": {
+        "x": 5.979995334543834,
+        "y": 5.742009348346419
+      },
+      "nextControl": {
+        "x": 5.838706767500596,
+        "y": 4.409860001938764
+      },
+      "isLocked": false,
+      "linkedName": "Intermediate Greedy CloseB"
+    },
+    {
+      "anchor": {
+        "x": 5.803147727275534,
+        "y": 3.25
+      },
+      "prevControl": {
+        "x": 5.803147727275534,
+        "y": 3.5
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Pass2_StartCloseSweepB"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7486631016042782,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.0267379679144382,
+      "rotationDegrees": -110.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": -105.00000000000001
+  },
+  "reversed": false,
+  "folder": "4 - BC Second Pass Connectors",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

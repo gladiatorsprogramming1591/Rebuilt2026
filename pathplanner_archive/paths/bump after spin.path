@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.246692307692309,
+        "y": 1.7093589743589748
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.211782051282053,
+        "y": 2.7326410256410263
+      },
+      "isLocked": false,
+      "linkedName": "end of spin"
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 4.240512820512821,
+        "y": 2.3807772628977455
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.766666666666667,
+      "rotationDegrees": -138.41
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "MISC",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

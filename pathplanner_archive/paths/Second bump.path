@@ -1,0 +1,71 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.839705128205129,
+        "y": 3.767551282051283
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.963195435092723,
+        "y": 1.9324679029957212
+      },
+      "isLocked": false,
+      "linkedName": "Start spinning"
+    },
+    {
+      "anchor": {
+        "x": 2.9,
+        "y": 2.723674698795181
+      },
+      "prevControl": {
+        "x": 2.321858974358976,
+        "y": 2.0086746987951813
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -138.41
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.11613774476704553,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -138.415
+  },
+  "reversed": false,
+  "folder": "MISC",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 110.0
+  },
+  "useDefaultConstraints": true
+}

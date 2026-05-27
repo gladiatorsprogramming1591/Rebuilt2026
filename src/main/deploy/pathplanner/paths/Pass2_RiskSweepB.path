@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.5,
+        "y": 2.75
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.518501069688437,
+        "y": 1.7977090102946187
+      },
+      "isLocked": false,
+      "linkedName": "Pass2_StartRiskSweepB"
+    },
+    {
+      "anchor": {
+        "x": 8.5,
+        "y": 1.487
+      },
+      "prevControl": {
+        "x": 8.500361211151144,
+        "y": 2.366999925867329
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Pass2_RiskSweepB"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "3 - BC Second Pass Sweeps",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

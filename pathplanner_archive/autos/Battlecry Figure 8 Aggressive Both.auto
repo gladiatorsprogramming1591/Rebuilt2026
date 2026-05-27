@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Safe_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Safe_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_SafeNoHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot - Center"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "BC Safe Autos",
+  "choreoAuto": false
+}

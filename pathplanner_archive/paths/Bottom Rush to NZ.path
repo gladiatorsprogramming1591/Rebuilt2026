@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.421064102564103,
+        "y": 0.4535128205128208
+      },
+      "isLocked": false,
+      "linkedName": "bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 7.525794871794874,
+        "y": 1.4651666666666676
+      },
+      "prevControl": {
+        "x": 7.303087338163281,
+        "y": 0.8141754145127751
+      },
+      "nextControl": {
+        "x": 7.676961538461539,
+        "y": 1.9070384615384612
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.570626506024096,
+        "y": 3.805518072289157
+      },
+      "prevControl": {
+        "x": 7.570626506024096,
+        "y": 3.1194539697250536
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "NZ bottom"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "MISC",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

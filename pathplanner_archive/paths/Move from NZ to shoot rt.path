@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.570626506024096,
+        "y": 3.805518072289157
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.09385350774325,
+        "y": 2.2056031156338296
+      },
+      "isLocked": false,
+      "linkedName": "NZ bottom"
+    },
+    {
+      "anchor": {
+        "x": 5.009457917261056,
+        "y": 0.6256633380884444
+      },
+      "prevControl": {
+        "x": 6.019419509068539,
+        "y": 0.6256633380884444
+      },
+      "nextControl": {
+        "x": 3.5473894436519258,
+        "y": 0.6256633380884447
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.729650602409638,
+        "y": 1.3467831325301212
+      },
+      "prevControl": {
+        "x": 3.3765835553340313,
+        "y": 0.2987517487926028
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "bottom start shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9266547406082268,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.373881932021466,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Warm Up Shooter",
+      "waypointRelativePos": 0.9435215946843853,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Warm Up Shooter"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -132.122
+  },
+  "reversed": false,
+  "folder": "MISC",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

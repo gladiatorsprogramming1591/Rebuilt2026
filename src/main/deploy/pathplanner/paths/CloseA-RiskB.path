@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.803147727275534,
+        "y": 3.25
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.803147727275534,
+        "y": 4.5
+      },
+      "isLocked": false,
+      "linkedName": "Pass2_CloseSweepA"
+    },
+    {
+      "anchor": {
+        "x": 8.5,
+        "y": 2.75
+      },
+      "prevControl": {
+        "x": 8.5,
+        "y": 4.0
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Pass2_StartRiskSweepB"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.39,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "4 - BC Second Pass Connectors",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": 105.00000000000001
+  },
+  "useDefaultConstraints": true
+}

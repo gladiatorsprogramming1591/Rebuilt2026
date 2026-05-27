@@ -80,7 +80,11 @@ public interface IntakeIO {
   /** Desired outputs written by the intake subsystem and applied by the IO implementation. */
   @AutoLog
   public static class IntakeIOOutputs {
-    /** Desired open-loop roller output. */
+    /**
+     * Desired roller output.
+     *
+     * <p>Forward torque-current commands use amps. Reverse commands use duty cycle.
+     */
     public double appliedRollerSpeed = 0.0;
 
     /** Desired open-loop slapdown output when slapdown mode is SPEED. */

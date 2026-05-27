@@ -98,7 +98,7 @@ public class TunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = FeetPerSecond.of(16.78);
+  public static final LinearVelocity kSpeedAt12Volts = FeetPerSecond.of(16.7);
   // 10 too slow, 15 too fast. TODO: Find max, then limit speed elsewhere (e.g. limit constant *
   // drive joystick)
 

@@ -1,0 +1,101 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9392724679029953,
+        "y": 0.7938659058487907
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9700602409638552,
+        "y": 0.40699999999999936
+      },
+      "isLocked": false,
+      "linkedName": "Bottom Trench Shoot"
+    },
+    {
+      "anchor": {
+        "x": 5.625493975903614,
+        "y": 0.48349397590361487
+      },
+      "prevControl": {
+        "x": 3.3071703981105083,
+        "y": 0.48349397590361515
+      },
+      "nextControl": {
+        "x": 6.625493975903613,
+        "y": 0.48349397590361487
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.0,
+        "y": 3.647
+      },
+      "prevControl": {
+        "x": 5.896440879798263,
+        "y": 1.4721976744186045
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "bottom NZ extend"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.8855098389982117,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Lower Hood And Stop Shooting",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0.7,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "MISC",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 62.71201205448449
+  },
+  "useDefaultConstraints": true
+}

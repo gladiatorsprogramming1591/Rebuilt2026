@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass2_CloseSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Greedy_CloseA-RiskB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass2_RiskSweepB"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Intake"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "92 - Test Second Pass",
+  "choreoAuto": false
+}

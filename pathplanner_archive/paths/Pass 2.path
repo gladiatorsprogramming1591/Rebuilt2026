@@ -1,0 +1,272 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.7952386363636355,
+        "y": 2.448511363636363
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.85026136363917,
+        "y": 1.6323409090869672
+      },
+      "isLocked": false,
+      "linkedName": "Battlecry Tilted Hub Shot"
+    },
+    {
+      "anchor": {
+        "x": 3.3087840909118977,
+        "y": 0.678613636359695
+      },
+      "prevControl": {
+        "x": 3.0508161015716153,
+        "y": 1.1035020893907475
+      },
+      "nextControl": {
+        "x": 3.464681818184625,
+        "y": 0.4218409090869681
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.56513636363917,
+        "y": 0.550227272723331
+      },
+      "prevControl": {
+        "x": 4.001061219610348,
+        "y": 0.5615087756039078
+      },
+      "nextControl": {
+        "x": 5.482181818184625,
+        "y": 0.5318863636324216
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.803147727275534,
+        "y": 2.347636363632422
+      },
+      "prevControl": {
+        "x": 5.9407045454573515,
+        "y": 0.7611477272687854
+      },
+      "nextControl": {
+        "x": 5.781552449111088,
+        "y": 2.5967019051290334
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.803147727275534,
+        "y": 3.237170454541513
+      },
+      "prevControl": {
+        "x": 5.766465909093715,
+        "y": 2.9345454545415133
+      },
+      "nextControl": {
+        "x": 5.841911612119339,
+        "y": 3.5569725045028955
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.5367840909118975,
+        "y": 3.539795454541513
+      },
+      "prevControl": {
+        "x": 5.970314994907794,
+        "y": 3.452646362848573
+      },
+      "nextControl": {
+        "x": 6.783877015324552,
+        "y": 3.577809750604999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.7381136363664424,
+        "y": 3.539795454541513
+      },
+      "prevControl": {
+        "x": 7.500177976094904,
+        "y": 3.616519776442376
+      },
+      "nextControl": {
+        "x": 7.9760492966379815,
+        "y": 3.4630711326406503
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.8481590909118975,
+        "y": 2.8244999999960587
+      },
+      "prevControl": {
+        "x": 7.836924689626384,
+        "y": 3.24579004823384
+      },
+      "nextControl": {
+        "x": 7.884840909090909,
+        "y": 1.448931818181818
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.674340909090908,
+        "y": 2.109204545454545
+      },
+      "prevControl": {
+        "x": 7.435488636363637,
+        "y": 1.4672727272727264
+      },
+      "nextControl": {
+        "x": 6.073545824037564,
+        "y": 2.6158991954995345
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7952386363636355,
+        "y": 2.448511363636363
+      },
+      "prevControl": {
+        "x": 4.72103409090909,
+        "y": 2.457681818181818
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Battlecry Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.023988005997002,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.8860569715142415,
+      "rotationDegrees": 105.00000000000001
+    },
+    {
+      "waypointRelativePos": 4,
+      "rotationDegrees": 105.00000000000001
+    },
+    {
+      "waypointRelativePos": 5.05,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 7.3,
+      "rotationDegrees": -87.17599004272807
+    },
+    {
+      "waypointRelativePos": 8.05,
+      "rotationDegrees": -136.6
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Localize",
+      "minWaypointRelativePos": 7.7,
+      "maxWaypointRelativePos": 7.8,
+      "constraints": {
+        "maxVelocity": 0.1,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Pre-bump",
+      "minWaypointRelativePos": 7.9,
+      "maxWaypointRelativePos": 8.2,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Lower Hood And Stop Shooting",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Hood And Stop Shooting"
+        }
+      }
+    },
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 2.2,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 8.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -136.6
+  },
+  "reversed": false,
+  "folder": "3 - BC Second Pass Sweeps",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -136.6
+  },
+  "useDefaultConstraints": true
+}

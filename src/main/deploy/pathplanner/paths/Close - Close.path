@@ -1,0 +1,86 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.281791846192703,
+        "y": 0.4535128205128206
+      },
+      "isLocked": false,
+      "linkedName": "Battlecry bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 6.793556818181818,
+        "y": 0.8253409090909087
+      },
+      "prevControl": {
+        "x": 6.330523346777878,
+        "y": 0.6820652557978992
+      },
+      "nextControl": {
+        "x": 7.0323847339753875,
+        "y": 0.8992410216598342
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.086590909094381,
+        "y": 1.1554772727274736
+      },
+      "prevControl": {
+        "x": 7.599852352115157,
+        "y": 1.3329571113739545
+      },
+      "nextControl": {
+        "x": 8.321464165124532,
+        "y": 1.0698352643332552
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.45340909090909,
+        "y": 0.4218409090911098
+      },
+      "prevControl": {
+        "x": 8.594613131483706,
+        "y": 0.6968957493499808
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Battlecry Close Dot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "0 - BC Starting Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}
