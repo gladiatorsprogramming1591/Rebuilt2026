@@ -1,0 +1,86 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.56,
+        "y": 0.454
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.183712969767618,
+        "y": 0.6607773089233424
+      },
+      "isLocked": false,
+      "linkedName": "Battlecry Sneaky Start"
+    },
+    {
+      "anchor": {
+        "x": 6.2525,
+        "y": 0.880363636363636
+      },
+      "prevControl": {
+        "x": 5.638224819430254,
+        "y": 0.6214285912934961
+      },
+      "nextControl": {
+        "x": 6.655483796661689,
+        "y": 1.0502331522609705
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.086590909094381,
+        "y": 1.1554772727274736
+      },
+      "prevControl": {
+        "x": 7.471669700359451,
+        "y": 1.4419472369392456
+      },
+      "nextControl": {
+        "x": 8.313206306013843,
+        "y": 1.0499052031302794
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.45340909090909,
+        "y": 0.4218409090911098
+      },
+      "prevControl": {
+        "x": 8.616311850176405,
+        "y": 0.7488813487468962
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Battlecry Close Dot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "BC Starting Dots",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

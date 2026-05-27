@@ -275,29 +275,18 @@ public class IntakeIOKraken implements IntakeIO {
   /**
    * Applies roller output using either torque-current mode or duty-cycle mode.
    *
-   * <p>Torque-current mode is only used for normal pickup speed when RobotState requests it. Other
-   * speeds use normal duty-cycle output so reverse/manual commands behave as expected.
+   * <p>Forward intake requests use torque-current mode. Normal pickup is 80 amps by default and
+   * boost is 120 amps by default. Reverse/manual requests use duty cycle.
    *
-   * @param rollerSpeed requested roller speed
+   * @param rollerOutput requested roller torque current in amps or duty-cycle output
    */
-  private void applyRollerOutput(double rollerSpeed) {
-    boolean useTorqueMode =
-      rollerSpeed > 0.0 && RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT;
-
-    if (useTorqueMode) {
-      double torqueOutput = IntakeConstants.rollerBoostTorqueCurrent.getAsDouble();
-      intakeLeft.setControl(torqueRollerControl.withOutput(torqueOutput));
+  private void applyRollerOutput(double rollerOutput) {
+    if (RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT) {
+      intakeLeft.setControl(torqueRollerControl.withOutput(rollerOutput));
       return;
     }
 
-    if (rollerSpeed > 0)
-    {
-      rollerSpeed = 70;
-    }
-    
-      intakeLeft.setControl(torqueRollerControl.withOutput(rollerSpeed)); // idk needs to be changes idk if i like torque more or duty cycle more..
-
-    // intakeLeft.set(rollerSpeed);
+    intakeLeft.set(rollerOutput);
   }
 
   /**

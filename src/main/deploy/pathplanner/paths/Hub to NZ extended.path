@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 3.3071703981105083,
-        "y": 0.48349397590361487
+        "y": 0.48349397590361515
       },
       "nextControl": {
         "x": 6.625493975903613,
@@ -81,9 +81,9 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -92,7 +92,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Competiton",
+  "folder": "MISC",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 62.71201205448449

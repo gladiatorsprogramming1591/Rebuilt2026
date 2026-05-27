@@ -18,14 +18,14 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-  public static final boolean tuningMode = true; // TODO: Remove before Tech Valley
+  public static final boolean tuningMode = false; // TODO: Remove before Tech Valley
   public static final boolean disableHAL = false;
 
   public static final class Tuning {
     private static final boolean ENABLED = tuningMode && !disableHAL;
 
     public static final boolean DRIVE = ENABLED && true;
-    public static final boolean DRIVE_COMMANDS = ENABLED && true;
+    public static final boolean DRIVE_COMMANDS = ENABLED && false;
 
     public static final boolean HOOD = ENABLED && false;
     public static final boolean SHOOTER = ENABLED && false;

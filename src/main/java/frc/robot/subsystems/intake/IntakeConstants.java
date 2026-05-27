@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intake;
 
 import frc.robot.Constants;
-import frc.robot.util.LoggedTunableBoolean;
 import frc.robot.util.LoggedTunableNumber;
 
 /** Constants and tunable values for the intake subsystem. */
@@ -137,86 +136,87 @@ public final class IntakeConstants {
   public static final String kstowFullTableKey = kintakeTableKey + "StowFull/";
 
 
-  //MAKING A MESS, NEEDS TO BE CLEANED AFTER TESTING/TUNING
+  // Roller torque-current tuning
+  private static final double DEFAULT_ROLLER_NORMAL_TORQUE_CURRENT = 80.0;
+  private static final double DEFAULT_ROLLER_BOOST_TORQUE_CURRENT = 120.0;
+  private static final double DEFAULT_ROLLER_BOOST_ENTER_CURRENT = 25.0;
+  private static final double DEFAULT_ROLLER_BOOST_EXIT_CURRENT = 15.0;
+  private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
+  private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
+  private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
 
-  private static final double DEFAULT_ROLLER_NORMAL_DUTY = 1.0;
-private static final double DEFAULT_ROLLER_BOOST_TORQUE_CURRENT = 120.0;
-private static final double DEFAULT_ROLLER_BOOST_ENTER_CURRENT = 25.0;
-private static final double DEFAULT_ROLLER_BOOST_EXIT_CURRENT = 15.0;
-private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
+  // Prepare-intake unjam tuning
+  public static final LoggedTunableNumber prepareUnjamReverseSpeed =
+      new LoggedTunableNumber(
+          kintakeTableKey + "PrepareUnjamReverseSpeed",
+          DEFAULT_PREPARE_UNJAM_REVERSE_SPEED,
+          Constants.Tuning.INTAKE);
 
-private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
-private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
+  public static final LoggedTunableNumber prepareUnjamReverseSeconds =
+      new LoggedTunableNumber(
+          kintakeTableKey + "PrepareUnjamReverseSeconds",
+          DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber shootingAgitateCurlCount =
-    new LoggedTunableNumber(
-        kintakeTableKey + "ShootingAgitateCurlCount", 3.0, Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerNormalTorqueCurrent =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerNormalTorqueCurrent",
+          DEFAULT_ROLLER_NORMAL_TORQUE_CURRENT,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber shootingAgitateCurlSeconds =
-    new LoggedTunableNumber(
-        kintakeTableKey + "ShootingAgitateCurlSeconds", 0.18, Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerBoostTorqueCurrent =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerBoostTorqueCurrent",
+          DEFAULT_ROLLER_BOOST_TORQUE_CURRENT,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber shootingAgitateReliefSeconds =
-    new LoggedTunableNumber(
-        kintakeTableKey + "ShootingAgitateReliefSeconds", 0.10, Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerBoostEnterCurrent =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerBoostEnterCurrent",
+          DEFAULT_ROLLER_BOOST_ENTER_CURRENT,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber shootingAgitateReliefSpeedScalar =
-    new LoggedTunableNumber(
-        kintakeTableKey + "ShootingAgitateReliefSpeedScalar", 0.65, Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerBoostExitCurrent =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerBoostExitCurrent",
+          DEFAULT_ROLLER_BOOST_EXIT_CURRENT,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber prepareUnjamReverseSpeed =
-    new LoggedTunableNumber(
-        kintakeTableKey + "PrepareUnjamReverseSpeed",
-        DEFAULT_PREPARE_UNJAM_REVERSE_SPEED,
-        Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerBoostHoldSeconds =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerBoostHoldSeconds",
+          DEFAULT_ROLLER_BOOST_HOLD_SECONDS,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber prepareUnjamReverseSeconds =
-    new LoggedTunableNumber(
-        kintakeTableKey + "PrepareUnjamReverseSeconds",
-        DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS,
-        Constants.Tuning.INTAKE);
-        
-public static final LoggedTunableNumber rollerBoostIgnoreSeconds =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerBoostIgnoreSeconds",
-        DEFAULT_ROLLER_BOOST_IGNORE_SECONDS,
-        Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerBoostIgnoreSeconds =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerBoostIgnoreSeconds",
+          DEFAULT_ROLLER_BOOST_IGNORE_SECONDS,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber rollerBoostDebounceSeconds =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerBoostDebounceSeconds",
-        DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS,
-        Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber rollerBoostDebounceSeconds =
+      new LoggedTunableNumber(
+          kintakeTableKey + "RollerBoostDebounceSeconds",
+          DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS,
+          Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber rollerNormalDuty =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerNormalDuty",
-        DEFAULT_ROLLER_NORMAL_DUTY,
-        Constants.Tuning.INTAKE);
+  // REFACTOR: Shooting agitation is still experimental. Keep these grouped so they can be removed
+  // or moved behind a chooser once the final shooting-stow behavior is selected.
+  public static final LoggedTunableNumber shootingAgitateCurlCount =
+      new LoggedTunableNumber(
+          kintakeTableKey + "ShootingAgitateCurlCount", 3.0, Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber rollerBoostTorqueCurrent =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerBoostTorqueCurrent",
-        DEFAULT_ROLLER_BOOST_TORQUE_CURRENT,
-        Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber shootingAgitateCurlSeconds =
+      new LoggedTunableNumber(
+          kintakeTableKey + "ShootingAgitateCurlSeconds", 0.18, Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber rollerBoostEnterCurrent =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerBoostEnterCurrent",
-        DEFAULT_ROLLER_BOOST_ENTER_CURRENT,
-        Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber shootingAgitateReliefSeconds =
+      new LoggedTunableNumber(
+          kintakeTableKey + "ShootingAgitateReliefSeconds", 0.10, Constants.Tuning.INTAKE);
 
-public static final LoggedTunableNumber rollerBoostExitCurrent =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerBoostExitCurrent",
-        DEFAULT_ROLLER_BOOST_EXIT_CURRENT,
-        Constants.Tuning.INTAKE);
-
-public static final LoggedTunableNumber rollerBoostHoldSeconds =
-    new LoggedTunableNumber(
-        kintakeTableKey + "RollerBoostHoldSeconds",
-        DEFAULT_ROLLER_BOOST_HOLD_SECONDS,
-        Constants.Tuning.INTAKE);
+  public static final LoggedTunableNumber shootingAgitateReliefSpeedScalar =
+      new LoggedTunableNumber(
+          kintakeTableKey + "ShootingAgitateReliefSpeedScalar", 0.65, Constants.Tuning.INTAKE);
 
   // Deploy tunables
   public static final LoggedTunableNumber deploySpeed =

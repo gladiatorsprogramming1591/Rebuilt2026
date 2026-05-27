@@ -38,8 +38,6 @@ public class Intake extends SubsystemBase {
 
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
-  private boolean overrideRollerSpeed = false;
-
   private boolean rollerBoostActive = false;
   private boolean rollerWasRequested = false;
   private double rollerRequestStartTimestamp = 0.0;
@@ -160,7 +158,7 @@ public class Intake extends SubsystemBase {
         });
   }
 
-    /**
+  /**
    * Pulses the slapdown while shooting, then falls back to the normal slow shooting curl.
    *
    * <p>The inward part of each pulse uses the existing shooting slow-stow speed. The short outward
@@ -223,7 +221,7 @@ public class Intake extends SubsystemBase {
         });
   }
 
-    /**
+  /**
    * Briefly backs the slapdown away from the hopper during shooting agitation.
    *
    * <p>The relief speed is based on the existing shooting curl speed so tuning the curl speed keeps
@@ -476,20 +474,16 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Converts the requested roller speed into the final applied roller output.
+   * Converts the requested roller intent into the final applied roller output.
    *
-   * <p>Normal forward intake starts in duty-cycle mode. Auto boost can switch to torque-current mode
-   * only after the roller has been requested for a short spin-up ignore period and high current has
-   * persisted through a debounce window.
+   * <p>Forward intake always uses torque-current mode. Normal pickup uses the tunable 80 amp
+   * request, and auto boost temporarily raises that request to the tunable 120 amp request after the
+   * roller has been requested for a short spin-up ignore period and high current has persisted
+   * through a debounce window. Reverse/manual roller commands still use duty cycle.
    */
   private void updateRollerOutput() {
-    // if (inputs.slapdownPosition < IntakeConstants.ROLLER_STOP_CONSTRAINT && !overrideRollerSpeed) {
-    //   outputs.appliedRollerSpeed = 0.0;
-    //   RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
-    //   resetRollerBoostState();
-    //   logRollerBoostState(0.0, false);
-    //   return;
-    // }
+    // REFACTOR: If we restore the slapdown-position roller safety cutoff, re-add it here instead
+    // of spreading safety checks into the individual roller commands.
 
     if (requestedRollerSpeed == 0.0) {
       outputs.appliedRollerSpeed = 0.0;
@@ -543,13 +537,11 @@ public class Intake extends SubsystemBase {
       rollerHighCurrentStartTimestamp = Double.NaN;
     }
 
-    if (rollerBoostActive) {
-      outputs.appliedRollerSpeed = IntakeConstants.ROLLER_PICKUP_SPEED;
-      RobotState.setRollerMode(RollerModeState.TORQUE_CURRENT);
-    } else {
-      outputs.appliedRollerSpeed = IntakeConstants.rollerNormalDuty.getAsDouble();
-      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
-    }
+    outputs.appliedRollerSpeed =
+        rollerBoostActive
+            ? IntakeConstants.rollerBoostTorqueCurrent.getAsDouble()
+            : IntakeConstants.rollerNormalTorqueCurrent.getAsDouble();
+    RobotState.setRollerMode(RollerModeState.TORQUE_CURRENT);
 
     logRollerBoostState(rollerCurrent, spinupComplete);
   }
@@ -636,12 +628,12 @@ public class Intake extends SubsystemBase {
         kintakeTableKey + "DesiredSlapdownPosition", outputs.desiredSlapdownPosition);
     Logger.recordOutput(
         kintakeTableKey + "SlapdownStatorCurrentLimit", outputs.slapdownStatorCurrentLimit);
-    Logger.recordOutput(kintakeTableKey + "OverrideRollerSpeed", overrideRollerSpeed);
     Logger.recordOutput(kintakeTableKey + "IsSlapdownStopped", isSlapdownStopped);
     Logger.recordOutput(kintakeTableKey + "StopSlapdownOnCurrentSpike", stopSlapdownOnCurrentSpike);
 
     Logger.recordOutput(
-        kintakeTableKey + "RollerNormalDuty", IntakeConstants.rollerNormalDuty.getAsDouble());
+        kintakeTableKey + "RollerNormalTorqueCurrent",
+        IntakeConstants.rollerNormalTorqueCurrent.getAsDouble());
     Logger.recordOutput(
         kintakeTableKey + "RollerBoostTorqueCurrent",
         IntakeConstants.rollerBoostTorqueCurrent.getAsDouble());
@@ -688,7 +680,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kstowFullTableKey + "kG", outputs.stowFullKG);
     Logger.recordOutput(kstowFullTableKey + "kFF", outputs.stowFullFF);
 
-        Logger.recordOutput(
+    Logger.recordOutput(
         kintakeTableKey + "ShootingAgitateCurlCount",
         IntakeConstants.shootingAgitateCurlCount.getAsDouble());
     Logger.recordOutput(
@@ -746,8 +738,7 @@ public class Intake extends SubsystemBase {
    * Briefly reverses the rollers to clear a pinch, then runs the rollers forward.
    *
    * <p>This command intentionally has no intake subsystem requirement so it can run alongside
-   * {@link #deploy()}. During the reverse pulse, the roller safety override is enabled so the
-   * rollers can move even while the slapdown is still above the normal roller cutoff position.
+   * {@link #deploy()}.
    *
    * @return command that unjams the rollers during prepare-intake, then runs them forward
    */
@@ -755,7 +746,7 @@ public class Intake extends SubsystemBase {
     return Commands.defer(
         () ->
             Commands.sequence(
-                runRollerReverseWithOverrideWithoutRequirements()
+                runRollerReverseWithoutRequirements()
                     .until(() -> inputs.slapdownDown)
                     .withTimeout(
                         Math.max(
@@ -765,38 +756,28 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Runs the rollers in reverse while bypassing the slapdown position safety cutoff.
+   * Runs the rollers in reverse during the prepare-intake unjam pulse.
    *
    * @return command that reverse-runs the rollers until interrupted
    */
-  private Command runRollerReverseWithOverrideWithoutRequirements() {
+  private Command runRollerReverseWithoutRequirements() {
     return Commands.runEnd(
-        () -> {
-          setRequestedRollerSpeed(
-              -Math.abs(IntakeConstants.prepareUnjamReverseSpeed.getAsDouble()));
-          overrideRollerSpeed = true;
-        },
-        () -> {
-          setRequestedRollerSpeed(0.0);
-          overrideRollerSpeed = false;
-        });
+        () ->
+            setRequestedRollerSpeed(
+                -Math.abs(IntakeConstants.prepareUnjamReverseSpeed.getAsDouble())),
+        () -> setRequestedRollerSpeed(0.0));
   }
 
   /**
-   * Runs the rollers while bypassing the slapdown position safety cutoff.
+   * Runs the rollers from the operator debug binding.
    *
-   * @return command that runs the rollers with the safety override enabled
+   * <p>REFACTOR: This keeps the old method name so RobotContainer does not need to change yet. The
+   * old slapdown-position safety override was removed because that safety cutoff is not active.
+   *
+   * @return command that runs the rollers until interrupted
    */
   public Command overrideRollerSpeedCommand() {
-    return runEnd(
-        () -> {
-          setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
-          overrideRollerSpeed = true;
-        },
-        () -> {
-          setRequestedRollerSpeed(0.0);
-          overrideRollerSpeed = false;
-        });
+    return runRoller();
   }
 
   /**

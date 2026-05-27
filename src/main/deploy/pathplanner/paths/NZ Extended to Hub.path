@@ -59,9 +59,9 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -70,7 +70,7 @@
     "rotation": 62.71201205448449
   },
   "reversed": false,
-  "folder": "Competiton",
+  "folder": "MISC",
   "idealStartingState": {
     "velocity": 2.0,
     "rotation": 90.0

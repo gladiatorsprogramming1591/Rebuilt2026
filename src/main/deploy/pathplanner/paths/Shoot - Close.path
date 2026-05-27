@@ -1,0 +1,157 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.7952386363636355,
+        "y": 2.448511363636363
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4841899019404914,
+        "y": 1.6459523729909773
+      },
+      "isLocked": false,
+      "linkedName": "Battlecry Tilted Hub Shot"
+    },
+    {
+      "anchor": {
+        "x": 3.556386363636363,
+        "y": 0.8253409090909087
+      },
+      "prevControl": {
+        "x": 3.331590463150328,
+        "y": 0.9762222362022881
+      },
+      "nextControl": {
+        "x": 3.837902159886202,
+        "y": 0.6363896121626483
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.895272727276199,
+        "y": 0.5685681818183821
+      },
+      "prevControl": {
+        "x": 4.360755165195288,
+        "y": 0.5169135444689394
+      },
+      "nextControl": {
+        "x": 6.376972454718068,
+        "y": 0.7117564837776584
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.793556818181818,
+        "y": 0.8253409090909087
+      },
+      "prevControl": {
+        "x": 6.330523346777878,
+        "y": 0.6820652557978992
+      },
+      "nextControl": {
+        "x": 7.0323847339753875,
+        "y": 0.8992410216598342
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.086590909094381,
+        "y": 1.1554772727274736
+      },
+      "prevControl": {
+        "x": 7.599852352115157,
+        "y": 1.3329571113739545
+      },
+      "nextControl": {
+        "x": 8.321464165124532,
+        "y": 1.0698352643332552
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.45340909090909,
+        "y": 0.4218409090911098
+      },
+      "prevControl": {
+        "x": 8.594613131483706,
+        "y": 0.6968957493499808
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Battlecry Close Dot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.250374812593708,
+      "rotationDegrees": 36.63311453056894
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Lower Hood And Stop Shooting",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Hood And Stop Shooting"
+        }
+      }
+    },
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 3.2,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 4.95,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Battlecry Dots",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -136.6
+  },
+  "useDefaultConstraints": true
+}
