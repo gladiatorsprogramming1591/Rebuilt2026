@@ -20,8 +20,8 @@
         "y": 2.75
       },
       "prevControl": {
-        "x": 6.75,
-        "y": 4.0
+        "x": 6.7257196338840455,
+        "y": 3.999764163280927
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,13 +46,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 5.0,
+    "velocity": 2.5,
     "rotation": -90.0
   },
   "reversed": false,
   "folder": "4 - BC Second Pass Connectors",
   "idealStartingState": {
-    "velocity": 5.0,
+    "velocity": 4.25,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

@@ -87,18 +87,7 @@
     }
   ],
   "constraintZones": [],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.626,
-        "y": 4.034536
-      },
-      "rotationOffset": 180.0,
-      "minWaypointRelativePos": 4.95,
-      "maxWaypointRelativePos": 4.95,
-      "name": "Point Towards Hub"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
@@ -115,7 +104,7 @@
   "reversed": false,
   "folder": "6 - BC Final Passes",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": -136.6
   },
   "useDefaultConstraints": true

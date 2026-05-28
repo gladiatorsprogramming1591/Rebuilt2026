@@ -36,8 +36,8 @@
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 3.121341792530265,
-        "y": 2.2840343668300855
+        "x": 2.9561104623998125,
+        "y": 2.7764080036436
       },
       "nextControl": null,
       "isLocked": false,
@@ -68,7 +68,7 @@
   "reversed": false,
   "folder": "5 - BC Second Pass Returns",
   "idealStartingState": {
-    "velocity": 2.0,
+    "velocity": 2.25,
     "rotation": -40.0
   },
   "useDefaultConstraints": true

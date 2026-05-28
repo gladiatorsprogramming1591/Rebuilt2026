@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -34,6 +35,10 @@ B_SWEEP_PATHS = {
     "CloseB": "Pass2_CloseSweepB",
     "FarB": "Pass2_FarSweepB",
     "RiskB": "Pass2_RiskSweepB",
+}
+
+GREEDY_B_SWEEP_PATHS = {
+    token: f"Greedy_{path_name}" for token, path_name in B_SWEEP_PATHS.items()
 }
 
 DOT_PATHS = {
@@ -241,14 +246,15 @@ def parse_chain_label(label: str, greedy: bool = False) -> Tuple[str, List[str],
     connector = f"{a_token}-{b_token}"
     if use_greedy:
         connector = f"Greedy_{connector}"
+    b_sweep_path = GREEDY_B_SWEEP_PATHS[b_token] if use_greedy else B_SWEEP_PATHS[b_token]
     readable = ("Greedy " if use_greedy else "") + f"{a_token}-{b_token}"
-    return readable, [A_SWEEP_PATHS[a_token], connector, B_SWEEP_PATHS[b_token]], b_token
+    return readable, [A_SWEEP_PATHS[a_token], connector, b_sweep_path], b_token
 
 
 def return_paths_for_second(end_token: str, localize: bool) -> List[str]:
     loc = "Localize" if localize else "NoLocalize"
     if end_token.endswith("B"):
-        return [f"{end_token}-{loc}", f"Pass2_{loc}_Return"]
+        return [f"{end_token}-{loc}", f"Pass2_{end_token}_{loc}_Return"]
     return [f"Pass2_{loc}_Return"]
 
 
@@ -365,6 +371,8 @@ def copy_paths_for_auto(
         dst = path_file(project, new_name)
         if dst.exists() and not overwrite:
             raise FileExistsError(f"Refusing to overwrite existing copied path: {dst.name}. Use --overwrite.")
+        if dst.exists() and overwrite:
+            dst.unlink()
 
         data = load_json(src)
         data["folder"] = path_folder
@@ -391,6 +399,8 @@ def write_auto(
     dst = auto_file(project, auto_name)
     if dst.exists() and not overwrite:
         raise FileExistsError(f"Refusing to overwrite existing auto: {dst.name}. Use --overwrite.")
+    if dst.exists() and overwrite:
+        dst.unlink()
 
     write_json(dst, auto_json)
     add_folder_to_settings(project, "autoFolders", auto_json.get("folder", ""))
@@ -571,7 +581,7 @@ def dynamic_preview_text(commands: List[Dict[str, Any]], warnings: List[str], au
 
 def canonical_generated_path(path_name: str) -> str:
     known_paths = set(ZERO_DOT_PATHS.values()) | set(SNEAKY_DOT_PATHS.values()) | set(DOT_PATHS.values())
-    known_paths |= set(A_SWEEP_PATHS.values()) | set(B_SWEEP_PATHS.values())
+    known_paths |= set(A_SWEEP_PATHS.values()) | set(B_SWEEP_PATHS.values()) | set(GREEDY_B_SWEEP_PATHS.values())
     known_paths |= {
         "Pass1_Safe_Start",
         "Pass1_Risk_Start",
@@ -580,6 +590,9 @@ def canonical_generated_path(path_name: str) -> str:
         "Pass2_Localize_Return",
         "Pass2_NoLocalize_Return",
     }
+    for b in B_SWEEP_PATHS:
+        known_paths.add(f"Pass2_{b}_Localize_Return")
+        known_paths.add(f"Pass2_{b}_NoLocalize_Return")
 
     for risk in [False, True]:
         for greedy in [False, True]:
@@ -625,6 +638,7 @@ def parse_chain_from_paths(paths: List[str]) -> Dict[str, Any]:
 
     inv_a = {path: token for token, path in A_SWEEP_PATHS.items()}
     inv_b = {path: token for token, path in B_SWEEP_PATHS.items()}
+    inv_b.update({path: token for token, path in GREEDY_B_SWEEP_PATHS.items()})
     a_token = inv_a.get(paths[0])
     if not a_token:
         raise ValueError(f"expected SweepA path, got {paths[0]}")
@@ -646,8 +660,8 @@ def parse_chain_from_paths(paths: List[str]) -> Dict[str, Any]:
     if not b_token:
         raise ValueError(f"expected SweepB path, got {paths[2]}")
 
-    greedy = connector.startswith("Greedy_")
-    clean = connector[len("Greedy_"):] if greedy else connector
+    greedy = connector.startswith("Greedy_") or paths[2].startswith("Greedy_")
+    clean = connector[len("Greedy_"):] if connector.startswith("Greedy_") else connector
     match = re.fullmatch(r"(MidA|CloseA|FarA|RiskA)-(MidB|CloseB|FarB|RiskB)", clean)
     if not match:
         raise ValueError(f"could not parse connector {connector}")
@@ -757,7 +771,12 @@ def parse_generated_auto(auto_json: Dict[str, Any]) -> Tuple[List[Dict[str, Any]
                     path_name = command_path_name(commands[index])
                     if not path_name:
                         break
-                    if path_name.endswith("-Localize") or path_name.endswith("-NoLocalize") or path_name in {"Pass2_Localize_Return", "Pass2_NoLocalize_Return"}:
+                    if (
+                        path_name.endswith("-Localize")
+                        or path_name.endswith("-NoLocalize")
+                        or path_name in {"Pass2_Localize_Return", "Pass2_NoLocalize_Return"}
+                        or re.fullmatch(r"Pass2_(MidB|CloseB|FarB|RiskB)_(Localize|NoLocalize)_Return", path_name)
+                    ):
                         break
                     sweep_paths.append(path_name)
                     index += 1
@@ -772,9 +791,12 @@ def parse_generated_auto(auto_json: Dict[str, Any]) -> Tuple[List[Dict[str, Any]
                         index += 1
                 if index < len(commands):
                     return_path = command_path_name(commands[index])
-                    if return_path == "Pass2_NoLocalize_Return":
+                    if return_path and ("NoLocalize_Return" in return_path):
                         localize = False
-                    if return_path in {"Pass2_Localize_Return", "Pass2_NoLocalize_Return"}:
+                    if return_path in {"Pass2_Localize_Return", "Pass2_NoLocalize_Return"} or (
+                        return_path is not None
+                        and re.fullmatch(r"Pass2_(MidB|CloseB|FarB|RiskB)_(Localize|NoLocalize)_Return", return_path)
+                    ):
                         index += 1
                 if index + 1 >= len(commands) or not command_named(commands[index], NAMED_SHOOT) or not command_named(commands[index + 1], NAMED_LOWER):
                     raise ValueError("second pass is missing shoot/lower commands")
@@ -825,8 +847,8 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
 
     root = tk.Tk()
     root.title("PathPlanner Auto Generator")
-    root.geometry("1180x820")
-    root.minsize(1020, 700)
+    root.geometry("1500x880")
+    root.minsize(1200, 760)
 
     bg = "#0f172a"
     panel = "#111827"
@@ -921,7 +943,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
     app = tk.Frame(root, bg=bg)
     app.pack(fill="both", expand=True, padx=16, pady=12)
     app.columnconfigure(0, weight=1)
-    app.rowconfigure(1, weight=1)
+    app.rowconfigure(2, weight=1)
 
     header = tk.Frame(app, bg=bg)
     header.grid(row=0, column=0, sticky="ew", pady=(0, 10))
@@ -930,7 +952,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
     title_box = tk.Frame(header, bg=bg)
     title_box.grid(row=0, column=0, sticky="w")
     label(title_box, "PathPlanner Auto Generator", 23, "bold", text, bg).pack(anchor="w")
-    label(title_box, "Add passes, choose a final path, preview when needed, then save.", 10, "normal", muted, bg).pack(anchor="w", pady=(3, 0))
+    label(title_box, "Add passes and watch the generated auto update on the field in real time.", 10, "normal", muted, bg).pack(anchor="w", pady=(3, 0))
 
     header_actions = tk.Frame(header, bg=bg)
     header_actions.grid(row=0, column=1, sticky="e")
@@ -940,14 +962,75 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
     toolbar_inner = tk.Frame(toolbar, bg=panel)
     toolbar_inner.pack(fill="x", padx=12, pady=12)
 
-    canvas = tk.Canvas(app, bg=bg, highlightthickness=0, bd=0)
-    scrollbar = tk.Scrollbar(app, orient="vertical", command=canvas.yview, bg=bg, troughcolor=bg, relief="flat", bd=0)
+    main_area = tk.Frame(app, bg=bg)
+    main_area.grid(row=2, column=0, sticky="nsew")
+    main_area.columnconfigure(0, weight=3)
+    main_area.columnconfigure(1, weight=2)
+    main_area.rowconfigure(0, weight=1)
+
+    editor_col = tk.Frame(main_area, bg=bg)
+    editor_col.grid(row=0, column=0, sticky="nsew", padx=(0, 12))
+    editor_col.columnconfigure(0, weight=1)
+    editor_col.rowconfigure(0, weight=1)
+
+    canvas = tk.Canvas(editor_col, bg=bg, highlightthickness=0, bd=0)
+    scrollbar = tk.Scrollbar(editor_col, orient="vertical", command=canvas.yview, bg=bg, troughcolor=bg, relief="flat", bd=0)
     pass_frame = tk.Frame(canvas, bg=bg)
     pass_frame_id = canvas.create_window((0, 0), window=pass_frame, anchor="nw")
     canvas.configure(yscrollcommand=scrollbar.set)
-    canvas.grid(row=2, column=0, sticky="nsew")
-    scrollbar.grid(row=2, column=1, sticky="ns")
-    app.rowconfigure(2, weight=1)
+    canvas.grid(row=0, column=0, sticky="nsew")
+    scrollbar.grid(row=0, column=1, sticky="ns")
+
+    live_panel = card_frame(main_area, panel)
+    live_panel.grid(row=0, column=1, sticky="nsew")
+    live_panel.columnconfigure(0, weight=1)
+    live_panel.rowconfigure(1, weight=1)
+
+    live_top = tk.Frame(live_panel, bg=panel)
+    live_top.grid(row=0, column=0, sticky="ew", padx=12, pady=(12, 8))
+    live_top.columnconfigure(0, weight=1)
+    label(live_top, "Live PathPlanner Preview", 15, "bold", text, panel).grid(row=0, column=0, sticky="w")
+    live_path_label = label(live_top, "Waiting for auto", 9, "normal", muted, panel)
+    live_path_label.grid(row=1, column=0, sticky="w", pady=(2, 0))
+
+    live_field = tk.Canvas(live_panel, bg="#020617", highlightthickness=1, highlightbackground=border, bd=0)
+    live_field.grid(row=1, column=0, sticky="nsew", padx=12, pady=(0, 8))
+
+    live_info = scrolledtext.ScrolledText(live_panel, height=9, wrap="word", borderwidth=0, relief="flat")
+    live_info.grid(row=2, column=0, sticky="ew", padx=12, pady=(0, 8))
+    live_info.configure(bg="#020617", fg="#dbeafe", insertbackground=text, font=("Cascadia Mono", 9), padx=10, pady=10)
+
+    live_controls = tk.Frame(live_panel, bg=panel)
+    live_controls.grid(row=3, column=0, sticky="ew", padx=12, pady=(0, 12))
+    live_controls.columnconfigure(4, weight=1)
+    live_playing = tk.BooleanVar(value=False)
+    live_frame_var = tk.IntVar(value=0)
+    live_speed_var = tk.StringVar(value="1x")
+    live_image_ref: Dict[str, Any] = {}
+    live_visual_state: Dict[str, Any] = {"playback_points": [], "loaded_paths": [], "field": None, "path_names": [], "warnings": [], "missing": []}
+    live_redraw_after: Dict[str, Optional[str]] = {"id": None}
+
+    live_play_button = button(live_controls, "Play", lambda: toggle_live_play(), accent, text, 10)
+    live_play_button.grid(row=0, column=0, padx=(0, 8))
+    button(live_controls, "Restart", lambda: restart_live_playback(), raised, text, 10).grid(row=0, column=1, padx=(0, 10))
+    label(live_controls, "Speed", 9, "normal", muted, panel).grid(row=0, column=2, padx=(0, 6))
+    combo(live_controls, live_speed_var, ["0.25x", "0.5x", "1x", "2x", "4x"], width=7).grid(row=0, column=3, padx=(0, 10))
+    live_slider = tk.Scale(
+        live_controls,
+        from_=0,
+        to=0,
+        orient="horizontal",
+        variable=live_frame_var,
+        command=lambda _value: draw_live_frame(),
+        bg=panel,
+        fg=text,
+        troughcolor=raised,
+        activebackground=accent,
+        highlightthickness=0,
+        relief="flat",
+        showvalue=False,
+    )
+    live_slider.grid(row=0, column=4, sticky="ew")
 
     status = card_frame(app, panel)
     status.grid(row=3, column=0, sticky="ew", pady=(8, 0))
@@ -995,6 +1078,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
             status_label.configure(text=message)
         except Exception as exc:
             status_label.configure(text=f"error: {exc}")
+        schedule_live_redraw()
 
     def show_text_window(title: str, value: str) -> None:
         dialog = tk.Toplevel(root)
@@ -1045,6 +1129,370 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
                 )
                 points.append((x, y))
         return points
+
+    def path_velocity(path_json: Dict[str, Any], section: str) -> Optional[float]:
+        state = path_json.get(section, {})
+        velocity = state.get("velocity") if isinstance(state, dict) else None
+        try:
+            return float(velocity) if velocity is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    def path_rotation(path_json: Dict[str, Any], section: str) -> Optional[float]:
+        state = path_json.get(section, {})
+        rotation = state.get("rotation") if isinstance(state, dict) else None
+        try:
+            return float(rotation) if rotation is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    def find_rebuilt_field_image(project: Path) -> Optional[Path]:
+        script_dir = Path(__file__).resolve().parent
+        candidates = [
+            script_dir / "field26.png",
+            script_dir / "BattlecryField26.png",
+            script_dir / "images" / "field26.png",
+            script_dir / "pathplanner" / "images" / "field26.png",
+            Path.cwd() / "field26.png",
+            Path.cwd() / "BattlecryField26.png",
+            Path.cwd() / "images" / "field26.png",
+            Path.cwd() / "pathplanner" / "images" / "field26.png",
+            project / "field26.png",
+            project / "BattlecryField26.png",
+            project / "images" / "field26.png",
+            project.parent / "images" / "field26.png",
+            project.parent.parent / "images" / "field26.png" if project.parent.parent else project / "missing",
+            Path("/mnt/data/pp_source/pathplanner/images/field26.png"),
+        ]
+        for candidate in candidates:
+            try:
+                if candidate.is_file():
+                    return candidate
+            except OSError:
+                continue
+        return None
+
+    def load_field_config(project: Path) -> Dict[str, Any]:
+        # Matches PathPlanner's FieldImage.official(OfficialField.rebuilt):
+        # defaultSize = 3508x1814, pixelsPerMeter = 200.0, marginMeters = 0.5.
+        config: Dict[str, Any] = {
+            "default_width": 3508.0,
+            "default_height": 1814.0,
+            "pixels_per_meter": 200.0,
+            "margin_meters": 0.5,
+            "image_source": None,
+            "image_file": None,
+            "image_error": None,
+        }
+        image_file = find_rebuilt_field_image(project)
+        if image_file is None:
+            return config
+
+        try:
+            from PIL import Image
+            image = Image.open(image_file).convert("RGBA")
+            config["default_width"] = float(image.size[0])
+            config["default_height"] = float(image.size[1])
+            config["image_source"] = image
+            config["image_file"] = image_file
+        except Exception as exc:
+            config["image_error"] = str(exc)
+            config["image_file"] = image_file
+        return config
+
+    def field_size_from_config(config: Dict[str, Any]) -> Tuple[float, float]:
+        ppm = float(config["pixels_per_meter"])
+        margin = float(config["margin_meters"])
+        return (
+            float(config["default_width"]) / ppm - 2.0 * margin,
+            float(config["default_height"]) / ppm - 2.0 * margin,
+        )
+
+    def make_visualization_state() -> Dict[str, Any]:
+        project = resolve_project(Path(project_var.get()))
+        commands, warnings, _folder = current_commands()
+        path_names = collect_path_names(sequential(commands))
+        loaded_paths: List[Dict[str, Any]] = []
+        missing: List[str] = []
+
+        for path_name in path_names:
+            file = path_file(project, path_name)
+            if not file.is_file():
+                missing.append(path_name)
+                continue
+            data = load_json(file)
+            points = sample_path(data, samples_per_segment=70)
+            loaded_paths.append({
+                "name": path_name,
+                "points": points,
+                "start_velocity": path_velocity(data, "idealStartingState"),
+                "end_velocity": path_velocity(data, "goalEndState"),
+                "start_rotation": path_rotation(data, "idealStartingState"),
+                "end_rotation": path_rotation(data, "goalEndState"),
+            })
+
+        playback_points: List[Tuple[float, float, int]] = []
+        for path_index, path_data in enumerate(loaded_paths):
+            for point in path_data["points"]:
+                playback_points.append((point[0], point[1], path_index))
+
+        return {
+            "project": project,
+            "path_names": path_names,
+            "loaded_paths": loaded_paths,
+            "missing": missing,
+            "warnings": warnings,
+            "playback_points": playback_points,
+            "field": load_field_config(project),
+        }
+
+    def handoff_lines(loaded_paths: List[Dict[str, Any]]) -> List[str]:
+        if len(loaded_paths) < 2:
+            return []
+        lines: List[str] = ["", "Handoffs:"]
+        for index in range(len(loaded_paths) - 1):
+            prev_path = loaded_paths[index]
+            next_path = loaded_paths[index + 1]
+            prev_points = prev_path["points"]
+            next_points = next_path["points"]
+            if not prev_points or not next_points:
+                continue
+            end_x, end_y = prev_points[-1]
+            start_x, start_y = next_points[0]
+            gap = math.hypot(start_x - end_x, start_y - end_y)
+            prev_v = prev_path.get("end_velocity")
+            next_v = next_path.get("start_velocity")
+            if prev_v is None or next_v is None:
+                velocity_text = "velocity n/a"
+                bad_velocity = False
+            else:
+                diff = abs(prev_v - next_v)
+                velocity_text = f"Δv {diff:.2f} m/s ({prev_v:.2f}->{next_v:.2f})"
+                bad_velocity = diff > 0.50
+            marker = " !" if gap > 0.08 or bad_velocity else ""
+            lines.append(f"  {index + 1:02d}->{index + 2:02d}: gap {gap:.3f} m, {velocity_text}{marker}")
+        return lines
+
+    def set_live_info(lines: List[str]) -> None:
+        live_info.configure(state="normal")
+        live_info.delete("1.0", "end")
+        live_info.insert("1.0", "\n".join(lines))
+        live_info.configure(state="disabled")
+
+    def update_live_info(state: Dict[str, Any]) -> None:
+        field_config = state.get("field") or {}
+        field_x, field_y = field_size_from_config(field_config) if field_config else (16.54, 8.07)
+        image_file = field_config.get("image_file") if field_config else None
+        lines: List[str] = []
+        if image_file and field_config.get("image_source") is not None:
+            lines.append(f"Backdrop: {Path(image_file).name}")
+        elif field_config.get("image_error"):
+            lines.append(f"Backdrop error: {field_config['image_error']}")
+        else:
+            lines.append("Backdrop: grid fallback")
+        lines.append(f"Transform: Rebuilt, 200 px/m, 0.5 m margin")
+        lines.append(f"Field: {field_x:.2f}m x {field_y:.2f}m")
+
+        if state.get("warnings"):
+            lines += ["", "Warnings:"] + [f"  - {warning}" for warning in state["warnings"]]
+        if state.get("missing"):
+            lines += ["", "Missing paths:"] + [f"  - {path_name}" for path_name in state["missing"]]
+
+        lines += ["", "Path sequence:"]
+        for index, path_data in enumerate(state.get("loaded_paths", [])):
+            start_v = path_data.get("start_velocity")
+            end_v = path_data.get("end_velocity")
+            velocity_text = ""
+            if start_v is not None or end_v is not None:
+                velocity_text = f"  v {start_v if start_v is not None else '?'}->{end_v if end_v is not None else '?'}"
+            lines.append(f"  {index + 1:02d}. {path_data['name']}{velocity_text}")
+        if not state.get("loaded_paths"):
+            lines.append("  None")
+        lines += handoff_lines(state.get("loaded_paths", []))
+        set_live_info(lines)
+
+    def live_get_view(width: int, height: int, field_config: Dict[str, Any]) -> Tuple[float, float, float, float, float]:
+        pad = 12
+        image_w = float(field_config["default_width"])
+        image_h = float(field_config["default_height"])
+        scale = min((width - pad * 2) / image_w, (height - pad * 2) / image_h)
+        drawn_w = image_w * scale
+        drawn_h = image_h * scale
+        left = (width - drawn_w) / 2
+        top = (height - drawn_h) / 2
+        return left, top, drawn_w, drawn_h, scale
+
+    def live_transform(x: float, y: float, width: int, height: int, field_config: Dict[str, Any]) -> Tuple[float, float]:
+        left, top, _drawn_w, _drawn_h, scale = live_get_view(width, height, field_config)
+        ppm = float(field_config["pixels_per_meter"])
+        margin = float(field_config["margin_meters"])
+        image_h = float(field_config["default_height"])
+        pixel_x = (x + margin) * ppm
+        pixel_y = image_h - ((y + margin) * ppm)
+        return left + pixel_x * scale, top + pixel_y * scale
+
+    def draw_live_background(width: int, height: int, field_config: Dict[str, Any]) -> None:
+        left, top, drawn_w, drawn_h, _scale = live_get_view(width, height, field_config)
+        image_source = field_config.get("image_source")
+        if image_source is not None:
+            try:
+                from PIL import ImageTk
+                resized = image_source.resize((max(1, int(drawn_w)), max(1, int(drawn_h))))
+                live_image_ref["image"] = ImageTk.PhotoImage(resized)
+                live_field.create_image(left, top, anchor="nw", image=live_image_ref["image"])
+            except Exception:
+                image_source = None
+
+        if image_source is None:
+            live_field.create_rectangle(left, top, left + drawn_w, top + drawn_h, fill="#020617", outline="#334155", width=1)
+
+        live_field.create_rectangle(left, top, left + drawn_w, top + drawn_h, outline="#94a3b8", width=1)
+        field_x, field_y = field_size_from_config(field_config)
+        for gx in range(0, int(math.floor(field_x)) + 1):
+            x1, y1 = live_transform(float(gx), 0.0, width, height, field_config)
+            x2, y2 = live_transform(float(gx), field_y, width, height, field_config)
+            live_field.create_line(x1, y1, x2, y2, fill="#1e293b")
+        for gy in range(0, int(math.floor(field_y)) + 1):
+            x1, y1 = live_transform(0.0, float(gy), width, height, field_config)
+            x2, y2 = live_transform(field_x, float(gy), width, height, field_config)
+            live_field.create_line(x1, y1, x2, y2, fill="#1e293b")
+
+    def draw_live_frame() -> None:
+        width = max(live_field.winfo_width(), 320)
+        height = max(live_field.winfo_height(), 240)
+        state = live_visual_state
+        field_config = state.get("field") or load_field_config(resolve_project(Path(project_var.get())))
+        playback_points: List[Tuple[float, float, int]] = state.get("playback_points", [])
+        loaded_paths: List[Dict[str, Any]] = state.get("loaded_paths", [])
+        colors = [
+            "#38bdf8", "#fb7185", "#4ade80", "#facc15", "#c084fc", "#f97316",
+            "#22d3ee", "#a3e635", "#f472b6", "#60a5fa", "#fde68a", "#34d399",
+        ]
+
+        live_field.delete("all")
+        draw_live_background(width, height, field_config)
+
+        if not playback_points:
+            live_path_label.configure(text="No drawable paths yet")
+            live_field.create_text(width / 2, height / 2, text="Add a pass or final path to preview", fill="#94a3b8", font=("Segoe UI", 12, "bold"))
+            return
+
+        frame = min(max(live_frame_var.get(), 0), len(playback_points) - 1)
+        if live_frame_var.get() != frame:
+            live_frame_var.set(frame)
+        active_path = playback_points[frame][2]
+
+        for index, path_data in enumerate(loaded_paths):
+            points = path_data["points"]
+            if len(points) < 2:
+                continue
+            color = colors[index % len(colors)]
+            coords: List[float] = []
+            for x, y in points:
+                sx, sy = live_transform(x, y, width, height, field_config)
+                coords += [sx, sy]
+            live_field.create_line(*coords, fill=color if index == active_path else "#475569", width=4 if index == active_path else 2, smooth=True)
+            sx, sy = live_transform(*points[0], width, height, field_config)
+            ex, ey = live_transform(*points[-1], width, height, field_config)
+            live_field.create_oval(sx - 5, sy - 5, sx + 5, sy + 5, fill=color, outline="")
+            live_field.create_oval(ex - 4, ey - 4, ex + 4, ey + 4, fill="#020617", outline=color, width=2)
+            live_field.create_text(sx + 9, sy - 9, text=str(index + 1), fill=color, anchor="w", font=("Segoe UI", 10, "bold"))
+
+        for index in range(len(loaded_paths) - 1):
+            prev_points = loaded_paths[index]["points"]
+            next_points = loaded_paths[index + 1]["points"]
+            if not prev_points or not next_points:
+                continue
+            end_x, end_y = prev_points[-1]
+            start_x, start_y = next_points[0]
+            gap = math.hypot(start_x - end_x, start_y - end_y)
+            if gap <= 0.08:
+                continue
+            ex, ey = live_transform(end_x, end_y, width, height, field_config)
+            sx, sy = live_transform(start_x, start_y, width, height, field_config)
+            live_field.create_line(ex, ey, sx, sy, fill="#facc15", width=2, dash=(5, 4))
+            live_field.create_text((ex + sx) / 2, (ey + sy) / 2, text=f"{gap:.2f}m", fill="#facc15", font=("Segoe UI", 9, "bold"))
+
+        trail_coords: List[float] = []
+        for x, y, _path_index in playback_points[:frame + 1][-260:]:
+            sx, sy = live_transform(x, y, width, height, field_config)
+            trail_coords += [sx, sy]
+        if len(trail_coords) >= 4:
+            live_field.create_line(*trail_coords, fill="#f8fafc", width=3, smooth=True)
+
+        x, y, path_index = playback_points[frame]
+        sx, sy = live_transform(x, y, width, height, field_config)
+        if frame > 0:
+            px, py, _prev_path = playback_points[frame - 1]
+            psx, psy = live_transform(px, py, width, height, field_config)
+            live_field.create_line(psx, psy, sx, sy, fill="#f8fafc", width=5, arrow=tk.LAST, arrowshape=(16, 20, 7))
+        live_field.create_oval(sx - 10, sy - 10, sx + 10, sy + 10, fill="#f8fafc", outline="#0284c7", width=3)
+        live_field.create_oval(sx - 3, sy - 3, sx + 3, sy + 3, fill="#0284c7", outline="")
+        live_path_label.configure(text=f"{frame + 1}/{len(playback_points)}  |  {loaded_paths[path_index]['name']}")
+
+    def redraw_live_visualization() -> None:
+        live_redraw_after["id"] = None
+        try:
+            state = make_visualization_state()
+            live_visual_state.clear()
+            live_visual_state.update(state)
+            live_slider.configure(to=max(0, len(state.get("playback_points", [])) - 1))
+            if live_frame_var.get() > len(state.get("playback_points", [])) - 1:
+                live_frame_var.set(max(0, len(state.get("playback_points", [])) - 1))
+            update_live_info(state)
+            draw_live_frame()
+        except Exception as exc:
+            live_visual_state.update({"playback_points": [], "loaded_paths": [], "path_names": [], "warnings": [], "missing": [], "field": load_field_config(Path.cwd())})
+            live_slider.configure(to=0)
+            live_field.delete("all")
+            live_field.create_text(max(live_field.winfo_width(), 300) / 2, max(live_field.winfo_height(), 240) / 2, text=str(exc), fill="#fb7185", font=("Segoe UI", 11, "bold"), width=360)
+            live_path_label.configure(text="Preview error")
+            set_live_info(["Preview error:", f"  {exc}"])
+
+    def schedule_live_redraw() -> None:
+        if live_redraw_after.get("id") is not None:
+            try:
+                root.after_cancel(live_redraw_after["id"])
+            except Exception:
+                pass
+        live_redraw_after["id"] = root.after(80, redraw_live_visualization)
+
+    def live_step_amount() -> int:
+        return {"0.25x": 1, "0.5x": 2, "1x": 4, "2x": 8, "4x": 14}.get(live_speed_var.get(), 4)
+
+    def live_play_loop() -> None:
+        if not live_playing.get():
+            return
+        playback_points: List[Tuple[float, float, int]] = live_visual_state.get("playback_points", [])
+        if not playback_points:
+            live_playing.set(False)
+            live_play_button.configure(text="Play")
+            return
+        next_frame = live_frame_var.get() + live_step_amount()
+        if next_frame >= len(playback_points):
+            next_frame = len(playback_points) - 1
+            live_playing.set(False)
+            live_play_button.configure(text="Play")
+        live_frame_var.set(next_frame)
+        draw_live_frame()
+        if live_playing.get():
+            root.after(33, live_play_loop)
+
+    def toggle_live_play() -> None:
+        live_playing.set(not live_playing.get())
+        live_play_button.configure(text="Pause" if live_playing.get() else "Play")
+        if live_playing.get():
+            live_play_loop()
+
+    def restart_live_playback() -> None:
+        live_playing.set(False)
+        live_play_button.configure(text="Play")
+        live_frame_var.set(0)
+        draw_live_frame()
+
+    live_field.bind("<Configure>", lambda _event: draw_live_frame())
+    project_var.trace_add("write", lambda *_args: schedule_live_redraw())
+    auto_name_var.trace_add("write", lambda *_args: update_status())
 
     def show_visualization() -> None:
         try:

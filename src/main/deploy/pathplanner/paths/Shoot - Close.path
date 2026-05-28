@@ -84,7 +84,7 @@
   "reversed": false,
   "folder": "6 - BC Final Passes",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": -136.6
   },
   "useDefaultConstraints": true

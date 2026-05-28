@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.730964912280701,
+        "y": 2.448511363636363
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.057796732524059,
+        "y": 2.6935245437229414
+      },
+      "isLocked": false,
+      "linkedName": "Pass2_StartNoLocalize_Return"
+    },
+    {
+      "anchor": {
+        "x": 2.7952386363636355,
+        "y": 2.448511363636363
+      },
+      "prevControl": {
+        "x": 3.177082998512852,
+        "y": 3.2268047816912944
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Battlecry Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -136.6
+  },
+  "reversed": false,
+  "folder": "5 - BC Second Pass Returns",
+  "idealStartingState": {
+    "velocity": 2.75,
+    "rotation": -136.6
+  },
+  "useDefaultConstraints": true
+}

@@ -68,8 +68,8 @@
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 3.10703409090909,
-        "y": 2.448511363636363
+        "x": 2.9325727558575228,
+        "y": 2.728432325870429
       },
       "nextControl": null,
       "isLocked": false,
@@ -173,13 +173,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": -136.6
   },
   "reversed": false,
   "folder": "2 - BC First Pass Returns",
   "idealStartingState": {
-    "velocity": 3.0,
+    "velocity": 4.5,
     "rotation": 77.471
   },
   "useDefaultConstraints": true

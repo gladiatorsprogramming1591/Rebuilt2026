@@ -62,13 +62,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 5.0,
+    "velocity": 3.75,
     "rotation": 90.0
   },
   "reversed": false,
   "folder": "3 - BC Second Pass Sweeps",
   "idealStartingState": {
-    "velocity": 5.0,
+    "velocity": 3.75,
     "rotation": 0.0
   },
   "useDefaultConstraints": true

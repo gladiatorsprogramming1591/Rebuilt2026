@@ -20,8 +20,8 @@
         "y": 1.487
       },
       "prevControl": {
-        "x": 8.500361211151144,
-        "y": 2.366999925867329
+        "x": 8.48505437470813,
+        "y": 2.3668730750992637
       },
       "nextControl": null,
       "isLocked": true,
@@ -47,7 +47,7 @@
   "reversed": false,
   "folder": "3 - BC Second Pass Sweeps",
   "idealStartingState": {
-    "velocity": 5.0,
+    "velocity": 2.5,
     "rotation": -90.0
   },
   "useDefaultConstraints": true

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.730964912280701,
-        "y": 2.448511363636363
+        "x": 6.75,
+        "y": 2.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.057796732524059,
-        "y": 2.6935245437229414
+        "x": 6.768501069688437,
+        "y": 1.7977090102946187
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartNoLocalize_Return"
+      "linkedName": "Pass2_StartMidSweepB"
     },
     {
       "anchor": {
-        "x": 2.7952386363636355,
-        "y": 2.448511363636363
+        "x": 6.75,
+        "y": 1.487
       },
       "prevControl": {
-        "x": 4.486574719020069,
-        "y": 2.4936325586396517
+        "x": 6.735061263752394,
+        "y": 2.3664675059482083
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "isLocked": true,
+      "linkedName": "Pass2_MidSweepB"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -136.6
+    "velocity": 5.0,
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "5 - BC Second Pass Returns",
+  "folder": "3 - BC Second Pass Sweeps",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -136.6
+    "velocity": 5.0,
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
