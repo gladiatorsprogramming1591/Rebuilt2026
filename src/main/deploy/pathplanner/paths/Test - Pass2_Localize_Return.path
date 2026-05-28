@@ -12,7 +12,7 @@
         "y": 2.59663521599131
       },
       "isLocked": false,
-      "linkedName": "Test_Pass2_StartLocalize_Return"
+      "linkedName": "test_Pass2_StartLocalize_Return"
     },
     {
       "anchor": {
@@ -28,7 +28,7 @@
         "y": 2.4068892258500996
       },
       "isLocked": false,
-      "linkedName": "Test_Battlecry Bump End"
+      "linkedName": "test_Battlecry Bump End"
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Test_Battlecry Tilted Hub Shot"
+      "linkedName": "test_Battlecry Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
@@ -66,7 +66,7 @@
     "rotation": -136.6
   },
   "reversed": false,
-  "folder": "Test",
+  "folder": "test",
   "idealStartingState": {
     "velocity": 2.0,
     "rotation": -40.0

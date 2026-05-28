@@ -29,6 +29,7 @@ public class AutoManager {
   private String rightFigure8TagAggressive = "Figure 8 Tag Aggressive Hub";
   private String rightFigure8AggressiveBoth = "Figure 8 Aggressive Both";
   private String middleBumpTest = "Straight ln auto";
+  private String testStartPathToCenter = "TEST Single - Pass1_Risk_Start";
 
   private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
 
@@ -65,6 +66,8 @@ public class AutoManager {
     // autos.addOption("Test: Bump", wrapAutoWithPose(new PathPlannerAuto(middleBumpTest)));
     autos.addOption("Right Figure 8 Aggressive Both", wrapAutoWithPose(new PathPlannerAuto(rightFigure8AggressiveBoth)));
     autos.addOption("Left Figure 8 Aggressive Both", wrapAutoWithPose(new PathPlannerAuto(rightFigure8AggressiveBoth, true)));
+    autos.addOption("Right Test", wrapAutoWithPose(new PathPlannerAuto(testStartPathToCenter)));
+    autos.addOption("Left Test", wrapAutoWithPose(new PathPlannerAuto(testStartPathToCenter, true)));
   }
 
   private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {

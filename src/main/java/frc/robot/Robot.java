@@ -94,8 +94,9 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-    robotContainer.useNormalDriveCurrentLimits();
+    robotContainer.useAutoDriveCurrentLimits();
     robotContainer.setDriveBrakeMode();
+    robotContainer.disableShooterDefaultIdle();
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -205,9 +206,6 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    robotContainer.useAutoDriveCurrentLimits();
-    robotContainer.setDriveBrakeMode();
-    robotContainer.disableShooterDefaultIdle();
     autonomousCommand = robotContainer.getAutonomousCommand();
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()

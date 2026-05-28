@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 3.25
+        "x": 7.9,
+        "y": 2.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.821648796963971,
-        "y": 2.2977090102946187
+        "x": 7.9,
+        "y": 4.0
       },
       "isLocked": false,
-      "linkedName": "test_Pass2_StartCloseSweepB"
+      "linkedName": "testee_Pass2_FarSweepA"
     },
     {
       "anchor": {
         "x": 5.803147727275534,
-        "y": 1.487
+        "y": 3.25
       },
       "prevControl": {
         "x": 5.803147727275534,
-        "y": 2.3665943723441147
+        "y": 4.5
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": "test_Pass2_CloseSweepB"
+      "isLocked": false,
+      "linkedName": "testee_Pass2_StartCloseSweepB"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5668449197860964,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,10 +50,10 @@
     "rotation": -105.00000000000001
   },
   "reversed": false,
-  "folder": "test",
+  "folder": "testee",
   "idealStartingState": {
     "velocity": 5.0,
-    "rotation": -105.00000000000001
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
