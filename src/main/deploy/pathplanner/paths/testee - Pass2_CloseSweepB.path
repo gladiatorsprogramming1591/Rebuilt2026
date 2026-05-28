@@ -12,7 +12,7 @@
         "y": 2.2977090102946187
       },
       "isLocked": false,
-      "linkedName": "test_Pass2_StartCloseSweepB"
+      "linkedName": "testee_Pass2_StartCloseSweepB"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "test_Pass2_CloseSweepB"
+      "linkedName": "testee_Pass2_CloseSweepB"
     }
   ],
   "rotationTargets": [],
@@ -45,9 +45,9 @@
     "rotation": -105.00000000000001
   },
   "reversed": false,
-  "folder": "test",
+  "folder": "testee",
   "idealStartingState": {
-    "velocity": 5.0,
+    "velocity": 2.0,
     "rotation": -105.00000000000001
   },
   "useDefaultConstraints": true

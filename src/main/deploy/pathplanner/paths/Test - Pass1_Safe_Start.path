@@ -12,7 +12,7 @@
         "y": 0.4681803613053605
       },
       "isLocked": true,
-      "linkedName": "Test_Battlecry bottom start rush"
+      "linkedName": "test_Battlecry bottom start rush"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Test_BC Close End"
+      "linkedName": "test_BC Close End"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 65.0
   },
   "reversed": false,
-  "folder": "Test",
+  "folder": "test",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

@@ -3,48 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7952386363636355,
-        "y": 2.448511363636363
+        "x": 4.6,
+        "y": 0.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.437237843920067,
-        "y": 1.9536053535504423
+        "x": 6.303687217676196,
+        "y": 0.3048257528287417
       },
       "isLocked": false,
-      "linkedName": "test_Battlecry Tilted Hub Shot"
+      "linkedName": "testee_Pass Start"
     },
     {
       "anchor": {
-        "x": 3.899232456136926,
-        "y": 0.7342543859670525
+        "x": 7.453881578947367,
+        "y": 1.2148574561403507
       },
       "prevControl": {
-        "x": 3.3133621322459845,
-        "y": 0.964371006142106
+        "x": 7.256850082999932,
+        "y": 0.9639889297006057
       },
       "nextControl": {
-        "x": 4.131926644352276,
-        "y": 0.6428573686699928
+        "x": 7.7158353379202715,
+        "y": 1.5483876523807343
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.6,
-        "y": 0.6
+        "x": 7.9,
+        "y": 2.75
       },
       "prevControl": {
-        "x": 4.342370824411648,
-        "y": 0.6207172734136988
+        "x": 7.9,
+        "y": 2.007422653313304
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "test_Pass Start"
+      "linkedName": "testee_Pass2_FarSweepA"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -58,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 5.0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "test",
+  "folder": "testee",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -136.6
+    "velocity": 5.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

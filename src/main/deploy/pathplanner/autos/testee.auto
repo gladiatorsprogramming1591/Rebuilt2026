@@ -13,19 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass1_Safe_Start"
+            "pathName": "Pass1_Safe_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass1_GreedySafe_Sweep"
+            "pathName": "Pass1_Safe_Sweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass1_GreedySafeHub_Return"
+            "pathName": "Pass1_SafeHub_Return"
           }
         },
         {
@@ -49,37 +49,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass_Start"
+            "pathName": "Pass_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass2_FarSweepA"
+            "pathName": "Pass2_FarSweepA"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - FarA-CloseB"
+            "pathName": "FarA-CloseB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass2_CloseSweepB"
+            "pathName": "Pass2_CloseSweepB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - CloseB-Localize"
+            "pathName": "CloseB-Localize"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "test - Pass2_Localize_Return"
+            "pathName": "Pass2_Localize_Return"
           }
         },
         {
@@ -98,6 +98,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "test",
+  "folder": "testee",
   "choreoAuto": false
 }

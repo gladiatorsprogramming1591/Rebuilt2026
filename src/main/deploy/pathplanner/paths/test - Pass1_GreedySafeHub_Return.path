@@ -12,7 +12,7 @@
         "y": 4.330136363636364
       },
       "isLocked": false,
-      "linkedName": "BC Greedy Safe Sweep End"
+      "linkedName": "test_BC Greedy Safe Sweep End"
     },
     {
       "anchor": {
@@ -44,7 +44,7 @@
         "y": 4.28890350877193
       },
       "isLocked": false,
-      "linkedName": "Pass 1 Greedy Hub A"
+      "linkedName": "test_Pass 1 Greedy Hub A"
     },
     {
       "anchor": {
@@ -60,7 +60,7 @@
         "y": 2.0574022653574575
       },
       "isLocked": false,
-      "linkedName": "Pass 1 Greedy Hub B"
+      "linkedName": "test_Pass 1 Greedy Hub B"
     },
     {
       "anchor": {
@@ -76,7 +76,7 @@
         "y": 2.533157880049794
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump Start"
+      "linkedName": "test_Battlecry Bump Start"
     },
     {
       "anchor": {
@@ -92,7 +92,7 @@
         "y": 2.433759490122432
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump End"
+      "linkedName": "test_Battlecry Bump End"
     },
     {
       "anchor": {
@@ -105,7 +105,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "linkedName": "test_Battlecry Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
@@ -217,7 +217,7 @@
     "rotation": -136.6
   },
   "reversed": false,
-  "folder": "2 - BC First Pass Returns",
+  "folder": "test",
   "idealStartingState": {
     "velocity": 3.0,
     "rotation": 65.0
