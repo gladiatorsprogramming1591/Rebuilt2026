@@ -834,10 +834,10 @@ def parse_generated_auto(auto_json: Dict[str, Any]) -> Tuple[List[Dict[str, Any]
     return passes, final_pass
 
 def cmd_gui(args: argparse.Namespace) -> int:
-    return launch_gui(args.project)
+    return launch_gui(args.project, getattr(args, "preview_assets", ""))
 
 
-def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
+def launch_gui(project_default: str = "../src/main/deploy/pathplanner", preview_assets_default: str = "") -> int:
     try:
         import tkinter as tk
         from tkinter import filedialog, messagebox, scrolledtext, ttk
@@ -873,6 +873,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
     style.map("TCombobox", fieldbackground=[("readonly", raised)], foreground=[("readonly", text)])
 
     project_var = tk.StringVar(value=project_default)
+    preview_assets_var = tk.StringVar(value=preview_assets_default)
     auto_name_var = tk.StringVar(value="New Auto")
     save_copy_var = tk.BooleanVar(value=False)
     overwrite_var = tk.BooleanVar(value=False)
@@ -996,9 +997,13 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
     live_field = tk.Canvas(live_panel, bg="#020617", highlightthickness=1, highlightbackground=border, bd=0)
     live_field.grid(row=1, column=0, sticky="nsew", padx=12, pady=(0, 8))
 
-    live_info = scrolledtext.ScrolledText(live_panel, height=9, wrap="word", borderwidth=0, relief="flat")
-    live_info.grid(row=2, column=0, sticky="ew", padx=12, pady=(0, 8))
+    # Hidden detail panel. The live preview now keeps the lower area clean and only
+    # reports the current segment in the header. The detail text is still updated
+    # internally so it can be re-enabled later without changing the preview logic.
+    live_info = scrolledtext.ScrolledText(live_panel, height=1, wrap="word", borderwidth=0, relief="flat")
+    live_info.grid(row=2, column=0, sticky="ew", padx=12, pady=(0, 0))
     live_info.configure(bg="#020617", fg="#dbeafe", insertbackground=text, font=("Cascadia Mono", 9), padx=10, pady=10)
+    live_info.grid_remove()
 
     live_controls = tk.Frame(live_panel, bg=panel)
     live_controls.grid(row=3, column=0, sticky="ew", padx=12, pady=(0, 12))
@@ -1008,6 +1013,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
     live_speed_var = tk.StringVar(value="1x")
     live_image_ref: Dict[str, Any] = {}
     live_visual_state: Dict[str, Any] = {"playback_points": [], "loaded_paths": [], "field": None, "path_names": [], "warnings": [], "missing": []}
+    live_asset_cache: Dict[str, Any] = {"gif_file": None, "frames": []}
     live_redraw_after: Dict[str, Optional[str]] = {"id": None}
 
     live_play_button = button(live_controls, "Play", lambda: toggle_live_play(), accent, text, 10)
@@ -1208,6 +1214,285 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
             float(config["default_height"]) / ppm - 2.0 * margin,
         )
 
+
+    def preview_safe_file_name(name: str) -> str:
+        return safe_filename(name)
+
+    def preview_asset_roots(project: Path) -> List[Path]:
+        roots: List[Path] = []
+
+        def add(path: Path) -> None:
+            try:
+                resolved = path.expanduser().resolve()
+            except Exception:
+                resolved = path.expanduser()
+            if resolved not in roots:
+                roots.append(resolved)
+
+        configured = preview_assets_var.get().strip()
+        if configured:
+            add(Path(configured))
+
+        script_dir = Path(__file__).resolve().parent
+        for base in [project, project.parent, project.parent.parent, Path.cwd(), script_dir]:
+            if not base:
+                continue
+            add(base / "exported_preview")
+            add(base / "preview_assets")
+            add(base / "pathplanner_preview")
+            add(base / "path_previews")
+            add(base / "exports")
+            add(base / "rendered_paths")
+            add(base)
+
+        return [root for root in roots if root.is_dir()]
+
+    def find_preview_asset(project: Path, path_name: str, extension: str) -> Optional[Path]:
+        stem = preview_safe_file_name(path_name)
+        names = [f"{stem}.{extension}"]
+        raw_name = f"{path_name}.{extension}"
+        if raw_name not in names:
+            names.append(raw_name)
+
+        subdirs = [
+            "",
+            "gifs" if extension.lower() == "gif" else "overlays",
+            "gif" if extension.lower() == "gif" else "overlay",
+            "dark_gifs" if extension.lower() == "gif" else "dark_transparent_pngs",
+            "animations" if extension.lower() == "gif" else "pngs",
+            "images",
+        ]
+
+        for root in preview_asset_roots(project):
+            for subdir in subdirs:
+                base = root / subdir if subdir else root
+                for name in names:
+                    candidate = base / name
+                    if candidate.is_file():
+                        return candidate
+
+            # Allow one extra nesting level so a selected parent export folder can contain gifs/ and overlays/.
+            try:
+                for child in root.iterdir():
+                    if not child.is_dir():
+                        continue
+                    for subdir in subdirs:
+                        base = child / subdir if subdir else child
+                        for name in names:
+                            candidate = base / name
+                            if candidate.is_file():
+                                return candidate
+            except OSError:
+                continue
+
+        return None
+
+    def get_gif_frame_count(file: Path) -> Tuple[int, Optional[Tuple[int, int]], Optional[str]]:
+        try:
+            from PIL import Image
+            with Image.open(file) as image:
+                return int(getattr(image, "n_frames", 1) or 1), tuple(image.size), None
+        except Exception as exc:
+            return 0, None, str(exc)
+
+    def build_preview_asset_state(project: Path, path_names: List[str], loaded_paths: List[Dict[str, Any]]) -> Dict[str, Any]:
+        segments: List[Dict[str, Any]] = []
+        missing_gifs: List[str] = []
+        bad_gifs: List[str] = []
+        overlay_files: List[Tuple[str, Path]] = []
+        missing_overlays: List[str] = []
+        total_frames = 0
+        first_size: Optional[Tuple[int, int]] = None
+
+        for path_index, path_name in enumerate(path_names):
+            gif_file = find_preview_asset(project, path_name, "gif")
+            overlay_file = find_preview_asset(project, path_name, "png")
+
+            if overlay_file is not None:
+                overlay_files.append((path_name, overlay_file))
+            else:
+                missing_overlays.append(path_name)
+
+            points: List[Tuple[float, float]] = []
+            if path_index < len(loaded_paths):
+                points = list(loaded_paths[path_index].get("points", []))
+
+            if gif_file is None:
+                missing_gifs.append(path_name)
+                fallback_frames = max(1, len(points), 40)
+                segments.append({
+                    "kind": "fallback",
+                    "name": path_name,
+                    "path_index": path_index,
+                    "points": points,
+                    "start_frame": total_frames,
+                    "frame_count": fallback_frames,
+                    "reason": "missing GIF",
+                })
+                total_frames += fallback_frames
+                continue
+
+            frame_count, gif_size, error = get_gif_frame_count(gif_file)
+            if frame_count <= 0 or gif_size is None:
+                bad_gifs.append(f"{path_name}: {error or 'no frames'}")
+                fallback_frames = max(1, len(points), 40)
+                segments.append({
+                    "kind": "fallback",
+                    "name": path_name,
+                    "path_index": path_index,
+                    "points": points,
+                    "start_frame": total_frames,
+                    "frame_count": fallback_frames,
+                    "reason": error or "bad GIF",
+                })
+                total_frames += fallback_frames
+                continue
+
+            if first_size is None:
+                first_size = gif_size
+
+            segments.append({
+                "kind": "gif",
+                "name": path_name,
+                "gif_file": gif_file,
+                "path_index": path_index,
+                "start_frame": total_frames,
+                "frame_count": frame_count,
+                "size": gif_size,
+            })
+            total_frames += frame_count
+
+        overlay_composite = None
+        overlay_error = None
+        if overlay_files:
+            try:
+                from PIL import Image
+                if first_size is None:
+                    with Image.open(overlay_files[0][1]) as first_overlay:
+                        first_size = tuple(first_overlay.size)
+                overlay_composite = Image.new("RGBA", first_size, (0, 0, 0, 0))
+                for _path_name, overlay_file in overlay_files:
+                    with Image.open(overlay_file) as overlay_image:
+                        overlay = overlay_image.convert("RGBA")
+                        if overlay.size != first_size:
+                            overlay = overlay.resize(first_size)
+                        overlay_composite.alpha_composite(overlay)
+            except Exception as exc:
+                overlay_composite = None
+                overlay_error = str(exc)
+
+        return {
+            "asset_segments": segments,
+            "asset_total_frames": total_frames,
+            "asset_overlay": overlay_composite,
+            "asset_overlay_files": overlay_files,
+            "asset_missing_gifs": missing_gifs,
+            "asset_bad_gifs": bad_gifs,
+            "asset_missing_overlays": missing_overlays,
+            "asset_overlay_error": overlay_error,
+            "asset_roots": preview_asset_roots(project),
+        }
+
+    def asset_segment_for_frame(segments: List[Dict[str, Any]], frame: int) -> Optional[Tuple[Dict[str, Any], int]]:
+        for segment in segments:
+            start = int(segment["start_frame"])
+            count = int(segment["frame_count"])
+            if start <= frame < start + count:
+                return segment, frame - start
+        if segments:
+            last = segments[-1]
+            return last, max(0, int(last["frame_count"]) - 1)
+        return None
+
+    def load_gif_frames(file: Path) -> List[Any]:
+        from PIL import Image, ImageSequence
+        frames = []
+        with Image.open(file) as image:
+            for frame in ImageSequence.Iterator(image):
+                frames.append(frame.copy().convert("RGBA"))
+        return frames
+
+    def current_gif_frame(segment: Dict[str, Any], local_frame: int) -> Optional[Any]:
+        gif_file = Path(segment["gif_file"])
+        if live_asset_cache.get("gif_file") != gif_file:
+            live_asset_cache["gif_file"] = gif_file
+            live_asset_cache["frames"] = load_gif_frames(gif_file)
+        frames = live_asset_cache.get("frames") or []
+        if not frames:
+            return None
+        return frames[min(max(local_frame, 0), len(frames) - 1)]
+
+    def draw_image_layer(image: Any, width: int, height: int, key: str, base_size: Optional[Tuple[int, int]] = None) -> Tuple[float, float, float, float]:
+        from PIL import ImageTk
+        pad = 12
+        image_w, image_h = base_size or image.size
+        scale = min((width - pad * 2) / image_w, (height - pad * 2) / image_h)
+        drawn_w = max(1, int(image_w * scale))
+        drawn_h = max(1, int(image_h * scale))
+        left = (width - drawn_w) / 2
+        top = (height - drawn_h) / 2
+        resized = image.resize((drawn_w, drawn_h))
+        live_image_ref[key] = ImageTk.PhotoImage(resized)
+        live_field.create_image(left, top, anchor="nw", image=live_image_ref[key])
+        return left, top, drawn_w, drawn_h
+
+    def draw_asset_preview_frame(width: int, height: int, state: Dict[str, Any]) -> bool:
+        segments: List[Dict[str, Any]] = state.get("asset_segments", [])
+        total_frames = int(state.get("asset_total_frames") or 0)
+        if not segments or total_frames <= 0:
+            return False
+
+        frame = min(max(live_frame_var.get(), 0), total_frames - 1)
+        if live_frame_var.get() != frame:
+            live_frame_var.set(frame)
+
+        selected = asset_segment_for_frame(segments, frame)
+        if selected is None:
+            return False
+        segment, local_frame = selected
+        overlay = state.get("asset_overlay")
+
+        if segment.get("kind") == "fallback":
+            field_config = state.get("field") or load_field_config(resolve_project(Path(project_var.get())))
+            draw_live_background(width, height, field_config)
+            if overlay is not None:
+                draw_image_layer(overlay, width, height, "asset_overlay_fallback")
+
+            points: List[Tuple[float, float]] = segment.get("points", [])
+            if points:
+                if int(segment.get("frame_count", 1)) <= 1:
+                    point_index = len(points) - 1
+                else:
+                    point_index = round((local_frame / max(1, int(segment["frame_count"]) - 1)) * (len(points) - 1))
+                x, y = points[min(max(point_index, 0), len(points) - 1)]
+                sx, sy = live_transform(x, y, width, height, field_config)
+                live_field.create_oval(sx - 10, sy - 10, sx + 10, sy + 10, fill="#f8fafc", outline="#0284c7", width=3)
+                live_field.create_oval(sx - 3, sy - 3, sx + 3, sy + 3, fill="#0284c7", outline="")
+
+            reason = str(segment.get("reason") or "fallback")
+            live_path_label.configure(text=f"{frame + 1}/{total_frames}  |  {segment['name']}  |  fallback: {reason}")
+            return True
+
+        try:
+            gif_frame = current_gif_frame(segment, local_frame)
+        except Exception as exc:
+            live_field.create_text(width / 2, height / 2, text=f"GIF load failed: {exc}", fill="#fb7185", font=("Segoe UI", 11, "bold"), width=360)
+            return True
+
+        if gif_frame is None:
+            live_field.create_text(width / 2, height / 2, text="GIF frame unavailable", fill="#fb7185", font=("Segoe UI", 11, "bold"), width=360)
+            return True
+
+        left, top, drawn_w, drawn_h = draw_image_layer(gif_frame, width, height, "asset_gif")
+        if overlay is not None:
+            if overlay.size != gif_frame.size:
+                overlay = overlay.resize(gif_frame.size)
+            draw_image_layer(overlay, width, height, "asset_overlay", base_size=gif_frame.size)
+
+        live_field.create_rectangle(left, top, left + drawn_w, top + drawn_h, outline="#94a3b8", width=1)
+        live_path_label.configure(text=f"{frame + 1}/{total_frames}  |  {segment['name']}  |  GIF {local_frame + 1}/{segment['frame_count']}")
+        return True
+
     def make_visualization_state() -> Dict[str, Any]:
         project = resolve_project(Path(project_var.get()))
         commands, warnings, _folder = current_commands()
@@ -1236,6 +1521,8 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
             for point in path_data["points"]:
                 playback_points.append((point[0], point[1], path_index))
 
+        asset_state = build_preview_asset_state(project, path_names, loaded_paths)
+
         return {
             "project": project,
             "path_names": path_names,
@@ -1244,6 +1531,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
             "warnings": warnings,
             "playback_points": playback_points,
             "field": load_field_config(project),
+            **asset_state,
         }
 
     def handoff_lines(loaded_paths: List[Dict[str, Any]]) -> List[str]:
@@ -1280,35 +1568,25 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
         live_info.configure(state="disabled")
 
     def update_live_info(state: Dict[str, Any]) -> None:
-        field_config = state.get("field") or {}
-        field_x, field_y = field_size_from_config(field_config) if field_config else (16.54, 8.07)
-        image_file = field_config.get("image_file") if field_config else None
-        lines: List[str] = []
-        if image_file and field_config.get("image_source") is not None:
-            lines.append(f"Backdrop: {Path(image_file).name}")
-        elif field_config.get("image_error"):
-            lines.append(f"Backdrop error: {field_config['image_error']}")
-        else:
-            lines.append("Backdrop: grid fallback")
-        lines.append(f"Transform: Rebuilt, 200 px/m, 0.5 m margin")
-        lines.append(f"Field: {field_x:.2f}m x {field_y:.2f}m")
+        path_count = len(state.get("path_names", []))
+        gif_count = sum(1 for segment in state.get("asset_segments", []) if segment.get("kind") == "gif")
+        fallback_count = sum(1 for segment in state.get("asset_segments", []) if segment.get("kind") == "fallback")
+        overlay_count = len(state.get("asset_overlay_files", []))
+        warnings = len(state.get("warnings", []))
+        missing_paths = len(state.get("missing", []))
 
-        if state.get("warnings"):
-            lines += ["", "Warnings:"] + [f"  - {warning}" for warning in state["warnings"]]
-        if state.get("missing"):
-            lines += ["", "Missing paths:"] + [f"  - {path_name}" for path_name in state["missing"]]
-
-        lines += ["", "Path sequence:"]
-        for index, path_data in enumerate(state.get("loaded_paths", [])):
-            start_v = path_data.get("start_velocity")
-            end_v = path_data.get("end_velocity")
-            velocity_text = ""
-            if start_v is not None or end_v is not None:
-                velocity_text = f"  v {start_v if start_v is not None else '?'}->{end_v if end_v is not None else '?'}"
-            lines.append(f"  {index + 1:02d}. {path_data['name']}{velocity_text}")
-        if not state.get("loaded_paths"):
-            lines.append("  None")
-        lines += handoff_lines(state.get("loaded_paths", []))
+        lines = [
+            f"Paths: {path_count}",
+            f"GIFs: {gif_count}/{path_count}",
+            f"Fallback segments: {fallback_count}",
+            f"PNG overlays: {overlay_count}/{path_count}",
+        ]
+        if warnings:
+            lines.append(f"Warnings: {warnings}")
+        if missing_paths:
+            lines.append(f"Missing path files: {missing_paths}")
+        if state.get("asset_overlay_error"):
+            lines.append(f"Overlay error: {state['asset_overlay_error']}")
         set_live_info(lines)
 
     def live_get_view(width: int, height: int, field_config: Dict[str, Any]) -> Tuple[float, float, float, float, float]:
@@ -1370,6 +1648,10 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
         ]
 
         live_field.delete("all")
+
+        if draw_asset_preview_frame(width, height, state):
+            return
+
         draw_live_background(width, height, field_config)
 
         if not playback_points:
@@ -1436,9 +1718,12 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
             state = make_visualization_state()
             live_visual_state.clear()
             live_visual_state.update(state)
-            live_slider.configure(to=max(0, len(state.get("playback_points", [])) - 1))
-            if live_frame_var.get() > len(state.get("playback_points", [])) - 1:
-                live_frame_var.set(max(0, len(state.get("playback_points", [])) - 1))
+            live_asset_cache["gif_file"] = None
+            live_asset_cache["frames"] = []
+            frame_count = int(state.get("asset_total_frames") or len(state.get("playback_points", [])))
+            live_slider.configure(to=max(0, frame_count - 1))
+            if live_frame_var.get() > frame_count - 1:
+                live_frame_var.set(max(0, frame_count - 1))
             update_live_info(state)
             draw_live_frame()
         except Exception as exc:
@@ -1457,20 +1742,25 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
                 pass
         live_redraw_after["id"] = root.after(80, redraw_live_visualization)
 
+    def live_frame_count() -> int:
+        return int(live_visual_state.get("asset_total_frames") or len(live_visual_state.get("playback_points", [])))
+
     def live_step_amount() -> int:
+        if live_visual_state.get("asset_segments"):
+            return {"0.25x": 1, "0.5x": 1, "1x": 1, "2x": 2, "4x": 4}.get(live_speed_var.get(), 1)
         return {"0.25x": 1, "0.5x": 2, "1x": 4, "2x": 8, "4x": 14}.get(live_speed_var.get(), 4)
 
     def live_play_loop() -> None:
         if not live_playing.get():
             return
-        playback_points: List[Tuple[float, float, int]] = live_visual_state.get("playback_points", [])
-        if not playback_points:
+        frame_count = live_frame_count()
+        if frame_count <= 0:
             live_playing.set(False)
             live_play_button.configure(text="Play")
             return
         next_frame = live_frame_var.get() + live_step_amount()
-        if next_frame >= len(playback_points):
-            next_frame = len(playback_points) - 1
+        if next_frame >= frame_count:
+            next_frame = frame_count - 1
             live_playing.set(False)
             live_play_button.configure(text="Play")
         live_frame_var.set(next_frame)
@@ -1492,6 +1782,7 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
 
     live_field.bind("<Configure>", lambda _event: draw_live_frame())
     project_var.trace_add("write", lambda *_args: schedule_live_redraw())
+    preview_assets_var.trace_add("write", lambda *_args: schedule_live_redraw())
     auto_name_var.trace_add("write", lambda *_args: update_status())
 
     def show_visualization() -> None:
@@ -1970,13 +2261,27 @@ def launch_gui(project_default: str = "../src/main/deploy/pathplanner") -> int:
         entry = tk.Entry(content, textvariable=project_var, width=56, bg=raised, fg=text, insertbackground=text, relief="flat", bd=0, font=("Segoe UI", 10))
         entry.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(6, 12), ipady=8)
 
-        def browse() -> None:
+        def browse_project() -> None:
             folder = filedialog.askdirectory(initialdir=str(Path.cwd()))
             if folder:
                 project_var.set(folder)
+                schedule_live_redraw()
 
-        button(content, "Browse", browse, raised).grid(row=2, column=2, padx=(8, 0), pady=(6, 12))
-        button(content, "Close", dialog.destroy, accent).grid(row=3, column=2, sticky="e")
+        button(content, "Browse", browse_project, raised).grid(row=2, column=2, padx=(8, 0), pady=(6, 12))
+
+        label(content, "Preview assets folder", 10, "normal", muted, panel).grid(row=3, column=0, columnspan=3, sticky="w")
+        asset_entry = tk.Entry(content, textvariable=preview_assets_var, width=56, bg=raised, fg=text, insertbackground=text, relief="flat", bd=0, font=("Segoe UI", 10))
+        asset_entry.grid(row=4, column=0, columnspan=2, sticky="ew", pady=(6, 12), ipady=8)
+
+        def browse_assets() -> None:
+            folder = filedialog.askdirectory(initialdir=str(Path.cwd()))
+            if folder:
+                preview_assets_var.set(folder)
+                schedule_live_redraw()
+
+        button(content, "Browse", browse_assets, raised).grid(row=4, column=2, padx=(8, 0), pady=(6, 12))
+        label(content, "This can be the export folder itself or a folder containing gifs/ and overlays/.", 9, "normal", muted, panel).grid(row=5, column=0, columnspan=3, sticky="w", pady=(0, 12))
+        button(content, "Close", lambda: (schedule_live_redraw(), dialog.destroy()), accent).grid(row=6, column=2, sticky="e")
 
     def save_dialog() -> None:
         try:
@@ -2170,6 +2475,7 @@ def build_parser() -> argparse.ArgumentParser:
     gen_parser.set_defaults(func=cmd_generate)
 
     gui_parser = subparsers.add_parser("gui", help="Open the GUI")
+    gui_parser.add_argument("--preview-assets", default="", help="Folder containing exported GIFs/PNGs, or a folder with gifs/ and overlays/ subfolders")
     gui_parser.set_defaults(func=cmd_gui)
 
     return parser

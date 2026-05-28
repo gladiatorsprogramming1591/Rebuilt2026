@@ -1,0 +1,337 @@
+{
+  "version": 1,
+  "description": "PathPlanner preview assets for external auto viewers",
+  "paths": [
+    {
+      "name": "Close - Center",
+      "gif": "gifs\\Close - Center.gif",
+      "overlay": "overlays\\Close - Center.png"
+    },
+    {
+      "name": "Close - Close",
+      "gif": "gifs\\Close - Close.gif",
+      "overlay": "overlays\\Close - Close.png"
+    },
+    {
+      "name": "CloseA-FarB",
+      "gif": "gifs\\CloseA-FarB.gif",
+      "overlay": "overlays\\CloseA-FarB.png"
+    },
+    {
+      "name": "CloseA-RiskB",
+      "gif": "gifs\\CloseA-RiskB.gif",
+      "overlay": "overlays\\CloseA-RiskB.png"
+    },
+    {
+      "name": "CloseB-Localize",
+      "gif": "gifs\\CloseB-Localize.gif",
+      "overlay": "overlays\\CloseB-Localize.png"
+    },
+    {
+      "name": "CloseB-NoLocalize",
+      "gif": "gifs\\CloseB-NoLocalize.gif",
+      "overlay": "overlays\\CloseB-NoLocalize.png"
+    },
+    {
+      "name": "FarA-CloseB",
+      "gif": "gifs\\FarA-CloseB.gif",
+      "overlay": "overlays\\FarA-CloseB.png"
+    },
+    {
+      "name": "FarA-MidB",
+      "gif": "gifs\\FarA-MidB.gif",
+      "overlay": "overlays\\FarA-MidB.png"
+    },
+    {
+      "name": "FarB-Localize",
+      "gif": "gifs\\FarB-Localize.gif",
+      "overlay": "overlays\\FarB-Localize.png"
+    },
+    {
+      "name": "FarB-NoLocalize",
+      "gif": "gifs\\FarB-NoLocalize.gif",
+      "overlay": "overlays\\FarB-NoLocalize.png"
+    },
+    {
+      "name": "Greedy_CloseA-FarB",
+      "gif": "gifs\\Greedy_CloseA-FarB.gif",
+      "overlay": "overlays\\Greedy_CloseA-FarB.png"
+    },
+    {
+      "name": "Greedy_CloseA-RiskB",
+      "gif": "gifs\\Greedy_CloseA-RiskB.gif",
+      "overlay": "overlays\\Greedy_CloseA-RiskB.png"
+    },
+    {
+      "name": "Greedy_FarA-CloseB",
+      "gif": "gifs\\Greedy_FarA-CloseB.gif",
+      "overlay": "overlays\\Greedy_FarA-CloseB.png"
+    },
+    {
+      "name": "Greedy_FarA-MidB",
+      "gif": "gifs\\Greedy_FarA-MidB.gif",
+      "overlay": "overlays\\Greedy_FarA-MidB.png"
+    },
+    {
+      "name": "Greedy_MidA-FarB",
+      "gif": "gifs\\Greedy_MidA-FarB.gif",
+      "overlay": "overlays\\Greedy_MidA-FarB.png"
+    },
+    {
+      "name": "Greedy_MidA-RiskB",
+      "gif": "gifs\\Greedy_MidA-RiskB.gif",
+      "overlay": "overlays\\Greedy_MidA-RiskB.png"
+    },
+    {
+      "name": "Greedy_Pass2_CloseSweepB",
+      "gif": "gifs\\Greedy_Pass2_CloseSweepB.gif",
+      "overlay": "overlays\\Greedy_Pass2_CloseSweepB.png"
+    },
+    {
+      "name": "Greedy_Pass2_FarSweepB",
+      "gif": "gifs\\Greedy_Pass2_FarSweepB.gif",
+      "overlay": "overlays\\Greedy_Pass2_FarSweepB.png"
+    },
+    {
+      "name": "Greedy_Pass2_MidSweepB",
+      "gif": "gifs\\Greedy_Pass2_MidSweepB.gif",
+      "overlay": "overlays\\Greedy_Pass2_MidSweepB.png"
+    },
+    {
+      "name": "Greedy_Pass2_RiskSweepB",
+      "gif": "gifs\\Greedy_Pass2_RiskSweepB.gif",
+      "overlay": "overlays\\Greedy_Pass2_RiskSweepB.png"
+    },
+    {
+      "name": "Greedy_RiskA-CloseB",
+      "gif": "gifs\\Greedy_RiskA-CloseB.gif",
+      "overlay": "overlays\\Greedy_RiskA-CloseB.png"
+    },
+    {
+      "name": "Greedy_RiskA-MidB",
+      "gif": "gifs\\Greedy_RiskA-MidB.gif",
+      "overlay": "overlays\\Greedy_RiskA-MidB.png"
+    },
+    {
+      "name": "MidA-FarB",
+      "gif": "gifs\\MidA-FarB.gif",
+      "overlay": "overlays\\MidA-FarB.png"
+    },
+    {
+      "name": "MidA-RiskB",
+      "gif": "gifs\\MidA-RiskB.gif",
+      "overlay": "overlays\\MidA-RiskB.png"
+    },
+    {
+      "name": "MidB-Localize",
+      "gif": "gifs\\MidB-Localize.gif",
+      "overlay": "overlays\\MidB-Localize.png"
+    },
+    {
+      "name": "MidB-NoLocalize",
+      "gif": "gifs\\MidB-NoLocalize.gif",
+      "overlay": "overlays\\MidB-NoLocalize.png"
+    },
+    {
+      "name": "Pass1 Sneaky Start",
+      "gif": "gifs\\Pass1 Sneaky Start.gif",
+      "overlay": "overlays\\Pass1 Sneaky Start.png"
+    },
+    {
+      "name": "Pass1_GreedyRiskHub_Return",
+      "gif": "gifs\\Pass1_GreedyRiskHub_Return.gif",
+      "overlay": "overlays\\Pass1_GreedyRiskHub_Return.png"
+    },
+    {
+      "name": "Pass1_GreedyRiskNoHub_Return",
+      "gif": "gifs\\Pass1_GreedyRiskNoHub_Return.gif",
+      "overlay": "overlays\\Pass1_GreedyRiskNoHub_Return.png"
+    },
+    {
+      "name": "Pass1_GreedyRisk_Sweep",
+      "gif": "gifs\\Pass1_GreedyRisk_Sweep.gif",
+      "overlay": "overlays\\Pass1_GreedyRisk_Sweep.png"
+    },
+    {
+      "name": "Pass1_GreedySafeHub_Return",
+      "gif": "gifs\\Pass1_GreedySafeHub_Return.gif",
+      "overlay": "overlays\\Pass1_GreedySafeHub_Return.png"
+    },
+    {
+      "name": "Pass1_GreedySafeNoHub_Return",
+      "gif": "gifs\\Pass1_GreedySafeNoHub_Return.gif",
+      "overlay": "overlays\\Pass1_GreedySafeNoHub_Return.png"
+    },
+    {
+      "name": "Pass1_GreedySafe_Sweep",
+      "gif": "gifs\\Pass1_GreedySafe_Sweep.gif",
+      "overlay": "overlays\\Pass1_GreedySafe_Sweep.png"
+    },
+    {
+      "name": "Pass1_RiskHub_Return",
+      "gif": "gifs\\Pass1_RiskHub_Return.gif",
+      "overlay": "overlays\\Pass1_RiskHub_Return.png"
+    },
+    {
+      "name": "Pass1_RiskNoHub_Return",
+      "gif": "gifs\\Pass1_RiskNoHub_Return.gif",
+      "overlay": "overlays\\Pass1_RiskNoHub_Return.png"
+    },
+    {
+      "name": "Pass1_Risk_Start",
+      "gif": "gifs\\Pass1_Risk_Start.gif",
+      "overlay": "overlays\\Pass1_Risk_Start.png"
+    },
+    {
+      "name": "Pass1_Risk_Sweep",
+      "gif": "gifs\\Pass1_Risk_Sweep.gif",
+      "overlay": "overlays\\Pass1_Risk_Sweep.png"
+    },
+    {
+      "name": "Pass1_SafeHub_Return",
+      "gif": "gifs\\Pass1_SafeHub_Return.gif",
+      "overlay": "overlays\\Pass1_SafeHub_Return.png"
+    },
+    {
+      "name": "Pass1_SafeNoHub_Return",
+      "gif": "gifs\\Pass1_SafeNoHub_Return.gif",
+      "overlay": "overlays\\Pass1_SafeNoHub_Return.png"
+    },
+    {
+      "name": "Pass1_Safe_Start",
+      "gif": "gifs\\Pass1_Safe_Start.gif",
+      "overlay": "overlays\\Pass1_Safe_Start.png"
+    },
+    {
+      "name": "Pass1_Safe_Sweep",
+      "gif": "gifs\\Pass1_Safe_Sweep.gif",
+      "overlay": "overlays\\Pass1_Safe_Sweep.png"
+    },
+    {
+      "name": "Pass2_CloseB_Localize_Return",
+      "gif": "gifs\\Pass2_CloseB_Localize_Return.gif",
+      "overlay": "overlays\\Pass2_CloseB_Localize_Return.png"
+    },
+    {
+      "name": "Pass2_CloseB_NoLocalize_Return",
+      "gif": "gifs\\Pass2_CloseB_NoLocalize_Return.gif",
+      "overlay": "overlays\\Pass2_CloseB_NoLocalize_Return.png"
+    },
+    {
+      "name": "Pass2_CloseSweepA",
+      "gif": "gifs\\Pass2_CloseSweepA.gif",
+      "overlay": "overlays\\Pass2_CloseSweepA.png"
+    },
+    {
+      "name": "Pass2_CloseSweepB",
+      "gif": "gifs\\Pass2_CloseSweepB.gif",
+      "overlay": "overlays\\Pass2_CloseSweepB.png"
+    },
+    {
+      "name": "Pass2_FarB_Localize_Return",
+      "gif": "gifs\\Pass2_FarB_Localize_Return.gif",
+      "overlay": "overlays\\Pass2_FarB_Localize_Return.png"
+    },
+    {
+      "name": "Pass2_FarB_NoLocalize_Return",
+      "gif": "gifs\\Pass2_FarB_NoLocalize_Return.gif",
+      "overlay": "overlays\\Pass2_FarB_NoLocalize_Return.png"
+    },
+    {
+      "name": "Pass2_FarSweepA",
+      "gif": "gifs\\Pass2_FarSweepA.gif",
+      "overlay": "overlays\\Pass2_FarSweepA.png"
+    },
+    {
+      "name": "Pass2_FarSweepB",
+      "gif": "gifs\\Pass2_FarSweepB.gif",
+      "overlay": "overlays\\Pass2_FarSweepB.png"
+    },
+    {
+      "name": "Pass2_MidB_Localize_Return",
+      "gif": "gifs\\Pass2_MidB_Localize_Return.gif",
+      "overlay": "overlays\\Pass2_MidB_Localize_Return.png"
+    },
+    {
+      "name": "Pass2_MidB_NoLocalize_Return",
+      "gif": "gifs\\Pass2_MidB_NoLocalize_Return.gif",
+      "overlay": "overlays\\Pass2_MidB_NoLocalize_Return.png"
+    },
+    {
+      "name": "Pass2_MidSweepA",
+      "gif": "gifs\\Pass2_MidSweepA.gif",
+      "overlay": "overlays\\Pass2_MidSweepA.png"
+    },
+    {
+      "name": "Pass2_MidSweepB",
+      "gif": "gifs\\Pass2_MidSweepB.gif",
+      "overlay": "overlays\\Pass2_MidSweepB.png"
+    },
+    {
+      "name": "Pass2_RiskB_Localize_Return",
+      "gif": "gifs\\Pass2_RiskB_Localize_Return.gif",
+      "overlay": "overlays\\Pass2_RiskB_Localize_Return.png"
+    },
+    {
+      "name": "Pass2_RiskB_NoLocalize_Return",
+      "gif": "gifs\\Pass2_RiskB_NoLocalize_Return.gif",
+      "overlay": "overlays\\Pass2_RiskB_NoLocalize_Return.png"
+    },
+    {
+      "name": "Pass2_RiskSweepA",
+      "gif": "gifs\\Pass2_RiskSweepA.gif",
+      "overlay": "overlays\\Pass2_RiskSweepA.png"
+    },
+    {
+      "name": "Pass2_RiskSweepB",
+      "gif": "gifs\\Pass2_RiskSweepB.gif",
+      "overlay": "overlays\\Pass2_RiskSweepB.png"
+    },
+    {
+      "name": "Pass_Start",
+      "gif": "gifs\\Pass_Start.gif",
+      "overlay": "overlays\\Pass_Start.png"
+    },
+    {
+      "name": "RiskA-CloseB",
+      "gif": "gifs\\RiskA-CloseB.gif",
+      "overlay": "overlays\\RiskA-CloseB.png"
+    },
+    {
+      "name": "RiskA-MidB",
+      "gif": "gifs\\RiskA-MidB.gif",
+      "overlay": "overlays\\RiskA-MidB.png"
+    },
+    {
+      "name": "RiskB-Localize",
+      "gif": "gifs\\RiskB-Localize.gif",
+      "overlay": "overlays\\RiskB-Localize.png"
+    },
+    {
+      "name": "RiskB-NoLocalize",
+      "gif": "gifs\\RiskB-NoLocalize.gif",
+      "overlay": "overlays\\RiskB-NoLocalize.png"
+    },
+    {
+      "name": "Shoot - Center",
+      "gif": "gifs\\Shoot - Center.gif",
+      "overlay": "overlays\\Shoot - Center.png"
+    },
+    {
+      "name": "Shoot - Close",
+      "gif": "gifs\\Shoot - Close.gif",
+      "overlay": "overlays\\Shoot - Close.png"
+    },
+    {
+      "name": "Sneaky - Center",
+      "gif": "gifs\\Sneaky - Center.gif",
+      "overlay": "overlays\\Sneaky - Center.png"
+    },
+    {
+      "name": "Sneaky - Close",
+      "gif": "gifs\\Sneaky - Close.gif",
+      "overlay": "overlays\\Sneaky - Close.png"
+    }
+  ],
+  "failures": []
+}
