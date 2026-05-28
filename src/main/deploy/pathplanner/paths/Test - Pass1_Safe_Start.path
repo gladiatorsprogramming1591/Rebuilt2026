@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421,
+        "y": 0.454
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.518379079254078,
+        "y": 0.4681803613053605
+      },
+      "isLocked": true,
+      "linkedName": "Test_Battlecry bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 7.765,
+        "y": 1.357
+      },
+      "prevControl": {
+        "x": 7.465504475036624,
+        "y": 0.7406046302367234
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Test_BC Close End"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 8.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": 65.0
+  },
+  "reversed": false,
+  "folder": "Test",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

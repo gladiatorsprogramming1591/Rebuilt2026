@@ -590,6 +590,30 @@ public class RobotContainer {
     driveSpeedMultiplier = isSlow ? 0.7 : 1.0;
   }
 
+  public void useNormalDriveCurrentLimits() {
+    drive.useNormalDriveCurrentLimits();
+  }
+
+  public void useAutoDriveCurrentLimits() {
+    drive.useAutoDriveCurrentLimits();
+  }
+
+  public void setDriveBrakeMode() {
+    drive.setDriveBrakeMode();
+  }
+
+  public void setDriveCoastMode() {
+    drive.setDriveCoastMode();
+  }
+
+  public void enableShooterDefaultIdle() {
+    shooter.enableDefaultIdle();
+  }
+
+  public void disableShooterDefaultIdle() {
+    shooter.disableDefaultIdle();
+  }
+
   /**
    * Builds the shooter warmup command used before feeding fuel.
    *
@@ -807,7 +831,9 @@ public class RobotContainer {
   /** Registers commands used by PathPlanner autonomous routines. */
   public void registerNamedCommands() {
     NamedCommands.registerCommand("Shoot Hub", autoShootHubCommand());
-    NamedCommands.registerCommand("Prepare Intake", prepareIntake());
+    NamedCommands.registerCommand("Prepare Intake", intake.prepareIntakeInstant());
+    NamedCommands.registerCommand("Stop Intake", intake.stopIntakeInstant());
+
     NamedCommands.registerCommand("Intake", intakeCommand());
     NamedCommands.registerCommand("Intake In", intakeIn());
     NamedCommands.registerCommand("Idle Intake", intake.stopIntakeInstant());
@@ -815,6 +841,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("Warm Up Shooter", warmUpShooterCommand());
     NamedCommands.registerCommand("Tunable Wait", tunableAutoStartDelayCommand());
     NamedCommands.registerCommand("Lower Hood And Stop Shooting", lowerHoodAndStopShootingCommand());
+
+    NamedCommands.registerCommand("Set Coast", Commands.runOnce(this::setDriveCoastMode));
+    NamedCommands.registerCommand("Idle Shooter", shooter.idleShooterInstant());
   }
 
   /**

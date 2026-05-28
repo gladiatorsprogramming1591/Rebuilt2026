@@ -94,6 +94,16 @@ public class Module {
     io.setTurnOpenLoop(0.0);
   }
 
+  /** Sets sticky drive motor current limits. */
+  public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
+    io.setDriveCurrentLimits(statorAmps, supplyAmps);
+  }
+
+  /** Sets drive motor neutral mode. */
+  public void setDriveBrakeMode(boolean brake) {
+    io.setDriveBrakeMode(brake);
+  }
+
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
     return inputs.turnPosition;

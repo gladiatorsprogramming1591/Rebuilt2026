@@ -26,6 +26,7 @@ public class Shooter extends SubsystemBase {
 
   private boolean hasSpeedTargetChanged = true;
   private boolean defaultShouldCoast = true;
+  private boolean defaultIdleEnabled = true;
 
   /**
    * Creates a shooter subsystem using the provided hardware implementation.
@@ -72,6 +73,11 @@ public class Shooter extends SubsystemBase {
   public Command coastShooterDefaultCommand() {
     return run(
         () -> {
+          if (!defaultIdleEnabled) {
+            requestShooterOff();
+            return;
+          }
+
           updateDefaultCoastState();
 
           if (defaultShouldCoast) {
@@ -94,6 +100,27 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> requestShooterVelocity(
             ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble()));
+  }
+
+  /** Requests idle shooter speed once and finishes immediately. */
+  public Command idleShooterInstant() {
+    return runOnce(
+        () -> {
+          enableDefaultIdle();
+          requestShooterVelocity(ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble());
+        });
+  }
+
+  /** Allows the default command to hold idle speed. */
+  public void enableDefaultIdle() {
+    defaultIdleEnabled = true;
+  }
+
+  /** Prevents the default command from idling the shooter. */
+  public void disableDefaultIdle() {
+    defaultIdleEnabled = false;
+    defaultShouldCoast = true;
+    requestShooterOff();
   }
 
   /**

@@ -94,6 +94,8 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    robotContainer.useNormalDriveCurrentLimits();
+    robotContainer.setDriveBrakeMode();
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -177,6 +179,8 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    robotContainer.useNormalDriveCurrentLimits();
+
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()
           .getTable("limelight-two")
@@ -201,6 +205,9 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    robotContainer.useAutoDriveCurrentLimits();
+    robotContainer.setDriveBrakeMode();
+    robotContainer.disableShooterDefaultIdle();
     autonomousCommand = robotContainer.getAutonomousCommand();
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()
@@ -231,6 +238,10 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    robotContainer.useNormalDriveCurrentLimits();
+    robotContainer.setDriveBrakeMode();
+    robotContainer.enableShooterDefaultIdle();
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -262,6 +273,9 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+    robotContainer.useNormalDriveCurrentLimits();
+    robotContainer.setDriveBrakeMode();
+    robotContainer.enableShooterDefaultIdle();
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     if (robotInitConstants.isCompBot) {

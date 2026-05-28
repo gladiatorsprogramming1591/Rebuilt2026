@@ -44,6 +44,12 @@ public interface ModuleIO {
   /** Run the drive motor at the specified velocity. */
   public default void setDriveVelocity(double velocityRadPerSec) {}
 
+  /** Sets sticky drive motor current limits. */
+  public default void setDriveCurrentLimits(double statorAmps, double supplyAmps) {}
+
+  /** Sets drive motor neutral mode. */
+  public default void setDriveBrakeMode(boolean brake) {}
+
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}
 }

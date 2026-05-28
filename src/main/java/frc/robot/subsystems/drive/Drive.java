@@ -75,6 +75,13 @@ public class Drive extends SubsystemBase {
       robotInitConstants.isCompBot ? 68.000 : 15.000; // Cbot is roughly 150 lbs total
   private static final double ROBOT_MOI = robotInitConstants.isCompBot ? 8.452 : 1.176;
   private static final double WHEEL_COF = 1.2;
+  private static final double NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
+      TunerConstants.FrontLeft.SlipCurrent;
+  private static final double NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 50.0;
+
+  private static final double AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
+      TunerConstants.FrontLeft.SlipCurrent;
+  private static final double AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 80.0;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
@@ -280,6 +287,43 @@ public class Drive extends SubsystemBase {
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());
+  }
+
+  /** Sets sticky current limits on all drive motors. */
+  public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
+    for (var module : modules) {
+      module.setDriveCurrentLimits(statorAmps, supplyAmps);
+    }
+    Logger.recordOutput("Drive/CurrentLimits/StatorAmps", statorAmps);
+    Logger.recordOutput("Drive/CurrentLimits/SupplyAmps", supplyAmps);
+  }
+
+  /** Uses normal teleop drive current limits. */
+  public void useNormalDriveCurrentLimits() {
+    setDriveCurrentLimits(
+        NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS, NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS);
+  }
+
+  /** Uses higher autonomous drive current limits. */
+  public void useAutoDriveCurrentLimits() {
+    setDriveCurrentLimits(
+        AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS, AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS);
+  }
+
+  /** Sets all drive motors to brake mode. */
+  public void setDriveBrakeMode() {
+    for (var module : modules) {
+      module.setDriveBrakeMode(true);
+    }
+    Logger.recordOutput("Drive/BrakeMode", true);
+  }
+
+  /** Sets all drive motors to coast mode. */
+  public void setDriveCoastMode() {
+    for (var module : modules) {
+      module.setDriveBrakeMode(false);
+    }
+    Logger.recordOutput("Drive/BrakeMode", false);
   }
 
   /**

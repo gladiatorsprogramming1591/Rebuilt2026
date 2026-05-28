@@ -11,7 +11,8 @@
     "5 - BC Second Pass Returns",
     "6 - BC Final Passes",
     "7 - BC Utility",
-    "99 - BC Archive"
+    "99 - BC Archive",
+    "Test"
   ],
   "autoFolders": [
     "0 - Sneaky Autos",
@@ -25,7 +26,8 @@
     "92 - Test Second Pass",
     "93 - Test Final Paths",
     "94 - Test Sneaky",
-    "95 - Test Dots"
+    "95 - Test Dots",
+    "Test"
   ],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 8.5,

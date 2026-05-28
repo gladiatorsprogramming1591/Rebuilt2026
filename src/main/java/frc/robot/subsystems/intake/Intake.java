@@ -6,6 +6,7 @@ import static frc.robot.subsystems.intake.IntakeConstants.kstowFullTableKey;
 import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,6 +40,7 @@ public class Intake extends SubsystemBase {
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
   private boolean rollerBoostActive = false;
+  private boolean autoPrepareIntakeLatched = false;
   private boolean rollerWasRequested = false;
   private double rollerRequestStartTimestamp = 0.0;
   private double rollerHighCurrentStartTimestamp = Double.NaN;
@@ -320,6 +322,16 @@ public class Intake extends SubsystemBase {
         () -> setRequestedRollerSpeed(0.0));
   }
 
+  /** Latches autonomous intake preparation and finishes immediately. */
+  public Command prepareIntakeInstant() {
+    return runOnce(
+        () -> {
+          autoPrepareIntakeLatched = true;
+          requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true);
+          setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
+        });
+  }
+
   /**
    * Stops the rollers and slapdown continuously.
    *
@@ -330,6 +342,11 @@ public class Intake extends SubsystemBase {
   public Command stopIntake() {
     return run(
         () -> {
+          if (DriverStation.isAutonomousEnabled() && autoPrepareIntakeLatched) {
+            setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
+            return;
+          }
+
           setRequestedRollerSpeed(0.0);
           stopSlapdown();
         });
@@ -343,7 +360,11 @@ public class Intake extends SubsystemBase {
    * @return instant command that sets requested roller speed to zero
    */
   public Command stopIntakeInstant() {
-    return runOnce(() -> setRequestedRollerSpeed(0.0));
+    return runOnce(
+        () -> {
+          autoPrepareIntakeLatched = false;
+          setRequestedRollerSpeed(0.0);
+        });
   }
 
   /**
