@@ -41,6 +41,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   private double autoStart;
   private boolean autoMessagePrinted;
+  private Boolean configuredSelectedAutoMode;
 
   private final Timer disabledTimer = new Timer();
   private final Alert lowBatteryAlert =
@@ -94,7 +95,6 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-    robotContainer.useAutoDriveCurrentLimits();
     robotContainer.setDriveBrakeMode();
     robotContainer.disableShooterDefaultIdle();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -180,7 +180,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    robotContainer.useNormalDriveCurrentLimits();
+    configureForSelectedMode();
 
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()
@@ -201,7 +201,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    configureForSelectedMode();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -223,6 +225,9 @@ public class Robot extends LoggedRobot {
           .setNumber(0);
     }
 
+    autoStart = Timer.getTimestamp();
+    autoMessagePrinted = false;
+
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(autonomousCommand);
@@ -236,10 +241,6 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    robotContainer.useNormalDriveCurrentLimits();
-    robotContainer.setDriveBrakeMode();
-    robotContainer.enableShooterDefaultIdle();
-
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -271,9 +272,6 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    robotContainer.useNormalDriveCurrentLimits();
-    robotContainer.setDriveBrakeMode();
-    robotContainer.enableShooterDefaultIdle();
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     if (robotInitConstants.isCompBot) {
@@ -296,6 +294,26 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  private void configureForSelectedMode() {
+    boolean selectedAutoMode = DriverStation.isAutonomous();
+
+    if (configuredSelectedAutoMode != null && configuredSelectedAutoMode == selectedAutoMode) {
+      return;
+    }
+
+    robotContainer.setDriveBrakeMode();
+
+    if (selectedAutoMode) {
+      robotContainer.useAutoDriveCurrentLimits();
+      robotContainer.disableShooterDefaultIdle();
+    } else {
+      robotContainer.useNormalDriveCurrentLimits();
+      robotContainer.enableShooterDefaultIdle();
+    }
+
+    configuredSelectedAutoMode = selectedAutoMode;
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override

@@ -1,0 +1,133 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.803147727275534,
+        "y": 3.25
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.803147727275534,
+        "y": 3.5
+      },
+      "isLocked": false,
+      "linkedName": "Copy Of CloseA-PassCloseDot_Copy Of CloseA-CloseDot_Pass2_CloseSweepA"
+    },
+    {
+      "anchor": {
+        "x": 7.142034090909091,
+        "y": 3.759886363636363
+      },
+      "prevControl": {
+        "x": 6.894761546438636,
+        "y": 3.7967141894085588
+      },
+      "nextControl": {
+        "x": 7.573045454545454,
+        "y": 3.6956931818181813
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.826350626118067,
+        "y": 0.909499105545616
+      },
+      "prevControl": {
+        "x": 6.636636847708977,
+        "y": 1.2648542191819674
+      },
+      "nextControl": {
+        "x": 7.016064404527158,
+        "y": 0.5541439919092647
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.45340909090909,
+        "y": 0.4218409090911098
+      },
+      "prevControl": {
+        "x": 8.435068181818181,
+        "y": 2.870352272727272
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Copy Of CloseA-PassCloseDot_Copy Of CloseA-CloseDot_Battlecry Close Dot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.15,
+      "rotationDegrees": -72.01570800171525
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Anti Slip Turn",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.1,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Anti Slip Finish",
+      "minWaypointRelativePos": 2.0,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 5.0,
+        "y": 5.5
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.3152542372881357,
+      "maxWaypointRelativePos": 0.75,
+      "name": "Right Aim Pass"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "6 - BC Final Passes",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": 105.00000000000001
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.75,
+        "y": 1.487
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.75,
+        "y": 0.4870000000000001
+      },
+      "isLocked": true,
+      "linkedName": "Pass2_MidSweepB"
+    },
+    {
+      "anchor": {
+        "x": 7.774795454545455,
+        "y": 0.6877840909090901
+      },
+      "prevControl": {
+        "x": 7.380465909090909,
+        "y": 0.7794886363636351
+      },
+      "nextControl": {
+        "x": 8.097036074125498,
+        "y": 0.6128444119369876
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.45340909090909,
+        "y": 0.4218409090911098
+      },
+      "prevControl": {
+        "x": 8.45340909090909,
+        "y": 0.7526807077728435
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Battlecry Close Dot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.798742138364779,
+      "rotationDegrees": -11.762890938704153
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Anti Slip Turn",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "6 - BC Final Passes",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

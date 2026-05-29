@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -145,6 +146,7 @@ public class RobotContainer {
     registerNamedCommands();
     autoManager = new AutoManager(drive);
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
+    warmUpPathPlanner();
 
     configureDriverControllerChooser();
     driverControllerChooser =
@@ -157,8 +159,8 @@ public class RobotContainer {
 
       /** Configures the dashboard chooser for the driver controller type. */
     private void configureDriverControllerChooser() {
-      driverControllerTypeChooser.setDefaultOption("Xbox", ControllerType.XBOX);
-      driverControllerTypeChooser.addOption("PS4", ControllerType.PS4);
+      driverControllerTypeChooser.setDefaultOption("PS4", ControllerType.PS4);
+      driverControllerTypeChooser.addOption("Xbox", ControllerType.XBOX);
     }
 
     /** Returns the selected driver controller type. */
@@ -172,6 +174,11 @@ public class RobotContainer {
     DataLogManager.start();
     SmartDashboard.putBoolean("isCompBot", robotInitConstants.isCompBot);
     DriverStation.startDataLog(DataLogManager.getLog());
+  }
+
+  /** Runs PathPlanner's warmup command before autonomous can start. */
+  private void warmUpPathPlanner() {
+    FollowPathCommand.warmupCommand().ignoringDisable(true).schedule();
   }
 
   /**
@@ -852,7 +859,7 @@ public class RobotContainer {
    * @return autonomous shoot-hub command
    */
   private Command autoShootHubCommand() {
-    return shootWithAimStationary().until(hopper::isHopperEmpty).withTimeout(3.0);
+    return shootWithAim().until(hopper::isHopperEmpty).withTimeout(2.0);
   }
 
   /**

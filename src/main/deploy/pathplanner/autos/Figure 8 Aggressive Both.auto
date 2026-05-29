@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Aggressive Both Tag"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Figure 8 Aggressive Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Albany",
+  "choreoAuto": false
+}

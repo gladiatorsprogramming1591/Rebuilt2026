@@ -16,15 +16,15 @@
     },
     {
       "anchor": {
-        "x": 3.5013636363636356,
+        "x": 3.1883542039355985,
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 4.252883771929824,
+        "x": 3.939874339501787,
         "y": 2.556918859649122
       },
       "nextControl": {
-        "x": 3.2128238602211656,
+        "x": 2.8998144277931286,
         "y": 2.4068892258500996
       },
       "isLocked": false,
@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 2.7952386363636355,
+        "x": 2.3654740608228972,
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 2.9561104623998125,
+        "x": 2.5263458868590742,
         "y": 2.7764080036436
       },
       "nextControl": null,
@@ -55,7 +55,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 8.5,
+    "maxAcceleration": 10.5,
     "maxAngularVelocity": 1000.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
@@ -63,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -136.6
+    "rotation": -145.0
   },
   "reversed": false,
   "folder": "5 - BC Second Pass Returns",

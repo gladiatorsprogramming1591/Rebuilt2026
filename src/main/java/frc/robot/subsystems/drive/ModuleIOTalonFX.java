@@ -13,6 +13,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -37,6 +38,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.generated.TunerConstants;
 import java.util.Queue;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -93,6 +95,10 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Debouncer turnEncoderConnectedDebounce =
       new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 
+  private double appliedDriveStatorCurrentLimitAmps = Double.NaN;
+  private double appliedDriveSupplyCurrentLimitAmps = Double.NaN;
+  private Boolean appliedDriveBrakeMode = null;
+
   public ModuleIOTalonFX(
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
@@ -104,6 +110,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    appliedDriveBrakeMode = true;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
@@ -200,6 +207,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
+    inputs.driveStatorCurrentLimitAmps = appliedDriveStatorCurrentLimitAmps;
+    inputs.driveSupplyCurrentLimitAmps = appliedDriveSupplyCurrentLimitAmps;
+    inputs.driveBrakeMode = appliedDriveBrakeMode != null && appliedDriveBrakeMode;
+    inputs.driveConfigApplied =
+        appliedDriveBrakeMode != null
+            && !Double.isNaN(appliedDriveStatorCurrentLimitAmps)
+            && !Double.isNaN(appliedDriveSupplyCurrentLimitAmps);
 
     // Update turn inputs
     inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
@@ -256,18 +270,52 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
+    if (Double.compare(appliedDriveStatorCurrentLimitAmps, statorAmps) == 0
+        && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0) {
+      return;
+    }
+
     var currentLimits = new CurrentLimitsConfigs();
-    tryUntilOk(5, () -> driveTalon.getConfigurator().refresh(currentLimits, 0.25));
     currentLimits.StatorCurrentLimit = statorAmps;
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = supplyAmps;
     currentLimits.SupplyCurrentLimitEnable = true;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(currentLimits, 0.25));
+
+    appliedDriveStatorCurrentLimitAmps = statorAmps;
+    appliedDriveSupplyCurrentLimitAmps = supplyAmps;
   }
 
   @Override
   public void setDriveBrakeMode(boolean brake) {
+    if (appliedDriveBrakeMode != null && appliedDriveBrakeMode == brake) {
+      return;
+    }
+
     driveTalon.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    appliedDriveBrakeMode = brake;
+  }
+
+  @Override
+  public void verifyDriveConfig(String logKey) {
+    var currentLimits = new CurrentLimitsConfigs();
+    var motorOutput = new MotorOutputConfigs();
+
+    var currentLimitStatus = driveTalon.getConfigurator().refresh(currentLimits, 0.25);
+    var motorOutputStatus = driveTalon.getConfigurator().refresh(motorOutput, 0.25);
+
+    Logger.recordOutput(
+        logKey + "/Verified/StatorCurrentLimitAmps", currentLimits.StatorCurrentLimit);
+    Logger.recordOutput(
+        logKey + "/Verified/StatorCurrentLimitEnabled", currentLimits.StatorCurrentLimitEnable);
+    Logger.recordOutput(
+        logKey + "/Verified/SupplyCurrentLimitAmps", currentLimits.SupplyCurrentLimit);
+    Logger.recordOutput(
+        logKey + "/Verified/SupplyCurrentLimitEnabled", currentLimits.SupplyCurrentLimitEnable);
+    Logger.recordOutput(
+        logKey + "/Verified/BrakeMode", motorOutput.NeutralMode == NeutralModeValue.Brake);
+    Logger.recordOutput(logKey + "/Verified/CurrentLimitsReadOk", currentLimitStatus.isOK());
+    Logger.recordOutput(logKey + "/Verified/MotorOutputReadOk", motorOutputStatus.isOK());
   }
 
   @Override

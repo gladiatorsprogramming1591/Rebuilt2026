@@ -1,0 +1,110 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.9,
+        "y": 1.487
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.9,
+        "y": 0.4870000000000001
+      },
+      "isLocked": false,
+      "linkedName": "Copy Of FarB-CenterDot_Pass2_FarSweepB"
+    },
+    {
+      "anchor": {
+        "x": 6.646829545454546,
+        "y": 1.487
+      },
+      "prevControl": {
+        "x": 6.986021008934566,
+        "y": 0.40386835929224096
+      },
+      "nextControl": {
+        "x": 6.48246363804132,
+        "y": 2.0118655527658746
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.407556818181819,
+        "y": 3.989147727272727
+      },
+      "prevControl": {
+        "x": 8.407556818181819,
+        "y": 3.500895638266777
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Copy Of FarB-CenterDot_Battlecry Center Dot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3836477987421384,
+      "rotationDegrees": 169.50534436475016
+    },
+    {
+      "waypointRelativePos": 1.1069182389937113,
+      "rotationDegrees": 58.63698359541918
+    },
+    {
+      "waypointRelativePos": 1.5220125786163516,
+      "rotationDegrees": 43.630136019758375
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Anti Slip Turn",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.05,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Anti Slip Finish",
+      "minWaypointRelativePos": 1.5,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "6 - BC Final Passes",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.56,
-        "y": 0.454
+        "x": 4.6,
+        "y": 0.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.186885964912281,
-        "y": 0.5619627192982455
+        "x": 6.226885964912281,
+        "y": 0.7079627192982454
       },
       "isLocked": false,
-      "linkedName": "Battlecry Sneaky Start"
+      "linkedName": "Pass Start"
     },
     {
       "anchor": {
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 8.5,
+    "maxAcceleration": 10.5,
     "maxAngularVelocity": 1000.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "0 - BC Starting Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

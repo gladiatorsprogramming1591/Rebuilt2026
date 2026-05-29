@@ -18,6 +18,10 @@ public interface ModuleIO {
     public double driveVelocityRadPerSec = 0.0;
     public double driveAppliedVolts = 0.0;
     public double driveCurrentAmps = 0.0;
+    public double driveStatorCurrentLimitAmps = Double.NaN;
+    public double driveSupplyCurrentLimitAmps = Double.NaN;
+    public boolean driveBrakeMode = false;
+    public boolean driveConfigApplied = false;
 
     public boolean turnConnected = false;
     public boolean turnEncoderConnected = false;
@@ -49,6 +53,9 @@ public interface ModuleIO {
 
   /** Sets drive motor neutral mode. */
   public default void setDriveBrakeMode(boolean brake) {}
+
+  /** Reads drive motor configs from hardware and logs them. Do not call this periodically. */
+  public default void verifyDriveConfig(String logKey) {}
 
   /** Run the turn motor to the specified rotation. */
   public default void setTurnPosition(Rotation2d rotation) {}

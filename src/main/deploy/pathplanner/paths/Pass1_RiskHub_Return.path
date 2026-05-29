@@ -80,15 +80,15 @@
     },
     {
       "anchor": {
-        "x": 3.5013636363636356,
+        "x": 3.1883542039355985,
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 4.326704545454545,
+        "x": 4.0136951130265075,
         "y": 2.494363636363636
       },
       "nextControl": {
-        "x": 3.235829913112883,
+        "x": 2.922820480684846,
         "y": 2.433759490122432
       },
       "isLocked": false,
@@ -96,11 +96,11 @@
     },
     {
       "anchor": {
-        "x": 2.7952386363636355,
+        "x": 2.3654740608228972,
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 2.9325727558575228,
+        "x": 2.5028081803167845,
         "y": 2.728432325870429
       },
       "nextControl": null,
@@ -202,7 +202,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 8.5,
+    "maxAcceleration": 10.5,
     "maxAngularVelocity": 1000.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
@@ -210,7 +210,7 @@
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": -136.6
+    "rotation": -145.0
   },
   "reversed": false,
   "folder": "2 - BC First Pass Returns",

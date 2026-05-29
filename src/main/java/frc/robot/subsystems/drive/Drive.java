@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -104,6 +105,10 @@ public class Drive extends SubsystemBase {
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
+  private double appliedDriveStatorCurrentLimitAmps = Double.NaN;
+  private double appliedDriveSupplyCurrentLimitAmps = Double.NaN;
+  private Boolean appliedDriveBrakeMode = null;
+
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = Rotation2d.kZero;
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
@@ -127,6 +132,9 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
 
     SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putData(
+        "Drive/Verify Drive Motor Configs",
+        Commands.runOnce(this::verifyDriveMotorConfigs).ignoringDisable(true));
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -142,7 +150,7 @@ public class Drive extends SubsystemBase {
         this::runVelocity,
         new PPHolonomicDriveController(
             // TODO: Break out PIDs into constants. Investigate PP_CONFIG
-            new PIDConstants(20.0, 0.0, 0.0), new PIDConstants(15.0, 0.0, 0.0)),
+            new PIDConstants(7.5, 0.0, 0), new PIDConstants(4, 0.0, 0.0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -177,6 +185,18 @@ public class Drive extends SubsystemBase {
       module.periodic();
     }
     odometryLock.unlock();
+
+    Logger.recordOutput(
+        "Drive/Config/AppliedStatorCurrentLimitAmps", appliedDriveStatorCurrentLimitAmps);
+    Logger.recordOutput(
+        "Drive/Config/AppliedSupplyCurrentLimitAmps", appliedDriveSupplyCurrentLimitAmps);
+    Logger.recordOutput(
+        "Drive/Config/AppliedBrakeMode", appliedDriveBrakeMode != null && appliedDriveBrakeMode);
+    Logger.recordOutput(
+        "Drive/Config/AppliedConfigValid",
+        appliedDriveBrakeMode != null
+            && !Double.isNaN(appliedDriveStatorCurrentLimitAmps)
+            && !Double.isNaN(appliedDriveSupplyCurrentLimitAmps));
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
@@ -289,11 +309,26 @@ public class Drive extends SubsystemBase {
     runVelocity(new ChassisSpeeds());
   }
 
+  /** Reads drive motor configs from hardware and logs them. Do not call this periodically. */
+  public void verifyDriveMotorConfigs() {
+    for (int i = 0; i < modules.length; i++) {
+      modules[i].verifyDriveConfig("Drive/Module" + Integer.toString(i));
+    }
+  }
+
   /** Sets sticky current limits on all drive motors. */
   public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
+    if (Double.compare(appliedDriveStatorCurrentLimitAmps, statorAmps) == 0
+        && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0) {
+      return;
+    }
+
     for (var module : modules) {
       module.setDriveCurrentLimits(statorAmps, supplyAmps);
     }
+
+    appliedDriveStatorCurrentLimitAmps = statorAmps;
+    appliedDriveSupplyCurrentLimitAmps = supplyAmps;
     Logger.recordOutput("Drive/CurrentLimits/StatorAmps", statorAmps);
     Logger.recordOutput("Drive/CurrentLimits/SupplyAmps", supplyAmps);
   }
@@ -312,18 +347,25 @@ public class Drive extends SubsystemBase {
 
   /** Sets all drive motors to brake mode. */
   public void setDriveBrakeMode() {
-    for (var module : modules) {
-      module.setDriveBrakeMode(true);
-    }
-    Logger.recordOutput("Drive/BrakeMode", true);
+    setDriveBrakeMode(true);
   }
 
   /** Sets all drive motors to coast mode. */
   public void setDriveCoastMode() {
-    for (var module : modules) {
-      module.setDriveBrakeMode(false);
+    setDriveBrakeMode(false);
+  }
+
+  private void setDriveBrakeMode(boolean brake) {
+    if (appliedDriveBrakeMode != null && appliedDriveBrakeMode == brake) {
+      return;
     }
-    Logger.recordOutput("Drive/BrakeMode", false);
+
+    for (var module : modules) {
+      module.setDriveBrakeMode(brake);
+    }
+
+    appliedDriveBrakeMode = brake;
+    Logger.recordOutput("Drive/BrakeMode", brake);
   }
 
   /**

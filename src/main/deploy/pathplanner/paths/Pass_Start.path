@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7952386363636355,
+        "x": 2.3654740608228972,
         "y": 2.448511363636363
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.437237843920067,
-        "y": 1.9536053535504423
+        "x": 1.8651226575182633,
+        "y": 2.0981615392886517
       },
       "isLocked": false,
       "linkedName": "Battlecry Tilted Hub Shot"
@@ -50,21 +50,21 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 8.5,
+    "maxAcceleration": 10.5,
     "maxAngularVelocity": 1000.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.75,
+    "velocity": 4.0,
     "rotation": 0.0
   },
   "reversed": false,
   "folder": "0 - BC Starting Paths",
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": -136.6
+    "velocity": 1.0,
+    "rotation": -145.0
   },
   "useDefaultConstraints": true
 }

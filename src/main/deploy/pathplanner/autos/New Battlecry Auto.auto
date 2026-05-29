@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Risk_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Risk_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_RiskHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Hood And Stop Shooting"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass_Start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Coast"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass2_RiskSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RiskA-CloseB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass2_CloseSweepB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CloseB-CenterDot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Double Dip Close Dot",
+  "choreoAuto": false
+}

@@ -1,84 +1,90 @@
 package frc.robot.util;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoManager {
-  private SendableChooser<Command> autos;
-  private Drive drivetrain;
-  // FYI: Auto names are case-sensitive!
-  private String rightSideRushHub = "Bottom Rush to Hub";
-  private String middleShootStraight = "Middle Shoot Straight";
-  private String middleShootTop = "Middle Shoot Top";
-  private String middleShootBottom = "Middle Shoot Bottom";
-  private String rightSideBumpReturn = "Bottom bump";
-  private String rightSideBumpWiggle = "Bottom Bump wiggle";
-  private String rightSideWiggles = "MORE WIGGLES";
-  private String rightSideWigglesTrench = "MORE WIGGLES but trench";
-  private String rightSideBumps = "MORE BUMPS";
-  private String middleShoot = "Middle shoot";
-  private String middleOutpost = "Middle outpost";
-  private String rightSideWigglesTrenchWithDelay = "MORE WIGGLES but trench with delay";
-  private String rightSafeBeanTag = "SAFE BEAN Tag";
-  private String rightFigure8Tag = "Figure 8 Tag";
-  private String rightFigure8TagAggressive = "Figure 8 Tag Aggressive Hub";
-  private String rightFigure8AggressiveBoth = "Figure 8 Aggressive Both";
-  private String middleBumpTest = "Straight ln auto";
-  private String testStartPathToCenter = "TEST Single - Pass1_Risk_Start";
+  private static final String AUTO_FILE_EXTENSION = ".auto";
 
-  private PathConstraints constraints = new PathConstraints(7, 3, 1, 1);
+  private final SendableChooser<Command> autos = new SendableChooser<>();
+  private final Drive drivetrain;
 
   public AutoManager(Drive drivetrain) {
     this.drivetrain = drivetrain;
 
-    autos = new SendableChooser<>();
-    // autos.addOption("Right Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(rightSideRushHub)));
-    // autos.addOption(
-    //     "Left Side Rush HUB", wrapAutoWithPose(new PathPlannerAuto(rightSideRushHub, true)));
-    // autos.addOption(
-    //     "Middle Shoot Straight", wrapAutoWithPose(new PathPlannerAuto(middleShootStraight)));
-    // autos.addOption("Middle Shoot Top", wrapAutoWithPose(new PathPlannerAuto(middleShootTop)));
-    // autos.addOption(
-    //     "Middle Shoot Bottom", wrapAutoWithPose(new PathPlannerAuto(middleShootBottom)));
-    // autos.addOption("Left Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles, true)));
-    // autos.addOption(
-    //     "Right Side Wiggle", wrapAutoWithPose(new PathPlannerAuto(rightSideWiggles)));
-    // autos.addOption("Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench, true)));
-    // autos.addOption(
-    //   "Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrench)));
-    //   autos.addOption(
-    //     "Delayed Left Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay, true)));
-    // autos.addOption(
-    //   "Delayed Right Side Wiggles trench", wrapAutoWithPose(new PathPlannerAuto(rightSideWigglesTrenchWithDelay)));
-    // autos.addOption("Center Back up and shoot", wrapAutoWithPose(new PathPlannerAuto(middleShoot)));
-    // autos.addOption("Center Outpost", wrapAutoWithPose(new PathPlannerAuto(middleOutpost)));
-    // autos.addOption("Right SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag)));
-    // autos.addOption("Left SAFE BEAN Tag", wrapAutoWithPose(new PathPlannerAuto(rightSafeBeanTag, true)));
-    // autos.addOption("Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag)));
-    // autos.addOption("Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8Tag, true)));
-    // autos.addOption("AGGRES Right Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive)));
-    // autos.addOption("AGGRES Left Figure 8 Tag", wrapAutoWithPose(new PathPlannerAuto(rightFigure8TagAggressive, true)));
-    // autos.addOption("Test: Bump", wrapAutoWithPose(new PathPlannerAuto(middleBumpTest)));
-    autos.addOption("Right Figure 8 Aggressive Both", wrapAutoWithPose(new PathPlannerAuto(rightFigure8AggressiveBoth)));
-    autos.addOption("Left Figure 8 Aggressive Both", wrapAutoWithPose(new PathPlannerAuto(rightFigure8AggressiveBoth, true)));
-    autos.addOption("Right Test", wrapAutoWithPose(new PathPlannerAuto(testStartPathToCenter)));
-    autos.addOption("Left Test", wrapAutoWithPose(new PathPlannerAuto(testStartPathToCenter, true)));
+    autos.setDefaultOption("Do Nothing", Commands.none());
+    preloadPathPlannerAutos();
   }
 
-  private Command wrapAutoWithPose(PathPlannerAuto autoCommand) {
-    return new InstantCommand(
-        () -> {
-          // TODO: .schedule is deprecated, and starting pose is not seeded. Consider removal.
-          // Passing in pose is only used for the getStartingPose method; does not actually seed
-          // auto's
-          // starting pose.
-          new PathPlannerAuto(autoCommand, drivetrain.getPose()).schedule();
-        });
+  private void preloadPathPlannerAutos() {
+    int loadedAutoCount = 0;
+    for (String autoName : getDeployedAutoNames()) {
+      try {
+        PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+        autos.addOption(autoName, wrapAuto(new PathPlannerAuto(autoName)));
+        autos.addOption("Left " + autoName, wrapAuto(new PathPlannerAuto(autoName, true)));
+        loadedAutoCount++;
+      } catch (Exception exception) {
+        reportSkippedAuto(autoName, exception);
+      }
+    }
+
+    Logger.recordOutput("AutoManager/LoadedAutoCount", loadedAutoCount);
+  }
+
+  private List<String> getDeployedAutoNames() {
+    Path autosDirectory =
+        Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("autos");
+    List<String> autoNames = new ArrayList<>();
+
+    if (!Files.isDirectory(autosDirectory)) {
+      DriverStation.reportWarning("PathPlanner autos directory was not found: " + autosDirectory, false);
+      return autoNames;
+    }
+
+    try (Stream<Path> autoFiles = Files.list(autosDirectory)) {
+      autoFiles
+          .filter(Files::isRegularFile)
+          .map((path) -> path.getFileName().toString())
+          .filter((fileName) -> fileName.endsWith(AUTO_FILE_EXTENSION))
+          .map(this::stripAutoExtension)
+          .sorted()
+          .forEach(autoNames::add);
+    } catch (IOException exception) {
+      DriverStation.reportWarning("Failed to list PathPlanner autos: " + exception.getMessage(), false);
+    }
+
+    return autoNames;
+  }
+
+  private Command wrapAuto(Command autoCommand) {
+    return Commands.runOnce(drivetrain::stop, drivetrain).andThen(autoCommand);
+  }
+
+  private String stripAutoExtension(String fileName) {
+    return fileName.substring(0, fileName.length() - AUTO_FILE_EXTENSION.length());
+  }
+
+  private void reportSkippedAuto(String autoName, Exception exception) {
+    String message = "Skipping PathPlanner auto '" + autoName + "': " + exception.getMessage();
+    DriverStation.reportWarning(message, false);
+    Logger.recordOutput("AutoManager/SkippedAutos/" + sanitizeKey(autoName), message);
+  }
+
+  private String sanitizeKey(String value) {
+    return value.replaceAll("[^A-Za-z0-9_]", "_");
   }
 
   public SendableChooser<Command> getChooser() {

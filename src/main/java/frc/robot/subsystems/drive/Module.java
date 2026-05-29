@@ -104,6 +104,11 @@ public class Module {
     io.setDriveBrakeMode(brake);
   }
 
+  /** Reads drive motor configs from hardware and logs them. Do not call this periodically. */
+  public void verifyDriveConfig(String logKey) {
+    io.verifyDriveConfig(logKey);
+  }
+
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
     return inputs.turnPosition;

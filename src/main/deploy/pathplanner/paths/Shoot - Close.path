@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7952386363636355,
+        "x": 2.3654740608228972,
         "y": 2.448511363636363
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4841899019404914,
+        "x": 2.054425326399753,
         "y": 1.6459523729909773
       },
       "isLocked": false,
@@ -62,8 +62,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.1,
-      "rotationDegrees": 36.63311453056894
+      "waypointRelativePos": 1.8,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -71,7 +71,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 8.5,
+    "maxAcceleration": 10.5,
     "maxAngularVelocity": 1000.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
@@ -79,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "6 - BC Final Passes",
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": -136.6
+    "velocity": 1.0,
+    "rotation": -145.0
   },
   "useDefaultConstraints": true
 }

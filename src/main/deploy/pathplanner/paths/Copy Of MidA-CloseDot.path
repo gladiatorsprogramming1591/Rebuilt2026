@@ -1,0 +1,106 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.75,
+        "y": 2.75
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.75,
+        "y": 3.0
+      },
+      "isLocked": false,
+      "linkedName": "Copy Of MidA-CloseDot_Pass2_MidSweepA"
+    },
+    {
+      "anchor": {
+        "x": 8.114102272727273,
+        "y": 3.218829545454545
+      },
+      "prevControl": {
+        "x": 7.389636363636364,
+        "y": 4.090022727272727
+      },
+      "nextControl": {
+        "x": 8.70677783655466,
+        "y": 2.5061184243962926
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.45340909090909,
+        "y": 0.4218409090911098
+      },
+      "prevControl": {
+        "x": 8.45340909090909,
+        "y": 0.9441768037961069
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Copy Of MidA-CloseDot_Battlecry Close Dot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7861635220125787,
+      "rotationDegrees": -35.543858358150935
+    },
+    {
+      "waypointRelativePos": 1.3113207547169823,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Anti Slip Turn",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.05,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Anti Slip Finish",
+      "minWaypointRelativePos": 1.5,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "6 - BC Final Passes",
+  "idealStartingState": {
+    "velocity": 3.75,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}
