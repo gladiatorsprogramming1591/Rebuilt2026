@@ -59,6 +59,7 @@ public class IntakeIOKraken implements IntakeIO {
   private final PositionTorqueCurrentFOC torquePositionControl =
       new PositionTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC torqueRollerControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
+  private final TorqueCurrentFOC torqueSlapdownControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
 
   private final StatusSignal<Angle> deployAngle = deployMotor.getPosition();
   private final StatusSignal<AngularVelocity> deployAngularVelocity = deployMotor.getVelocity();
@@ -189,6 +190,10 @@ public void useTeleopRollerCurrentLimits() {
     deployConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
     deployConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     deployConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    deployConfig.CurrentLimits.SupplyCurrentLowerLimit =
+        IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_LIMIT;
+    deployConfig.CurrentLimits.SupplyCurrentLowerTime =
+        IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME;
 
     deployConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -339,6 +344,11 @@ public void useTeleopRollerCurrentLimits() {
         deployMotor.set(outputs.appliedSlapdownSpeed);
         break;
 
+      case TORQUE_CURRENT:
+        deployMotor.setControl(
+            torqueSlapdownControl.withOutput(outputs.appliedSlapdownTorqueCurrent));
+        break;
+
       case OFF:
         deployMotor.stopMotor();
         break;
@@ -370,6 +380,8 @@ public void useTeleopRollerCurrentLimits() {
         new CurrentLimitsConfigs()
             .withSupplyCurrentLimit(IntakeConstants.SLAPDOWN_SUPPLY_CURRENT_LIMIT)
             .withSupplyCurrentLimitEnable(true)
+            .withSupplyCurrentLowerLimit(IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_LIMIT)
+            .withSupplyCurrentLowerTime(IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME)
             .withStatorCurrentLimit(appliedSlapdownStatorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
 

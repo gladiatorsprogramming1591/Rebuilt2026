@@ -90,6 +90,9 @@ public interface IntakeIO {
     /** Desired open-loop slapdown output when slapdown mode is SPEED. */
     public double appliedSlapdownSpeed = 0.0;
 
+    /** Desired slapdown torque-current output when slapdown mode is TORQUE_CURRENT. */
+    public double appliedSlapdownTorqueCurrent = 0.0;
+
     /** Desired slapdown position in current legacy slapdown units. */
     public double desiredSlapdownPosition = 0.0;
 
@@ -137,7 +140,7 @@ public interface IntakeIO {
 
   default void useAutoRollerCurrentLimits() {}
 
-default void useTeleopRollerCurrentLimits() {}
+  default void useTeleopRollerCurrentLimits() {}
 
   /**
    * Optional connection check for hardware implementations.

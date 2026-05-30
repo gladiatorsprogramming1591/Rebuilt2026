@@ -37,24 +37,14 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
 
-  private static final double FORCE_DEPLOY_DOWN_SPEED = 0.08;
-  private static final double FORCE_DEPLOY_DOWN_SECONDS = 0.10;
-  private static final double FORCE_DEPLOY_DOWN_REAPPLY_COOLDOWN_SECONDS = 0.20;
-  private static final double FORCE_DEPLOY_DOWN_STATOR_CURRENT_LIMIT = 10.0;
-  private static final double FORCE_DEPLOY_DOWN_SUPPLY_CURRENT_LIMIT = 8.0;
-  private static final double FORCE_DEPLOY_DOWN_REAPPLY_POSITION_ERROR = 0.75;
 
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
   private boolean deployHoldDownAssistEnabled = false;
-  private boolean deployHoldDownInitialPulsePending = false;
-  private boolean forcingDeployDown = false;
   private boolean rollerBoostActive = false;
   private boolean autoPrepareIntakeRequested = false;
   private boolean autoPrepareIntakeLatched = false;
   private boolean rollerWasRequested = false;
-  private double forcingDeployDownStartTimestamp = 0.0;
-  private double lastDeployDownForceEndTimestamp = 0.0;
   private double rollerRequestStartTimestamp = 0.0;
   private double rollerHighCurrentStartTimestamp = Double.NaN;
   private double rollerBoostUntilTimestamp = 0.0;
@@ -116,12 +106,7 @@ public class Intake extends SubsystemBase {
    */
   public Command deploy() {
     return runOnce(() -> requestDeployWithHoldDownAssist())
-        .andThen(
-            new WaitUntilCommand(
-                () ->
-                    isSlapdownStopped
-                        && !forcingDeployDown
-                        && !deployHoldDownInitialPulsePending));
+        .andThen(new WaitUntilCommand(() -> isSlapdownStopped));
   }
 
   /**
@@ -410,8 +395,7 @@ public class Intake extends SubsystemBase {
   /** Starts normal deploy motion and enables deploy hold-down assist. */
   private void requestDeployWithHoldDownAssist() {
     deployHoldDownAssistEnabled = true;
-    deployHoldDownInitialPulsePending = true;
-    clearDeployDownForce();
+    stopSlapdownHoldDownTorque();
 
     requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true);
   }
@@ -437,6 +421,8 @@ public class Intake extends SubsystemBase {
 
     isSlapdownStopped = false;
     restoreSlapdownCurrentLimit();
+    outputs.appliedSlapdownSpeed = 0.0;
+    outputs.appliedSlapdownTorqueCurrent = 0.0;
     outputs.desiredSlapdownPosition =
         MathUtil.clamp(position, IntakeConstants.MIN_ANGLE, IntakeConstants.MAX_ANGLE);
     RobotState.setSlapdownMode(slapdownMode);
@@ -452,128 +438,61 @@ public class Intake extends SubsystemBase {
    * @param stopOnCurrentSpike true when current-spike stop should end the slapdown motion
    */
   private void requestSlapdownSpeed(double speed, boolean stopOnCurrentSpike) {
-    requestSlapdownSpeed(speed, stopOnCurrentSpike, false);
-  }
-
-  /**
-   * Requests open-loop slapdown speed control.
-   *
-   * <p>The deploy force-down path is the only speed command allowed to keep
-   * {@link #forcingDeployDown} true. Every other speed command clears the hold-down force state.
-   *
-   * @param speed requested slapdown open-loop output
-   * @param stopOnCurrentSpike true when current-spike stop should end the slapdown motion
-   * @param isDeployDownForce true when this speed command is the deploy settle pulse
-   */
-  private void requestSlapdownSpeed(
-      double speed, boolean stopOnCurrentSpike, boolean isDeployDownForce) {
-    if (!isDeployDownForce) {
-      disableDeployHoldDownAssist();
-    }
+    disableDeployHoldDownAssist();
 
     isSlapdownStopped = false;
     outputs.appliedSlapdownSpeed = speed;
+    outputs.appliedSlapdownTorqueCurrent = 0.0;
     RobotState.setSlapdownMode(SlapdownModeState.SPEED);
     stopSlapdownOnCurrentSpike = stopOnCurrentSpike;
   }
 
+  /** Requests constant torque-current downforce from the slapdown motor. */
+  private void requestSlapdownTorqueCurrent(double torqueCurrent) {
+    isSlapdownStopped = false;
+    outputs.appliedSlapdownSpeed = 0.0;
+    outputs.appliedSlapdownTorqueCurrent = torqueCurrent;
+    RobotState.setSlapdownMode(SlapdownModeState.TORQUE_CURRENT);
+    stopSlapdownOnCurrentSpike = false;
+  }
+
   /**
-   * Reapplies a short down-force pulse while intaking if the slapdown has lifted away from the
-   * deployed position.
+   * Applies constant downforce while the intake has deployed and the rollers are intaking.
    */
   private void updateDeployHoldDownAssist() {
     if (!deployHoldDownAssistEnabled) {
       return;
     }
 
-    if (RobotState.getSlapdownMode() != SlapdownModeState.OFF) {
-      return;
-    }
-
-    if (forcingDeployDown) {
-      return;
-    }
-
-    if (deployHoldDownInitialPulsePending) {
-      deployHoldDownInitialPulsePending = false;
-      startDeployDownForce();
-      return;
-    }
-
     if (requestedRollerSpeed <= 0.0) {
-      clearDeployDownForce();
+      stopSlapdownHoldDownTorque();
       return;
     }
 
-    double now = Timer.getTimestamp();
-    boolean forceCooldownFinished =
-        now - lastDeployDownForceEndTimestamp >= FORCE_DEPLOY_DOWN_REAPPLY_COOLDOWN_SECONDS;
+    SlapdownModeState slapdownMode = RobotState.getSlapdownMode();
 
-    if (forceCooldownFinished && isSlapdownRaisedFromDeployPosition()) {
-      startDeployDownForce();
-    }
-  }
-
-  /**
-   * Returns whether the slapdown has moved far enough away from DOWN toward UP to justify another
-   * small down-force pulse.
-   *
-   * @return true when the slapdown has lifted enough to reapply the assist
-   */
-  private boolean isSlapdownRaisedFromDeployPosition() {
-    double directionTowardStow = Math.signum(IntakeConstants.UP - IntakeConstants.DOWN);
-
-    if (directionTowardStow == 0.0) {
-      return false;
+    if (slapdownMode != SlapdownModeState.OFF
+        && slapdownMode != SlapdownModeState.TORQUE_CURRENT) {
+      return;
     }
 
-    double raisedAmount = (inputs.slapdownPosition - IntakeConstants.DOWN) * directionTowardStow;
-
-    return raisedAmount >= FORCE_DEPLOY_DOWN_REAPPLY_POSITION_ERROR;
+    requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
   }
 
-  /** Starts a short low-current force-down pulse after normal deploy completes or lifts again. */
-  private void startDeployDownForce() {
-    forcingDeployDown = true;
-    forcingDeployDownStartTimestamp = Timer.getTimestamp();
-    outputs.slapdownStatorCurrentLimit = FORCE_DEPLOY_DOWN_STATOR_CURRENT_LIMIT;
+  /** Stops hold-down torque without disabling future hold-down assist. */
+  private void stopSlapdownHoldDownTorque() {
+    outputs.appliedSlapdownTorqueCurrent = 0.0;
 
-    requestSlapdownSpeed(FORCE_DEPLOY_DOWN_SPEED, false, true);
-  }
-
-  /** Finishes an active deploy force-down pulse without disabling future hold-down assist. */
-  private void finishDeployDownForcePulse() {
-    clearDeployDownForce();
-    lastDeployDownForceEndTimestamp = Timer.getTimestamp();
-
-    outputs.appliedSlapdownSpeed = 0.0;
-    restoreSlapdownCurrentLimit();
-    RobotState.setSlapdownMode(SlapdownModeState.OFF);
-    stopSlapdownOnCurrentSpike = false;
-    isSlapdownStopped = true;
-  }
-
-  /** Clears only the active deploy force-down pulse state. */
-  private void clearDeployDownForce() {
-    forcingDeployDown = false;
-    forcingDeployDownStartTimestamp = 0.0;
-  }
-
-  /** Disables deploy hold-down assist and clears any active force pulse. */
-  private void disableDeployHoldDownAssist() {
-    boolean wasForcingDeployDown = forcingDeployDown;
-
-    deployHoldDownAssistEnabled = false;
-    deployHoldDownInitialPulsePending = false;
-    clearDeployDownForce();
-
-    if (wasForcingDeployDown) {
-      outputs.appliedSlapdownSpeed = 0.0;
-      restoreSlapdownCurrentLimit();
+    if (RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT) {
       RobotState.setSlapdownMode(SlapdownModeState.OFF);
-      stopSlapdownOnCurrentSpike = false;
       isSlapdownStopped = true;
     }
+  }
+
+  /** Disables deploy hold-down assist and clears any active hold-down torque. */
+  private void disableDeployHoldDownAssist() {
+    deployHoldDownAssistEnabled = false;
+    stopSlapdownHoldDownTorque();
   }
 
   /**
@@ -607,6 +526,7 @@ public class Intake extends SubsystemBase {
   private void stopSlapdown() {
     disableDeployHoldDownAssist();
     outputs.appliedSlapdownSpeed = 0.0;
+    outputs.appliedSlapdownTorqueCurrent = 0.0;
     restoreSlapdownCurrentLimit();
     RobotState.setSlapdownMode(SlapdownModeState.OFF);
     stopSlapdownOnCurrentSpike = false;
@@ -771,20 +691,6 @@ public class Intake extends SubsystemBase {
    * has a wide range of motion.
    */
   private void stopSlapdownIfNeeded() {
-    if (forcingDeployDown) {
-      boolean forceTimedOut =
-          Timer.getTimestamp() - forcingDeployDownStartTimestamp >= FORCE_DEPLOY_DOWN_SECONDS;
-
-      boolean forceHitCurrent =
-          inputs.slapdownSupplyCurrent >= FORCE_DEPLOY_DOWN_SUPPLY_CURRENT_LIMIT;
-
-      if (forceTimedOut || forceHitCurrent) {
-        finishDeployDownForcePulse();
-      }
-
-      return;
-    }
-
     if (stopSlapdownOnCurrentSpike
         && inputs.slapdownSupplyCurrent >= IntakeConstants.SLAPDOWN_CURRENT_STOP_THRESHOLD) {
       deployStop();
@@ -818,8 +724,8 @@ public class Intake extends SubsystemBase {
    * slapdown command wait condition as complete.
    */
   private void deployStop() {
-    clearDeployDownForce();
     outputs.appliedSlapdownSpeed = 0.0;
+    outputs.appliedSlapdownTorqueCurrent = 0.0;
     restoreSlapdownCurrentLimit();
     RobotState.setSlapdownMode(SlapdownModeState.OFF);
     stopSlapdownOnCurrentSpike = false;
@@ -834,6 +740,8 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "AppliedRollerSpeed", outputs.appliedRollerSpeed);
     Logger.recordOutput(kintakeTableKey + "AppliedSlapdownSpeed", outputs.appliedSlapdownSpeed);
     Logger.recordOutput(
+        kintakeTableKey + "AppliedSlapdownTorqueCurrent", outputs.appliedSlapdownTorqueCurrent);
+    Logger.recordOutput(
         kintakeTableKey + "DesiredSlapdownPosition", outputs.desiredSlapdownPosition);
     Logger.recordOutput(
         kintakeTableKey + "SlapdownStatorCurrentLimit", outputs.slapdownStatorCurrentLimit);
@@ -842,30 +750,19 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownAssistEnabled", deployHoldDownAssistEnabled);
     Logger.recordOutput(
-        kintakeTableKey + "DeployHoldDownInitialPulsePending",
-        deployHoldDownInitialPulsePending);
-    Logger.recordOutput(kintakeTableKey + "ForcingDeployDown", forcingDeployDown);
-    Logger.recordOutput(
-        kintakeTableKey + "ForcingDeployDownStartTimestamp", forcingDeployDownStartTimestamp);
-    Logger.recordOutput(
-        kintakeTableKey + "LastDeployDownForceEndTimestamp",
-        lastDeployDownForceEndTimestamp);
+        kintakeTableKey + "DeployHoldDownActive",
+        RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeRequested", autoPrepareIntakeRequested);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeLatched", autoPrepareIntakeLatched);
-    Logger.recordOutput(kintakeTableKey + "ForceDeployDownSpeed", FORCE_DEPLOY_DOWN_SPEED);
-    Logger.recordOutput(kintakeTableKey + "ForceDeployDownSeconds", FORCE_DEPLOY_DOWN_SECONDS);
     Logger.recordOutput(
-        kintakeTableKey + "ForceDeployDownReapplyCooldownSeconds",
-        FORCE_DEPLOY_DOWN_REAPPLY_COOLDOWN_SECONDS);
+        kintakeTableKey + "SlapdownHoldDownTorqueCurrent",
+        IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
     Logger.recordOutput(
-        kintakeTableKey + "ForceDeployDownStatorCurrentLimit",
-        FORCE_DEPLOY_DOWN_STATOR_CURRENT_LIMIT);
+        kintakeTableKey + "SlapdownLowerSupplyCurrentLimit",
+        IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_LIMIT);
     Logger.recordOutput(
-        kintakeTableKey + "ForceDeployDownSupplyCurrentLimit",
-        FORCE_DEPLOY_DOWN_SUPPLY_CURRENT_LIMIT);
-    Logger.recordOutput(
-        kintakeTableKey + "ForceDeployDownReapplyPositionError",
-        FORCE_DEPLOY_DOWN_REAPPLY_POSITION_ERROR);
+        kintakeTableKey + "SlapdownLowerSupplyCurrentTime",
+        IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME);
 
     Logger.recordOutput(
         kintakeTableKey + "RollerNormalTorqueCurrent",

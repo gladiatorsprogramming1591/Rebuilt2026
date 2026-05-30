@@ -146,6 +146,7 @@ public final class RobotState {
     BUMP_POSITION,
     STOW_WHILE_SHOOTING,
     SPEED,
+    TORQUE_CURRENT,
     OFF
   }
 
