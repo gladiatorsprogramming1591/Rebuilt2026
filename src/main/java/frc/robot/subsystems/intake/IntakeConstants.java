@@ -32,7 +32,7 @@ public final class IntakeConstants {
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = ROLLER_AUTO_SUPPLY_CURRENT_LIMIT;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
 
-  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
+  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 50.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 50.0;
 
   public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 40.0;
