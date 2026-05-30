@@ -400,6 +400,11 @@ public class Intake extends SubsystemBase {
     requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true);
   }
 
+  private boolean isFullTravelPositionMode() {
+  return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
+      || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
+}
+
   /**
    * Requests closed-loop slapdown position control.
    *
@@ -697,7 +702,7 @@ public class Intake extends SubsystemBase {
       return;
     }
 
-    if (RobotState.getSlapdownMode() != SlapdownModeState.OFF && isAtRequestedLimit()) {
+    if (isFullTravelPositionMode() && isAtRequestedLimit()) {
       deployStop();
     }
   }
