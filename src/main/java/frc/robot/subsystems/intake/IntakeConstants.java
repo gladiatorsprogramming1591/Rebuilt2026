@@ -35,7 +35,7 @@ public final class IntakeConstants {
   public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 50.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 50.0;
   public static final double SLAPDOWN_LOWER_SUPPLY_CURRENT_LIMIT = 15.0;
-  public static final double SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME = 0.50;
+  public static final double SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME = 0;
 
 
   public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 40.0;
@@ -142,7 +142,7 @@ public final class IntakeConstants {
 
 
   // Slapdown torque-current tuning
-  private static final double DEFAULT_SLAPDOWN_HOLD_DOWN_TORQUE_CURRENT = 10.0;
+  private static final double DEFAULT_SLAPDOWN_HOLD_DOWN_TORQUE_CURRENT = 50.0;
 
   // Roller torque-current tuning
   private static final double DEFAULT_ROLLER_NORMAL_TORQUE_CURRENT = 80.0;
