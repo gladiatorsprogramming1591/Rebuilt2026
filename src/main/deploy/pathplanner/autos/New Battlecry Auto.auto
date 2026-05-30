@@ -13,19 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pass1_Risk_Start"
+            "pathName": "Pass1_Safe_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass1_Risk_Sweep"
+            "pathName": "Pass1_Safe_Sweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass1_RiskHub_Return"
+            "pathName": "Pass1_SafeHub_Return"
           }
         },
         {
@@ -47,12 +47,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Pass_Start"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Set Coast"
@@ -67,13 +61,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RiskA-CloseB"
+            "pathName": "Greedy_RiskA-CloseB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass2_CloseSweepB"
+            "pathName": "Greedy_Pass2_CloseSweepB"
           }
         },
         {

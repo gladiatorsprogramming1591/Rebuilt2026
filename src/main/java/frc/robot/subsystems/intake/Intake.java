@@ -39,6 +39,7 @@ public class Intake extends SubsystemBase {
 
   private static final double FORCE_DEPLOY_DOWN_SPEED = 0.08;
   private static final double FORCE_DEPLOY_DOWN_SECONDS = 0.10;
+  private static final double FORCE_DEPLOY_DOWN_REAPPLY_COOLDOWN_SECONDS = 0.20;
   private static final double FORCE_DEPLOY_DOWN_STATOR_CURRENT_LIMIT = 10.0;
   private static final double FORCE_DEPLOY_DOWN_SUPPLY_CURRENT_LIMIT = 8.0;
   private static final double FORCE_DEPLOY_DOWN_REAPPLY_POSITION_ERROR = 0.75;
@@ -49,9 +50,11 @@ public class Intake extends SubsystemBase {
   private boolean deployHoldDownInitialPulsePending = false;
   private boolean forcingDeployDown = false;
   private boolean rollerBoostActive = false;
+  private boolean autoPrepareIntakeRequested = false;
   private boolean autoPrepareIntakeLatched = false;
   private boolean rollerWasRequested = false;
   private double forcingDeployDownStartTimestamp = 0.0;
+  private double lastDeployDownForceEndTimestamp = 0.0;
   private double rollerRequestStartTimestamp = 0.0;
   private double rollerHighCurrentStartTimestamp = Double.NaN;
   private double rollerBoostUntilTimestamp = 0.0;
@@ -69,8 +72,8 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Updates intake inputs, updates tunable outputs, applies requested outputs, and stops the
-   * slapdown when a configured stop condition is reached.
+   * Updates intake inputs, updates tunable outputs, handles latched auto requests, applies requested
+   * outputs, and stops the slapdown when a configured stop condition is reached.
    */
   @Override
   public void periodic() {
@@ -78,6 +81,7 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
 
     updateTunableOutputs();
+    handleAutoPrepareIntakeRequest();
     updateRollerOutput();
     updateDeployHoldDownAssist();
     logOutputs();
@@ -343,14 +347,9 @@ public class Intake extends SubsystemBase {
         () -> setRequestedRollerSpeed(0.0));
   }
 
-  /** Latches autonomous intake preparation and finishes immediately. */
+  /** Requests autonomous intake preparation and finishes immediately. */
   public Command prepareIntakeInstant() {
-    return runOnce(
-        () -> {
-          autoPrepareIntakeLatched = true;
-          requestDeployWithHoldDownAssist();
-          setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
-        });
+    return runOnce(() -> autoPrepareIntakeRequested = true);
   }
 
   /**
@@ -374,18 +373,38 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Stops only the intake rollers once.
+   * Stops only the autonomous intake latch and rollers once.
    *
-   * <p>This does not stop or change the slapdown.
+   * <p>This also disables deploy hold-down assist because the intake is no longer intentionally
+   * running.
    *
-   * @return instant command that sets requested roller speed to zero
+   * @return instant command that clears autonomous intake state
    */
   public Command stopIntakeInstant() {
     return runOnce(
         () -> {
+          autoPrepareIntakeRequested = false;
           autoPrepareIntakeLatched = false;
+          disableDeployHoldDownAssist();
           setRequestedRollerSpeed(0.0);
         });
+  }
+
+  /** Handles the one-cycle request created by the autonomous Prepare Intake named command. */
+  private void handleAutoPrepareIntakeRequest() {
+    if (!autoPrepareIntakeRequested) {
+      return;
+    }
+
+    autoPrepareIntakeRequested = false;
+
+    if (!DriverStation.isAutonomousEnabled()) {
+      return;
+    }
+
+    autoPrepareIntakeLatched = true;
+    requestDeployWithHoldDownAssist();
+    setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
   }
 
   /** Starts normal deploy motion and enables deploy hold-down assist. */
@@ -486,7 +505,11 @@ public class Intake extends SubsystemBase {
       return;
     }
 
-    if (isSlapdownRaisedFromDeployPosition()) {
+    double now = Timer.getTimestamp();
+    boolean forceCooldownFinished =
+        now - lastDeployDownForceEndTimestamp >= FORCE_DEPLOY_DOWN_REAPPLY_COOLDOWN_SECONDS;
+
+    if (forceCooldownFinished && isSlapdownRaisedFromDeployPosition()) {
       startDeployDownForce();
     }
   }
@@ -504,8 +527,7 @@ public class Intake extends SubsystemBase {
       return false;
     }
 
-    double raisedAmount =
-        (inputs.slapdownPosition - IntakeConstants.DOWN) * directionTowardStow;
+    double raisedAmount = (inputs.slapdownPosition - IntakeConstants.DOWN) * directionTowardStow;
 
     return raisedAmount >= FORCE_DEPLOY_DOWN_REAPPLY_POSITION_ERROR;
   }
@@ -519,6 +541,18 @@ public class Intake extends SubsystemBase {
     requestSlapdownSpeed(FORCE_DEPLOY_DOWN_SPEED, false, true);
   }
 
+  /** Finishes an active deploy force-down pulse without disabling future hold-down assist. */
+  private void finishDeployDownForcePulse() {
+    clearDeployDownForce();
+    lastDeployDownForceEndTimestamp = Timer.getTimestamp();
+
+    outputs.appliedSlapdownSpeed = 0.0;
+    restoreSlapdownCurrentLimit();
+    RobotState.setSlapdownMode(SlapdownModeState.OFF);
+    stopSlapdownOnCurrentSpike = false;
+    isSlapdownStopped = true;
+  }
+
   /** Clears only the active deploy force-down pulse state. */
   private void clearDeployDownForce() {
     forcingDeployDown = false;
@@ -527,9 +561,19 @@ public class Intake extends SubsystemBase {
 
   /** Disables deploy hold-down assist and clears any active force pulse. */
   private void disableDeployHoldDownAssist() {
+    boolean wasForcingDeployDown = forcingDeployDown;
+
     deployHoldDownAssistEnabled = false;
     deployHoldDownInitialPulsePending = false;
     clearDeployDownForce();
+
+    if (wasForcingDeployDown) {
+      outputs.appliedSlapdownSpeed = 0.0;
+      restoreSlapdownCurrentLimit();
+      RobotState.setSlapdownMode(SlapdownModeState.OFF);
+      stopSlapdownOnCurrentSpike = false;
+      isSlapdownStopped = true;
+    }
   }
 
   /**
@@ -735,7 +779,7 @@ public class Intake extends SubsystemBase {
           inputs.slapdownSupplyCurrent >= FORCE_DEPLOY_DOWN_SUPPLY_CURRENT_LIMIT;
 
       if (forceTimedOut || forceHitCurrent) {
-        deployStop();
+        finishDeployDownForcePulse();
       }
 
       return;
@@ -769,9 +813,9 @@ public class Intake extends SubsystemBase {
   /**
    * Ends the current slapdown deploy/stow motion.
    *
-   * <p>This is used when the slapdown reaches a limit sensor, hits the current threshold, or finishes
-   * a force-down assist pulse. It stops the motor, restores the normal current limit, clears
-   * current-spike stopping, and marks the slapdown command wait condition as complete.
+   * <p>This is used when the slapdown reaches a limit sensor or hits the current threshold. It stops
+   * the motor, restores the normal current limit, clears current-spike stopping, and marks the
+   * slapdown command wait condition as complete.
    */
   private void deployStop() {
     clearDeployDownForce();
@@ -803,8 +847,16 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "ForcingDeployDown", forcingDeployDown);
     Logger.recordOutput(
         kintakeTableKey + "ForcingDeployDownStartTimestamp", forcingDeployDownStartTimestamp);
+    Logger.recordOutput(
+        kintakeTableKey + "LastDeployDownForceEndTimestamp",
+        lastDeployDownForceEndTimestamp);
+    Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeRequested", autoPrepareIntakeRequested);
+    Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeLatched", autoPrepareIntakeLatched);
     Logger.recordOutput(kintakeTableKey + "ForceDeployDownSpeed", FORCE_DEPLOY_DOWN_SPEED);
     Logger.recordOutput(kintakeTableKey + "ForceDeployDownSeconds", FORCE_DEPLOY_DOWN_SECONDS);
+    Logger.recordOutput(
+        kintakeTableKey + "ForceDeployDownReapplyCooldownSeconds",
+        FORCE_DEPLOY_DOWN_REAPPLY_COOLDOWN_SECONDS);
     Logger.recordOutput(
         kintakeTableKey + "ForceDeployDownStatorCurrentLimit",
         FORCE_DEPLOY_DOWN_STATOR_CURRENT_LIMIT);

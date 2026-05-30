@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class AutoManager {
   private static final String AUTO_FILE_EXTENSION = ".auto";
@@ -43,6 +46,20 @@ public class AutoManager {
 
     Logger.recordOutput("AutoManager/LoadedAutoCount", loadedAutoCount);
   }
+
+  public void warmupAutos() {
+  for (String autoName : AutoBuilder.getAllAutoNames()) {
+    try {
+      PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+      new PathPlannerAuto(autoName);
+      new PathPlannerAuto(autoName, true);
+    } catch (Exception exception) {
+      DriverStation.reportWarning(
+          "Failed to warm up PathPlanner auto: " + autoName + " - " + exception.getMessage(),
+          exception.getStackTrace());
+    }
+  }
+}
 
   private List<String> getDeployedAutoNames() {
     Path autosDirectory =

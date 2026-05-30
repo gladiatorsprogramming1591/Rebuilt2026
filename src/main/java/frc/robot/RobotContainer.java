@@ -9,6 +9,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -146,7 +148,7 @@ public class RobotContainer {
     registerNamedCommands();
     autoManager = new AutoManager(drive);
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", autoManager.getChooser());
-    warmUpPathPlanner();
+    warmupPathPlanner();
 
     configureDriverControllerChooser();
     driverControllerChooser =
@@ -177,9 +179,9 @@ public class RobotContainer {
   }
 
   /** Runs PathPlanner's warmup command before autonomous can start. */
-  private void warmUpPathPlanner() {
-    FollowPathCommand.warmupCommand().ignoringDisable(true).schedule();
-  }
+  // private void warmUpPathPlanner() {
+  //   FollowPathCommand.warmupCommand().ignoringDisable(true).schedule();
+  // }
 
   /**
    * Creates the real drivetrain hardware.
@@ -423,8 +425,6 @@ public class RobotContainer {
 
   /** Configures driver controller bindings. */
   private void configureDriverControls() {
-    driverController.povLeft().onTrue(setSlowModeCommand(true));
-    driverController.povLeft().onFalse(setSlowModeCommand(false));
 
     driverController.a().whileTrue(rotateToHubCommand());
     driverController.x().onTrue(stopWithXCommand());
@@ -435,7 +435,6 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(intake.stow());
     driverController.rightBumper().onTrue(intake.deploy());
 
-    driverController.povUp().whileTrue(hood.runHoodUp());
     driverController.povDown().whileTrue(hood.runHoodDown());
 
     driverController.povRight().toggleOnTrue(kicker.runKickerMotor());
@@ -452,8 +451,6 @@ public class RobotContainer {
   }
 
   private void configureBattlecryOperatorControls() {
-    operatorController.povLeft().onTrue(setSlowModeCommand(true));
-    operatorController.povLeft().onFalse(setSlowModeCommand(false));
 
     operatorController.a().whileTrue(rotateToHubCommand());
     operatorController.x().onTrue(stopWithXCommand());
@@ -464,7 +461,6 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(intake.stow());
     operatorController.rightBumper().onTrue(intake.deploy());
 
-    operatorController.povUp().whileTrue(hood.runHoodUp());
     operatorController.povDown().whileTrue(hood.runHoodDown());
 
     operatorController.povRight().toggleOnTrue(kicker.runKickerMotor());
@@ -863,6 +859,12 @@ public class RobotContainer {
 
     return Optional.empty();
   }
+
+  private void warmupPathPlanner() {
+  FollowPathCommand.warmupCommand().ignoringDisable(true).schedule();
+  PathfindingCommand.warmupCommand().ignoringDisable(true).schedule();
+  autoManager.warmupAutos();
+}
 
   /** Registers commands used by PathPlanner autonomous routines. */
   public void registerNamedCommands() {
