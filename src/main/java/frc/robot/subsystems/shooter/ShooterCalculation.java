@@ -253,7 +253,7 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber flywheelSpeed5 =
       shooterCalcTunable("FlyWheelSpeedMap/2.18", 1900.0);
   private static final LoggedTunableNumber flywheelSpeed6 =
-      shooterCalcTunable("FlyWheelSpeedMap/2.47", 1950.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.47", 1900.0); //1950
   private static final LoggedTunableNumber flywheelSpeed7 =
       shooterCalcTunable("FlyWheelSpeedMap/2.70", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed8 =
@@ -270,23 +270,23 @@ public class ShooterCalculation {
       shooterCalcTunable("FlyWheelSpeedMap/5.46", 2350.0);
 
   private static final LoggedTunableNumber passingHoodAngle1 =
-      shooterCalcTunable("PassingHoodMap/3.4", 900.0);
+      shooterCalcTunable("PassingHoodMap/3.4", 800.0);
   private static final LoggedTunableNumber passingHoodAngle2 =
-      shooterCalcTunable("PassingHoodMap/4.275", 900.0);
+      shooterCalcTunable("PassingHoodMap/4.275", 800.0);
   private static final LoggedTunableNumber passingHoodAngle3 =
-      shooterCalcTunable("PassingHoodMap/5.46", 900.0);
+      shooterCalcTunable("PassingHoodMap/5.46", 800.0);
   private static final LoggedTunableNumber passingHoodAngle4 =
-      shooterCalcTunable("PassingHoodMap/6.62", 900.0);
+      shooterCalcTunable("PassingHoodMap/6.62", 800.0);
   private static final LoggedTunableNumber passingHoodAngle5 =
-      shooterCalcTunable("PassingHoodMap/7.8", 900.0);
+      shooterCalcTunable("PassingHoodMap/7.8", 800.0);
   private static final LoggedTunableNumber passingHoodAngle6 =
-      shooterCalcTunable("PassingHoodMap/8.67", 900.0);
+      shooterCalcTunable("PassingHoodMap/8.67", 800.0);
   private static final LoggedTunableNumber passingHoodAngle7 =
-      shooterCalcTunable("PassingHoodMap/9.65", 900.0);
+      shooterCalcTunable("PassingHoodMap/9.65", 800.0);
   private static final LoggedTunableNumber passingHoodAngle8 =
-      shooterCalcTunable("PassingHoodMap/10.16", 900.0);
+      shooterCalcTunable("PassingHoodMap/10.16", 800.0);
   private static final LoggedTunableNumber passingHoodAngleLast =
-      shooterCalcTunable("PassingHoodMap/17.16", 900.0);
+      shooterCalcTunable("PassingHoodMap/17.16", 800.0);
 
   private static final LoggedTunableNumber passingFlywheelSpeed1 =
       shooterCalcTunable("PassingFlywheelMap/3.4", 2300.0);

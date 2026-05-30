@@ -859,7 +859,7 @@ public class RobotContainer {
    * @return autonomous shoot-hub command
    */
   private Command autoShootHubCommand() {
-    return shootWithAim().until(hopper::isHopperEmpty).withTimeout(2.0);
+    return shootWithAim().until(hopper::isHopperEmpty).withTimeout(3.0);
   }
 
   /**

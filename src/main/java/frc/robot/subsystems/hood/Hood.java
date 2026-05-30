@@ -26,7 +26,7 @@ public class Hood extends SubsystemBase {
   private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
   private final HoodIOOutputsAutoLogged outputs = new HoodIOOutputsAutoLogged();
 
-  private boolean hasInitiallyBeenZeroed = false;
+  private boolean hasInitiallyBeenZeroed = true; //FIXME
   private boolean hasReducedCurrentLimit = false;
   private boolean hasAppliedZeroAtCurrentHardStop = false;
 
