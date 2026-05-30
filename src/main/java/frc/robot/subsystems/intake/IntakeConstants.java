@@ -27,10 +27,12 @@ public final class IntakeConstants {
   public static final double SLAPDOWN_MOTOR_REDUCTION = 1.0; // TODO: placeholder until tested
 
   // Current limits
-  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_AUTO_SUPPLY_CURRENT_LIMIT = 80.0;
+  public static final double ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT = 60.0;
+  public static final double ROLLER_SUPPLY_CURRENT_LIMIT = ROLLER_AUTO_SUPPLY_CURRENT_LIMIT;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
 
-  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 50.0;
+  public static final double SLAPDOWN_SUPPLY_CURRENT_LIMIT = 30.0;
   public static final double SLAPDOWN_STATOR_CURRENT_LIMIT = 50.0;
 
   public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 40.0;
@@ -144,6 +146,8 @@ public final class IntakeConstants {
   private static final double DEFAULT_ROLLER_BOOST_HOLD_SECONDS = 0.25;
   private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
   private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
+
+  
 
   // Prepare-intake unjam tuning
   public static final LoggedTunableNumber prepareUnjamReverseSpeed =

@@ -135,6 +135,10 @@ public interface IntakeIO {
    */
   public default void applyOutputs(IntakeIOOutputs outputs) {}
 
+  default void useAutoRollerCurrentLimits() {}
+
+default void useTeleopRollerCurrentLimits() {}
+
   /**
    * Optional connection check for hardware implementations.
    *

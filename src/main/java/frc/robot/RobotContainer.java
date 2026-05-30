@@ -623,12 +623,14 @@ public class RobotContainer {
   }
 
   public void useNormalDriveCurrentLimits() {
-    drive.useNormalDriveCurrentLimits();
-  }
+  drive.useNormalDriveCurrentLimits();
+  intake.useTeleopRollerCurrentLimits();
+}
 
-  public void useAutoDriveCurrentLimits() {
-    drive.useAutoDriveCurrentLimits();
-  }
+public void useAutoDriveCurrentLimits() {
+  drive.useAutoDriveCurrentLimits();
+  intake.useAutoRollerCurrentLimits();
+}
 
   public void setDriveBrakeMode() {
     drive.setDriveBrakeMode();

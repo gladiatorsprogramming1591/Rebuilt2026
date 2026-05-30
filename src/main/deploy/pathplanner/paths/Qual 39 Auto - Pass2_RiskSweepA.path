@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.6,
+        "y": 0.6
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.642625992805803,
+        "y": 0.35379822411014494
+      },
+      "isLocked": false,
+      "linkedName": "Qual 39 Auto_Pass Start"
+    },
+    {
+      "anchor": {
+        "x": 8.0,
+        "y": 1.577576754385965
+      },
+      "prevControl": {
+        "x": 7.726050399494988,
+        "y": 1.2666701219968264
+      },
+      "nextControl": {
+        "x": 8.319939325437563,
+        "y": 1.9406773322195334
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.5,
+        "y": 2.75
+      },
+      "prevControl": {
+        "x": 8.5,
+        "y": 2.0539782044197312
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Qual 39 Auto_Pass2_RiskSweepA"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 4.25,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Qual 39 Auto",
+  "idealStartingState": {
+    "velocity": 3.75,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

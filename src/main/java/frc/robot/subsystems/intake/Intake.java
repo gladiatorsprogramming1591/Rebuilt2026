@@ -1004,6 +1004,15 @@ public class Intake extends SubsystemBase {
         () -> setRequestedRollerSpeed(0.0));
   }
 
+
+  public void useAutoRollerCurrentLimits() {
+  io.useAutoRollerCurrentLimits();
+}
+
+public void useTeleopRollerCurrentLimits() {
+  io.useTeleopRollerCurrentLimits();
+}
+
   /**
    * Runs the rollers from the operator debug binding.
    *

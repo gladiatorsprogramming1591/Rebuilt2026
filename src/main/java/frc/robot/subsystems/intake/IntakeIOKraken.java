@@ -113,6 +113,33 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
+private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
+  CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
+
+  currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
+  currentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
+  currentLimits.SupplyCurrentLimitEnable = true;
+  currentLimits.StatorCurrentLimitEnable = true;
+
+  PhoenixUtil.tryUntilOk(
+      5,
+      () -> intakeLeft.getConfigurator().apply(currentLimits));
+
+  PhoenixUtil.tryUntilOk(
+      5,
+      () -> intakeRight.getConfigurator().apply(currentLimits));
+}
+
+@Override
+public void useAutoRollerCurrentLimits() {
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT);
+}
+
+@Override
+public void useTeleopRollerCurrentLimits() {
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT);
+}
+
   /**
    * Applies base configuration to the left and right roller motors.
    *
