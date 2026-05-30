@@ -41,6 +41,7 @@ public class Intake extends SubsystemBase {
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
   private boolean deployHoldDownAssistEnabled = false;
+  private boolean driverIntakeHeld = false;
   private boolean rollerBoostActive = false;
   private boolean autoPrepareIntakeRequested = false;
   private boolean autoPrepareIntakeLatched = false;
@@ -135,7 +136,12 @@ public class Intake extends SubsystemBase {
    * @return command that deploys the intake and then runs the rollers
    */
   public Command deployAndRunRoller() {
-    return deploy().andThen(runRoller());
+    return Commands.sequence(runOnce(() -> driverIntakeHeld = true), deploy(), runRoller())
+        .finallyDo(
+            interrupted -> {
+              driverIntakeHeld = false;
+              stopSlapdownHoldDownTorque();
+            });
   }
 
   /**
@@ -368,6 +374,7 @@ public class Intake extends SubsystemBase {
   public Command stopIntakeInstant() {
     return runOnce(
         () -> {
+          driverIntakeHeld = false;
           autoPrepareIntakeRequested = false;
           autoPrepareIntakeLatched = false;
           disableDeployHoldDownAssist();
@@ -397,13 +404,13 @@ public class Intake extends SubsystemBase {
     deployHoldDownAssistEnabled = true;
     stopSlapdownHoldDownTorque();
 
-    requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true);
+    requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, false);
   }
 
   private boolean isFullTravelPositionMode() {
-  return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
-      || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
-}
+    return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
+        || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
+  }
 
   /**
    * Requests closed-loop slapdown position control.
@@ -461,15 +468,15 @@ public class Intake extends SubsystemBase {
     stopSlapdownOnCurrentSpike = false;
   }
 
-  /**
-   * Applies constant downforce while the intake has deployed and the rollers are intaking.
-   */
+  /** Applies constant downforce while the driver is holding intake or auto intake is latched. */
   private void updateDeployHoldDownAssist() {
     if (!deployHoldDownAssistEnabled) {
       return;
     }
 
-    if (requestedRollerSpeed <= 0.0) {
+    boolean holdDownRequested = driverIntakeHeld || autoPrepareIntakeLatched;
+
+    if (!holdDownRequested) {
       stopSlapdownHoldDownTorque();
       return;
     }
@@ -529,6 +536,7 @@ public class Intake extends SubsystemBase {
    * {@link #setRequestedRollerSpeed(double)} separately.
    */
   private void stopSlapdown() {
+    driverIntakeHeld = false;
     disableDeployHoldDownAssist();
     outputs.appliedSlapdownSpeed = 0.0;
     outputs.appliedSlapdownTorqueCurrent = 0.0;
@@ -754,6 +762,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "StopSlapdownOnCurrentSpike", stopSlapdownOnCurrentSpike);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownAssistEnabled", deployHoldDownAssistEnabled);
+    Logger.recordOutput(kintakeTableKey + "DriverIntakeHeld", driverIntakeHeld);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownActive",
         RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
