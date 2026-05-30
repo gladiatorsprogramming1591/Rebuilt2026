@@ -417,7 +417,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     configureDriverControls();
-    configureOperatorControls();
+    configureBattlecryOperatorControls();
     configureRobotModeTriggers();
   }
 
@@ -441,6 +441,35 @@ public class RobotContainer {
     driverController.povRight().toggleOnTrue(kicker.runKickerMotor());
 
     Trigger shootTrigger = driverController.rightTrigger();
+
+    shootTrigger.whileTrue(shootWithAim());
+    shootTrigger.and(hopper::isHopperEmpty).whileTrue(driverRumbleCommand(0.8));
+
+    shootTrigger
+        .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
+        .and(DriverStation::isTeleop)
+        .onTrue(driverRumbleCommand(1.0).withTimeout(0.5));
+  }
+
+  private void configureBattlecryOperatorControls() {
+    operatorController.povLeft().onTrue(setSlowModeCommand(true));
+    operatorController.povLeft().onFalse(setSlowModeCommand(false));
+
+    operatorController.a().whileTrue(rotateToHubCommand());
+    operatorController.x().onTrue(stopWithXCommand());
+    operatorController.b().onTrue(resetGyroCommand());
+    operatorController.y().whileTrue(warmUpShooterCommand());
+
+    operatorController.leftTrigger().whileTrue(prepareIntake());
+    operatorController.leftBumper().onTrue(intake.stow());
+    operatorController.rightBumper().onTrue(intake.deploy());
+
+    operatorController.povUp().whileTrue(hood.runHoodUp());
+    operatorController.povDown().whileTrue(hood.runHoodDown());
+
+    operatorController.povRight().toggleOnTrue(kicker.runKickerMotor());
+
+    Trigger shootTrigger = operatorController.rightTrigger();
 
     shootTrigger.whileTrue(shootWithAim());
     shootTrigger.and(hopper::isHopperEmpty).whileTrue(driverRumbleCommand(0.8));
