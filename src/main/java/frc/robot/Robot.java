@@ -248,6 +248,9 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+      robotContainer.setDriveBrakeMode();
+      robotContainer.useNormalDriveCurrentLimits();
+      robotContainer.enableShooterDefaultIdle();
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()
           .getTable("limelight-two")
