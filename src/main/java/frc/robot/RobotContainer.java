@@ -812,7 +812,7 @@ public void useAutoDriveCurrentLimits() {
    * @return intake preparation command
    */
   public Command prepareIntake() {
-    return Commands.parallel(intake.deploy(), intake.runRollerWithPrepareUnjamWithoutRequirements());
+    return intake.deployAndRunRoller();
   }
 
   /**

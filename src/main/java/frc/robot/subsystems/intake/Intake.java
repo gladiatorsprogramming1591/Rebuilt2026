@@ -136,13 +136,24 @@ public class Intake extends SubsystemBase {
    * @return command that deploys the intake and then runs the rollers
    */
   public Command deployAndRunRoller() {
-    return Commands.sequence(runOnce(() -> driverIntakeHeld = true), deploy(), runRoller())
-        .finallyDo(
-            interrupted -> {
-              driverIntakeHeld = false;
-              stopSlapdownHoldDownTorque();
-            });
-  }
+  return Commands.sequence(
+          runOnce(
+              () -> {
+                driverIntakeHeld = true;
+                requestDeployWithHoldDownAssist();
+              }),
+          run(
+              () -> {
+                driverIntakeHeld = true;
+                setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
+              }))
+      .finallyDo(
+          interrupted -> {
+            driverIntakeHeld = false;
+            setRequestedRollerSpeed(0.0);
+            stopSlapdownHoldDownTorque();
+          });
+}
 
   /**
    * Moves the slapdown to the bump/intermediate position.
@@ -470,26 +481,26 @@ public class Intake extends SubsystemBase {
 
   /** Applies constant downforce while the driver is holding intake or auto intake is latched. */
   private void updateDeployHoldDownAssist() {
-    if (!deployHoldDownAssistEnabled) {
-      return;
-    }
-
-    boolean holdDownRequested = driverIntakeHeld || autoPrepareIntakeLatched;
-
-    if (!holdDownRequested) {
-      stopSlapdownHoldDownTorque();
-      return;
-    }
-
-    SlapdownModeState slapdownMode = RobotState.getSlapdownMode();
-
-    if (slapdownMode != SlapdownModeState.OFF
-        && slapdownMode != SlapdownModeState.TORQUE_CURRENT) {
-      return;
-    }
-
-    requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
+  if (!deployHoldDownAssistEnabled) {
+    return;
   }
+
+  boolean holdDownRequested = driverIntakeHeld || autoPrepareIntakeLatched;
+
+  if (!holdDownRequested) {
+    stopSlapdownHoldDownTorque();
+    return;
+  }
+
+  SlapdownModeState slapdownMode = RobotState.getSlapdownMode();
+
+  if (slapdownMode != SlapdownModeState.OFF
+      && slapdownMode != SlapdownModeState.TORQUE_CURRENT) {
+    return;
+  }
+
+  requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
+}
 
   /** Stops hold-down torque without disabling future hold-down assist. */
   private void stopSlapdownHoldDownTorque() {
