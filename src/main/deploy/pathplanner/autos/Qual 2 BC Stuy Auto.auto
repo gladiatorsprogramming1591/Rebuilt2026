@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - Pass1_Risk_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - Pass1_Risk_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - Pass1_RiskHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Hood And Stop Shooting"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - Pass_Start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Coast"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - Pass2_CloseSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - CloseA-FarB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - Pass2_FarSweepB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Qual 2 BC Stuy Auto - FarB-CloseDot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
