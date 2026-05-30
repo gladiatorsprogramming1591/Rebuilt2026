@@ -13,19 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - Pass1_Risk_Start"
+            "pathName": "Pass1_Risk_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - Pass1_Risk_Sweep"
+            "pathName": "Pass1_Risk_Sweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - Pass1_RiskHub_Return"
+            "pathName": "Pass1_RiskNoHub_Return"
           }
         },
         {
@@ -49,7 +49,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - Pass_Start"
+            "pathName": "Pass_Start"
           }
         },
         {
@@ -61,25 +61,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - Pass2_CloseSweepA"
+            "pathName": "Pass2_RiskSweepA"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - CloseA-FarB"
+            "pathName": "RiskA-CloseB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - Pass2_FarSweepB"
+            "pathName": "Pass2_CloseSweepB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Qual 2 BC Stuy Auto - FarB-CloseDot"
+            "pathName": "CloseB-CloseDot"
           }
         }
       ]
