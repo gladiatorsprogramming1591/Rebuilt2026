@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Qual 39 Auto - Pass1_Risk_Start"
@@ -32,6 +38,12 @@
           "type": "named",
           "data": {
             "name": "Lower Hood And Stop Shooting"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
           }
         },
         {
