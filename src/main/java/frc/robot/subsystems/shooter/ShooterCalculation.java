@@ -251,7 +251,7 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber flywheelSpeed4 =
       shooterCalcTunable("FlyWheelSpeedMap/1.73", 1750.0);
   private static final LoggedTunableNumber flywheelSpeed5 =
-      shooterCalcTunable("FlyWheelSpeedMap/2.18", 1900.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.18", 1800.0); //1900
   private static final LoggedTunableNumber flywheelSpeed6 =
       shooterCalcTunable("FlyWheelSpeedMap/2.47", 1900.0); //1950
   private static final LoggedTunableNumber flywheelSpeed7 =
