@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.388,
+        "x": 7.894651162790698,
         "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.378189746300212,
+        "x": 7.884840909090909,
         "y": 4.330136363636364
       },
       "isLocked": false,
-      "linkedName": "BC Greedy Risk Sweep End"
+      "linkedName": "BC Greedy Safe Sweep End"
     },
     {
       "anchor": {
-        "x": 7.163706140350877,
+        "x": 7.109298245614034,
         "y": 4.316107456140351
       },
       "prevControl": {
-        "x": 7.413623998078249,
-        "y": 4.309699305942213
+        "x": 7.5390298809162,
+        "y": 4.316218864939817
       },
       "nextControl": {
-        "x": 6.8060584130781505,
-        "y": 4.325277910685806
+        "x": 6.859298254015486,
+        "y": 4.3160426431346455
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 4.316107456140351
       },
       "prevControl": {
-        "x": 6.710783696358341,
-        "y": 4.267921130132619
+        "x": 6.764367268438294,
+        "y": 4.32806328722876
       },
       "nextControl": {
-        "x": 5.95766447368421,
-        "y": 4.415855263157895
+        "x": 5.785372807017543,
+        "y": 4.28890350877193
       },
       "isLocked": false,
       "linkedName": "Pass 1 Greedy Hub A"
@@ -52,12 +52,12 @@
         "y": 2.6566666666666663
       },
       "prevControl": {
-        "x": 5.5293767660070845,
-        "y": 2.886044060732332
+        "x": 5.622149122807017,
+        "y": 3.110065789473684
       },
       "nextControl": {
-        "x": 8.00702850877193,
-        "y": 1.9675
+        "x": 6.843238810781839,
+        "y": 2.0574022653574575
       },
       "isLocked": false,
       "linkedName": "Pass 1 Greedy Hub B"
@@ -68,12 +68,12 @@
         "y": 2.2009090909090903
       },
       "prevControl": {
-        "x": 5.930460526315788,
-        "y": 0.7705263157894731
+        "x": 7.407977272727273,
+        "y": 0.9170454545454538
       },
       "nextControl": {
-        "x": 5.907347005492661,
-        "y": 2.685191426128333
+        "x": 5.526360663032934,
+        "y": 2.533157880049794
       },
       "isLocked": false,
       "linkedName": "Battlecry Bump Start"
@@ -84,7 +84,7 @@
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 4.013695113026508,
+        "x": 4.0136951130265075,
         "y": 2.494363636363636
       },
       "nextControl": {
@@ -100,8 +100,8 @@
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 2.6763785398568856,
-        "y": 2.6662090235191243
+        "x": 2.5028081803167845,
+        "y": 2.728432325870429
       },
       "nextControl": null,
       "isLocked": false,
@@ -118,11 +118,11 @@
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 2.6037735849056602,
+      "waypointRelativePos": 2.6,
       "rotationDegrees": -71.034
     },
     {
-      "waypointRelativePos": 3.0754716981132084,
+      "waypointRelativePos": 3.08,
       "rotationDegrees": -26.703000000000003
     },
     {
@@ -167,7 +167,7 @@
       "rotationOffset": 180.0,
       "minWaypointRelativePos": 3.4,
       "maxWaypointRelativePos": 4.26,
-      "name": "Side April Tags"
+      "name": "Point Towards Zone"
     },
     {
       "fieldPosition": {
@@ -177,21 +177,10 @@
       "rotationOffset": 180.0,
       "minWaypointRelativePos": 6.0,
       "maxWaypointRelativePos": 6.0,
-      "name": "Hub Center"
+      "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
-    {
-      "name": "Idle Shooter",
-      "waypointRelativePos": 3.9,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Idle Shooter"
-        }
-      }
-    },
     {
       "name": "Stop Intake",
       "waypointRelativePos": 3.98,
@@ -224,14 +213,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 1.125,
     "rotation": -145.0
   },
   "reversed": false,
   "folder": "2 - BC First Pass Returns",
   "idealStartingState": {
     "velocity": 4.5,
-    "rotation": 77.471
+    "rotation": 65.0
   },
   "useDefaultConstraints": true
 }

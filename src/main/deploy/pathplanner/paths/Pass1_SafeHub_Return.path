@@ -158,6 +158,17 @@
   ],
   "eventMarkers": [
     {
+      "name": "Idle Shooter",
+      "waypointRelativePos": 2.95,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Idle Shooter"
+        }
+      }
+    },
+    {
       "name": "Stop Intake",
       "waypointRelativePos": 2.98,
       "endWaypointRelativePos": null,
