@@ -42,6 +42,7 @@ public class Intake extends SubsystemBase {
   private boolean isSlapdownStopped = true;
   private boolean deployHoldDownAssistEnabled = false;
   private boolean driverIntakeHeld = false;
+  private boolean rollerReverseOverride = false;
   private boolean rollerBoostActive = false;
   private boolean autoPrepareIntakeRequested = false;
   private boolean autoPrepareIntakeLatched = false;
@@ -632,6 +633,14 @@ public class Intake extends SubsystemBase {
     // REFACTOR: If we restore the slapdown-position roller safety cutoff, re-add it here instead
     // of spreading safety checks into the individual roller commands.
 
+    if (rollerReverseOverride) {
+      outputs.appliedRollerSpeed = IntakeConstants.ROLLER_REVERSE_SPEED;
+      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+      resetRollerBoostState();
+      logRollerBoostState(getMaxRollerStatorCurrent(), false);
+      return;
+    }
+
     if (requestedRollerSpeed == 0.0) {
       outputs.appliedRollerSpeed = 0.0;
       RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
@@ -784,6 +793,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownAssistEnabled", deployHoldDownAssistEnabled);
     Logger.recordOutput(kintakeTableKey + "DriverIntakeHeld", driverIntakeHeld);
+    Logger.recordOutput(kintakeTableKey + "RollerReverseOverride", rollerReverseOverride);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownActive",
         RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
@@ -958,16 +968,17 @@ public void useTeleopRollerCurrentLimits() {
   }
 
   /**
-   * Reverses the intake rollers.
+   * Forces the intake rollers in reverse while held, then returns to the previous roller behavior.
    *
-   * <p>This is not currently bound in RobotContainer, but is kept as a debug/manual command.
+   * <p>This command intentionally does not require the intake subsystem. It acts as a temporary
+   * override on top of the normal roller request state, so releasing the button lets the rollers go
+   * back to auto prepare, teleop intake, or stopped depending on the current robot state.
    *
-   * @return command that reverses the rollers until interrupted
+   * @return command that forces reverse roller output while scheduled
    */
-  @Deprecated
   public Command reverseRoller() {
-    return runEnd(
-        () -> setRequestedRollerSpeed(IntakeConstants.ROLLER_REVERSE_SPEED),
-        () -> setRequestedRollerSpeed(0.0));
+    return Commands.runEnd(
+        () -> rollerReverseOverride = true,
+        () -> rollerReverseOverride = false);
   }
 }

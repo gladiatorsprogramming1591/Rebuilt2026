@@ -435,7 +435,7 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(intake.stow());
     driverController.rightBumper().onTrue(intake.deploy());
 
-    driverController.povLeft().onTrue(intake.reverseRoller());
+    driverController.povLeft().whileTrue(intake.reverseRoller());
 
     driverController.povDown().whileTrue(hood.runHoodDown());
 
@@ -462,7 +462,7 @@ public class RobotContainer {
     operatorController.leftTrigger().whileTrue(prepareIntake());
     operatorController.leftBumper().onTrue(intake.stow());
     operatorController.rightBumper().onTrue(intake.deploy());
-    operatorController.povLeft().onTrue(intake.reverseRoller());
+    operatorController.povLeft().whileTrue(intake.reverseRoller());
 
     operatorController.povDown().whileTrue(hood.runHoodDown());
 
