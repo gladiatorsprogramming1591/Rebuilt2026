@@ -52,7 +52,19 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 10.5,
@@ -66,7 +78,7 @@
     "rotation": 105.00000000000001
   },
   "reversed": false,
-  "folder": "Mojo Sweep",
+  "folder": null,
   "idealStartingState": {
     "velocity": 3.75,
     "rotation": 0.0

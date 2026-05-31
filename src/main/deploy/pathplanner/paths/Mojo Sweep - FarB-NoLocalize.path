@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.9,
-        "y": 1.487
+        "y": 2.0
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.925416666666666,
-        "y": -0.0093201754385972
+        "y": 0.5036798245614027
       },
       "isLocked": false,
       "linkedName": "Mojo Sweep_Pass2_FarSweepB"
@@ -82,7 +82,7 @@
     "rotation": -136.6
   },
   "reversed": false,
-  "folder": "Mojo Sweep",
+  "folder": null,
   "idealStartingState": {
     "velocity": 5.0,
     "rotation": -90.0
