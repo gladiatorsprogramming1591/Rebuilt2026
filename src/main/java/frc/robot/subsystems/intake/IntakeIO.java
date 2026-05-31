@@ -83,13 +83,11 @@ public interface IntakeIO {
     /**
      * Desired roller output.
      *
-     * <p>Forward torque-current commands use amps. Reverse commands use duty cycle. Velocity
-     * commands use rotations per second.
+     * <p>Forward torque-current commands use amps. Reverse and auto Prepare Intake commands use
+     * duty cycle.
      */
     public double appliedRollerSpeed = 0.0;
 
-    /** Desired roller velocity when roller mode is VELOCITY. */
-    public double appliedRollerVelocityRPS = 0.0;
 
     /** Desired open-loop slapdown output when slapdown mode is SPEED. */
     public double appliedSlapdownSpeed = 0.0;

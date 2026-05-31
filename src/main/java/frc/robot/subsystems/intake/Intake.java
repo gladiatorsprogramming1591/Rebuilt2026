@@ -634,26 +634,23 @@ public class Intake extends SubsystemBase {
   /**
    * Converts the requested roller intent into the final applied roller output.
    *
-   * <p>Autonomous Prepare Intake uses velocity control so the rollers try to maintain a fixed RPS
-   * independently of the torque-current boost logic. Teleop forward intake still uses torque-current
-   * mode. Reverse/manual roller commands still use duty cycle.
+   * <p>Autonomous Prepare Intake uses duty-cycle output so the rollers run directly without the
+   * torque-current boost logic. Teleop forward intake still uses torque-current mode. Reverse/manual
+   * roller commands still use duty cycle.
    */
   private void updateRollerOutput() {
     // REFACTOR: If we restore the slapdown-position roller safety cutoff, re-add it here instead
     // of spreading safety checks into the individual roller commands.
 
     if (DriverStation.isAutonomousEnabled() && autoPrepareIntakeLatched) {
-      outputs.appliedRollerSpeed = 0.0;
-      outputs.appliedRollerVelocityRPS =
-          IntakeConstants.autoPrepareRollerVelocityRPS.getAsDouble();
-      RobotState.setRollerMode(RollerModeState.VELOCITY);
+      outputs.appliedRollerSpeed = IntakeConstants.autoPrepareRollerDutyCycle.getAsDouble();
+      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
       resetRollerBoostState();
       logRollerBoostState(getMaxRollerStatorCurrent(), false);
       return;
     }
 
     if (requestedRollerSpeed == 0.0) {
-      outputs.appliedRollerVelocityRPS = 0.0;
       outputs.appliedRollerSpeed = 0.0;
       RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
       resetRollerBoostState();
@@ -663,7 +660,6 @@ public class Intake extends SubsystemBase {
 
     // Preserve reverse/manual roller behavior. Boost is only for forward pickup.
     if (requestedRollerSpeed < 0.0) {
-      outputs.appliedRollerVelocityRPS = 0.0;
       outputs.appliedRollerSpeed = requestedRollerSpeed;
       RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
       resetRollerBoostState();
@@ -706,7 +702,6 @@ public class Intake extends SubsystemBase {
       rollerHighCurrentStartTimestamp = Double.NaN;
     }
 
-    outputs.appliedRollerVelocityRPS = 0.0;
     outputs.appliedRollerSpeed =
         rollerBoostActive
             ? IntakeConstants.rollerBoostTorqueCurrent.getAsDouble()
@@ -795,8 +790,6 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "RollerMode", RobotState.getRollerMode().toString());
     Logger.recordOutput(kintakeTableKey + "RequestedRollerSpeed", requestedRollerSpeed);
     Logger.recordOutput(kintakeTableKey + "AppliedRollerSpeed", outputs.appliedRollerSpeed);
-    Logger.recordOutput(
-        kintakeTableKey + "AppliedRollerVelocityRPS", outputs.appliedRollerVelocityRPS);
     Logger.recordOutput(kintakeTableKey + "AppliedSlapdownSpeed", outputs.appliedSlapdownSpeed);
     Logger.recordOutput(
         kintakeTableKey + "AppliedSlapdownTorqueCurrent", outputs.appliedSlapdownTorqueCurrent);
@@ -845,8 +838,8 @@ public class Intake extends SubsystemBase {
         kintakeTableKey + "PrepareUnjamReverseSeconds",
         IntakeConstants.prepareUnjamReverseSeconds.getAsDouble());
     Logger.recordOutput(
-        kintakeTableKey + "AutoPrepareRollerVelocityRPS",
-        IntakeConstants.autoPrepareRollerVelocityRPS.getAsDouble());
+        kintakeTableKey + "AutoPrepareRollerDutyCycle",
+        IntakeConstants.autoPrepareRollerDutyCycle.getAsDouble());
 
     Logger.recordOutput(
         kintakeTableKey + "ShootingSlowStowSpeed",

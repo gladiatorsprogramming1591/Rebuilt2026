@@ -13,7 +13,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -60,7 +59,6 @@ public class IntakeIOKraken implements IntakeIO {
   private final PositionTorqueCurrentFOC torquePositionControl =
       new PositionTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC torqueRollerControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
-  private final VelocityVoltage velocityRollerControl = new VelocityVoltage(0.0).withSlot(0);
   private final TorqueCurrentFOC torqueSlapdownControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
 
   private final StatusSignal<Angle> deployAngle = deployMotor.getPosition();
@@ -307,10 +305,10 @@ public void useTeleopRollerCurrentLimits() {
   }
 
   /**
-   * Applies roller output using torque-current, velocity, or duty-cycle mode.
+   * Applies roller output using either torque-current mode or duty-cycle mode.
    *
-   * <p>Teleop forward intake requests use torque-current mode. Autonomous Prepare Intake uses
-   * velocity mode. Reverse/manual requests use duty cycle.
+   * <p>Forward intake requests use torque-current mode. Autonomous Prepare Intake and reverse/manual
+   * requests use duty cycle.
    *
    * @param outputs latest requested intake outputs
    */
@@ -320,10 +318,6 @@ public void useTeleopRollerCurrentLimits() {
         intakeLeft.setControl(torqueRollerControl.withOutput(outputs.appliedRollerSpeed));
         return;
 
-      case VELOCITY:
-        intakeLeft.setControl(
-            velocityRollerControl.withVelocity(outputs.appliedRollerVelocityRPS));
-        return;
 
       case DUTYCYCLE:
       default:
