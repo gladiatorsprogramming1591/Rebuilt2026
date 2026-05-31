@@ -12,7 +12,7 @@
         "y": 2.0981615392886517
       },
       "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Battlecry Tilted Hub Shot"
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Pass Start"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass Start"
     }
   ],
   "rotationTargets": [],
@@ -61,7 +61,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Mojo Sweep",
+  "folder": "Copy Of Qual 54",
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": -145.0

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 3.25
+        "x": 7.9,
+        "y": 2.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.821648796963971,
-        "y": 2.2977090102946187
+        "x": 7.918501069688437,
+        "y": 1.7977090102946187
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartCloseSweepB"
+      "linkedName": "Mojo Sweep_Pass2_StartFarSweepB"
     },
     {
       "anchor": {
-        "x": 5.803147727275534,
+        "x": 7.9,
         "y": 1.487
       },
       "prevControl": {
-        "x": 5.803147727275534,
-        "y": 2.3665943723441147
+        "x": 7.892526917883239,
+        "y": 2.3669682682027093
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Pass2_CloseSweepB"
+      "linkedName": "Mojo Sweep_Pass2_FarSweepB"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 5.0,
-    "rotation": -105.00000000000001
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Mojo Sweep",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -105.00000000000001
+    "velocity": 5.0,
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

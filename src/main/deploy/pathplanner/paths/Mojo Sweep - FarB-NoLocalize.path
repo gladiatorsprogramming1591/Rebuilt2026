@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803147727275534,
+        "x": 7.9,
         "y": 1.487
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.803147727275534,
-        "y": -0.0129999999999999
+        "x": 7.925416666666666,
+        "y": -0.0093201754385972
       },
       "isLocked": false,
-      "linkedName": "Pass2_CloseSweepB"
+      "linkedName": "Mojo Sweep_Pass2_FarSweepB"
     },
     {
       "anchor": {
@@ -20,36 +20,23 @@
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 6.82606855965815,
-        "y": 2.04992623255462
+        "x": 6.572530296080135,
+        "y": 2.1422066137445563
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Pass2_StartLocalize_Return"
+      "linkedName": "Mojo Sweep_Pass2_StartNoLocalize_Return"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
-      "name": "Localize",
-      "minWaypointRelativePos": 0.6624775583482947,
-      "maxWaypointRelativePos": 0.9030520646319574,
-      "constraints": {
-        "maxVelocity": 0.5,
-        "maxAcceleration": 8.5,
-        "maxAngularVelocity": 1000.0,
-        "maxAngularAcceleration": 1200.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
       "name": "Anti Slip",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.49910233393177794,
+      "maxWaypointRelativePos": 0.37522441651705596,
       "constraints": {
         "maxVelocity": 5.0,
-        "maxAcceleration": 0.1,
+        "maxAcceleration": 0.25,
         "maxAngularVelocity": 1000.0,
         "maxAngularAcceleration": 1200.0,
         "nominalVoltage": 12.0,
@@ -57,18 +44,7 @@
       }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.62,
-        "y": 3.3
-      },
-      "rotationOffset": 180.0,
-      "minWaypointRelativePos": 0.3267504488330339,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Stop Intake",
@@ -102,14 +78,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.25,
-    "rotation": -40.0
+    "velocity": 3.75,
+    "rotation": -136.6
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Mojo Sweep",
   "idealStartingState": {
     "velocity": 5.0,
-    "rotation": -105.00000000000001
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

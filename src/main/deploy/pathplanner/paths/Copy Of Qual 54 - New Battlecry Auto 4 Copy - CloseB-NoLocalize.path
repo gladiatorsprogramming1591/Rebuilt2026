@@ -12,7 +12,7 @@
         "y": -0.0129999999999999
       },
       "isLocked": false,
-      "linkedName": "Pass2_CloseSweepB"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass2_CloseSweepB"
     },
     {
       "anchor": {
@@ -20,29 +20,16 @@
         "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 6.82606855965815,
-        "y": 2.04992623255462
+        "x": 7.140503843459563,
+        "y": 1.9354811486478594
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Pass2_StartLocalize_Return"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass2_StartNoLocalize_Return"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
-    {
-      "name": "Localize",
-      "minWaypointRelativePos": 0.6624775583482947,
-      "maxWaypointRelativePos": 0.9030520646319574,
-      "constraints": {
-        "maxVelocity": 0.5,
-        "maxAcceleration": 8.5,
-        "maxAngularVelocity": 1000.0,
-        "maxAngularAcceleration": 1200.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
     {
       "name": "Anti Slip",
       "minWaypointRelativePos": 0,
@@ -57,18 +44,7 @@
       }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.62,
-        "y": 3.3
-      },
-      "rotationOffset": 180.0,
-      "minWaypointRelativePos": 0.3267504488330339,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Stop Intake",
@@ -102,11 +78,11 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.25,
-    "rotation": -40.0
+    "velocity": 3.5,
+    "rotation": -136.6
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Copy Of Qual 54",
   "idealStartingState": {
     "velocity": 5.0,
     "rotation": -105.00000000000001

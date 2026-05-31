@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 3.25
+        "x": 5.730964912280701,
+        "y": 2.448511363636363
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.821648796963971,
-        "y": 2.2977090102946187
+        "x": 5.057796732524059,
+        "y": 2.6935245437229414
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartCloseSweepB"
+      "linkedName": "Mojo Sweep_Pass2_StartNoLocalize_Return"
     },
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 1.487
+        "x": 2.3654740608228972,
+        "y": 2.448511363636363
       },
       "prevControl": {
-        "x": 5.803147727275534,
-        "y": 2.3665943723441147
+        "x": 2.585705173066174,
+        "y": 2.8973969361379632
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": "Pass2_CloseSweepB"
+      "isLocked": false,
+      "linkedName": "Mojo Sweep_Battlecry Tilted Hub Shot"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 5.0,
-    "rotation": -105.00000000000001
+    "velocity": 0.0,
+    "rotation": -145.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Mojo Sweep",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -105.00000000000001
+    "velocity": 3.75,
+    "rotation": -136.6
   },
   "useDefaultConstraints": true
 }

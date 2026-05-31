@@ -9,10 +9,26 @@
       "prevControl": null,
       "nextControl": {
         "x": 5.803147727275534,
-        "y": 4.5
+        "y": 3.5
       },
       "isLocked": false,
-      "linkedName": "Pass2_CloseSweepA"
+      "linkedName": "Mojo Sweep_Pass2_CloseSweepA"
+    },
+    {
+      "anchor": {
+        "x": 5.9,
+        "y": 4.987767622647428
+      },
+      "prevControl": {
+        "x": 5.838706767500596,
+        "y": 4.409860001938764
+      },
+      "nextControl": {
+        "x": 5.979995334543834,
+        "y": 5.742009348346419
+      },
+      "isLocked": false,
+      "linkedName": "Mojo Sweep_Intermediate Greedy CloseA"
     },
     {
       "anchor": {
@@ -20,18 +36,21 @@
         "y": 2.75
       },
       "prevControl": {
-        "x": 7.875719633884046,
-        "y": 3.999764163280927
+        "x": 7.841727121321709,
+        "y": 5.749433991874224
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Pass2_StartFarSweepB"
+      "linkedName": "Mojo Sweep_Pass2_StartFarSweepB"
     }
   ],
   "rotationTargets": [
     {
-      "name": "Test",
-      "waypointRelativePos": 0.38502673796791403,
+      "waypointRelativePos": 0.9732620320855618,
+      "rotationDegrees": 110.0
+    },
+    {
+      "waypointRelativePos": 1.2513368983957218,
       "rotationDegrees": 0.0
     }
   ],
@@ -47,11 +66,11 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.75,
+    "velocity": 5.0,
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Mojo Sweep",
   "idealStartingState": {
     "velocity": 5.0,
     "rotation": 105.00000000000001

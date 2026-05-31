@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Risk_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_Risk_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass1_RiskHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Hood And Stop Shooting"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Prepare Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass2_CloseSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Greedy_CloseA-FarB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Greedy_Pass2_FarSweepB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FarB-NoLocalize"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pass2_FarB_NoLocalize_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Hood And Stop Shooting"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot - Center"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Double Dip Close Dot",
+  "choreoAuto": false
+}

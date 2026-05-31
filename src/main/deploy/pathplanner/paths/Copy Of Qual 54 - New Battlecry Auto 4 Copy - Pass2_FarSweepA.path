@@ -8,51 +8,63 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.093684210526316,
-        "y": 0.5528947368421053
+        "x": 6.303687217676196,
+        "y": 0.3048257528287417
       },
       "isLocked": false,
-      "linkedName": "Pass Start"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass Start"
     },
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 1.4868969298245611
+        "x": 7.453881578947367,
+        "y": 1.2148574561403507
       },
       "prevControl": {
-        "x": 5.803147727275534,
-        "y": 0.9653435450722723
+        "x": 7.256850082999932,
+        "y": 0.9639889297006057
       },
       "nextControl": {
-        "x": 5.803147727275534,
-        "y": 2.0084503145768497
+        "x": 7.7158353379202715,
+        "y": 1.5483876523807343
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 3.25
+        "x": 7.9,
+        "y": 2.75
       },
       "prevControl": {
-        "x": 5.803147727275534,
-        "y": 2.0069999999999997
+        "x": 7.9,
+        "y": 2.007422653313304
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "Pass2_CloseSweepA"
+      "isLocked": true,
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass2_FarSweepA"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.9,
-      "rotationDegrees": 105.00000000000001
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 10.5,
@@ -63,10 +75,10 @@
   },
   "goalEndState": {
     "velocity": 5.0,
-    "rotation": 105.00000000000001
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Mojo Sweep",
+  "folder": "Copy Of Qual 54",
   "idealStartingState": {
     "velocity": 3.75,
     "rotation": 0.0

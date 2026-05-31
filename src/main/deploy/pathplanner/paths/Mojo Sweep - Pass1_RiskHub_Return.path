@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.894651162790698,
+        "x": 8.388,
         "y": 3.0170795454545445
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.884840909090909,
+        "x": 8.378189746300212,
         "y": 3.3472159090909086
       },
       "isLocked": false,
-      "linkedName": "BC Safe Sweep End"
+      "linkedName": "Mojo Sweep_BC Risk Sweep End"
     },
     {
       "anchor": {
@@ -48,19 +48,35 @@
     },
     {
       "anchor": {
+        "x": 6.577226898756195,
+        "y": 2.4293322308679333
+      },
+      "prevControl": {
+        "x": 6.338534004223891,
+        "y": 2.5594148066407936
+      },
+      "nextControl": {
+        "x": 8.00702850877193,
+        "y": 1.650120614035087
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
         "x": 5.9131931818181815,
         "y": 2.2009090909090903
       },
       "prevControl": {
-        "x": 7.407977272727273,
-        "y": 0.9170454545454538
+        "x": 6.429199561403508,
+        "y": 0.9790899122807013
       },
       "nextControl": {
-        "x": 5.526360663032934,
-        "y": 2.533157880049794
+        "x": 5.724767759126369,
+        "y": 2.6470698445242467
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump Start"
+      "linkedName": "Mojo Sweep_Battlecry Bump Start"
     },
     {
       "anchor": {
@@ -76,7 +92,7 @@
         "y": 2.433759490122432
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump End"
+      "linkedName": "Mojo Sweep_Battlecry Bump End"
     },
     {
       "anchor": {
@@ -89,7 +105,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "linkedName": "Mojo Sweep_Battlecry Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
@@ -102,15 +118,19 @@
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 4.0,
+      "waypointRelativePos": 2.7924528301886795,
+      "rotationDegrees": -54.44786442603636
+    },
+    {
+      "waypointRelativePos": 5.0,
       "rotationDegrees": -44.0
     }
   ],
   "constraintZones": [
     {
       "name": "Bump Zone",
-      "minWaypointRelativePos": 3.0999999999999996,
-      "maxWaypointRelativePos": 4.0,
+      "minWaypointRelativePos": 4.1,
+      "maxWaypointRelativePos": 5.0,
       "constraints": {
         "maxVelocity": 5.0,
         "maxAcceleration": 8.5,
@@ -122,8 +142,8 @@
     },
     {
       "name": "Initializing",
-      "minWaypointRelativePos": 2.95,
-      "maxWaypointRelativePos": 3.0680272108843702,
+      "minWaypointRelativePos": 3.9,
+      "maxWaypointRelativePos": 4.06802721088437,
       "constraints": {
         "maxVelocity": 0.5,
         "maxAcceleration": 4.0,
@@ -141,8 +161,8 @@
         "y": 3.3
       },
       "rotationOffset": 180.0,
-      "minWaypointRelativePos": 2.7,
-      "maxWaypointRelativePos": 3.26,
+      "minWaypointRelativePos": 3.4,
+      "maxWaypointRelativePos": 4.26,
       "name": "Point Towards Zone"
     },
     {
@@ -151,15 +171,15 @@
         "y": 4.02
       },
       "rotationOffset": 180.0,
-      "minWaypointRelativePos": 5.0,
-      "maxWaypointRelativePos": 5.0,
+      "minWaypointRelativePos": 6.0,
+      "maxWaypointRelativePos": 6.0,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
     {
       "name": "Idle Shooter",
-      "waypointRelativePos": 2.95,
+      "waypointRelativePos": 3.9,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -170,7 +190,7 @@
     },
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 2.98,
+      "waypointRelativePos": 3.98,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -181,7 +201,7 @@
     },
     {
       "name": "Stow For Bump",
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 4.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -204,10 +224,10 @@
     "rotation": -145.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Mojo Sweep",
   "idealStartingState": {
     "velocity": 3.5,
-    "rotation": 65.0
+    "rotation": 77.471
   },
   "useDefaultConstraints": true
 }

@@ -12,7 +12,7 @@
         "y": 2.2977090102946187
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartCloseSweepB"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass2_StartCloseSweepB"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Pass2_CloseSweepB"
+      "linkedName": "Copy Of Qual 54_New Battlecry Auto 4 Copy_Pass2_CloseSweepB"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": -105.00000000000001
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "Copy Of Qual 54",
   "idealStartingState": {
     "velocity": 2.0,
     "rotation": -105.00000000000001

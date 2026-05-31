@@ -3,35 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.730964912280701,
-        "y": 2.448511363636363
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.057796732524059,
-        "y": 2.6935245437229414
+        "x": 7.517357456140351,
+        "y": 0.46221491228070133
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartNoLocalize_Return"
+      "linkedName": "Mojo Sweep_Battlecry bottom start rush"
     },
     {
       "anchor": {
-        "x": 2.3654740608228972,
-        "y": 2.448511363636363
+        "x": 8.306,
+        "y": 1.357
       },
       "prevControl": {
-        "x": 2.585705173066174,
-        "y": 2.8973969361379632
+        "x": 8.225666694905728,
+        "y": 0.7028969827670377
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "linkedName": "Mojo Sweep_BC Risk End"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 10.5,
@@ -41,14 +53,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -145.0
+    "velocity": 2.75,
+    "rotation": 77.47119229084846
   },
   "reversed": false,
   "folder": "Mojo Sweep",
   "idealStartingState": {
-    "velocity": 3.75,
-    "rotation": -136.6
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

@@ -45,7 +45,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "3 - BC Second Pass Sweeps",
+  "folder": "Mojo Sweep",
   "idealStartingState": {
     "velocity": 5.0,
     "rotation": -90.0
