@@ -125,6 +125,11 @@ public final class IntakeConstants {
 
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SPEED = ROLLER_REVERSE_SPEED;
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS = 0.18;
+  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS = 35.0;
+  public static final double ROLLER_VELOCITY_KP = 0.18;
+  public static final double ROLLER_VELOCITY_KI = 0.0;
+  public static final double ROLLER_VELOCITY_KD = 0.0;
+  public static final double ROLLER_VELOCITY_KV = 0.18;
 
   // Manual slapdown speeds
   public static final double DEPLOYING_SPEED = 0.5;
@@ -166,6 +171,12 @@ public final class IntakeConstants {
       new LoggedTunableNumber(
           kintakeTableKey + "PrepareUnjamReverseSeconds",
           DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS,
+          Constants.Tuning.INTAKE);
+
+  public static final LoggedTunableNumber autoPrepareRollerVelocityRPS =
+      new LoggedTunableNumber(
+          kintakeTableKey + "AutoPrepareRollerVelocityRPS",
+          DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS,
           Constants.Tuning.INTAKE);
 
   public static final LoggedTunableNumber slapdownHoldDownTorqueCurrent =

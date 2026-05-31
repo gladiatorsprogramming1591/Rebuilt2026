@@ -13,6 +13,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -59,6 +60,7 @@ public class IntakeIOKraken implements IntakeIO {
   private final PositionTorqueCurrentFOC torquePositionControl =
       new PositionTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC torqueRollerControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
+  private final VelocityVoltage velocityRollerControl = new VelocityVoltage(0.0).withSlot(0);
   private final TorqueCurrentFOC torqueSlapdownControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
 
   private final StatusSignal<Angle> deployAngle = deployMotor.getPosition();
@@ -114,15 +116,13 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
-private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean isAuto) {
+private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
   CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
 
   currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
   currentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
   currentLimits.SupplyCurrentLimitEnable = true;
   currentLimits.StatorCurrentLimitEnable = true;
-  currentLimits.SupplyCurrentLowerLimit = isAuto ? 60 : 40;
-  currentLimits.SupplyCurrentLowerTime = isAuto ? 0 : 1;
 
   PhoenixUtil.tryUntilOk(
       5,
@@ -135,12 +135,12 @@ private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean is
 
 @Override
 public void useAutoRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT, true);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT);
 }
 
 @Override
 public void useTeleopRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT, false);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT);
 }
 
   /**
@@ -158,9 +158,6 @@ public void useTeleopRollerCurrentLimits() {
         IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
     intakeLeftConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeLeftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerLimit = 60;
-    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
-
 
     intakeLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     intakeLeftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -305,25 +302,34 @@ public void useTeleopRollerCurrentLimits() {
     }
 
     applySlapdownCurrentLimit(outputs.slapdownStatorCurrentLimit);
-    applyRollerOutput(outputs.appliedRollerSpeed);
+    applyRollerOutput(outputs);
     applySlapdownOutput(outputs);
   }
 
   /**
-   * Applies roller output using either torque-current mode or duty-cycle mode.
+   * Applies roller output using torque-current, velocity, or duty-cycle mode.
    *
-   * <p>Forward intake requests use torque-current mode. Normal pickup is 80 amps by default and
-   * boost is 120 amps by default. Reverse/manual requests use duty cycle.
+   * <p>Teleop forward intake requests use torque-current mode. Autonomous Prepare Intake uses
+   * velocity mode. Reverse/manual requests use duty cycle.
    *
-   * @param rollerOutput requested roller torque current in amps or duty-cycle output
+   * @param outputs latest requested intake outputs
    */
-  private void applyRollerOutput(double rollerOutput) {
-    if (RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT) {
-      intakeLeft.setControl(torqueRollerControl.withOutput(rollerOutput));
-      return;
-    }
+  private void applyRollerOutput(IntakeIOOutputs outputs) {
+    switch (RobotState.getRollerMode()) {
+      case TORQUE_CURRENT:
+        intakeLeft.setControl(torqueRollerControl.withOutput(outputs.appliedRollerSpeed));
+        return;
 
-    intakeLeft.set(rollerOutput);
+      case VELOCITY:
+        intakeLeft.setControl(
+            velocityRollerControl.withVelocity(outputs.appliedRollerVelocityRPS));
+        return;
+
+      case DUTYCYCLE:
+      default:
+        intakeLeft.set(outputs.appliedRollerSpeed);
+        return;
+    }
   }
 
   /**
