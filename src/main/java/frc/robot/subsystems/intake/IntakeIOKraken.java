@@ -114,13 +114,15 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
-private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
+private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean isAuto) {
   CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
 
   currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
   currentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
   currentLimits.SupplyCurrentLimitEnable = true;
   currentLimits.StatorCurrentLimitEnable = true;
+  currentLimits.SupplyCurrentLowerLimit = isAuto ? 60 : 40;
+  currentLimits.SupplyCurrentLowerTime = isAuto ? 0 : 1;
 
   PhoenixUtil.tryUntilOk(
       5,
@@ -133,12 +135,12 @@ private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
 
 @Override
 public void useAutoRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT, true);
 }
 
 @Override
 public void useTeleopRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT, false);
 }
 
   /**
@@ -156,6 +158,9 @@ public void useTeleopRollerCurrentLimits() {
         IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
     intakeLeftConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeLeftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerLimit = 60;
+    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
+
 
     intakeLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     intakeLeftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -300,30 +305,25 @@ public void useTeleopRollerCurrentLimits() {
     }
 
     applySlapdownCurrentLimit(outputs.slapdownStatorCurrentLimit);
-    applyRollerOutput(outputs);
+    applyRollerOutput(outputs.appliedRollerSpeed);
     applySlapdownOutput(outputs);
   }
 
   /**
    * Applies roller output using either torque-current mode or duty-cycle mode.
    *
-   * <p>Forward intake requests use torque-current mode. Autonomous Prepare Intake and reverse/manual
-   * requests use duty cycle.
+   * <p>Forward intake requests use torque-current mode. Normal pickup is 80 amps by default and
+   * boost is 120 amps by default. Reverse/manual requests use duty cycle.
    *
-   * @param outputs latest requested intake outputs
+   * @param rollerOutput requested roller torque current in amps or duty-cycle output
    */
-  private void applyRollerOutput(IntakeIOOutputs outputs) {
-    switch (RobotState.getRollerMode()) {
-      case TORQUE_CURRENT:
-        intakeLeft.setControl(torqueRollerControl.withOutput(outputs.appliedRollerSpeed));
-        return;
-
-
-      case DUTYCYCLE:
-      default:
-        intakeLeft.set(outputs.appliedRollerSpeed);
-        return;
+  private void applyRollerOutput(double rollerOutput) {
+    if (RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT) {
+      intakeLeft.setControl(torqueRollerControl.withOutput(rollerOutput));
+      return;
     }
+
+    intakeLeft.set(rollerOutput);
   }
 
   /**

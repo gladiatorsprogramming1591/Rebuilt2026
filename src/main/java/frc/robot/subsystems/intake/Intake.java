@@ -155,7 +155,6 @@ public class Intake extends SubsystemBase {
             });
   }
 
-
   /**
    * Moves the slapdown to the bump/intermediate position.
    *
@@ -164,13 +163,11 @@ public class Intake extends SubsystemBase {
   public Command stowBump() {
     return runEnd(
         () -> {
-          driverIntakeHeld = false;
           clearAutoPrepareIntakeLatch();
           requestSlapdownPosition(IntakeConstants.BUMP, SlapdownModeState.BUMP_POSITION, false);
         },
         this::stopSlapdown);
   }
-
 
   /**
    * Moves the slapdown to the shooting stop position and stops the rollers.
@@ -183,7 +180,6 @@ public class Intake extends SubsystemBase {
   public Command stowWhileShooting() {
     return runEnd(
         () -> {
-          clearAutoPrepareIntakeLatch();
           requestSlapdownPosition(
               IntakeConstants.SHOOTING_STOP, SlapdownModeState.BUMP_POSITION, false);
           setRequestedRollerSpeed(0.8);
@@ -211,8 +207,6 @@ public class Intake extends SubsystemBase {
 
     return runEnd(
         () -> {
-          clearAutoPrepareIntakeLatch();
-
           if (!timer.isRunning()) {
             completedCurls[0] = 0;
             curlingIn[0] = true;
@@ -298,7 +292,6 @@ public class Intake extends SubsystemBase {
   public Command curlInWhileShootingSlowSpeed() {
     return runEnd(
         () -> {
-          clearAutoPrepareIntakeLatch();
           setRequestedRollerSpeed(0.8);
           requestSlapdownSlowStowSpeed();
         },
@@ -323,8 +316,6 @@ public class Intake extends SubsystemBase {
 
     return runEnd(
         () -> {
-          clearAutoPrepareIntakeLatch();
-
           if (!timer.isRunning()) {
             startPosition[0] = inputs.slapdownPosition;
             timer.restart();
@@ -432,13 +423,13 @@ public class Intake extends SubsystemBase {
     deployHoldDownAssistEnabled = true;
     stopSlapdownHoldDownTorque();
 
-    requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true);
+    requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, false);
   }
 
   private boolean isFullTravelPositionMode() {
-  return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
-      || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
-}
+    return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
+        || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
+  }
 
   /**
    * Requests closed-loop slapdown position control.
@@ -496,9 +487,7 @@ public class Intake extends SubsystemBase {
     stopSlapdownOnCurrentSpike = false;
   }
 
-  /**
-   * Applies constant downforce while the intake has deployed and the rollers are intaking.
-   */
+  /** Applies constant downforce while the driver is holding intake or auto intake is latched. */
   private void updateDeployHoldDownAssist() {
     if (!deployHoldDownAssistEnabled) {
       return;
@@ -522,7 +511,6 @@ public class Intake extends SubsystemBase {
 
     requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
   }
-
 
   /** Stops hold-down torque without disabling future hold-down assist. */
   private void stopSlapdownHoldDownTorque() {
@@ -569,6 +557,7 @@ public class Intake extends SubsystemBase {
    * {@link #setRequestedRollerSpeed(double)} separately.
    */
   private void stopSlapdown() {
+    driverIntakeHeld = false;
     disableDeployHoldDownAssist();
     outputs.appliedSlapdownSpeed = 0.0;
     outputs.appliedSlapdownTorqueCurrent = 0.0;
@@ -634,21 +623,14 @@ public class Intake extends SubsystemBase {
   /**
    * Converts the requested roller intent into the final applied roller output.
    *
-   * <p>Autonomous Prepare Intake uses duty-cycle output so the rollers run directly without the
-   * torque-current boost logic. Teleop forward intake still uses torque-current mode. Reverse/manual
-   * roller commands still use duty cycle.
+   * <p>Forward intake always uses torque-current mode. Normal pickup uses the tunable 80 amp
+   * request, and auto boost temporarily raises that request to the tunable 120 amp request after the
+   * roller has been requested for a short spin-up ignore period and high current has persisted
+   * through a debounce window. Reverse/manual roller commands still use duty cycle.
    */
   private void updateRollerOutput() {
     // REFACTOR: If we restore the slapdown-position roller safety cutoff, re-add it here instead
     // of spreading safety checks into the individual roller commands.
-
-    if (DriverStation.isAutonomousEnabled() && autoPrepareIntakeLatched) {
-      outputs.appliedRollerSpeed = IntakeConstants.autoPrepareRollerDutyCycle.getAsDouble();
-      RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
-      resetRollerBoostState();
-      logRollerBoostState(getMaxRollerStatorCurrent(), false);
-      return;
-    }
 
     if (requestedRollerSpeed == 0.0) {
       outputs.appliedRollerSpeed = 0.0;
@@ -801,6 +783,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "StopSlapdownOnCurrentSpike", stopSlapdownOnCurrentSpike);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownAssistEnabled", deployHoldDownAssistEnabled);
+    Logger.recordOutput(kintakeTableKey + "DriverIntakeHeld", driverIntakeHeld);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownActive",
         RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
@@ -837,9 +820,6 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(
         kintakeTableKey + "PrepareUnjamReverseSeconds",
         IntakeConstants.prepareUnjamReverseSeconds.getAsDouble());
-    Logger.recordOutput(
-        kintakeTableKey + "AutoPrepareRollerDutyCycle",
-        IntakeConstants.autoPrepareRollerDutyCycle.getAsDouble());
 
     Logger.recordOutput(
         kintakeTableKey + "ShootingSlowStowSpeed",
