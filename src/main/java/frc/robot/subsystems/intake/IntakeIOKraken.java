@@ -114,13 +114,15 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
-private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
+private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean isAuto) {
   CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
 
   currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
   currentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
   currentLimits.SupplyCurrentLimitEnable = true;
   currentLimits.StatorCurrentLimitEnable = true;
+  currentLimits.SupplyCurrentLowerLimit = isAuto ? 60 : 40;
+  currentLimits.SupplyCurrentLowerTime = isAuto ? 0 : 1;
 
   PhoenixUtil.tryUntilOk(
       5,
@@ -133,12 +135,12 @@ private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
 
 @Override
 public void useAutoRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT, true);
 }
 
 @Override
 public void useTeleopRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT, false);
 }
 
   /**
@@ -156,6 +158,9 @@ public void useTeleopRollerCurrentLimits() {
         IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
     intakeLeftConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeLeftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerLimit = 60;
+    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
+
 
     intakeLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     intakeLeftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
