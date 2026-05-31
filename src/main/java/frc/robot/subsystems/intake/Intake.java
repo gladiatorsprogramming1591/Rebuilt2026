@@ -136,24 +136,24 @@ public class Intake extends SubsystemBase {
    * @return command that deploys the intake and then runs the rollers
    */
   public Command deployAndRunRoller() {
-  return Commands.sequence(
-          runOnce(
-              () -> {
-                driverIntakeHeld = true;
-                requestDeployWithHoldDownAssist();
-              }),
-          run(
-              () -> {
-                driverIntakeHeld = true;
-                setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
-              }))
-      .finallyDo(
-          interrupted -> {
-            driverIntakeHeld = false;
-            setRequestedRollerSpeed(0.0);
-            stopSlapdownHoldDownTorque();
-          });
-}
+    return Commands.sequence(
+            runOnce(
+                () -> {
+                  driverIntakeHeld = true;
+                  requestDeployWithHoldDownAssist();
+                }),
+            run(
+                () -> {
+                  driverIntakeHeld = true;
+                  setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
+                }))
+        .finallyDo(
+            interrupted -> {
+              driverIntakeHeld = false;
+              setRequestedRollerSpeed(0.0);
+              stopSlapdownHoldDownTorque();
+            });
+  }
 
   /**
    * Moves the slapdown to the bump/intermediate position.
@@ -162,7 +162,10 @@ public class Intake extends SubsystemBase {
    */
   public Command stowBump() {
     return runEnd(
-        () -> requestSlapdownPosition(IntakeConstants.BUMP, SlapdownModeState.BUMP_POSITION, false),
+        () -> {
+          clearAutoPrepareIntakeLatch();
+          requestSlapdownPosition(IntakeConstants.BUMP, SlapdownModeState.BUMP_POSITION, false);
+        },
         this::stopSlapdown);
   }
 
@@ -374,6 +377,12 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  /** Clears autonomous intake request state. */
+  private void clearAutoPrepareIntakeLatch() {
+    autoPrepareIntakeRequested = false;
+    autoPrepareIntakeLatched = false;
+  }
+
   /**
    * Stops only the autonomous intake latch and rollers once.
    *
@@ -386,8 +395,7 @@ public class Intake extends SubsystemBase {
     return runOnce(
         () -> {
           driverIntakeHeld = false;
-          autoPrepareIntakeRequested = false;
-          autoPrepareIntakeLatched = false;
+          clearAutoPrepareIntakeLatch();
           disableDeployHoldDownAssist();
           setRequestedRollerSpeed(0.0);
         });
@@ -481,26 +489,28 @@ public class Intake extends SubsystemBase {
 
   /** Applies constant downforce while the driver is holding intake or auto intake is latched. */
   private void updateDeployHoldDownAssist() {
-  if (!deployHoldDownAssistEnabled) {
-    return;
+    if (!deployHoldDownAssistEnabled) {
+      return;
+    }
+
+    boolean holdDownRequested = driverIntakeHeld || autoPrepareIntakeLatched;
+
+    if (!holdDownRequested) {
+      stopSlapdownHoldDownTorque();
+      return;
+    }
+
+    SlapdownModeState slapdownMode = RobotState.getSlapdownMode();
+
+    if (slapdownMode == SlapdownModeState.STOW_POSITION
+        || slapdownMode == SlapdownModeState.BUMP_POSITION
+        || slapdownMode == SlapdownModeState.STOW_WHILE_SHOOTING
+        || slapdownMode == SlapdownModeState.SPEED) {
+      return;
+    }
+
+    requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
   }
-
-  boolean holdDownRequested = driverIntakeHeld || autoPrepareIntakeLatched;
-
-  if (!holdDownRequested) {
-    stopSlapdownHoldDownTorque();
-    return;
-  }
-
-  SlapdownModeState slapdownMode = RobotState.getSlapdownMode();
-
-  if (slapdownMode != SlapdownModeState.OFF
-      && slapdownMode != SlapdownModeState.TORQUE_CURRENT) {
-    return;
-  }
-
-  requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
-}
 
   /** Stops hold-down torque without disabling future hold-down assist. */
   private void stopSlapdownHoldDownTorque() {
