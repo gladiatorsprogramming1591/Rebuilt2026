@@ -274,12 +274,13 @@ public class DriveCommands {
           if (!ShooterCalculation.getInstance().getParameters().passing()) {
             // Calculate max linear velocity magnitude based on the max polar velocity
             double maxLinearVelocityMagnitude = Double.POSITIVE_INFINITY;
+            boolean isNullVector = fieldRelativeLinearVelocity.getX() == 0 && fieldRelativeLinearVelocity.getY() == 0;
             double robotAngle =
                 Math.abs(
                     AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d())
                         .minus(RobotState.getInstance().getEstimatedPose().getTranslation())
                         .getAngle()
-                        .minus(fieldRelativeLinearVelocity.getAngle())
+                        .minus(isNullVector ? new Rotation2d(0) : fieldRelativeLinearVelocity.getAngle())
                         .getRadians());
             double robotHubDistance =
                 ShooterCalculation.getInstance().getParameters().distanceNoLookahead();
