@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 3.899232456136926,
-        "y": 0.7342543859670525
+        "y": 0.6
       },
       "prevControl": {
-        "x": 3.3133621322459845,
-        "y": 0.964371006142106
+        "x": 2.649232456136926,
+        "y": 0.6000000000000001
       },
       "nextControl": {
-        "x": 4.131926644352276,
-        "y": 0.6428573686699928
+        "x": 4.149232456136926,
+        "y": 0.6
       },
       "isLocked": false,
       "linkedName": null
@@ -61,7 +61,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4 Copy",
+  "folder": null,
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": -145.0

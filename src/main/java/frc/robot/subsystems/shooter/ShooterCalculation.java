@@ -247,9 +247,9 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber flywheelSpeed2 =
       shooterCalcTunable("FlyWheelSpeedMap/0.96", 1450.0);
   private static final LoggedTunableNumber flywheelSpeed3 =
-      shooterCalcTunable("FlyWheelSpeedMap/1.46", 1650.0);
+      shooterCalcTunable("FlyWheelSpeedMap/1.46", 1600.0);
   private static final LoggedTunableNumber flywheelSpeed4 =
-      shooterCalcTunable("FlyWheelSpeedMap/1.73", 1750.0);
+      shooterCalcTunable("FlyWheelSpeedMap/1.73", 1700.0);
   private static final LoggedTunableNumber flywheelSpeed5 =
       shooterCalcTunable("FlyWheelSpeedMap/2.18", 1800.0); //1900
   private static final LoggedTunableNumber flywheelSpeed6 =
@@ -257,17 +257,17 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber flywheelSpeed7 =
       shooterCalcTunable("FlyWheelSpeedMap/2.70", 1950.0);
   private static final LoggedTunableNumber flywheelSpeed8 =
-      shooterCalcTunable("FlyWheelSpeedMap/2.94", 1950.0);
+      shooterCalcTunable("FlyWheelSpeedMap/2.94", 2025.0);
   private static final LoggedTunableNumber flywheelSpeed9 =
-      shooterCalcTunable("FlyWheelSpeedMap/3.48", 2024.0);
+      shooterCalcTunable("FlyWheelSpeedMap/3.48", 2050.0);
   private static final LoggedTunableNumber flywheelSpeed10 =
-      shooterCalcTunable("FlyWheelSpeedMap/3.92", 2050.0);
+      shooterCalcTunable("FlyWheelSpeedMap/3.92", 2100.0);
   private static final LoggedTunableNumber flywheelSpeed11 =
-      shooterCalcTunable("FlyWheelSpeedMap/4.35", 2125.0);
+      shooterCalcTunable("FlyWheelSpeedMap/4.35", 2150.0);
   private static final LoggedTunableNumber flywheelSpeed12 =
-      shooterCalcTunable("FlyWheelSpeedMap/4.84", 2200.0);
+      shooterCalcTunable("FlyWheelSpeedMap/4.84", 2250.0);
   private static final LoggedTunableNumber flywheelSpeed13 =
-      shooterCalcTunable("FlyWheelSpeedMap/5.46", 2350.0);
+      shooterCalcTunable("FlyWheelSpeedMap/5.46", 2450.0);
 
   private static final LoggedTunableNumber passingHoodAngle1 =
       shooterCalcTunable("PassingHoodMap/3.4", 800.0);
