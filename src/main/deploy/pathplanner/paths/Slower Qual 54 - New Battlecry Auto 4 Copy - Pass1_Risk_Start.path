@@ -1,0 +1,66 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.517357456140351,
+        "y": 0.46221491228070133
+      },
+      "isLocked": false,
+      "linkedName": "Slower Qual 54_New Battlecry Auto 4 Copy_Battlecry bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 8.306,
+        "y": 1.357
+      },
+      "prevControl": {
+        "x": 8.225666694905728,
+        "y": 0.7028969827670377
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Slower Qual 54_New Battlecry Auto 4 Copy_BC Risk End"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 10.5,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.75,
+    "rotation": 77.47119229084846
+  },
+  "reversed": false,
+  "folder": "Slower Qual 54",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

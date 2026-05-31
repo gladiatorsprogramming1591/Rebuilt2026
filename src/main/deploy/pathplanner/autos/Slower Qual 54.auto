@@ -5,27 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Prepare Intake"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass1_Risk_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass1_Risk_Start"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass1_Risk_Sweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass1_Risk_Sweep"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pass1_RiskNoHub_Return"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass1_RiskNoHub_Return"
           }
         },
         {
@@ -41,45 +35,39 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Prepare Intake"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass_Start"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass2_FarSweepA"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass2_FarSweepA"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - FarA-CloseB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FarA-CloseB"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass2_CloseSweepB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass2_CloseSweepB"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - CloseB-NoLocalize"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CloseB-NoLocalize"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pass2_CloseB_NoLocalize_Return"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass2_CloseB_NoLocalize_Return"
           }
         },
         {
@@ -95,15 +83,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Prepare Intake"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Pass_Start"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass_Start"
           }
         },
         {
@@ -115,19 +97,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pass2_FarSweepA"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass2_FarSweepA"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FarA-CloseB"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - FarA-CloseB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pass2_CloseSweepB"
+            "pathName": "Slower Qual 54 - New Battlecry Auto 4 Copy - Pass2_CloseSweepB"
           }
         },
         {
