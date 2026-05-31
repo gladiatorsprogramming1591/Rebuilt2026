@@ -3,51 +3,51 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.730964912280701,
-        "y": 2.448511363636363
+        "x": 4.6,
+        "y": 0.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.323997972652854,
-        "y": 2.59663521599131
+        "x": 6.303687217676196,
+        "y": 0.3048257528287417
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartLocalize_Return"
+      "linkedName": "Qual 53_Pass Start"
     },
     {
       "anchor": {
-        "x": 3.1883542039355985,
-        "y": 2.448511363636363
+        "x": 7.453881578947367,
+        "y": 1.2148574561403507
       },
       "prevControl": {
-        "x": 3.939874339501787,
-        "y": 2.556918859649122
+        "x": 7.256850082999932,
+        "y": 0.9639889297006057
       },
       "nextControl": {
-        "x": 2.8998144277931286,
-        "y": 2.4068892258500996
+        "x": 7.7158353379202715,
+        "y": 1.5483876523807343
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump End"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3654740608228972,
-        "y": 2.448511363636363
+        "x": 7.9,
+        "y": 2.75
       },
       "prevControl": {
-        "x": 2.5263458868590742,
-        "y": 2.7764080036436
+        "x": 7.9,
+        "y": 2.007422653313304
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "isLocked": true,
+      "linkedName": "Qual 53_Pass2_FarSweepA"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -40.0
+      "waypointRelativePos": 0.9,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
@@ -62,14 +62,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -145.0
+    "velocity": 5.0,
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4",
+  "folder": "Qual 53",
   "idealStartingState": {
-    "velocity": 2.25,
-    "rotation": -40.0
+    "velocity": 3.75,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

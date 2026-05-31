@@ -12,7 +12,7 @@
         "y": 1.6459523729909773
       },
       "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "linkedName": "Qual 53_Battlecry Tilted Hub Shot"
     },
     {
       "anchor": {
@@ -57,7 +57,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Battlecry Close Dot"
+      "linkedName": "Qual 53_Battlecry Close Dot"
     }
   ],
   "rotationTargets": [
@@ -82,7 +82,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 3",
+  "folder": "Qual 53",
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": -145.0

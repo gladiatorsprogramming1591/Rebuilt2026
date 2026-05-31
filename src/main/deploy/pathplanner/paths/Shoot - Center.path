@@ -8,62 +8,82 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.054425326399753,
-        "y": 1.6459523729909773
+        "x": 2.069521352762153,
+        "y": 1.6921501035136703
       },
       "isLocked": false,
       "linkedName": "Battlecry Tilted Hub Shot"
     },
     {
       "anchor": {
-        "x": 3.556386363636363,
-        "y": 0.8253409090909087
+        "x": 3.3638068181818177,
+        "y": 0.7794886363636351
       },
       "prevControl": {
-        "x": 3.331590463150328,
-        "y": 0.9762222362022881
+        "x": 2.975738467676433,
+        "y": 1.0186202425946556
       },
       "nextControl": {
-        "x": 3.837902159886202,
-        "y": 0.6363896121626483
+        "x": 3.9323861530709774,
+        "y": 0.42912435274003835
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.895272727276199,
-        "y": 0.5685681818183821
+        "x": 4.9411249999999995,
+        "y": 0.5593977272727261
       },
       "prevControl": {
-        "x": 4.360755165195288,
-        "y": 0.5169135444689394
+        "x": 4.636480847047739,
+        "y": 0.584913623072638
       },
       "nextControl": {
-        "x": 6.376972454718068,
-        "y": 0.7117564837776584
+        "x": 5.6854625983707585,
+        "y": 0.4970546938813674
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.45340909090909,
-        "y": 0.4218409090911098
+        "x": 7.325443181818182,
+        "y": 0.9078749999999991
       },
       "prevControl": {
-        "x": 8.623651315789473,
-        "y": 0.7795942982456142
+        "x": 6.857749999999999,
+        "y": 0.504374999999999
+      },
+      "nextControl": {
+        "x": 8.454828990793622,
+        "y": 1.8822470704886127
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.407556818181819,
+        "y": 3.989147727272727
+      },
+      "prevControl": {
+        "x": 8.342439112575239,
+        "y": 3.74777729740085
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Battlecry Close Dot"
+      "linkedName": "Battlecry Center Dot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.8,
+      "waypointRelativePos": 1.6551724137931028,
       "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 3.262368815592196,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [],
@@ -79,10 +99,10 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 3",
+  "folder": "New Battlecry Auto 4",
   "idealStartingState": {
     "velocity": 1.0,
     "rotation": -145.0

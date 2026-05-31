@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 3.25
+        "x": 4.421064102564103,
+        "y": 0.4535128205128206
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.821648796963971,
-        "y": 2.2977090102946187
+        "x": 7.517357456140351,
+        "y": 0.46221491228070133
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartCloseSweepB"
+      "linkedName": "Qual 53_Battlecry bottom start rush"
     },
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 1.487
+        "x": 8.306,
+        "y": 1.357
       },
       "prevControl": {
-        "x": 5.803147727275534,
-        "y": 2.3665943723441147
+        "x": 8.225666694905728,
+        "y": 0.7028969827670377
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": "Pass2_CloseSweepB"
+      "isLocked": false,
+      "linkedName": "Qual 53_BC Risk End"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 5.0,
-    "rotation": -105.00000000000001
+    "velocity": 2.75,
+    "rotation": 77.47119229084846
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4 Copy",
+  "folder": "Qual 53",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -105.00000000000001
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

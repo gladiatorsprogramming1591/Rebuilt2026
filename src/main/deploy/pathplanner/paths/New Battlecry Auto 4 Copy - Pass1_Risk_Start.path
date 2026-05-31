@@ -12,7 +12,7 @@
         "y": 0.46221491228070133
       },
       "isLocked": false,
-      "linkedName": "Battlecry bottom start rush"
+      "linkedName": "New Battlecry Auto 4 Copy_Battlecry bottom start rush"
     },
     {
       "anchor": {
@@ -25,13 +25,25 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BC Risk End"
+      "linkedName": "New Battlecry Auto 4 Copy_BC Risk End"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 10.5,
@@ -45,7 +57,7 @@
     "rotation": 77.47119229084846
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4 Copy",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 90.0

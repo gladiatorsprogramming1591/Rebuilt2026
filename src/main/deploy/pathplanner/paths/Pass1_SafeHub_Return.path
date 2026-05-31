@@ -4,63 +4,47 @@
     {
       "anchor": {
         "x": 7.894651162790698,
-        "y": 4.0
+        "y": 3.0170795454545445
       },
       "prevControl": null,
       "nextControl": {
         "x": 7.884840909090909,
-        "y": 4.330136363636364
+        "y": 3.3472159090909086
       },
       "isLocked": false,
-      "linkedName": "BC Greedy Safe Sweep End"
+      "linkedName": "BC Safe Sweep End"
     },
     {
       "anchor": {
-        "x": 7.109298245614034,
-        "y": 4.316107456140351
+        "x": 7.288761363636363,
+        "y": 3.6131590909090905
       },
       "prevControl": {
-        "x": 7.5390298809162,
-        "y": 4.316218864939817
+        "x": 7.538679221363735,
+        "y": 3.6067509407109526
       },
       "nextControl": {
-        "x": 6.859298254015486,
-        "y": 4.3160426431346455
+        "x": 6.931113636363636,
+        "y": 3.622329545454545
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.465471491228069,
-        "y": 4.316107456140351
+        "x": 6.307522727272727,
+        "y": 3.6131590909090905
       },
       "prevControl": {
-        "x": 6.764367268438294,
-        "y": 4.32806328722876
+        "x": 6.701643720729034,
+        "y": 3.597394251170838
       },
       "nextControl": {
-        "x": 5.785372807017543,
-        "y": 4.28890350877193
+        "x": 6.0577224875922795,
+        "y": 3.6231511004963086
       },
       "isLocked": false,
-      "linkedName": "Pass 1 Greedy Hub A"
-    },
-    {
-      "anchor": {
-        "x": 6.148092105263157,
-        "y": 2.6566666666666663
-      },
-      "prevControl": {
-        "x": 5.622149122807017,
-        "y": 3.110065789473684
-      },
-      "nextControl": {
-        "x": 6.843238810781839,
-        "y": 2.0574022653574575
-      },
-      "isLocked": false,
-      "linkedName": "Pass 1 Greedy Hub B"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -118,23 +102,15 @@
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 2.6,
-      "rotationDegrees": -71.034
-    },
-    {
-      "waypointRelativePos": 3.08,
-      "rotationDegrees": -26.703000000000003
-    },
-    {
-      "waypointRelativePos": 5.0,
+      "waypointRelativePos": 4.0,
       "rotationDegrees": -44.0
     }
   ],
   "constraintZones": [
     {
       "name": "Bump Zone",
-      "minWaypointRelativePos": 4.1,
-      "maxWaypointRelativePos": 5.0,
+      "minWaypointRelativePos": 3.0999999999999996,
+      "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 5.0,
         "maxAcceleration": 8.5,
@@ -146,8 +122,8 @@
     },
     {
       "name": "Initializing",
-      "minWaypointRelativePos": 3.9,
-      "maxWaypointRelativePos": 4.06802721088437,
+      "minWaypointRelativePos": 2.95,
+      "maxWaypointRelativePos": 3.0680272108843702,
       "constraints": {
         "maxVelocity": 0.5,
         "maxAcceleration": 4.0,
@@ -165,8 +141,8 @@
         "y": 3.3
       },
       "rotationOffset": 180.0,
-      "minWaypointRelativePos": 3.4,
-      "maxWaypointRelativePos": 4.26,
+      "minWaypointRelativePos": 2.7,
+      "maxWaypointRelativePos": 3.26,
       "name": "Point Towards Zone"
     },
     {
@@ -175,15 +151,15 @@
         "y": 4.02
       },
       "rotationOffset": 180.0,
-      "minWaypointRelativePos": 6.0,
-      "maxWaypointRelativePos": 6.0,
+      "minWaypointRelativePos": 5.0,
+      "maxWaypointRelativePos": 5.0,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [
     {
       "name": "Idle Shooter",
-      "waypointRelativePos": 3.9,
+      "waypointRelativePos": 2.95,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -194,7 +170,7 @@
     },
     {
       "name": "Stop Intake",
-      "waypointRelativePos": 3.98,
+      "waypointRelativePos": 2.98,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -205,7 +181,7 @@
     },
     {
       "name": "Stow For Bump",
-      "waypointRelativePos": 4.0,
+      "waypointRelativePos": 3.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -224,13 +200,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.125,
+    "velocity": 1.0,
     "rotation": -145.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 3",
+  "folder": "New Battlecry Auto 4",
   "idealStartingState": {
-    "velocity": 4.5,
+    "velocity": 3.5,
     "rotation": 65.0
   },
   "useDefaultConstraints": true

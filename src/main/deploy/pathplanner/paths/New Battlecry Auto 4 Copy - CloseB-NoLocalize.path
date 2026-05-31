@@ -12,7 +12,7 @@
         "y": -0.0129999999999999
       },
       "isLocked": false,
-      "linkedName": "Pass2_CloseSweepB"
+      "linkedName": "New Battlecry Auto 4 Copy_Pass2_CloseSweepB"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Pass2_StartNoLocalize_Return"
+      "linkedName": "New Battlecry Auto 4 Copy_Pass2_StartNoLocalize_Return"
     }
   ],
   "rotationTargets": [],

@@ -3,53 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.306,
-        "y": 1.357
+        "x": 7.764722719141323,
+        "y": 1.357030411449016
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.34207995337405,
-        "y": 1.6507761160940249
+        "x": 7.786990544904049,
+        "y": 1.6060367244930849
       },
       "isLocked": true,
-      "linkedName": "BC Risk End"
+      "linkedName": "BC Close End"
     },
     {
       "anchor": {
-        "x": 8.388,
-        "y": 2.3098389982110903
+        "x": 7.894651162790698,
+        "y": 3.0170795454545445
       },
       "prevControl": {
-        "x": 8.374230391418875,
-        "y": 2.050169824725158
-      },
-      "nextControl": {
-        "x": 8.422868156166409,
-        "y": 2.967387485473247
-      },
-      "isLocked": true,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 8.388,
-        "y": 4.0
-      },
-      "prevControl": {
-        "x": 8.399225671371887,
-        "y": 3.6222317547025615
+        "x": 7.902787019972764,
+        "y": 2.743290264632002
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BC Greedy Risk Sweep End"
+      "linkedName": "BC Safe Sweep End"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Initial fuel contact",
-      "minWaypointRelativePos": 0.25,
-      "maxWaypointRelativePos": 1.5008976660682216,
+      "minWaypointRelativePos": 0.15,
+      "maxWaypointRelativePos": 0.7450628366247757,
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 8.5,
@@ -71,14 +55,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 4.5,
-    "rotation": 77.471
+    "velocity": 3.5,
+    "rotation": 65.0
   },
   "reversed": false,
   "folder": "New Battlecry Auto 4",
   "idealStartingState": {
-    "velocity": 2.75,
-    "rotation": 77.471
+    "velocity": 3.27,
+    "rotation": 65.0
   },
   "useDefaultConstraints": true
 }

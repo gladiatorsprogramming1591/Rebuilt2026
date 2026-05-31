@@ -12,7 +12,7 @@
         "y": 2.59663521599131
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartLocalize_Return"
+      "linkedName": "Qual 53_Pass2_StartLocalize_Return"
     },
     {
       "anchor": {
@@ -28,7 +28,7 @@
         "y": 2.4068892258500996
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump End"
+      "linkedName": "Qual 53_Battlecry Bump End"
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "linkedName": "Qual 53_Battlecry Tilted Hub Shot"
     }
   ],
   "rotationTargets": [
@@ -66,7 +66,7 @@
     "rotation": -145.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4",
+  "folder": "Qual 53",
   "idealStartingState": {
     "velocity": 2.25,
     "rotation": -40.0

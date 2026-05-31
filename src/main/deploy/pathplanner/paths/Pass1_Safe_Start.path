@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 3.25
+        "x": 4.421,
+        "y": 0.454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.821648796963971,
-        "y": 2.2977090102946187
+        "x": 6.518379079254078,
+        "y": 0.4681803613053605
       },
-      "isLocked": false,
-      "linkedName": "Pass2_StartCloseSweepB"
+      "isLocked": true,
+      "linkedName": "Battlecry bottom start rush"
     },
     {
       "anchor": {
-        "x": 5.803147727275534,
-        "y": 1.487
+        "x": 7.765,
+        "y": 1.357
       },
       "prevControl": {
-        "x": 5.803147727275534,
-        "y": 2.3665943723441147
+        "x": 7.5817195877825565,
+        "y": 0.6966598514128508
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Pass2_CloseSweepB"
+      "linkedName": "BC Close End"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 5.0,
-    "rotation": -105.00000000000001
+    "velocity": 3.27,
+    "rotation": 65.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4 Copy",
+  "folder": "New Battlecry Auto 4",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -105.00000000000001
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

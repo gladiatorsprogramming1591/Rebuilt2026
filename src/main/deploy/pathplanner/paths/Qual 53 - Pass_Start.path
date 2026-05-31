@@ -3,53 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.730964912280701,
+        "x": 2.3654740608228972,
         "y": 2.448511363636363
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.323997972652854,
-        "y": 2.59663521599131
+        "x": 1.8651226575182633,
+        "y": 2.0981615392886517
       },
       "isLocked": false,
-      "linkedName": "Pass2_StartLocalize_Return"
+      "linkedName": "Qual 53_Battlecry Tilted Hub Shot"
     },
     {
       "anchor": {
-        "x": 3.1883542039355985,
-        "y": 2.448511363636363
+        "x": 3.899232456136926,
+        "y": 0.7342543859670525
       },
       "prevControl": {
-        "x": 3.939874339501787,
-        "y": 2.556918859649122
+        "x": 3.3133621322459845,
+        "y": 0.964371006142106
       },
       "nextControl": {
-        "x": 2.8998144277931286,
-        "y": 2.4068892258500996
+        "x": 4.131926644352276,
+        "y": 0.6428573686699928
       },
       "isLocked": false,
-      "linkedName": "Battlecry Bump End"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3654740608228972,
-        "y": 2.448511363636363
+        "x": 4.6,
+        "y": 0.6
       },
       "prevControl": {
-        "x": 2.5263458868590742,
-        "y": 2.7764080036436
+        "x": 4.341926291184963,
+        "y": 0.6141406630142722
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "Battlecry Tilted Hub Shot"
+      "isLocked": true,
+      "linkedName": "Qual 53_Pass Start"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -40.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -62,14 +57,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -145.0
+    "velocity": 4.0,
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4",
+  "folder": "Qual 53",
   "idealStartingState": {
-    "velocity": 2.25,
-    "rotation": -40.0
+    "velocity": 1.0,
+    "rotation": -145.0
   },
   "useDefaultConstraints": true
 }
