@@ -41,7 +41,9 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   private double autoStart;
   private boolean autoMessagePrinted;
-  private Boolean configuredSelectedAutoMode;
+  private int robotDashboardUpdateCounter = 0;
+
+  private static final int ROBOT_DASHBOARD_UPDATE_PERIOD_LOOPS = 10;
 
   private final Timer disabledTimer = new Timer();
   private final Alert lowBatteryAlert =
@@ -90,13 +92,13 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
-    SmartDashboard.putData(CommandScheduler.getInstance());
+    if (Constants.tuningMode) {
+      SmartDashboard.putData(CommandScheduler.getInstance());
+    }
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
-    robotContainer.setDriveBrakeMode();
-    robotContainer.disableShooterDefaultIdle();
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -109,14 +111,34 @@ public class Robot extends LoggedRobot {
 
     var shooterCalculation = ShooterCalculation.getInstance();
 
-    Logger.recordOutput(
-        "ShooterCalculation/HoodAngleOffsetDeg", shooterCalculation.getHoodAngleOffsetDeg());
+    boolean updateSlowDashboard =
+        ++robotDashboardUpdateCounter >= ROBOT_DASHBOARD_UPDATE_PERIOD_LOOPS;
 
-    String formattedOffset = String.format("%.1f", shooterCalculation.getHoodAngleOffsetDeg());
-    if (formattedOffset.equals("-0.0")) {
-      formattedOffset = "0.0";
+    if (updateSlowDashboard) {
+      robotDashboardUpdateCounter = 0;
+
+      Logger.recordOutput(
+          "ShooterCalculation/HoodAngleOffsetDeg", shooterCalculation.getHoodAngleOffsetDeg());
+
+      String formattedOffset = String.format("%.1f", shooterCalculation.getHoodAngleOffsetDeg());
+      if (formattedOffset.equals("-0.0")) {
+        formattedOffset = "0.0";
+      }
+      SmartDashboard.putString("Launch Hood Angle Offset", formattedOffset);
+
+      ShiftInfo official = HubShiftUtil.getOfficialShiftInfo();
+
+      SmartDashboard.putString(
+          "Shift/Official/CurrentShift",
+          HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+      SmartDashboard.putNumber(
+          "Shift/Official/Remaining", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+      SmartDashboard.putNumber(
+          "Shift/Official/RemainingTime", HubShiftUtil.getShiftedShiftInfo().remainingTime());
+      SmartDashboard.putNumber(
+          "Shift/Official/ElapsedTime", Math.round(official.elapsedTime() * 10) / 10.0);
+      SmartDashboard.putBoolean("Shift/Official/Active", official.active());
     }
-    SmartDashboard.putString("Launch Hood Angle Offset", formattedOffset);
 
     // Low battery alert
     if (DriverStation.isEnabled()) {
@@ -127,21 +149,6 @@ public class Robot extends LoggedRobot {
         && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
       lowBatteryAlert.set(true);
     }
-
-    ShiftInfo official = HubShiftUtil.getOfficialShiftInfo();
-
-    // Official shift info
-    SmartDashboard.putString(
-        "Shift/Official/CurrentShift",
-        HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
-    SmartDashboard.putNumber(
-        "Shift/Official/Remaining", HubShiftUtil.getOfficialShiftInfo().remainingTime());
-    SmartDashboard.putNumber(
-        "Shift/Official/RemainingTime", HubShiftUtil.getShiftedShiftInfo().remainingTime());
-
-    SmartDashboard.putNumber(
-        "Shift/Official/ElapsedTime", Math.round(official.elapsedTime() * 10) / 10.0);
-    SmartDashboard.putBoolean("Shift/Official/Active", official.active());
 
     // Update RobotContainer dashboard outputs
     robotContainer.updateDashboardOutputs();
@@ -156,8 +163,12 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    // Log the same launching parameters used by commands this loop.
-    Logger.recordOutput("ShooterCalculation/Parameters", shooterCalculation.getParameters());
+    // Log the same launching parameters used by commands this loop. Avoid calculating and
+    // publishing the full shooter solution while disabled, which is noisy during boot and NT
+    // reconnects.
+    if (DriverStation.isEnabled()) {
+      Logger.recordOutput("ShooterCalculation/Parameters", shooterCalculation.getParameters());
+    }
 
     // Print auto duration
     if (autonomousCommand != null) {
@@ -180,8 +191,6 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    configureForSelectedMode();
-
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()
           .getTable("limelight-two")
@@ -201,9 +210,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-    configureForSelectedMode();
-  }
+  public void disabledPeriodic() {}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -225,9 +232,6 @@ public class Robot extends LoggedRobot {
           .setNumber(0);
     }
 
-    autoStart = Timer.getTimestamp();
-    autoMessagePrinted = false;
-
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(autonomousCommand);
@@ -248,9 +252,6 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    robotContainer.setDriveBrakeMode();
-    robotContainer.useNormalDriveCurrentLimits();
-    robotContainer.enableShooterDefaultIdle();
     if (robotInitConstants.isCompBot) {
       NetworkTableInstance.getDefault()
           .getTable("limelight-two")
@@ -297,26 +298,6 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
-
-  private void configureForSelectedMode() {
-    boolean selectedAutoMode = DriverStation.isAutonomous();
-
-    if (configuredSelectedAutoMode != null && configuredSelectedAutoMode == selectedAutoMode) {
-      return;
-    }
-
-    robotContainer.setDriveBrakeMode();
-
-    if (selectedAutoMode) {
-      robotContainer.useAutoDriveCurrentLimits();
-      robotContainer.disableShooterDefaultIdle();
-    } else {
-      robotContainer.useNormalDriveCurrentLimits();
-      robotContainer.enableShooterDefaultIdle();
-    }
-
-    configuredSelectedAutoMode = selectedAutoMode;
-  }
 
   /** This function is called once when the robot is first started up. */
   @Override

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,6 +54,7 @@ import frc.robot.subsystems.kicker.KickerIO;
 import frc.robot.subsystems.kicker.KickerIOKraken;
 import frc.robot.subsystems.kicker.KickerIOSim;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOKraken;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -68,6 +70,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -102,10 +105,23 @@ public class RobotContainer {
   private final LoggedTunableNumber autoStartDelay =
       new LoggedTunableNumber("Auto Start Delay", 1.0, Constants.Tuning.AUTO);
 
+  private final LoggedTunableNumber launchReadyMaxYawRateRadPerSec =
+      new LoggedTunableNumber(
+          "LaunchReady/MaxYawRateRadPerSec", 2.0, Constants.Tuning.SHOOTER);
+
+  private final LoggedTunableNumber launchReadyAutoAimTimeoutSeconds =
+      new LoggedTunableNumber(
+          "LaunchReady/AutoAimTimeoutSeconds", 0.35, Constants.Tuning.AUTO);
+
+  private final LoggedTunableNumber launchReadyLogPeriodLoops =
+      new LoggedTunableNumber(
+          "LaunchReady/Logging/PeriodLoops", 5.0, Constants.Tuning.SHOOTER);
+
   private final LoggedDashboardChooser<Command> autoChooser;
   private final AutoManager autoManager;
 
   private int dashboardUpdateCounter = 0;
+  private int launchReadyLogCounter = 0;
 
   /** Creates all subsystems, autonomous routines, default commands, and controller bindings. */
   public RobotContainer() {
@@ -733,10 +749,95 @@ public void useAutoDriveCurrentLimits() {
    * @return command that ends when hood, shooter, and launch angle are ready
    */
   private Command waitUntilReadyToLaunch() {
-    return Commands.parallel(
-        Commands.waitUntil(hood.isHoodAtAngle()),
-        Commands.waitUntil(shooter.isShooterAtVelocity()),
-        Commands.waitUntil(DriveCommands::atLaunchGoal));
+    Timer timer = new Timer();
+
+    return Commands.waitUntil(() -> isReadyToLaunch(timer))
+        .beforeStarting(timer::restart)
+        .finallyDo(
+            interrupted -> {
+              timer.stop();
+              timer.reset();
+            });
+  }
+
+  /** Returns whether the shooter and hood are ready, without drive-angle checks. */
+  private boolean isShooterAndHoodReadyForLaunch(boolean log) {
+    boolean shooterReady = shooter.isShooterAtVelocity().getAsBoolean();
+    boolean hoodReady = hood.isHoodAtAngle().getAsBoolean();
+    boolean ready = shooterReady && hoodReady;
+
+    if (log) {
+      Logger.recordOutput("LaunchReady/ShooterReady", shooterReady);
+      Logger.recordOutput("LaunchReady/HoodReady", hoodReady);
+      Logger.recordOutput("LaunchReady/ShooterAndHoodReady", ready);
+    }
+
+    return ready;
+  }
+
+  /** Returns whether all launch conditions are satisfied, with an autonomous aim timeout fallback. */
+  private boolean isReadyToLaunch(Timer launchReadyTimer) {
+    boolean shooterReady = shooter.isShooterAtVelocity().getAsBoolean();
+    boolean hoodReady = hood.isHoodAtAngle().getAsBoolean();
+    boolean driveAngleReady = DriveCommands.atLaunchGoal();
+    boolean poseValid = ShooterCalculation.getInstance().getParameters().isValid();
+    double yawRateRadPerSec =
+        Math.abs(RobotState.getInstance().getMeasuredRobotRelativeSpeeds().omegaRadiansPerSecond);
+    boolean yawStable = yawRateRadPerSec <= launchReadyMaxYawRateRadPerSec.get();
+
+    boolean autoAimTimedOut =
+        DriverStation.isAutonomousEnabled()
+            && launchReadyTimer.hasElapsed(launchReadyAutoAimTimeoutSeconds.get());
+    boolean driveReadyOrTimedOut = driveAngleReady || autoAimTimedOut;
+
+    boolean ready = shooterReady && hoodReady && poseValid && yawStable && driveReadyOrTimedOut;
+
+    StringBuilder blockedReasons = new StringBuilder();
+    if (!shooterReady) {
+      blockedReasons.append("Shooter,");
+    }
+    if (!hoodReady) {
+      blockedReasons.append("Hood,");
+    }
+    if (!poseValid) {
+      blockedReasons.append("PoseOrTarget,");
+    }
+    if (!yawStable) {
+      blockedReasons.append("YawRate,");
+    }
+    if (!driveReadyOrTimedOut) {
+      blockedReasons.append("DriveAngle,");
+    }
+
+    String blockedReasonsOutput;
+    if (blockedReasons.length() == 0) {
+      blockedReasonsOutput = "Ready";
+    } else {
+      blockedReasonsOutput = blockedReasons.substring(0, blockedReasons.length() - 1);
+    }
+
+    if (shouldLogLaunchReady()) {
+      Logger.recordOutput("LaunchReady/Ready", ready);
+      Logger.recordOutput("LaunchReady/BlockedReasons", blockedReasonsOutput);
+      Logger.recordOutput("LaunchReady/ShooterReady", shooterReady);
+      Logger.recordOutput("LaunchReady/HoodReady", hoodReady);
+      Logger.recordOutput("LaunchReady/DriveAngleReady", driveAngleReady);
+      Logger.recordOutput("LaunchReady/PoseValid", poseValid);
+      Logger.recordOutput("LaunchReady/YawStable", yawStable);
+      Logger.recordOutput("LaunchReady/YawRateRadPerSec", yawRateRadPerSec);
+      Logger.recordOutput("LaunchReady/AutoAimTimedOut", autoAimTimedOut);
+      Logger.recordOutput("LaunchReady/TimerSeconds", launchReadyTimer.get());
+      Logger.recordOutput(
+          "LaunchReady/Logging/PeriodLoopsActive",
+          Math.max(1, (int) Math.round(launchReadyLogPeriodLoops.get())));
+    }
+
+    return ready;
+  }
+
+  private boolean shouldLogLaunchReady() {
+    int periodLoops = Math.max(1, (int) Math.round(launchReadyLogPeriodLoops.get()));
+    return launchReadyLogCounter++ % periodLoops == 0;
   }
 
   /**
