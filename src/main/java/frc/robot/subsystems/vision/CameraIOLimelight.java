@@ -1,24 +1,19 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.LimelightHelpers;
 import java.util.Optional;
 
 /**
  * {@link CameraIO} implementation for a Limelight unit.
  *
- * <p>This class performs the physical NetworkTables/Limelight reads once in
- * {@link #updateInputs(CameraIOInputs)}. The mode-specific read helpers return cached values from
- * the latest update so {@link Vision} does not reread the same data multiple times in one loop.
+ * <p>Provides typed accessors for MT1/MT2 pose estimates and basic tx/ty/ta readings, plus
+ * configuration helpers (pipeline, valid tag filters, camera pose).
  */
 public class CameraIOLimelight implements CameraIO {
-  private static final double HEARTBEAT_STALE_SECONDS = 0.5;
-
   private final String name;
   private final String tableKey;
   private final CameraType cameraType;
@@ -27,17 +22,11 @@ public class CameraIOLimelight implements CameraIO {
   private final double primaryXYStandardDeviationCoefficient;
   private final double secondaryXYStandardDeviationCoefficient;
 
-  private Optional<LimelightHelpers.PoseEstimate> latestMT1 = Optional.empty();
-  private Optional<LimelightHelpers.PoseEstimate> latestMT2 = Optional.empty();
-  private Optional<Target2D> latestTarget2D = Optional.empty();
-
-  private double lastHeartbeat = -1.0;
-  private double lastHeartbeatChangeTimestamp = 0.0;
-
   /**
    * Constructs a Limelight-backed camera IO wrapper.
    *
-   * @param name logical camera name, without the {@code limelight-} prefix
+   * @param name logical camera name (e.g., {@code "left"}); will be prefixed with {@code
+   *     "limelight-"}
    * @param cameraType camera model/config for FOV and std-dev coefficients
    */
   public CameraIOLimelight(String name, CameraType cameraType) {
@@ -54,105 +43,61 @@ public class CameraIOLimelight implements CameraIO {
   /**
    * Populates the {@link CameraIOInputs} snapshot from NetworkTables and LimelightHelpers.
    *
-   * <p>This is the only method that should perform physical Limelight reads during the robot loop.
-   *
    * @param inputs mutable container to fill for logging/telemetry
    */
   @Override
   public void updateInputs(CameraIOInputs inputs) {
-    double heartbeat =
-        NetworkTableInstance.getDefault().getTable(name).getEntry("hb").getDouble(-1.0);
-    boolean connected = isHeartbeatConnected(heartbeat);
+    double hb = NetworkTableInstance.getDefault().getTable(this.name).getEntry("hb").getDouble(-1);
+    boolean connected = getIsConnected(hb);
 
-    Rotation2d xOffset = new Rotation2d();
-    Rotation2d yOffset = new Rotation2d();
-    boolean targetAquired = false;
-    int totalTargets = 0;
-    double averageDistance = 0.0;
-    double frameTimestamp = 0.0;
-    Pose2d primaryPose = new Pose2d();
-    Pose2d secondaryPose = new Pose2d();
+    Rotation2d x = new Rotation2d();
+    Rotation2d y = new Rotation2d();
+    boolean tv = false;
+    int count = 0;
+    double avgDist = 0.0;
+    double ts = 0.0;
+    var primary = new edu.wpi.first.math.geometry.Pose2d();
+    var secondary = new edu.wpi.first.math.geometry.Pose2d();
     double tagId = -1.0;
 
-    latestMT1 = Optional.empty();
-    latestMT2 = Optional.empty();
-    latestTarget2D = Optional.empty();
-
     if (connected) {
-      double tx = LimelightHelpers.getTX(name);
-      double ty = LimelightHelpers.getTY(name);
-      double ta = LimelightHelpers.getTA(name);
+      x = Rotation2d.fromDegrees(LimelightHelpers.getTX(name));
+      y = Rotation2d.fromDegrees(LimelightHelpers.getTY(name));
+      tv = LimelightHelpers.getTV(name);
+      count = LimelightHelpers.getTargetCount(name);
 
-      xOffset = Rotation2d.fromDegrees(tx);
-      yOffset = Rotation2d.fromDegrees(ty);
-      targetAquired = LimelightHelpers.getTV(name);
-      totalTargets = LimelightHelpers.getTargetCount(name);
+      var mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+      var mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+
+      if (mt2 != null) {
+        avgDist = mt2.avgTagDist;
+        primary = mt2.pose; // prefer MT2 in primary slot
+        ts = mt2.timestampSeconds;
+      }
+      if (mt1 != null) {
+        secondary = mt1.pose;
+        ts = (ts == 0.0) ? mt1.timestampSeconds : ts;
+      }
+
       tagId = LimelightHelpers.getFiducialID(name);
-
-      latestMT2 = Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
-      latestMT1 = Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
-
-      if (targetAquired) {
-        latestTarget2D = Optional.of(new Target2D(tx, ty, ta));
-      }
-
-      if (latestMT2.isPresent()) {
-        var mt2 = latestMT2.get();
-        averageDistance = mt2.avgTagDist;
-        primaryPose = mt2.pose;
-        frameTimestamp = mt2.timestampSeconds;
-      }
-
-      if (latestMT1.isPresent()) {
-        var mt1 = latestMT1.get();
-        secondaryPose = mt1.pose;
-
-        if (frameTimestamp == 0.0) {
-          averageDistance = mt1.avgTagDist;
-          frameTimestamp = mt1.timestampSeconds;
-        }
-      }
     }
 
     inputs.data =
-        new CameraIOData(
-            heartbeat,
-            connected,
-            xOffset,
-            yOffset,
-            targetAquired,
-            totalTargets,
-            averageDistance,
-            frameTimestamp,
-            primaryPose,
-            secondaryPose,
-            tagId);
+        new CameraIOData(hb, connected, x, y, tv, count, avgDist, ts, primary, secondary, tagId);
   }
 
   /**
-   * Determines if the camera heartbeat is present and still updating.
+   * Determines if the camera is alive based on the heartbeat.
    *
-   * @param heartbeat latest heartbeat value
-   * @return true when the camera is connected and the heartbeat has updated recently
+   * @param heartbeat value of {@code nt:/<ll>/hb}, or {@code -1} if absent
+   * @return true if connected and producing heartbeats
    */
-  private boolean isHeartbeatConnected(double heartbeat) {
-    double now = Timer.getFPGATimestamp();
-
-    if (heartbeat == -1.0) {
-      return false;
-    }
-
-    if (heartbeat != lastHeartbeat) {
-      lastHeartbeat = heartbeat;
-      lastHeartbeatChangeTimestamp = now;
-      return true;
-    }
-
-    return now - lastHeartbeatChangeTimestamp <= HEARTBEAT_STALE_SECONDS;
+  private boolean getIsConnected(double heartbeat) {
+    return heartbeat != -1;
   }
 
   /**
-   * @return Limelight table name of device only, for example {@code limelight-left}
+   * @return Limelight table name of device only (e.g., {@code "limelight-left"})
    */
   @Override
   public String getName() {
@@ -160,7 +105,8 @@ public class CameraIOLimelight implements CameraIO {
   }
 
   /**
-   * @return Limelight table key, for example {@code Vision/Cameras/limelight-left/}
+   * @return Limelight table key (e.g., {@code "Vision/Cameras/limelight-left"})
+   * @see edu.wpi.first.wpilibj.smartdashboard.SmartDashboard SmartDashboard
    */
   @Override
   public String getTableKey() {
@@ -173,53 +119,33 @@ public class CameraIOLimelight implements CameraIO {
   }
 
   /**
-   * @return configured camera type
-   */
-  @Override
-  public CameraType getCameraType() {
-    return cameraType;
-  }
-
-  /**
-   * @return horizontal field of view in radians
-   */
-  @Override
-  public double getHorizontalFOV() {
-    return horizontalFOV;
-  }
-
-  /**
-   * @return vertical field of view in radians
-   */
-  @Override
-  public double getVerticalFOV() {
-    return verticalFOV;
-  }
-
-  /**
-   * @return coefficient for primary pose XY std-dev modeling
-   */
-  @Override
-  public double getPrimaryXYStandardDeviationCoefficient() {
-    return primaryXYStandardDeviationCoefficient;
-  }
-
-  /**
-   * @return coefficient for secondary pose XY std-dev modeling
-   */
-  @Override
-  public double getSecondaryXYStandardDeviationCoefficient() {
-    return secondaryXYStandardDeviationCoefficient;
-  }
-
-  /**
    * Sets the active Limelight pipeline.
    *
-   * @param pipeline pipeline index
+   * @param pipeline pipeline index (0–9)
    */
   @Override
   public void setPipeline(int pipeline) {
     LimelightHelpers.setPipelineIndex(name, pipeline);
+  }
+
+  /**
+   * Enables or pauses Limelight Rewind recording.
+   *
+   * @param enabled true to record into the rewind buffer, false to pause it
+   */
+  @Override
+  public void setRewindEnabled(boolean enabled) {
+    LimelightHelpers.setRewindEnabled(name, enabled);
+  }
+
+  /**
+   * Triggers Limelight Rewind to save a buffered clip.
+   *
+   * @param durationSeconds amount of recent buffered video to save
+   */
+  @Override
+  public void triggerRewindCapture(double durationSeconds) {
+    LimelightHelpers.triggerRewindCapture(name, durationSeconds);
   }
 
   /**
@@ -233,9 +159,9 @@ public class CameraIOLimelight implements CameraIO {
   }
 
   /**
-   * Sets the camera pose relative to robot frame for Limelight internal transforms.
+   * Sets the camera pose relative to robot frame (for Limelight internal transforms).
    *
-   * @param cameraOffset camera-to-robot transform
+   * @param cameraOffset camera-to-robot transform (meters/radians)
    */
   @Override
   public void setCameraOffset(Transform3d cameraOffset) {
@@ -249,38 +175,50 @@ public class CameraIOLimelight implements CameraIO {
         Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
   }
 
+  // MT1 / MT2 reads and tx-ty-ta
+
   /**
-   * Returns the cached Megatag1-style pose estimate from the latest input update.
+   * Reads a Megatag1-style pose estimate ({@code botpose_*}).
    *
-   * @return optional cached Limelight pose estimate
+   * @return optional Limelight pose estimate
    */
   @Override
   public Optional<LimelightHelpers.PoseEstimate> readMT1() {
-    return latestMT1;
+    var pe = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+    return Optional.ofNullable(pe);
   }
 
   /**
-   * Returns the cached Megatag2-style pose estimate from the latest input update.
+   * Reads a Megatag2-style pose estimate ({@code botpose_orb_*}). Requires publishing robot yaw.
    *
-   * @return optional cached Limelight pose estimate
+   * @return optional Limelight pose estimate (MT2)
    */
   @Override
   public Optional<LimelightHelpers.PoseEstimate> readMT2() {
-    return latestMT2;
+    var pe = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+    return Optional.ofNullable(pe);
   }
 
   /**
-   * Returns cached raw 2D alignment signals from the latest input update.
+   * Reads raw 2D alignment signals.
    *
-   * @return tx/ty/ta target data, or empty if no target was detected
+   * @return {@link Target2D} with {@code tx} (deg), {@code ty} (deg), {@code ta} (% of image), or
+   *     empty if no valid target
    */
   @Override
   public Optional<Target2D> readTxTyTa() {
-    return latestTarget2D;
+    if (LimelightHelpers.getTV(name)) {
+      return Optional.of(
+          new Target2D(
+              LimelightHelpers.getTX(name),
+              LimelightHelpers.getTY(name),
+              LimelightHelpers.getTA(name)));
+    }
+    return Optional.empty();
   }
 
   /**
-   * Publishes the robot yaw to the Limelight, required for MT2.
+   * Publishes the robot yaw to the Limelight (required for MT2).
    *
    * @param yawDeg robot yaw in field coordinates, degrees
    */

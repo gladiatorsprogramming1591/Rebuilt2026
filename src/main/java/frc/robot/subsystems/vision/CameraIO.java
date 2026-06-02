@@ -226,6 +226,20 @@ public interface CameraIO {
   public default void setPipeline(int pipeline) {}
 
   /**
+   * Enables or pauses the camera rewind buffer.
+   *
+   * @param enabled true to record into the rewind buffer, false to pause it
+   */
+  public default void setRewindEnabled(boolean enabled) {}
+
+  /**
+   * Triggers saving a rewind clip from the camera's buffered history.
+   *
+   * @param durationSeconds amount of recent buffered video to save
+   */
+  public default void triggerRewindCapture(double durationSeconds) {}
+
+  /**
    * Restricts valid AprilTag IDs used for localization.
    *
    * @param validIds list of allowed tag IDs

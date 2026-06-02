@@ -371,9 +371,16 @@ public class ShooterIOKraken implements ShooterIO {
 
   @Override
   public BooleanSupplier rightShooterAtVelocityRPM(DoubleSupplier targetRPM) {
-    return () ->
-        Math.abs(rpsToRpm(rightLeaderVelocity.getValueAsDouble()) - targetRPM.getAsDouble())
-            < ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
+    return () -> {
+      double measuredRPM = rpsToRpm(rightLeaderVelocity.getValueAsDouble());
+      double errorRPM = targetRPM.getAsDouble() - measuredRPM;
+      double allowedErrorRPM =
+          errorRPM >= 0.0
+              ? ShooterConstants.flywheelUnderToleranceRPM.getAsDouble()
+              : ShooterConstants.flywheelOverToleranceRPM.getAsDouble();
+
+      return Math.abs(errorRPM) <= allowedErrorRPM;
+    };
   }
 
   @Override

@@ -51,6 +51,16 @@ public final class ShooterConstants {
   // Default tunable values
   private static final double DEFAULT_SHOOT_FIXED_RPM = 2000.0;
   private static final double DEFAULT_COAST_RPM = 1800.0; // TODO optimized for alliance zone, revisit for passing
+  private static final double DEFAULT_PASSING_IDLE_RPM = 2000.0;
+  private static final double DEFAULT_SHOOTING_IDLE_RPM = 2400.0;
+  private static final double DEFAULT_DYNAMIC_IDLE_SCALAR = 0.75;
+  private static final double DEFAULT_DYNAMIC_IDLE_MIN_RPM = 1200.0;
+  private static final double DEFAULT_DYNAMIC_IDLE_MAX_RPM = 3000.0;
+  private static final double DEFAULT_IDLE_RAMP_UP_RPM_PER_SEC = 600.0;
+  private static final double DEFAULT_IDLE_RAMP_DOWN_RPM_PER_SEC = 900.0;
+  private static final double DEFAULT_IDLE_MIN_COMMAND_RPM = 100.0;
+  private static final double DEFAULT_FLYWHEEL_UNDER_TOLERANCE_RPM = FLYWHEEL_TOLERANCE_RPM;
+  private static final double DEFAULT_FLYWHEEL_OVER_TOLERANCE_RPM = FLYWHEEL_TOLERANCE_RPM / 3.0;
 
   private static final double DEFAULT_KP = 0.45;
   private static final double DEFAULT_KI = 0.0;
@@ -125,6 +135,66 @@ public final class ShooterConstants {
   public static final LoggedTunableNumber coastRPM =
       new LoggedTunableNumber(
           SHOOTER_TABLE_KEY + "Coast RPM", DEFAULT_COAST_RPM, Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber passingIdleRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Passing RPM",
+          DEFAULT_PASSING_IDLE_RPM,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber shootingIdleRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Shooting RPM",
+          DEFAULT_SHOOTING_IDLE_RPM,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber dynamicIdleScalar =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Dynamic Scalar",
+          DEFAULT_DYNAMIC_IDLE_SCALAR,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber dynamicIdleMinRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Dynamic Min RPM",
+          DEFAULT_DYNAMIC_IDLE_MIN_RPM,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber dynamicIdleMaxRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Dynamic Max RPM",
+          DEFAULT_DYNAMIC_IDLE_MAX_RPM,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber idleRampUpRPMPerSec =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Ramp Up RPM Per Sec",
+          DEFAULT_IDLE_RAMP_UP_RPM_PER_SEC,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber idleRampDownRPMPerSec =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Ramp Down RPM Per Sec",
+          DEFAULT_IDLE_RAMP_DOWN_RPM_PER_SEC,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber idleMinCommandRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Idle/Min Command RPM",
+          DEFAULT_IDLE_MIN_COMMAND_RPM,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber flywheelUnderToleranceRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Tolerance/Under RPM",
+          DEFAULT_FLYWHEEL_UNDER_TOLERANCE_RPM,
+          Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber flywheelOverToleranceRPM =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Tolerance/Over RPM",
+          DEFAULT_FLYWHEEL_OVER_TOLERANCE_RPM,
+          Constants.Tuning.SHOOTER);
 
   /** Transform from robot origin to shooter/launcher origin. */
   public static final Transform3d robotToLauncher =

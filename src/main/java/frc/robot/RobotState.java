@@ -155,7 +155,10 @@ public final class RobotState {
   public enum RollerModeState {
     DUTYCYCLE,
     TORQUE_CURRENT,
-    VELOCITY
+    VOLTAGE,
+    VELOCITY_DUTY_CYCLE,
+    VELOCITY_VOLTAGE,
+    VELOCITY_TORQUE_CURRENT_FOC
   }
 
   @Getter @Setter private static RollerModeState rollerMode = RollerModeState.DUTYCYCLE;

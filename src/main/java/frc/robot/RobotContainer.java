@@ -161,8 +161,8 @@ public class RobotContainer {
 
       /** Configures the dashboard chooser for the driver controller type. */
     private void configureDriverControllerChooser() {
-      driverControllerTypeChooser.setDefaultOption("PS4", ControllerType.PS4);
-      driverControllerTypeChooser.addOption("Xbox", ControllerType.XBOX);
+      driverControllerTypeChooser.setDefaultOption("Xbox", ControllerType.XBOX);
+      driverControllerTypeChooser.addOption("PS4", ControllerType.PS4);
     }
 
     /** Returns the selected driver controller type. */

@@ -1,62 +1,124 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LoggedTracer;
+import frc.robot.util.LoggedTunableBoolean;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * Vision subsystem.
+ * Vision subsystem that:
  *
- * <p>The subsystem updates each camera once per loop, creates at most one accepted candidate per
- * camera, optionally fuses candidates from multiple cameras, and feeds the selected field estimate
- * into {@link RobotState}.
+ * <ul>
+ *   <li>Builds at most one {@code VisionCandidate} per camera per loop (pre-fusing samples per
+ *       camera to avoid jitter).
+ *   <li>Supports modes: MT1, MT2, single-tag fallback (XY from vision + fused yaw), and tx/ty/ta
+ *       logging-only.
+ *   <li>Optionally provides yaw to Limelights for MT2.
+ *   <li>Fuses cross-camera candidates using inverse-variance weighting (à la 254).
+ * </ul>
+ *
+ * <h2>Source References (teams & files)</h2>
+ *
+ * <ul>
+ *   <li>254 (inverse-variance fuse, MT1 preference, gating): {@code VisionSubsystem.java}, {@code
+ *       VisionIOHardwareLimelight.java} <br>
+ *       https://github.com/Team254/FRC-2025-Public
+ *   <li>2910 (pinhole/trig distance + odometry+vision fusion pattern): {@code
+ *       VisionIOLimelight.java} <br>
+ *       https://github.com/FRCTeam2910/2025CompetitionRobot-Public
+ *   <li>6328 (observation gating, distance^n / tagCount stddev modeling, Photon/Lime IO split):
+ *       {@code Vision.java}, {@code VisionIOLimelight.java}, {@code VisionIOPhotonVision.java} <br>
+ *       https://github.com/Mechanical-Advantage/RobotCode2025Public
+ *   <li>1678 (subsystem shell, logging/timing patterns): {@code LimelightSubsystem}, {@code
+ *       VisionIOLimelight} <br>
+ *       https://github.com/frc1678/C2025-Public
+ * </ul>
  */
 public class Vision extends SubsystemBase {
   private final Camera[] cameras;
 
-  /** Per-camera processing mode. */
+  private static final LoggedTunableBoolean pipelineCyclingEnabled =
+      new LoggedTunableBoolean("Vision/PipelineCyclingEnabled", false);
+  private static final LoggedTunableNumber normalPipeline =
+      new LoggedTunableNumber("Vision/NormalPipeline", 0.0);
+  private static final LoggedTunableNumber alternatePipeline =
+      new LoggedTunableNumber("Vision/AlternatePipeline", 1.0);
+  private static final LoggedTunableNumber pipelineCycleSeconds =
+      new LoggedTunableNumber("Vision/PipelineCycleSeconds", 0.25);
+
+  private static final LoggedTunableBoolean saveRewindOnDisable =
+      new LoggedTunableBoolean("Vision/SaveRewindOnDisable", true);
+  private static final LoggedTunableBoolean saveFullMatchRewind =
+      new LoggedTunableBoolean("Vision/SaveFullMatchRewind", true);
+  private static final LoggedTunableNumber rewindCaptureExtraSeconds =
+      new LoggedTunableNumber("Vision/RewindCaptureExtraSeconds", 1.0);
+  private static final LoggedTunableNumber rewindMaxCaptureSeconds =
+      new LoggedTunableNumber("Vision/RewindMaxCaptureSeconds", 165.0);
+
+  private int activePipeline = Integer.MIN_VALUE;
+  private boolean useAlternatePipeline = false;
+  private boolean lastPipelineCyclingEnabled = false;
+  private double lastPipelineCycleTimestamp = 0.0;
+
+  private boolean hasSetRewindEnabled = false;
+  private boolean requestedRewindEnabled = false;
+  private boolean wasDriverStationEnabled = false;
+  private boolean matchRewindStarted = false;
+  private boolean lastEnabledWasAutonomous = false;
+  private double lastEnabledStartTimestamp = 0.0;
+  private double matchRewindStartTimestamp = 0.0;
+
+  /** Per-camera processing mode (matchable at runtime). */
   public enum VisionEstimationMode {
-    /** Limelight botpose/Megatag1 style pose estimate. */
+    /** Limelight "botpose" (Megatag1 style, multi-tag preferred). Source: 254 VisionSubsystem. */
     MT1,
-
-    /** Limelight Megatag2 pose estimate. Requires robot yaw to be sent before reading. */
+    /** Limelight "orb" pose (Megatag2; requires publishing yaw). Source: 254 VisionIO HW. */
     MT2,
-
-    /** Single-tag fallback that uses vision XY and gyro/odometry yaw. */
+    /**
+     * Single-tag fallback: use XY from vision but yaw from gyro/odometry. Source: 254
+     * fuse-with-gyro path for single-tag.
+     */
     SINGLE_TAG_GYRO,
-
-    /** Log-only tx/ty/ta mode. No estimator injection. */
+    /**
+     * Log-only: publish tx/ty/ta for alignment, no estimator injection. Source: 6328 exposes target
+     * offsets while gating pose updates.
+     */
     TX_TY_TA
   }
 
-  /** Optional yaw provider for MT2 and single-tag fallback fusion. */
+  /** Optional yaw provider for MT2 and single-tag fallback fusion (e.g., Pigeon2/odometry). */
   private Supplier<Rotation2d> yawSupplier = null;
 
-  /**
-   * Creates the vision subsystem.
-   *
-   * @param cameras cameras owned by this subsystem
-   */
   public Vision(Camera... cameras) {
     this.cameras = cameras;
   }
 
   /**
-   * Provides an external yaw supplier.
+   * Provide an external yaw supplier (gyro/odometry). This will:
    *
-   * <p>The yaw is sent to cameras before each camera update, which keeps MT2 input snapshots and
-   * candidate reads aligned to the current robot orientation.
+   * <ul>
+   *   <li>Be forwarded to Limelight for MT2 via {@code robot_orientation_set} (254/6328 style).
+   *   <li>Replace single-tag vision yaw when {@link VisionEstimationMode#SINGLE_TAG_GYRO} is used.
+   * </ul>
    *
    * @param yawSupplier supplier of current robot yaw in field coordinates
    */
@@ -64,383 +126,494 @@ public class Vision extends SubsystemBase {
     this.yawSupplier = yawSupplier;
   }
 
-  /**
-   * Updates each camera once, builds candidates from cached camera data, and feeds the estimator.
-   */
+  /** Main loop: update cameras, build per-camera candidates, then cross-camera fuse & feed. */
   @Override
   public void periodic() {
     LoggedTracer.record("VisionStart");
+    List<Rotation2d> mt1Yaws = new ArrayList<>();
+    // If available, push yaw to MT2 cameras before we read (254/63 28 pattern).
+    Rotation2d yawNow = (yawSupplier != null) ? yawSupplier.get() : null;
 
-    Rotation2d yawNow = yawSupplier != null ? yawSupplier.get() : null;
-    List<VisionCandidate> candidates = new ArrayList<>();
+    updateRewindState();
+    updatePipelines();
 
-    for (Camera camera : cameras) {
-      publishYawToCamera(camera, yawNow);
-      camera.periodic();
+    for (Camera cam : cameras) {
+      cam.periodic();
 
-      buildCandidateForMode(camera, yawNow).ifPresent(candidates::add);
+      if (yawNow != null && cam.getIo() != null) {
+        // Limelight robot_orientation_set (required for MT2)
+        // 254 VisionIOHardwareLimelight.setLLSettings()/orientation path; 6328 VisionIOLimelight
+        cam.getIo().setRobotYawDegrees(yawNow.getDegrees());
+        SmartDashboard.putNumber(cam.getTableKey() + "Camera Angle", yawNow.getDegrees());
+      }
 
-      Logger.recordOutput(
-          "Vision/Camera/" + camera.getName() + "/Mode", camera.getVisionMode().toString());
+      Optional<LimelightHelpers.PoseEstimate> mt1Opt = cam.getIo().readMT1();
+      SmartDashboard.putBoolean(cam.getTableKey() + "mt1Opt", mt1Opt.isPresent());
+      if (mt1Opt.isPresent()) {
+        var pe = mt1Opt.get();
+        if (pe.pose != null && isPoseWithinField(pe.pose)) {
+          SmartDashboard.putBoolean(cam.getTableKey() + "PoseInField", true);
+          if (pe.tagCount == 1
+              && pe.rawFiducials != null
+              && pe.rawFiducials.length >= 1
+              && pe.rawFiducials[0].ambiguity < 0.2) {
+            mt1Yaws.add(pe.pose.getRotation());
+          }
+        } else {
+          SmartDashboard.putBoolean(cam.getTableKey() + "PoseInField", false);
+        }
+      }
     }
 
-    injectCandidates(candidates);
+    // Build <=1 candidate per camera (pre-fuse per-camera samples; see 254 notes about jitter).
+    List<VisionCandidate> candidates = new ArrayList<>();
+    for (Camera cam : cameras) {
+      // Logger.recordOutput(
+      //     "Vision/Camera/" + cam.getName() + "/TrackingPose",
+      //     new Pose3d(RobotState.getInstance().getRobotPoseOdometry())
+      //         .transformBy(
+      //             new Transform3d(
+      //                 cam.getCameraOffset().getTranslation().minus(new Translation3d(0, 0, 0.5)),
+      //                 cam.getCameraOffset().getRotation())));
+      // Logger.recordOutput(
+      //     "Vision/Camera/" + cam.getName() + "/Pose",
+      //     new Pose3d(RobotState.getInstance().getRobotPoseOdometry())
+      //         .transformBy(
+      //             new Transform3d(
+      //                 cam.getCameraOffset().getTranslation().minus(new Translation3d(0, 0, 0)),
+      //                 cam.getCameraOffset().getRotation())));
+      Optional<VisionCandidate> cand =
+          switch (cam.getVisionMode()) {
+            case MT1 -> pickFromPoseEstimate(cam, cam.getIo().readMT1(), true, yawNow);
+            case MT2 -> pickFromPoseEstimate(cam, cam.getIo().readMT2(), false, yawNow);
+            case SINGLE_TAG_GYRO -> pickSingleTagFallback(cam, yawNow);
+            case TX_TY_TA -> {
+              logTxTyTa(cam);
+              yield Optional.empty();
+            }
+          };
+      cand.ifPresent(candidates::add);
+      SmartDashboard.putString(cam.getTableKey() + "VisionMode", cam.getVisionMode().toString());
+    }
+    // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
+    // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't
+    // moving or disabled
+    // RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
 
-    Logger.recordOutput("Vision/CandidateCount", candidates.size());
+    // Cross-camera fuse (254-style inverse-variance weighting), then feed field estimator.
+    boolean injectVision =
+        Math.abs(RobotState.getInstance().getRobotPoseField().getX())
+            < Integer.MAX_VALUE; // flip this false -> true to test
+    if (injectVision) {
+      if (candidates.size() >= 2) {
+        VisionCandidate fused = fuse(candidates.get(0), candidates.get(1));
+        feedFieldEstimate(fused);
+      } else if (candidates.size() == 1) {
+        feedFieldEstimate(candidates.get(0));
+      }
+    }
+
     LoggedTracer.record("Vision");
   }
 
-  /**
-   * Sends yaw to the camera before camera inputs are read.
-   *
-   * @param camera camera to update
-   * @param yawNow latest robot yaw, or null if unavailable
-   */
-  private void publishYawToCamera(Camera camera, Rotation2d yawNow) {
-    if (yawNow == null || camera.getIo() == null) {
+  private void updatePipelines() {
+    boolean cyclingEnabled = pipelineCyclingEnabled.get();
+    int normalPipelineIndex = sanitizePipelineIndex(normalPipeline.get());
+    int alternatePipelineIndex = sanitizePipelineIndex(alternatePipeline.get());
+
+    if (!cyclingEnabled) {
+      useAlternatePipeline = false;
+      lastPipelineCyclingEnabled = false;
+      setPipelineIfChanged(normalPipelineIndex);
+
       return;
     }
 
-    camera.getIo().setRobotYawDegrees(yawNow.getDegrees());
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/YawPublishedDeg", yawNow.getDegrees());
+    double now = Timer.getFPGATimestamp();
+    double cycleSeconds = Math.max(0.02, pipelineCycleSeconds.get());
+
+    if (!lastPipelineCyclingEnabled) {
+      useAlternatePipeline = false;
+      lastPipelineCycleTimestamp = now;
+      lastPipelineCyclingEnabled = true;
+    } else if (now - lastPipelineCycleTimestamp >= cycleSeconds) {
+      useAlternatePipeline = !useAlternatePipeline;
+      lastPipelineCycleTimestamp = now;
+    }
+
+    int requestedPipeline = useAlternatePipeline ? alternatePipelineIndex : normalPipelineIndex;
+    setPipelineIfChanged(requestedPipeline);
+
   }
 
-  /**
-   * Builds one vision candidate from the selected camera mode.
-   *
-   * @param camera camera to process
-   * @param yawNow latest robot yaw, or null if unavailable
-   * @return accepted candidate, if available
-   */
-  private Optional<VisionCandidate> buildCandidateForMode(Camera camera, Rotation2d yawNow) {
-    return switch (camera.getVisionMode()) {
-      case MT1 -> pickFromPoseEstimate(camera, camera.getIo().readMT1(), true, yawNow);
-      case MT2 -> pickFromPoseEstimate(camera, camera.getIo().readMT2(), false, yawNow);
-      case SINGLE_TAG_GYRO -> pickSingleTagFallback(camera, yawNow);
-      case TX_TY_TA -> {
-        logTxTyTa(camera);
-        yield Optional.empty();
+  private void updateRewindState() {
+    boolean driverStationEnabled = DriverStation.isEnabled();
+    double now = Timer.getFPGATimestamp();
+
+    if (driverStationEnabled && !wasDriverStationEnabled) {
+      lastEnabledStartTimestamp = now;
+      if (!matchRewindStarted) {
+        matchRewindStarted = true;
+        matchRewindStartTimestamp = now;
       }
-    };
+    }
+
+    if (driverStationEnabled) {
+      lastEnabledWasAutonomous = DriverStation.isAutonomousEnabled();
+    }
+
+    if (!driverStationEnabled && wasDriverStationEnabled) {
+      handleDriverStationDisable(now);
+    }
+
+    setRewindEnabledIfChanged(driverStationEnabled);
+    wasDriverStationEnabled = driverStationEnabled;
+
   }
 
-  /**
-   * Injects the best available vision candidate into the field estimator.
-   *
-   * <p>When two or more candidates are available, the first two are fused. This preserves the
-   * current two-camera behavior while avoiding extra camera reads.
-   *
-   * @param candidates accepted vision candidates for this loop
-   */
-  private void injectCandidates(List<VisionCandidate> candidates) {
-    if (candidates.isEmpty()) {
+  private void handleDriverStationDisable(double now) {
+    boolean skipAutoDisableCapture =
+        saveFullMatchRewind.get() && DriverStation.isFMSAttached() && lastEnabledWasAutonomous;
+
+    if (saveRewindOnDisable.get() && !skipAutoDisableCapture) {
+      double captureStartTimestamp =
+          saveFullMatchRewind.get() && matchRewindStarted
+              ? matchRewindStartTimestamp
+              : lastEnabledStartTimestamp;
+      double captureSeconds =
+          clampRewindCaptureSeconds(
+              now - captureStartTimestamp + Math.max(0.0, rewindCaptureExtraSeconds.get()));
+
+      triggerRewindCapture(captureSeconds);
+      matchRewindStarted = false;
+      lastEnabledWasAutonomous = false;
+    } else {
+      if (!skipAutoDisableCapture) {
+        matchRewindStarted = false;
+      }
+    }
+
+  }
+
+  private double clampRewindCaptureSeconds(double requestedSeconds) {
+    double maxSeconds = Math.max(1.0, Math.min(165.0, rewindMaxCaptureSeconds.get()));
+    return Math.max(1.0, Math.min(maxSeconds, requestedSeconds));
+  }
+
+  private void setRewindEnabledIfChanged(boolean enabled) {
+    if (hasSetRewindEnabled && requestedRewindEnabled == enabled) {
       return;
     }
 
-    if (candidates.size() >= 2) {
-      feedFieldEstimate(fuse(candidates.get(0), candidates.get(1)));
+    hasSetRewindEnabled = true;
+    requestedRewindEnabled = enabled;
+
+    for (Camera camera : cameras) {
+      camera.getIo().setRewindEnabled(enabled);
+    }
+  }
+
+  private void triggerRewindCapture(double durationSeconds) {
+    for (Camera camera : cameras) {
+      camera.getIo().triggerRewindCapture(durationSeconds);
+    }
+  }
+
+  private int sanitizePipelineIndex(double pipeline) {
+    return Math.max(0, Math.min(9, (int) Math.round(pipeline)));
+  }
+
+  private void setPipelineIfChanged(int pipeline) {
+    if (activePipeline == pipeline) {
       return;
     }
 
-    feedFieldEstimate(candidates.get(0));
+    activePipeline = pipeline;
+
+    for (Camera camera : cameras) {
+      camera.setPipeline(pipeline);
+    }
   }
 
   /**
-   * Adds a fused or single candidate into the field estimator and logs useful artifacts.
+   * Adds a fused (or single) candidate into the field estimator and logs useful artifacts.
    *
-   * @param candidate candidate to feed
+   * @param c candidate to feed
    */
-  private void feedFieldEstimate(VisionCandidate candidate) {
-    RobotState.getInstance()
-        .addFieldVisionMeasurement(
-            candidate.pose(),
-            candidate.timestampSec(),
-            candidate.xyStdDev(),
-            candidate.rotStdDev());
-
-    Logger.recordOutput("Vision/FusedPose", candidate.pose());
-    Logger.recordOutput("Vision/FusedTimestamp", candidate.timestampSec());
-    Logger.recordOutput("Vision/FusedXYStd", candidate.xyStdDev());
-    Logger.recordOutput("Vision/FusedRotStd", candidate.rotStdDev());
-    Logger.recordOutput("Vision/FusedTrustYaw", candidate.trustYaw());
+  private void feedFieldEstimate(VisionCandidate c) {
+    RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev(), c.rotStdDev());
+    Logger.recordOutput("Vision/FusedPose", c.pose());
+    Logger.recordOutput("Vision/FusedTimestamp", c.timestampSec());
+    Logger.recordOutput("Vision/FusedXYStd", c.xyStdDev());
+    Logger.recordOutput("Vision/FusedRotStd", c.rotStdDev());
   }
 
   /**
-   * Builds a candidate from a Limelight pose estimate.
+   * Build a candidate from a Limelight pose estimate (MT1 or MT2), applying basic gating and
+   * std-dev modeling:
    *
-   * @param camera camera that produced the estimate
-   * @param poseEstimate optional pose estimate
-   * @param usePrimaryCoefficient true to use the camera primary XY coefficient
-   * @param yawNow fused yaw to use for single-tag estimates, may be null
-   * @return accepted candidate, if available
+   * <ul>
+   *   <li>Field bounds check like 6328.
+   *   <li>For single-tag, reject high ambiguity like 6328.
+   *   <li>Std-dev scales as {@code distance^3.5 / tagCount} (6328 pattern) with per-camera coeff;
+   *       looser in auto (6328).
+   *   <li>Yaw trusted on multi-tag; for single-tag use fused yaw if supplied (254’s single-tag
+   *       idea).
+   * </ul>
+   *
+   * @param cam the camera
+   * @param peOpt optional pose estimate
+   * @param mt1Primary whether this is the MT1 (primary) channel for coeff selection
+   * @param yawNow fused yaw to use for single-tag (may be null)
+   * @return present if accepted
    */
   private Optional<VisionCandidate> pickFromPoseEstimate(
-      Camera camera,
-      Optional<LimelightHelpers.PoseEstimate> poseEstimate,
-      boolean usePrimaryCoefficient,
+      Camera cam,
+      Optional<LimelightHelpers.PoseEstimate> peOpt,
+      boolean mt1Primary,
       Rotation2d yawNow) {
 
-    if (poseEstimate.isEmpty()) {
-      Logger.recordOutput("Vision/Camera/" + camera.getName() + "/PoseEstimatePresent", false);
+    if (peOpt.isEmpty()) return Optional.empty();
+    var pe = peOpt.get();
+    if (pe.pose == null) return Optional.empty();
+    if (pe.tagCount <= 0) return Optional.empty();
+
+    // 6328-style field bounds gating
+    Pose2d pose = pe.pose;
+    if (!isPoseWithinField(pose)) {
+      Logger.recordOutput("Vision/Rejected/OutOfField", pose);
       return Optional.empty();
     }
 
-    var estimate = poseEstimate.get();
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/PoseEstimatePresent", true);
+    // 6328 single-tag ambiguity gating
+    if (pe.tagCount == 1 && pe.rawFiducials != null && pe.rawFiducials.length >= 1) {
+      double ambiguity = pe.rawFiducials[0].ambiguity;
+      SmartDashboard.putNumber(cam.getTableKey() + "Ambiguity", ambiguity);
+      if (ambiguity > 0.5) { // conservative default; tune per camera
+        Logger.recordOutput("Vision/Rejected/HighAmbiguity", ambiguity);
+        SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", false);
+        return Optional.empty();
+      } else {
+        SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", true);
+      }
 
-    if (estimate.pose == null || estimate.tagCount <= 0) {
-      Logger.recordOutput("Vision/Rejected/" + camera.getName() + "/MissingPoseOrTags", true);
-      return Optional.empty();
+      SmartDashboard.putNumber(cam.getTableKey() + "Avg Tag Area", pe.avgTagArea);
+      SmartDashboard.putBoolean(cam.getTableKey() + "Tag Area Ok", (pe.avgTagArea >= 0.25));
+      if (pe.avgTagArea < 0.25) {
+        return Optional.empty();
+      }
+
+      // TODO - had to comment this out after switching to MT1 tags, need to debug
+      // // Ignore flickering when too close to tags
+      // var priorPose = RobotState.getInstance().getRobotPoseField();
+      // SmartDashboard.putBoolean(cam.getTableKey() + "YawDiff OK", true);
+      // if (pe.avgTagArea < 2.0) {
+      //   double yawDiff =
+      //       Math.abs(
+      //           MathUtil.angleModulus(
+      //               priorPose.getRotation().getRadians() - pose.getRotation().getRadians()));
+
+      //   if (yawDiff > Units.degreesToRadians(5.0)) {
+      //     SmartDashboard.putBoolean(cam.getTableKey() + "YawDiff OK", false);
+      //     return Optional.empty();
+      //   }
+      // }
     }
 
-    Pose2d pose = estimate.pose;
-    boolean poseInField = isPoseWithinField(pose);
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/PoseInField", poseInField);
+    // 6328-style std-dev model: (dist^3.5 / tagCount) * coeff; looser in auto.
+    double dist = Math.max(0.01, pe.avgTagDist);
+    double modeled = Math.pow(Math.max(dist, 0.8), 3.5) / Math.max(1, pe.tagCount);
+    if (DriverStation.isAutonomous()) modeled *= 2.0;
+    double coeff =
+        mt1Primary
+            ? cam.getPrimaryXYStandardDeviationCoefficient()
+            : cam.getSecondaryXYStandardDeviationCoefficient();
+    double xyStd = coeff * modeled;
+    xyStd = Math.max(xyStd, 0.04); // 3 cm; tune 0.03–0.07
 
-    if (!poseInField) {
-      Logger.recordOutput("Vision/Rejected/OutOfField/" + camera.getName(), pose);
-      return Optional.empty();
-    }
+    // Exclusive‑tag filtering USE FOR AUTO ALIGN
+    // var exclusiveTag = state.getExclusiveTag();
+    // boolean hasExclusiveId =
+    //         exclusiveTag.isPresent()
+    //                 && java.util.Arrays.stream(poseEstimate.fiducialIds())
+    //                         .anyMatch(id -> id == exclusiveTag.get());
 
-    if (!passesSingleTagQualityChecks(camera, estimate)) {
-      return Optional.empty();
-    }
+    // if (exclusiveTag.isPresent() && !hasExclusiveId) {
+    //   return Optional.empty();
+    // }
+    // Trust yaw for multi-tag; else replace yaw with fused yaw (254 single-tag + gyro fusion idea).
+    boolean trustYaw = pe.tagCount >= 2;
+    Pose2d out = (!trustYaw && yawNow != null) ? new Pose2d(pose.getTranslation(), yawNow) : pose;
+    boolean okToSeedYaw = DriverStation.isDisabled(); // TODO: is this a good enough marker of when to seed yaw?
+    double rotStd = (okToSeedYaw && trustYaw) ? 1 : 9999;
 
-    double xyStdDev = calculateXYStdDev(camera, estimate, usePrimaryCoefficient);
-    boolean trustYaw = estimate.tagCount >= 2;
-    Pose2d acceptedPose =
-        !trustYaw && yawNow != null ? new Pose2d(pose.getTranslation(), yawNow) : pose;
+    SmartDashboard.putNumber(cam.getTableKey() + "xyStd", xyStd);
+    SmartDashboard.putNumber(cam.getTableKey() + "out.x", out.getX());
+    SmartDashboard.putNumber(cam.getTableKey() + "out.y", out.getY());
+    SmartDashboard.putNumber(cam.getTableKey() + "out.rot", out.getRotation().getDegrees());
+    SmartDashboard.putBoolean(cam.getTableKey() + "trustYaw", trustYaw);
 
-    boolean allowYawUpdate = DriverStation.isDisabled();
-    double rotStdDev = allowYawUpdate && trustYaw ? 1.0 : 9999.0;
-
-    Logger.recordOutput("Vision/CandidatePose/" + camera.getName(), acceptedPose);
-    Logger.recordOutput("Vision/CandidateXYStd/" + camera.getName(), xyStdDev);
-    Logger.recordOutput("Vision/CandidateRotStd/" + camera.getName(), rotStdDev);
-    Logger.recordOutput("Vision/CandidateTags/" + camera.getName(), estimate.tagCount);
-    Logger.recordOutput("Vision/CandidateTrustYaw/" + camera.getName(), trustYaw);
-
-    return Optional.of(
-        new VisionCandidate(
-            acceptedPose, estimate.timestampSeconds, xyStdDev, trustYaw, rotStdDev));
+    // Logging (1678/254 style telemetry hygiene)
+    Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out);
+    Logger.recordOutput("Vision/CandidateXYStd/" + cam.getName(), xyStd);
+    Logger.recordOutput("Vision/CandidateRotStd/" + cam.getName(), rotStd);
+    Logger.recordOutput("Vision/CandidateTags/" + cam.getName(), pe.tagCount);
+    int[] ids =
+        (pe.rawFiducials == null)
+            ? new int[0]
+            : Arrays.stream(pe.rawFiducials).filter(f -> f != null).mapToInt(f -> f.id).toArray();
+    return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, trustYaw, rotStd, ids));
   }
 
   /**
-   * Applies single-tag ambiguity and area gates.
+   * Single-tag fallback: prefer MT1 if single tag, else MT2 if single tag. XY from vision, yaw from
+   * gyro/odometry if available.
    *
-   * @param camera camera that produced the estimate
-   * @param estimate pose estimate to validate
-   * @return true when the estimate passes quality checks
-   */
-  private boolean passesSingleTagQualityChecks(
-      Camera camera, LimelightHelpers.PoseEstimate estimate) {
-    if (estimate.tagCount != 1 || estimate.rawFiducials == null || estimate.rawFiducials.length < 1) {
-      return true;
-    }
-
-    double ambiguity = estimate.rawFiducials[0].ambiguity;
-    boolean ambiguityOk = ambiguity <= 0.5;
-    boolean areaOk = estimate.avgTagArea >= 0.25;
-
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/Ambiguity", ambiguity);
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/AmbiguityOK", ambiguityOk);
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/AvgTagArea", estimate.avgTagArea);
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/TagAreaOK", areaOk);
-
-    if (!ambiguityOk) {
-      Logger.recordOutput("Vision/Rejected/HighAmbiguity/" + camera.getName(), ambiguity);
-      return false;
-    }
-
-    if (!areaOk) {
-      Logger.recordOutput("Vision/Rejected/SmallTagArea/" + camera.getName(), estimate.avgTagArea);
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Calculates the XY standard deviation for a pose estimate.
+   * <p>Pattern source: 254’s "fuse with gyro" path for single-tag when MT multi-tag quality is low.
    *
-   * @param camera camera that produced the estimate
-   * @param estimate pose estimate to model
-   * @param usePrimaryCoefficient true to use primary coefficient, false to use secondary
-   * @return modeled XY standard deviation in meters
+   * @param cam the camera
+   * @param isBlue alliance color for LL helper
+   * @param yawNow current fused yaw (may be null)
+   * @return present if accepted
    */
-  private double calculateXYStdDev(
-      Camera camera, LimelightHelpers.PoseEstimate estimate, boolean usePrimaryCoefficient) {
-    double distance = Math.max(0.01, estimate.avgTagDist);
-    double modeled = Math.pow(Math.max(distance, 0.8), 3.5) / Math.max(1, estimate.tagCount);
+  private Optional<VisionCandidate> pickSingleTagFallback(Camera cam, Rotation2d yawNow) {
+    Optional<LimelightHelpers.PoseEstimate> mt1 = cam.getIo().readMT1();
+    Optional<LimelightHelpers.PoseEstimate> mt2 = cam.getIo().readMT2();
 
-    if (DriverStation.isAutonomous()) {
-      modeled *= 2.0;
-    }
-
-    double coefficient =
-        usePrimaryCoefficient
-            ? camera.getPrimaryXYStandardDeviationCoefficient()
-            : camera.getSecondaryXYStandardDeviationCoefficient();
-
-    double xyStdDev = Math.max(coefficient * modeled, 0.04);
-
-    Logger.recordOutput("Vision/Camera/" + camera.getName() + "/ModeledXYStd", xyStdDev);
-    return xyStdDev;
-  }
-
-  /**
-   * Single-tag fallback. Uses vision XY and replaces yaw with gyro/odometry yaw when available.
-   *
-   * @param camera camera to read
-   * @param yawNow current fused yaw, may be null
-   * @return accepted candidate, if available
-   */
-  private Optional<VisionCandidate> pickSingleTagFallback(Camera camera, Rotation2d yawNow) {
     Optional<LimelightHelpers.PoseEstimate> selected =
-        camera
-            .getIo()
-            .readMT1()
-            .filter(estimate -> estimate != null && estimate.tagCount == 1)
-            .or(() ->
-                camera
-                    .getIo()
-                    .readMT2()
-                    .filter(estimate -> estimate != null && estimate.tagCount == 1));
+        mt1.filter(pe -> pe != null && pe.tagCount == 1)
+            .or(() -> mt2.filter(pe -> pe != null && pe.tagCount > 1));
 
-    if (selected.isEmpty()) {
-      return Optional.empty();
-    }
+    if (selected.isEmpty()) return Optional.empty();
+    var pe = selected.get();
+    if (pe.pose == null) return Optional.empty();
+    if (!isPoseWithinField(pe.pose)) return Optional.empty();
 
-    var estimate = selected.get();
+    // 6328-style std-dev model for one tag
+    // TODO: What if selected is an mt2?
+    double dist = Math.max(0.01, pe.avgTagDist);
+    double modeled = Math.pow(dist, 3.5) / 1.0;
+    if (DriverStation.isAutonomous()) modeled *= 2.0;
+    double xyStd = cam.getPrimaryXYStandardDeviationCoefficient() * modeled;
 
-    if (estimate.pose == null || !isPoseWithinField(estimate.pose)) {
-      return Optional.empty();
-    }
+    Pose2d out = (yawNow != null) ? new Pose2d(pe.pose.getTranslation(), yawNow) : pe.pose;
+    double rotStd = 9999;
 
-    if (!passesSingleTagQualityChecks(camera, estimate)) {
-      return Optional.empty();
-    }
-
-    double distance = Math.max(0.01, estimate.avgTagDist);
-    double modeled = Math.pow(Math.max(distance, 0.8), 3.5);
-
-    if (DriverStation.isAutonomous()) {
-      modeled *= 2.0;
-    }
-
-    double xyStdDev = Math.max(camera.getPrimaryXYStandardDeviationCoefficient() * modeled, 0.04);
-    Pose2d acceptedPose =
-        yawNow != null ? new Pose2d(estimate.pose.getTranslation(), yawNow) : estimate.pose;
-
-    Logger.recordOutput("Vision/CandidatePose/" + camera.getName(), acceptedPose);
-    Logger.recordOutput("Vision/CandidateXYStd/" + camera.getName(), xyStdDev);
-    Logger.recordOutput("Vision/CandidateRotStd/" + camera.getName(), 9999.0);
-    Logger.recordOutput("Vision/CandidateTags/" + camera.getName(), estimate.tagCount);
-    Logger.recordOutput("Vision/CandidateTrustYaw/" + camera.getName(), false);
-
-    return Optional.of(
-        new VisionCandidate(
-            acceptedPose, estimate.timestampSeconds, xyStdDev, false, 9999.0));
+    int[] ids =
+        (pe.rawFiducials == null)
+            ? new int[0]
+            : java.util.Arrays.stream(pe.rawFiducials)
+                .filter(f -> f != null)
+                .mapToInt(f -> f.id)
+                .toArray();
+    return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, false, rotStd, ids));
   }
 
   /**
-   * Logs raw 2D alignment signals for operator/servo use. No estimator injection.
+   * Log raw 2D alignment signals (tx/ty/ta) for operator/servo use. No estimator injection.
    *
-   * @param camera camera to read from
+   * <p>Source pattern: 6328 keeps tx/ty while gating pose addVisionMeasurement.
+   *
+   * @param cam camera to read from
    */
-  private void logTxTyTa(Camera camera) {
-    camera
-        .getIo()
+  private void logTxTyTa(Camera cam) {
+    cam.getIo()
         .readTxTyTa()
         .ifPresent(
-            target -> {
-              Logger.recordOutput("Vision/Tx/" + camera.getName(), target.txDeg());
-              Logger.recordOutput("Vision/Ty/" + camera.getName(), target.tyDeg());
-              Logger.recordOutput("Vision/Ta/" + camera.getName(), target.taPct());
+            t -> {
+              Logger.recordOutput("Vision/Tx/" + cam.getName(), t.txDeg());
+              Logger.recordOutput("Vision/Ty/" + cam.getName(), t.tyDeg());
+              Logger.recordOutput("Vision/Ta/" + cam.getName(), t.taPct());
             });
   }
 
   /**
    * Simple field bounds gate using {@link FieldConstants}.
    *
+   * <p>Source concept: 6328 Vision.java rejects poses outside field extents.
+   *
    * @param pose field pose to test
-   * @return true if pose is within the playable area with edge tolerance
+   * @return true if pose (x,y) is within the playable area (with a small edge tolerance)
    */
   private boolean isPoseWithinField(Pose2d pose) {
-    final double edgeToleranceMeters = 0.10;
+    final double edgeTolMeters = 0.10; // tighten/loosen if needed
     double x = pose.getX();
     double y = pose.getY();
-
-    return x >= edgeToleranceMeters
-        && x <= FieldConstants.fieldLength - edgeToleranceMeters
-        && y >= edgeToleranceMeters
-        && y <= FieldConstants.fieldWidth - edgeToleranceMeters;
+    return x >= edgeTolMeters
+        && x <= (FieldConstants.fieldLength - edgeTolMeters)
+        && y >= edgeTolMeters
+        && y <= (FieldConstants.fieldWidth - edgeTolMeters);
   }
 
   /**
-   * Fuses two candidates using inverse-variance weighting in X/Y and heading blending when trusted.
+   * Fuse two candidates via inverse-variance weighting in X/Y, and cosine-sine blending for yaw
+   * when both yaws are trusted.
    *
-   * @param a first candidate
-   * @param b second candidate
-   * @return fused candidate
+   * <p>Source: 254 {@code VisionSubsystem.fuseEstimates()} (adapted to our scalar XY σ model).
+   *
+   * @param a candidate A
+   * @param b candidate B
+   * @return fused candidate (newer timestamp)
    */
   private VisionCandidate fuse(VisionCandidate a, VisionCandidate b) {
+    // Make b the newer one
     if (b.timestampSec() < a.timestampSec()) {
-      VisionCandidate temp = a;
+      var tmp = a;
       a = b;
-      b = temp;
+      b = tmp;
     }
 
-    double aWeight = invVar(a.xyStdDev());
-    double bWeight = invVar(b.xyStdDev());
+    double wAx = invVar(a.xyStdDev());
+    double wBx = invVar(b.xyStdDev());
+    double wAy = wAx, wBy = wBx; // single scalar σ for xy in RobotState API
 
-    double x = (a.pose().getX() * aWeight + b.pose().getX() * bWeight) / (aWeight + bWeight);
-    double y = (a.pose().getY() * aWeight + b.pose().getY() * bWeight) / (aWeight + bWeight);
+    double x = (a.pose().getX() * wAx + b.pose().getX() * wBx) / (wAx + wBx);
+    double y = (a.pose().getY() * wAy + b.pose().getY() * wBy) / (wAy + wBy);
 
     Rotation2d heading;
     if (a.trustYaw() && b.trustYaw()) {
-      double cos =
-          a.pose().getRotation().getCos() * aWeight
-              + b.pose().getRotation().getCos() * bWeight;
-      double sin =
-          a.pose().getRotation().getSin() * aWeight
-              + b.pose().getRotation().getSin() * bWeight;
+      // 254: inverse-variance heading blend
+      double wA = wAx, wB = wBx;
+      double cos = a.pose().getRotation().getCos() * wA + b.pose().getRotation().getCos() * wB;
+      double sin = a.pose().getRotation().getSin() * wA + b.pose().getRotation().getSin() * wB;
       heading = new Rotation2d(cos, sin);
     } else if (a.trustYaw()) {
       heading = a.pose().getRotation();
     } else if (b.trustYaw()) {
       heading = b.pose().getRotation();
     } else {
-      heading = yawSupplier != null ? yawSupplier.get() : b.pose().getRotation();
+      // Neither yaw trusted: prefer gyro if available, else newer
+      heading = (yawSupplier != null) ? yawSupplier.get() : b.pose().getRotation();
     }
 
     Pose2d fusedPose = new Pose2d(x, y, heading);
-    double fusedStdDev = Math.sqrt(1.0 / (aWeight + bWeight));
-    double rotStdDev = a.trustYaw() && b.trustYaw() ? fusedStdDev : 9999.0;
+    double fusedStd = Math.sqrt(1.0 / (wAx + wBx));
+    double t = b.timestampSec();
+    double rotStd = a.trustYaw() && b.trustYaw() ? fusedStd : 9999.0;
 
-    Logger.recordOutput("Vision/Fuse/A_TrustYaw", a.trustYaw());
-    Logger.recordOutput("Vision/Fuse/B_TrustYaw", b.trustYaw());
-    Logger.recordOutput("Vision/Fuse/FusedXYStd", fusedStdDev);
-    Logger.recordOutput("Vision/Fuse/FusedRotStd", rotStdDev);
+    Logger.recordOutput("Vision/Fuse/a.trustYaw", a.trustYaw);
+    Logger.recordOutput("Vision/Fuse/b.trustYaw", b.trustYaw);
+    Logger.recordOutput("Vision/Fuse/fusedStd", fusedStd);
+    Logger.recordOutput("Vision/Fuse/rotStd", rotStd);
 
-    return new VisionCandidate(
-        fusedPose, b.timestampSec(), fusedStdDev, a.trustYaw() && b.trustYaw(), rotStdDev);
+    int[] fusedIds =
+        IntStream.concat(Arrays.stream(a.tagIds()), Arrays.stream(b.tagIds()))
+            .distinct() // keep if you want unique IDs
+            .toArray();
+
+    return new VisionCandidate(fusedPose, t, fusedStd, a.trustYaw() && b.trustYaw(), rotStd, fusedIds);
   }
 
   /**
-   * @param std standard deviation in meters
-   * @return inverse variance
+   * @param std standard deviation (meters) for XY
+   * @return inverse variance (1 / σ²) with a small floor
    */
   private double invVar(double std) {
-    double clampedStd = Math.max(1e-6, std);
-    return 1.0 / (clampedStd * clampedStd);
+    double s = Math.max(1e-6, std);
+    return 1.0 / (s * s);
   }
 
-  /** Immutable per-camera candidate accepted by vision gating. */
+  /** Immutable per-camera candidate (already pre-fused for that camera). */
   private static record VisionCandidate(
-      Pose2d pose,
-      double timestampSec,
-      double xyStdDev,
-      boolean trustYaw,
-      double rotStdDev) {}
+      Pose2d pose, double timestampSec, double xyStdDev, boolean trustYaw, double rotStdDev, int[] tagIds) {}
 }

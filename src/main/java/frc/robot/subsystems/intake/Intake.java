@@ -8,6 +8,8 @@ import static frc.robot.subsystems.intake.IntakeConstants.kstowTableKey;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,9 +17,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RollerModeState;
 import frc.robot.RobotState.SlapdownModeState;
-import java.util.Set;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * Controls the intake rollers and slapdown arm.
@@ -33,19 +35,30 @@ import org.littletonrobotics.junction.Logger;
  * </ul>
  */
 public class Intake extends SubsystemBase {
+  /** Roller control mode used only by the autonomous Prepare Intake latch. */
+  public enum AutoPrepareRollerMode {
+    DUTY_CYCLE,
+    VOLTAGE,
+    VELOCITY_DUTY_CYCLE,
+    VELOCITY_VOLTAGE,
+    VELOCITY_TORQUE_CURRENT_FOC
+  }
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
-
+  private final SendableChooser<AutoPrepareRollerMode> autoPrepareRollerModeChooser =
+      new SendableChooser<>();
+  private final LoggedDashboardChooser<AutoPrepareRollerMode> loggedAutoPrepareRollerModeChooser;
 
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
   private boolean deployHoldDownAssistEnabled = false;
   private boolean driverIntakeHeld = false;
-  private boolean rollerReverseOverride = false;
   private boolean rollerBoostActive = false;
   private boolean autoPrepareIntakeRequested = false;
   private boolean autoPrepareIntakeLatched = false;
+  private boolean rollerReverseOverride = false;
   private boolean rollerWasRequested = false;
   private double rollerRequestStartTimestamp = 0.0;
   private double rollerHighCurrentStartTimestamp = Double.NaN;
@@ -61,6 +74,41 @@ public class Intake extends SubsystemBase {
    */
   public Intake(IntakeIO io) {
     this.io = io;
+    configureAutoPrepareRollerModeChooser();
+    loggedAutoPrepareRollerModeChooser =
+        new LoggedDashboardChooser<>(
+            kintakeTableKey + "Auto Prepare Roller Mode", autoPrepareRollerModeChooser);
+  }
+
+  /** Configures the roller control mode chooser used only by autonomous Prepare Intake. */
+  private void configureAutoPrepareRollerModeChooser() {
+    autoPrepareRollerModeChooser.setDefaultOption(
+        "Voltage", AutoPrepareRollerMode.VOLTAGE);
+    autoPrepareRollerModeChooser.addOption(
+        "Duty Cycle", AutoPrepareRollerMode.DUTY_CYCLE);
+    autoPrepareRollerModeChooser.addOption(
+        "Velocity Duty Cycle", AutoPrepareRollerMode.VELOCITY_DUTY_CYCLE);
+    autoPrepareRollerModeChooser.addOption(
+        "Velocity Voltage", AutoPrepareRollerMode.VELOCITY_VOLTAGE);
+    autoPrepareRollerModeChooser.addOption(
+        "Velocity Torque Current FOC", AutoPrepareRollerMode.VELOCITY_TORQUE_CURRENT_FOC);
+  }
+
+  /** Returns the selected autonomous Prepare Intake roller mode. */
+  private AutoPrepareRollerMode getAutoPrepareRollerMode() {
+    AutoPrepareRollerMode selectedMode = loggedAutoPrepareRollerModeChooser.get();
+    return selectedMode != null ? selectedMode : AutoPrepareRollerMode.VOLTAGE;
+  }
+
+  /**
+   * Returns whether the autonomous Prepare Intake roller chooser should control the rollers.
+   *
+   * <p>During a real match this is only active for the autonomous Prepare Intake latch. During
+   * tuning, the same path can be tested in teleop by holding the normal intake button.
+   */
+  private boolean shouldUsePrepareRollerMode() {
+    return (DriverStation.isAutonomousEnabled() && autoPrepareIntakeLatched)
+        || (Constants.tuningMode && DriverStation.isTeleopEnabled() && driverIntakeHeld);
   }
 
   /**
@@ -156,6 +204,7 @@ public class Intake extends SubsystemBase {
             });
   }
 
+
   /**
    * Moves the slapdown to the bump/intermediate position.
    *
@@ -164,11 +213,13 @@ public class Intake extends SubsystemBase {
   public Command stowBump() {
     return runEnd(
         () -> {
+          driverIntakeHeld = false;
           clearAutoPrepareIntakeLatch();
           requestSlapdownPosition(IntakeConstants.BUMP, SlapdownModeState.BUMP_POSITION, false);
         },
         this::stopSlapdown);
   }
+
 
   /**
    * Moves the slapdown to the shooting stop position and stops the rollers.
@@ -181,6 +232,7 @@ public class Intake extends SubsystemBase {
   public Command stowWhileShooting() {
     return runEnd(
         () -> {
+          clearAutoPrepareIntakeLatch();
           requestSlapdownPosition(
               IntakeConstants.SHOOTING_STOP, SlapdownModeState.BUMP_POSITION, false);
           setRequestedRollerSpeed(0.8);
@@ -208,6 +260,8 @@ public class Intake extends SubsystemBase {
 
     return runEnd(
         () -> {
+          clearAutoPrepareIntakeLatch();
+
           if (!timer.isRunning()) {
             completedCurls[0] = 0;
             curlingIn[0] = true;
@@ -293,6 +347,7 @@ public class Intake extends SubsystemBase {
   public Command curlInWhileShootingSlowSpeed() {
     return runEnd(
         () -> {
+          clearAutoPrepareIntakeLatch();
           setRequestedRollerSpeed(0.8);
           requestSlapdownSlowStowSpeed();
         },
@@ -317,6 +372,8 @@ public class Intake extends SubsystemBase {
 
     return runEnd(
         () -> {
+          clearAutoPrepareIntakeLatch();
+
           if (!timer.isRunning()) {
             startPosition[0] = inputs.slapdownPosition;
             timer.restart();
@@ -424,13 +481,13 @@ public class Intake extends SubsystemBase {
     deployHoldDownAssistEnabled = true;
     stopSlapdownHoldDownTorque();
 
-    requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, false);
+    requestSlapdownPosition(IntakeConstants.DOWN, SlapdownModeState.DEPLOY_POSITION, true);
   }
 
   private boolean isFullTravelPositionMode() {
-    return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
-        || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
-  }
+  return RobotState.getSlapdownMode() == SlapdownModeState.DEPLOY_POSITION
+      || RobotState.getSlapdownMode() == SlapdownModeState.STOW_POSITION;
+}
 
   /**
    * Requests closed-loop slapdown position control.
@@ -488,7 +545,9 @@ public class Intake extends SubsystemBase {
     stopSlapdownOnCurrentSpike = false;
   }
 
-  /** Applies constant downforce while the driver is holding intake or auto intake is latched. */
+  /**
+   * Applies constant downforce while the intake has deployed and the rollers are intaking.
+   */
   private void updateDeployHoldDownAssist() {
     if (!deployHoldDownAssistEnabled) {
       return;
@@ -512,6 +571,7 @@ public class Intake extends SubsystemBase {
 
     requestSlapdownTorqueCurrent(IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
   }
+
 
   /** Stops hold-down torque without disabling future hold-down assist. */
   private void stopSlapdownHoldDownTorque() {
@@ -558,7 +618,6 @@ public class Intake extends SubsystemBase {
    * {@link #setRequestedRollerSpeed(double)} separately.
    */
   private void stopSlapdown() {
-    driverIntakeHeld = false;
     disableDeployHoldDownAssist();
     outputs.appliedSlapdownSpeed = 0.0;
     outputs.appliedSlapdownTorqueCurrent = 0.0;
@@ -619,27 +678,57 @@ public class Intake extends SubsystemBase {
     outputs.stowFullKD = IntakeConstants.kstowFullD.getAsDouble();
     outputs.stowFullKG = IntakeConstants.kstowFullG.getAsDouble();
     outputs.stowFullFF = IntakeConstants.kstowFullFF.getAsDouble();
+
+    outputs.rollerVelocityDutyKP = IntakeConstants.rollerVelocityDutyKP.getAsDouble();
+    outputs.rollerVelocityDutyKI = IntakeConstants.rollerVelocityDutyKI.getAsDouble();
+    outputs.rollerVelocityDutyKD = IntakeConstants.rollerVelocityDutyKD.getAsDouble();
+    outputs.rollerVelocityDutyKS = IntakeConstants.rollerVelocityDutyKS.getAsDouble();
+    outputs.rollerVelocityDutyKV = IntakeConstants.rollerVelocityDutyKV.getAsDouble();
+    outputs.rollerVelocityDutyKA = IntakeConstants.rollerVelocityDutyKA.getAsDouble();
+
+    outputs.rollerVelocityVoltageKP = IntakeConstants.rollerVelocityVoltageKP.getAsDouble();
+    outputs.rollerVelocityVoltageKI = IntakeConstants.rollerVelocityVoltageKI.getAsDouble();
+    outputs.rollerVelocityVoltageKD = IntakeConstants.rollerVelocityVoltageKD.getAsDouble();
+    outputs.rollerVelocityVoltageKS = IntakeConstants.rollerVelocityVoltageKS.getAsDouble();
+    outputs.rollerVelocityVoltageKV = IntakeConstants.rollerVelocityVoltageKV.getAsDouble();
+    outputs.rollerVelocityVoltageKA = IntakeConstants.rollerVelocityVoltageKA.getAsDouble();
+
+    outputs.rollerVelocityTorqueKP = IntakeConstants.rollerVelocityTorqueKP.getAsDouble();
+    outputs.rollerVelocityTorqueKI = IntakeConstants.rollerVelocityTorqueKI.getAsDouble();
+    outputs.rollerVelocityTorqueKD = IntakeConstants.rollerVelocityTorqueKD.getAsDouble();
+    outputs.rollerVelocityTorqueKS = IntakeConstants.rollerVelocityTorqueKS.getAsDouble();
+    outputs.rollerVelocityTorqueKV = IntakeConstants.rollerVelocityTorqueKV.getAsDouble();
+    outputs.rollerVelocityTorqueKA = IntakeConstants.rollerVelocityTorqueKA.getAsDouble();
   }
 
   /**
    * Converts the requested roller intent into the final applied roller output.
    *
-   * <p>Forward intake always uses torque-current mode. Normal pickup uses the tunable 80 amp
-   * request, and auto boost temporarily raises that request to the tunable 120 amp request after the
-   * roller has been requested for a short spin-up ignore period and high current has persisted
-   * through a debounce window. Reverse/manual roller commands still use duty cycle.
+   * <p>Autonomous Prepare Intake uses the selected chooser mode and bypasses roller boost logic.
+   * Teleop forward intake still uses torque-current mode with boost. Reverse override/manual roller
+   * commands still use duty cycle.
    */
   private void updateRollerOutput() {
     // REFACTOR: If we restore the slapdown-position roller safety cutoff, re-add it here instead
     // of spreading safety checks into the individual roller commands.
 
     if (rollerReverseOverride) {
-      outputs.appliedRollerSpeed = IntakeConstants.ROLLER_REVERSE_SPEED;
+      outputs.appliedRollerSpeed = -Math.abs(IntakeConstants.ROLLER_REVERSE_SPEED);
+      outputs.appliedRollerVoltage = 0.0;
+      outputs.appliedRollerVelocityRPS = 0.0;
       RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
       resetRollerBoostState();
       logRollerBoostState(getMaxRollerStatorCurrent(), false);
       return;
     }
+
+    if (shouldUsePrepareRollerMode()) {
+      updateAutoPrepareRollerOutput();
+      return;
+    }
+
+    outputs.appliedRollerVoltage = 0.0;
+    outputs.appliedRollerVelocityRPS = 0.0;
 
     if (requestedRollerSpeed == 0.0) {
       outputs.appliedRollerSpeed = 0.0;
@@ -700,6 +789,52 @@ public class Intake extends SubsystemBase {
     RobotState.setRollerMode(RollerModeState.TORQUE_CURRENT);
 
     logRollerBoostState(rollerCurrent, spinupComplete);
+  }
+
+  /** Applies the selected roller mode for autonomous Prepare Intake or teleop tuning. */
+  private void updateAutoPrepareRollerOutput() {
+    resetRollerBoostState();
+    logRollerBoostState(getMaxRollerStatorCurrent(), false);
+
+    AutoPrepareRollerMode selectedMode = getAutoPrepareRollerMode();
+
+    switch (selectedMode) {
+      case VELOCITY_DUTY_CYCLE:
+        outputs.appliedRollerSpeed = 0.0;
+        outputs.appliedRollerVoltage = 0.0;
+        outputs.appliedRollerVelocityRPS = IntakeConstants.autoPrepareRollerVelocityRPS.getAsDouble();
+        RobotState.setRollerMode(RollerModeState.VELOCITY_DUTY_CYCLE);
+        break;
+
+      case VELOCITY_VOLTAGE:
+        outputs.appliedRollerSpeed = 0.0;
+        outputs.appliedRollerVoltage = 0.0;
+        outputs.appliedRollerVelocityRPS = IntakeConstants.autoPrepareRollerVelocityRPS.getAsDouble();
+        RobotState.setRollerMode(RollerModeState.VELOCITY_VOLTAGE);
+        break;
+
+      case VELOCITY_TORQUE_CURRENT_FOC:
+        outputs.appliedRollerSpeed = 0.0;
+        outputs.appliedRollerVoltage = 0.0;
+        outputs.appliedRollerVelocityRPS = IntakeConstants.autoPrepareRollerVelocityRPS.getAsDouble();
+        RobotState.setRollerMode(RollerModeState.VELOCITY_TORQUE_CURRENT_FOC);
+        break;
+
+      case VOLTAGE:
+        outputs.appliedRollerSpeed = 0.0;
+        outputs.appliedRollerVoltage = IntakeConstants.autoPrepareRollerVoltage.getAsDouble();
+        outputs.appliedRollerVelocityRPS = 0.0;
+        RobotState.setRollerMode(RollerModeState.VOLTAGE);
+        break;
+
+      case DUTY_CYCLE:
+      default:
+        outputs.appliedRollerVoltage = 0.0;
+        outputs.appliedRollerVelocityRPS = 0.0;
+        outputs.appliedRollerSpeed = IntakeConstants.autoPrepareRollerDutyCycle.getAsDouble();
+        RobotState.setRollerMode(RollerModeState.DUTYCYCLE);
+        break;
+    }
   }
 
   /**
@@ -792,13 +927,12 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "StopSlapdownOnCurrentSpike", stopSlapdownOnCurrentSpike);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownAssistEnabled", deployHoldDownAssistEnabled);
-    Logger.recordOutput(kintakeTableKey + "DriverIntakeHeld", driverIntakeHeld);
-    Logger.recordOutput(kintakeTableKey + "RollerReverseOverride", rollerReverseOverride);
     Logger.recordOutput(
         kintakeTableKey + "DeployHoldDownActive",
         RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeRequested", autoPrepareIntakeRequested);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeLatched", autoPrepareIntakeLatched);
+    Logger.recordOutput(kintakeTableKey + "RollerReverseOverride", rollerReverseOverride);
     Logger.recordOutput(
         kintakeTableKey + "SlapdownHoldDownTorqueCurrent",
         IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());
@@ -825,11 +959,35 @@ public class Intake extends SubsystemBase {
         kintakeTableKey + "RollerBoostHoldSeconds",
         IntakeConstants.rollerBoostHoldSeconds.getAsDouble());
     Logger.recordOutput(
-        kintakeTableKey + "PrepareUnjamReverseSpeed",
-        IntakeConstants.prepareUnjamReverseSpeed.getAsDouble());
+        kintakeTableKey + "AutoPrepareRollerMode",
+        getAutoPrepareRollerMode().toString());
     Logger.recordOutput(
-        kintakeTableKey + "PrepareUnjamReverseSeconds",
-        IntakeConstants.prepareUnjamReverseSeconds.getAsDouble());
+        kintakeTableKey + "UsingPrepareRollerMode",
+        shouldUsePrepareRollerMode());
+    Logger.recordOutput(
+        kintakeTableKey + "AppliedRollerVoltage",
+        outputs.appliedRollerVoltage);
+    Logger.recordOutput(
+        kintakeTableKey + "AppliedRollerVelocityRPS",
+        outputs.appliedRollerVelocityRPS);
+    Logger.recordOutput(
+        kintakeTableKey + "AutoPrepareRollerDutyCycle",
+        IntakeConstants.autoPrepareRollerDutyCycle.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "AutoPrepareRollerVoltage",
+        IntakeConstants.autoPrepareRollerVoltage.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "AutoPrepareRollerVelocityRPS",
+        IntakeConstants.autoPrepareRollerVelocityRPS.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerVelocityDuty/kP",
+        IntakeConstants.rollerVelocityDutyKP.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerVelocityVoltage/kP",
+        IntakeConstants.rollerVelocityVoltageKP.getAsDouble());
+    Logger.recordOutput(
+        kintakeTableKey + "RollerVelocityTorque/kP",
+        IntakeConstants.rollerVelocityTorqueKP.getAsDouble());
 
     Logger.recordOutput(
         kintakeTableKey + "ShootingSlowStowSpeed",
@@ -912,48 +1070,13 @@ public class Intake extends SubsystemBase {
         () -> setRequestedRollerSpeed(0.0));
   }
 
-  /**
-   * Briefly reverses the rollers to clear a pinch, then runs the rollers forward.
-   *
-   * <p>This command intentionally has no intake subsystem requirement so it can run alongside
-   * {@link #deploy()}.
-   *
-   * @return command that unjams the rollers during prepare-intake, then runs them forward
-   */
-  public Command runRollerWithPrepareUnjamWithoutRequirements() {
-    return Commands.defer(
-        () ->
-            Commands.sequence(
-                runRollerReverseWithoutRequirements()
-                    .until(() -> inputs.slapdownDown)
-                    .withTimeout(
-                        Math.max(
-                            0.0, IntakeConstants.prepareUnjamReverseSeconds.getAsDouble())),
-                runRollerWithoutRequirements()),
-        Set.of());
-  }
-
-  /**
-   * Runs the rollers in reverse during the prepare-intake unjam pulse.
-   *
-   * @return command that reverse-runs the rollers until interrupted
-   */
-  private Command runRollerReverseWithoutRequirements() {
-    return Commands.runEnd(
-        () ->
-            setRequestedRollerSpeed(
-                -Math.abs(IntakeConstants.prepareUnjamReverseSpeed.getAsDouble())),
-        () -> setRequestedRollerSpeed(0.0));
-  }
-
-
   public void useAutoRollerCurrentLimits() {
-  io.useAutoRollerCurrentLimits();
-}
+    io.useAutoRollerCurrentLimits();
+  }
 
-public void useTeleopRollerCurrentLimits() {
-  io.useTeleopRollerCurrentLimits();
-}
+  public void useTeleopRollerCurrentLimits() {
+    io.useTeleopRollerCurrentLimits();
+  }
 
   /**
    * Runs the rollers from the operator debug binding.
@@ -968,16 +1091,16 @@ public void useTeleopRollerCurrentLimits() {
   }
 
   /**
-   * Forces the intake rollers in reverse while held, then returns to the previous roller behavior.
+   * Forces the intake rollers to reverse while held without interrupting the current intake state.
    *
-   * <p>This command intentionally does not require the intake subsystem. It acts as a temporary
-   * override on top of the normal roller request state, so releasing the button lets the rollers go
-   * back to auto prepare, teleop intake, or stopped depending on the current robot state.
+   * <p>This command intentionally does not require the intake subsystem. It only sets a temporary
+   * override flag, so releasing the button returns the rollers to whatever the subsystem would have
+   * otherwise been doing, such as auto Prepare Intake, teleop intake, or stopped.
    *
    * @return command that forces reverse roller output while scheduled
    */
   public Command reverseRoller() {
-    return Commands.runEnd(
+    return Commands.startEnd(
         () -> rollerReverseOverride = true,
         () -> rollerReverseOverride = false);
   }

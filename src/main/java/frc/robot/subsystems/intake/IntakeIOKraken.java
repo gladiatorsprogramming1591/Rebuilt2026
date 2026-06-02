@@ -13,6 +13,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -41,6 +45,10 @@ public class IntakeIOKraken implements IntakeIO {
   private static final int DEPLOY_SLOT = 1;
   private static final int STOW_FULL_SLOT = 2;
 
+  private static final int ROLLER_VELOCITY_DUTY_SLOT = 0;
+  private static final int ROLLER_VELOCITY_VOLTAGE_SLOT = 1;
+  private static final int ROLLER_VELOCITY_TORQUE_SLOT = 2;
+
   private static final String UPDATE_DEPLOY_CONFIG_NAME = "Update Deploy Configs";
 
   private static final double INIT_CONFIG_TIMEOUT = 0.250;
@@ -59,6 +67,13 @@ public class IntakeIOKraken implements IntakeIO {
   private final PositionTorqueCurrentFOC torquePositionControl =
       new PositionTorqueCurrentFOC(0.0);
   private final TorqueCurrentFOC torqueRollerControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
+  private final VoltageOut voltageRollerControl = new VoltageOut(0.0);
+  private final VelocityDutyCycle velocityDutyRollerControl =
+      new VelocityDutyCycle(0.0).withSlot(ROLLER_VELOCITY_DUTY_SLOT);
+  private final VelocityVoltage velocityVoltageRollerControl =
+      new VelocityVoltage(0.0).withSlot(ROLLER_VELOCITY_VOLTAGE_SLOT);
+  private final VelocityTorqueCurrentFOC velocityTorqueRollerControl =
+      new VelocityTorqueCurrentFOC(0.0).withSlot(ROLLER_VELOCITY_TORQUE_SLOT);
   private final TorqueCurrentFOC torqueSlapdownControl = new TorqueCurrentFOC(0.0).withDeadband(1.0);
 
   private final StatusSignal<Angle> deployAngle = deployMotor.getPosition();
@@ -82,6 +97,7 @@ public class IntakeIOKraken implements IntakeIO {
   private double rawDeployPosition = 0.0;
   private double encoderOffset = 0.0;
   private double appliedSlapdownStatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
+  private final double[] appliedRollerVelocityConfigValues = new double[18];
 
   /**
    * Creates the real intake IO layer and configures all motor controllers and status signals.
@@ -90,6 +106,10 @@ public class IntakeIOKraken implements IntakeIO {
    * and which RobotState modes are active.
    */
   public IntakeIOKraken() {
+    for (int i = 0; i < appliedRollerVelocityConfigValues.length; i++) {
+      appliedRollerVelocityConfigValues[i] = Double.NaN;
+    }
+
     initializeTuningDashboard();
     configureRollerMotors();
     configureDeployMotor();
@@ -114,15 +134,13 @@ public class IntakeIOKraken implements IntakeIO {
     }
   }
 
-private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean isAuto) {
+private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit) {
   CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
 
   currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
   currentLimits.StatorCurrentLimit = IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
   currentLimits.SupplyCurrentLimitEnable = true;
   currentLimits.StatorCurrentLimitEnable = true;
-  currentLimits.SupplyCurrentLowerLimit = isAuto ? 60 : 40;
-  currentLimits.SupplyCurrentLowerTime = isAuto ? 0 : 1;
 
   PhoenixUtil.tryUntilOk(
       5,
@@ -135,12 +153,12 @@ private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean is
 
 @Override
 public void useAutoRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT, true);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT);
 }
 
 @Override
 public void useTeleopRollerCurrentLimits() {
-  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT, false);
+  applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT);
 }
 
   /**
@@ -158,9 +176,10 @@ public void useTeleopRollerCurrentLimits() {
         IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
     intakeLeftConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeLeftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerLimit = 60;
-    intakeLeftConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
 
+    configureRollerVelocityDutySlot(intakeLeftConfig.Slot0);
+    configureRollerVelocityVoltageSlot(intakeLeftConfig.Slot1);
+    configureRollerVelocityTorqueSlot(intakeLeftConfig.Slot2);
 
     intakeLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     intakeLeftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -305,25 +324,117 @@ public void useTeleopRollerCurrentLimits() {
     }
 
     applySlapdownCurrentLimit(outputs.slapdownStatorCurrentLimit);
-    applyRollerOutput(outputs.appliedRollerSpeed);
+    applyRollerVelocityConfigs(outputs);
+    applyRollerOutput(outputs);
     applySlapdownOutput(outputs);
   }
 
   /**
    * Applies roller output using either torque-current mode or duty-cycle mode.
    *
-   * <p>Forward intake requests use torque-current mode. Normal pickup is 80 amps by default and
-   * boost is 120 amps by default. Reverse/manual requests use duty cycle.
+   * <p>Forward intake requests use torque-current mode. Autonomous Prepare Intake and reverse/manual
+   * requests use duty cycle.
    *
-   * @param rollerOutput requested roller torque current in amps or duty-cycle output
+   * @param outputs latest requested intake outputs
    */
-  private void applyRollerOutput(double rollerOutput) {
-    if (RobotState.getRollerMode() == RollerModeState.TORQUE_CURRENT) {
-      intakeLeft.setControl(torqueRollerControl.withOutput(rollerOutput));
+  private void applyRollerOutput(IntakeIOOutputs outputs) {
+    switch (RobotState.getRollerMode()) {
+      case TORQUE_CURRENT:
+        intakeLeft.setControl(torqueRollerControl.withOutput(outputs.appliedRollerSpeed));
+        return;
+
+      case VOLTAGE:
+        intakeLeft.setControl(voltageRollerControl.withOutput(outputs.appliedRollerVoltage));
+        return;
+
+      case VELOCITY_DUTY_CYCLE:
+        intakeLeft.setControl(
+            velocityDutyRollerControl.withVelocity(outputs.appliedRollerVelocityRPS));
+        return;
+
+      case VELOCITY_VOLTAGE:
+        intakeLeft.setControl(
+            velocityVoltageRollerControl.withVelocity(outputs.appliedRollerVelocityRPS));
+        return;
+
+      case VELOCITY_TORQUE_CURRENT_FOC:
+        intakeLeft.setControl(
+            velocityTorqueRollerControl.withVelocity(outputs.appliedRollerVelocityRPS));
+        return;
+
+      case DUTYCYCLE:
+      default:
+        intakeLeft.set(outputs.appliedRollerSpeed);
+        return;
+    }
+  }
+
+  /** Applies roller velocity slot configs when the tunables change. */
+  private void applyRollerVelocityConfigs(IntakeIOOutputs outputs) {
+    double[] requestedValues = {
+      outputs.rollerVelocityDutyKP,
+      outputs.rollerVelocityDutyKI,
+      outputs.rollerVelocityDutyKD,
+      outputs.rollerVelocityDutyKS,
+      outputs.rollerVelocityDutyKV,
+      outputs.rollerVelocityDutyKA,
+      outputs.rollerVelocityVoltageKP,
+      outputs.rollerVelocityVoltageKI,
+      outputs.rollerVelocityVoltageKD,
+      outputs.rollerVelocityVoltageKS,
+      outputs.rollerVelocityVoltageKV,
+      outputs.rollerVelocityVoltageKA,
+      outputs.rollerVelocityTorqueKP,
+      outputs.rollerVelocityTorqueKI,
+      outputs.rollerVelocityTorqueKD,
+      outputs.rollerVelocityTorqueKS,
+      outputs.rollerVelocityTorqueKV,
+      outputs.rollerVelocityTorqueKA
+    };
+
+    boolean changed = false;
+    for (int i = 0; i < requestedValues.length; i++) {
+      if (Math.abs(requestedValues[i] - appliedRollerVelocityConfigValues[i]) > 1e-9) {
+        changed = true;
+        break;
+      }
+    }
+
+    if (!changed) {
       return;
     }
 
-    intakeLeft.set(rollerOutput);
+    System.arraycopy(
+        requestedValues, 0, appliedRollerVelocityConfigValues, 0, requestedValues.length);
+
+    var dutySlot = new Slot0Configs();
+    configureRollerVelocityDutySlot(dutySlot, outputs);
+
+    var voltageSlot = new Slot1Configs();
+    configureRollerVelocityVoltageSlot(voltageSlot, outputs);
+
+    var torqueSlot = new Slot2Configs();
+    configureRollerVelocityTorqueSlot(torqueSlot, outputs);
+
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> intakeLeft.getConfigurator().apply(dutySlot, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> intakeLeft.getConfigurator().apply(voltageSlot, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> intakeLeft.getConfigurator().apply(torqueSlot, TUNED_CONFIG_TIMEOUT));
+
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> intakeRight.getConfigurator().apply(dutySlot, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> intakeRight.getConfigurator().apply(voltageSlot, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> intakeRight.getConfigurator().apply(torqueSlot, TUNED_CONFIG_TIMEOUT));
   }
 
   /**
@@ -519,6 +630,66 @@ public void useTeleopRollerCurrentLimits() {
     logCreatedTuningConfig(configs);
 
     return configs;
+  }
+
+  /** Applies default velocity-duty-cycle gains to the roller leader slot 0. */
+  private void configureRollerVelocityDutySlot(Slot0Configs slot0) {
+    slot0.kP = IntakeConstants.rollerVelocityDutyKP.getAsDouble();
+    slot0.kI = IntakeConstants.rollerVelocityDutyKI.getAsDouble();
+    slot0.kD = IntakeConstants.rollerVelocityDutyKD.getAsDouble();
+    slot0.kS = IntakeConstants.rollerVelocityDutyKS.getAsDouble();
+    slot0.kV = IntakeConstants.rollerVelocityDutyKV.getAsDouble();
+    slot0.kA = IntakeConstants.rollerVelocityDutyKA.getAsDouble();
+  }
+
+  /** Applies tunable velocity-duty-cycle gains to the roller leader slot 0. */
+  private void configureRollerVelocityDutySlot(Slot0Configs slot0, IntakeIOOutputs outputs) {
+    slot0.kP = outputs.rollerVelocityDutyKP;
+    slot0.kI = outputs.rollerVelocityDutyKI;
+    slot0.kD = outputs.rollerVelocityDutyKD;
+    slot0.kS = outputs.rollerVelocityDutyKS;
+    slot0.kV = outputs.rollerVelocityDutyKV;
+    slot0.kA = outputs.rollerVelocityDutyKA;
+  }
+
+  /** Applies default velocity-voltage gains to the roller leader slot 1. */
+  private void configureRollerVelocityVoltageSlot(Slot1Configs slot1) {
+    slot1.kP = IntakeConstants.rollerVelocityVoltageKP.getAsDouble();
+    slot1.kI = IntakeConstants.rollerVelocityVoltageKI.getAsDouble();
+    slot1.kD = IntakeConstants.rollerVelocityVoltageKD.getAsDouble();
+    slot1.kS = IntakeConstants.rollerVelocityVoltageKS.getAsDouble();
+    slot1.kV = IntakeConstants.rollerVelocityVoltageKV.getAsDouble();
+    slot1.kA = IntakeConstants.rollerVelocityVoltageKA.getAsDouble();
+  }
+
+  /** Applies tunable velocity-voltage gains to the roller leader slot 1. */
+  private void configureRollerVelocityVoltageSlot(Slot1Configs slot1, IntakeIOOutputs outputs) {
+    slot1.kP = outputs.rollerVelocityVoltageKP;
+    slot1.kI = outputs.rollerVelocityVoltageKI;
+    slot1.kD = outputs.rollerVelocityVoltageKD;
+    slot1.kS = outputs.rollerVelocityVoltageKS;
+    slot1.kV = outputs.rollerVelocityVoltageKV;
+    slot1.kA = outputs.rollerVelocityVoltageKA;
+  }
+
+  /** Applies default velocity-torque-current gains to the roller leader slot 2. */
+  private void configureRollerVelocityTorqueSlot(Slot2Configs slot2) {
+    slot2.kP = IntakeConstants.rollerVelocityTorqueKP.getAsDouble();
+    slot2.kI = IntakeConstants.rollerVelocityTorqueKI.getAsDouble();
+    slot2.kD = IntakeConstants.rollerVelocityTorqueKD.getAsDouble();
+    slot2.kS = IntakeConstants.rollerVelocityTorqueKS.getAsDouble();
+    slot2.kV = IntakeConstants.rollerVelocityTorqueKV.getAsDouble();
+    slot2.kA = IntakeConstants.rollerVelocityTorqueKA.getAsDouble();
+  }
+
+  /** Applies tunable velocity-torque-current gains to the roller leader slot 2. */
+  private void configureRollerVelocityTorqueSlot(Slot2Configs slot2, IntakeIOOutputs outputs) {
+    slot2.kP = outputs.rollerVelocityTorqueKP;
+    slot2.kI = outputs.rollerVelocityTorqueKI;
+    slot2.kD = outputs.rollerVelocityTorqueKD;
+    slot2.kS = outputs.rollerVelocityTorqueKS;
+    slot2.kV = outputs.rollerVelocityTorqueKV;
+    slot2.kA = outputs.rollerVelocityTorqueKA;
   }
 
   /** Applies default stow gains to slot 0. */

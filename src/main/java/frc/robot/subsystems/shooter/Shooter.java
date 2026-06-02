@@ -4,6 +4,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_TABLE_KEY;
 import static frc.robot.subsystems.shooter.ShooterConstants.UPDATE_CONFIG_NAME;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,6 +13,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.ShooterModeState;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * Controls the shooter flywheel.
@@ -20,13 +22,26 @@ import org.littletonrobotics.junction.Logger;
  * rotations-per-second units required by the motor controllers.
  */
 public class Shooter extends SubsystemBase {
+  /** Idle target source used by the shooter default command. */
+  public enum ShooterIdleMode {
+    OFF,
+    FIXED,
+    PASSING,
+    SHOOTING,
+    DYNAMIC
+  }
+
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private final ShooterIOOutputsAutoLogged outputs = new ShooterIOOutputsAutoLogged();
+  private final SendableChooser<ShooterIdleMode> idleModeChooser = new SendableChooser<>();
+  private final LoggedDashboardChooser<ShooterIdleMode> loggedIdleModeChooser;
 
   private boolean hasSpeedTargetChanged = true;
   private boolean defaultShouldCoast = true;
   private boolean defaultIdleEnabled = true;
+  private double rampedIdleRPM = 0.0;
+  private double requestedIdleRPM = 0.0;
 
   /**
    * Creates a shooter subsystem using the provided hardware implementation.
@@ -35,10 +50,28 @@ public class Shooter extends SubsystemBase {
    */
   public Shooter(ShooterIO io) {
     this.io = io;
+    configureIdleModeChooser();
+    loggedIdleModeChooser =
+        new LoggedDashboardChooser<>(SHOOTER_TABLE_KEY + "Idle Mode", idleModeChooser);
 
     if (Constants.Tuning.SHOOTER) {
       SmartDashboard.putBoolean(SHOOTER_TABLE_KEY + UPDATE_CONFIG_NAME, false);
     }
+  }
+
+  /** Configures the dashboard chooser used to select the default idle behavior. */
+  private void configureIdleModeChooser() {
+    idleModeChooser.setDefaultOption("Dynamic", ShooterIdleMode.DYNAMIC);
+    idleModeChooser.addOption("Fixed", ShooterIdleMode.FIXED);
+    idleModeChooser.addOption("Passing", ShooterIdleMode.PASSING);
+    idleModeChooser.addOption("Shooting", ShooterIdleMode.SHOOTING);
+    idleModeChooser.addOption("Off", ShooterIdleMode.OFF);
+  }
+
+  /** Returns the selected shooter idle mode. */
+  private ShooterIdleMode getSelectedIdleMode() {
+    ShooterIdleMode selectedMode = loggedIdleModeChooser.get();
+    return selectedMode != null ? selectedMode : ShooterIdleMode.DYNAMIC;
   }
 
   /** Updates shooter inputs, tunables, readiness logs, and applies requested outputs. */
@@ -74,16 +107,26 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           if (!defaultIdleEnabled) {
+            rampedIdleRPM = getMeasuredShooterRPM();
+            requestedIdleRPM = 0.0;
             requestShooterOff();
             return;
           }
 
-          updateDefaultCoastState();
+          requestedIdleRPM = getRequestedIdleRPM(getSelectedIdleMode());
+          double idleRPM = updateRampedIdleRPM(requestedIdleRPM);
+
+          if (idleRPM <= ShooterConstants.idleMinCommandRPM.getAsDouble()) {
+            requestShooterOff();
+            return;
+          }
+
+          updateDefaultCoastState(idleRPM);
 
           if (defaultShouldCoast) {
             requestShooterOff();
           } else {
-            requestShooterVelocity(ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble());
+            requestShooterVelocity(ShooterModeState.IDLE, idleRPM);
           }
         });
   }
@@ -99,7 +142,7 @@ public class Shooter extends SubsystemBase {
   public Command runIdleCommand() {
     return run(
         () -> requestShooterVelocity(
-            ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble()));
+            ShooterModeState.IDLE, getRequestedIdleRPM(getSelectedIdleMode())));
   }
 
   /** Requests idle shooter speed once and finishes immediately. */
@@ -107,7 +150,7 @@ public class Shooter extends SubsystemBase {
     return runOnce(
         () -> {
           enableDefaultIdle();
-          requestShooterVelocity(ShooterModeState.IDLE, ShooterConstants.coastRPM.getAsDouble());
+          requestedIdleRPM = getRequestedIdleRPM(getSelectedIdleMode());
         });
   }
 
@@ -121,6 +164,14 @@ public class Shooter extends SubsystemBase {
     defaultIdleEnabled = false;
     defaultShouldCoast = true;
     requestShooterOff();
+  }
+
+  public Command enableDefaultIdleCommand() {
+    return runOnce(this::enableDefaultIdle);
+  }
+
+  public Command disableDefaultIdleCommand() {
+    return runOnce(this::disableDefaultIdle);
   }
 
   /**
@@ -206,7 +257,7 @@ public class Shooter extends SubsystemBase {
   public BooleanSupplier isShooterBelowCoastRPM() {
     return () ->
         getMeasuredShooterRPM()
-            <= ShooterConstants.coastRPM.getAsDouble()
+            <= Math.max(ShooterConstants.coastRPM.getAsDouble(), rampedIdleRPM)
                 + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM;
   }
 
@@ -215,9 +266,8 @@ public class Shooter extends SubsystemBase {
    *
    * <p>This small hysteresis state machine replaces the old timed {@code ConditionalCommand}.
    */
-  private void updateDefaultCoastState() {
+  private void updateDefaultCoastState(double idleRPM) {
     double measuredRPM = getMeasuredShooterRPM();
-    double idleRPM = ShooterConstants.coastRPM.getAsDouble();
 
     double coastEnterRPM = idleRPM + ShooterConstants.IDLE_COAST_ENTER_MARGIN_RPM;
     double coastExitRPM = idleRPM + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM;
@@ -231,6 +281,55 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(SHOOTER_TABLE_KEY + "Default/ShouldCoast", defaultShouldCoast);
     Logger.recordOutput(SHOOTER_TABLE_KEY + "Default/CoastEnterRPM", coastEnterRPM);
     Logger.recordOutput(SHOOTER_TABLE_KEY + "Default/CoastExitRPM", coastExitRPM);
+  }
+
+  /** Returns the unramped idle target for the selected idle mode. */
+  private double getRequestedIdleRPM(ShooterIdleMode idleMode) {
+    switch (idleMode) {
+      case OFF:
+        return 0.0;
+
+      case PASSING:
+        return ShooterConstants.passingIdleRPM.getAsDouble();
+
+      case SHOOTING:
+        return ShooterConstants.shootingIdleRPM.getAsDouble();
+
+      case DYNAMIC:
+        return getDynamicIdleRPM();
+
+      case FIXED:
+      default:
+        return ShooterConstants.coastRPM.getAsDouble();
+    }
+  }
+
+  /** Returns the dynamic idle target based on the current shooter lookup-table target. */
+  private double getDynamicIdleRPM() {
+    var params = ShooterCalculation.getInstance().getParameters();
+    double lookupRPM =
+        MathUtil.clamp(params.flywheelSpeed(), 0.0, ShooterConstants.MAX_FLYWHEEL_CALCULATED_RPM);
+    double scaledRPM = lookupRPM * ShooterConstants.dynamicIdleScalar.getAsDouble();
+
+    return MathUtil.clamp(
+        scaledRPM,
+        ShooterConstants.dynamicIdleMinRPM.getAsDouble(),
+        ShooterConstants.dynamicIdleMaxRPM.getAsDouble());
+  }
+
+  /** Slews the idle target so idle spin-up is gentle and idle spin-down can coast. */
+  private double updateRampedIdleRPM(double targetRPM) {
+    double clampedTargetRPM = MathUtil.clamp(targetRPM, 0.0, ShooterConstants.MAX_FLYWHEEL_RPM);
+    double maxDelta =
+        (clampedTargetRPM > rampedIdleRPM
+                ? ShooterConstants.idleRampUpRPMPerSec.getAsDouble()
+                : ShooterConstants.idleRampDownRPMPerSec.getAsDouble())
+            * Constants.loopPeriodSecs;
+
+    rampedIdleRPM =
+        MathUtil.clamp(clampedTargetRPM, rampedIdleRPM - maxDelta, rampedIdleRPM + maxDelta);
+
+    return rampedIdleRPM;
   }
 
   /**
@@ -298,7 +397,8 @@ public class Shooter extends SubsystemBase {
    * @param rpm desired shooter speed in RPM
    */
   private void setDesiredVelocityRPM(double rpm) {
-    if (Math.abs(rpm - outputs.desiredVelocityRPM) > ShooterConstants.FLYWHEEL_TOLERANCE_RPM) {
+    if (Math.abs(rpm - outputs.desiredVelocityRPM)
+        > ShooterConstants.flywheelUnderToleranceRPM.getAsDouble()) {
       hasSpeedTargetChanged = true;
     }
 
@@ -320,8 +420,14 @@ public class Shooter extends SubsystemBase {
    * @return true when measured speed is within tolerance of desired speed
    */
   private boolean rawShooterAtCurrentTarget() {
-    return Math.abs(getMeasuredShooterRPM() - outputs.desiredVelocityRPM)
-        <= ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
+    double measuredRPM = getMeasuredShooterRPM();
+    double errorRPM = outputs.desiredVelocityRPM - measuredRPM;
+    double allowedErrorRPM =
+        errorRPM >= 0.0
+            ? ShooterConstants.flywheelUnderToleranceRPM.getAsDouble()
+            : ShooterConstants.flywheelOverToleranceRPM.getAsDouble();
+
+    return Math.abs(errorRPM) <= allowedErrorRPM;
   }
 
   /** Logs requested shooter state and readiness values. */
@@ -336,6 +442,15 @@ public class Shooter extends SubsystemBase {
         outputs.desiredVelocityRPM - getMeasuredShooterRPM());
     Logger.recordOutput(SHOOTER_TABLE_KEY + "DesiredDutyCycle", outputs.desiredDutyCycle);
     Logger.recordOutput(SHOOTER_TABLE_KEY + "UseMotionMagic", outputs.useMotionMagic);
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Idle/Mode", getSelectedIdleMode().toString());
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Idle/RequestedRPM", requestedIdleRPM);
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Idle/RampedRPM", rampedIdleRPM);
+    Logger.recordOutput(
+        SHOOTER_TABLE_KEY + "Tolerance/UnderRPM",
+        ShooterConstants.flywheelUnderToleranceRPM.getAsDouble());
+    Logger.recordOutput(
+        SHOOTER_TABLE_KEY + "Tolerance/OverRPM",
+        ShooterConstants.flywheelOverToleranceRPM.getAsDouble());
     Logger.recordOutput(SHOOTER_TABLE_KEY + "RawShooterAtCurrentTarget", rawAtCurrentTarget);
     Logger.recordOutput(
         SHOOTER_TABLE_KEY + "IsShooterReadyFiltered",
