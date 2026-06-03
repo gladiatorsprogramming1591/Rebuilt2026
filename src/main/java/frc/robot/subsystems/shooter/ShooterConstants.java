@@ -53,14 +53,16 @@ public final class ShooterConstants {
   private static final double DEFAULT_COAST_RPM = 1800.0; // TODO optimized for alliance zone, revisit for passing
   private static final double DEFAULT_PASSING_IDLE_RPM = 2000.0;
   private static final double DEFAULT_SHOOTING_IDLE_RPM = 2400.0;
-  private static final double DEFAULT_DYNAMIC_IDLE_SCALAR = 0.75;
-  private static final double DEFAULT_DYNAMIC_IDLE_MIN_RPM = 1200.0;
-  private static final double DEFAULT_DYNAMIC_IDLE_MAX_RPM = 3000.0;
-  private static final double DEFAULT_IDLE_RAMP_UP_RPM_PER_SEC = 600.0;
-  private static final double DEFAULT_IDLE_RAMP_DOWN_RPM_PER_SEC = 900.0;
-  private static final double DEFAULT_IDLE_MIN_COMMAND_RPM = 100.0;
+  private static final double DEFAULT_DYNAMIC_IDLE_SCALAR = 0.60;
+  private static final double DEFAULT_DYNAMIC_IDLE_MIN_RPM = 1600.0;
+  private static final double DEFAULT_DYNAMIC_IDLE_MAX_RPM = 2400.0;
+  private static final double DEFAULT_IDLE_RAMP_UP_RPM_PER_SEC = 250.0;
+  private static final double DEFAULT_IDLE_RAMP_DOWN_RPM_PER_SEC = 250.0;
+  private static final double DEFAULT_IDLE_MIN_COMMAND_RPM = 250.0;
   private static final double DEFAULT_FLYWHEEL_UNDER_TOLERANCE_RPM = FLYWHEEL_TOLERANCE_RPM;
   private static final double DEFAULT_FLYWHEEL_OVER_TOLERANCE_RPM = FLYWHEEL_TOLERANCE_RPM / 3.0;
+  private static final double DEFAULT_SHOOTER_SLOW_LOG_PERIOD_LOOPS = 10.0;
+  private static final int SLOW_STATUS_SIGNAL_UPDATE_FREQUENCY = 4;
 
   private static final double DEFAULT_KP = 0.45;
   private static final double DEFAULT_KI = 0.0;
@@ -70,7 +72,7 @@ public final class ShooterConstants {
   private static final double DEFAULT_KA = 0.0;
 
   /** Conservative Motion Magic velocity acceleration until ramping is fully tuned. */
-  private static final double DEFAULT_IDLE_MM_ACCELERATION = 200.0;
+  private static final double DEFAULT_IDLE_MM_ACCELERATION = 80.0;
 
   private static final double DEFAULT_SHOOT_MM_ACCELERATION  = 4000.0;
 
@@ -195,6 +197,15 @@ public final class ShooterConstants {
           SHOOTER_TABLE_KEY + "Tolerance/Over RPM",
           DEFAULT_FLYWHEEL_OVER_TOLERANCE_RPM,
           Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableNumber slowLogPeriodLoops =
+      new LoggedTunableNumber(
+          SHOOTER_TABLE_KEY + "Logging/Slow Period Loops",
+          DEFAULT_SHOOTER_SLOW_LOG_PERIOD_LOOPS,
+          Constants.Tuning.SHOOTER);
+
+  public static final int SHOOTER_SLOW_STATUS_SIGNAL_UPDATE_FREQUENCY =
+      SLOW_STATUS_SIGNAL_UPDATE_FREQUENCY;
 
   /** Transform from robot origin to shooter/launcher origin. */
   public static final Transform3d robotToLauncher =

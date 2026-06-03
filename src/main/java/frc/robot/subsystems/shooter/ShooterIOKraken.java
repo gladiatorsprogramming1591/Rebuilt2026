@@ -35,6 +35,10 @@ import org.littletonrobotics.junction.Logger;
  * robot code. CTRE velocity signals are rotations per second, but the subsystem and logs use RPM.
  */
 public class ShooterIOKraken implements ShooterIO {
+  private static final int SLOW_INPUT_PERIOD_LOOPS = 10;
+
+  private int slowInputCounter = 0;
+
   private static final String CURRENT_CONTROL_MODE = "ControlMode";
   private static final double INIT_CONFIG_TIMEOUT = 0.250;
   private static final double TUNED_CONFIG_TIMEOUT = 0.100;
@@ -111,6 +115,7 @@ public class ShooterIOKraken implements ShooterIO {
 
   private double desiredVelocityRPM = 0.0;
   private int tuneConfigsCreated = 0;
+  private int slowStatusRefreshCounter = 0;
 
   /**
    * Creates the real shooter IO layer and configures all shooter motor controllers.
@@ -200,10 +205,6 @@ public class ShooterIOKraken implements ShooterIO {
         rightFollowerAppliedVolts,
         leftLeaderAppliedVolts,
         leftFollowerAppliedVolts,
-        rightLeaderTemperature,
-        rightFollowerTemperature,
-        leftLeaderTemperature,
-        leftFollowerTemperature,
         rightLeaderSupplyCurrent,
         rightFollowerSupplyCurrent,
         leftLeaderSupplyCurrent,
@@ -216,6 +217,13 @@ public class ShooterIOKraken implements ShooterIO {
         rightFollowerTorqueCurrent,
         leftLeaderTorqueCurrent,
         leftFollowerTorqueCurrent);
+
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        ShooterConstants.SHOOTER_SLOW_STATUS_SIGNAL_UPDATE_FREQUENCY,
+        rightLeaderTemperature,
+        rightFollowerTemperature,
+        leftLeaderTemperature,
+        leftFollowerTemperature);
 
     rightShooterLeader.optimizeBusUtilization();
     rightShooterFollower.optimizeBusUtilization();
@@ -239,10 +247,6 @@ public class ShooterIOKraken implements ShooterIO {
         rightFollowerAppliedVolts,
         leftLeaderAppliedVolts,
         leftFollowerAppliedVolts,
-        rightLeaderTemperature,
-        rightFollowerTemperature,
-        leftLeaderTemperature,
-        leftFollowerTemperature,
         rightLeaderSupplyCurrent,
         rightFollowerSupplyCurrent,
         leftLeaderSupplyCurrent,
@@ -255,6 +259,15 @@ public class ShooterIOKraken implements ShooterIO {
         rightFollowerTorqueCurrent,
         leftLeaderTorqueCurrent,
         leftFollowerTorqueCurrent);
+
+    if (++slowStatusRefreshCounter >= 10) {
+      slowStatusRefreshCounter = 0;
+      BaseStatusSignal.refreshAll(
+          rightLeaderTemperature,
+          rightFollowerTemperature,
+          leftLeaderTemperature,
+          leftFollowerTemperature);
+    }
 
     inputs.rightLeaderConnected = rightShooterLeader.isConnected();
     inputs.rightFollowerConnected = rightShooterFollower.isConnected();

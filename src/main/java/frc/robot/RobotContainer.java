@@ -451,11 +451,11 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(intake.stow());
     driverController.rightBumper().onTrue(intake.deploy());
 
+    driverController.povRight().whileTrue(barfCommand());
+
     driverController.povLeft().whileTrue(intake.reverseRoller());
 
     driverController.povDown().whileTrue(hood.runHoodDown());
-
-    driverController.povRight().toggleOnTrue(kicker.runKickerMotor());
 
     Trigger shootTrigger = driverController.rightTrigger();
 
@@ -479,10 +479,10 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(intake.stow());
     operatorController.rightBumper().onTrue(intake.deploy());
     operatorController.povLeft().whileTrue(intake.reverseRoller());
+    operatorController.povRight().whileTrue(barfCommand());
 
     operatorController.povDown().whileTrue(hood.runHoodDown());
 
-    operatorController.povRight().toggleOnTrue(kicker.runKickerMotor());
 
     Trigger shootTrigger = operatorController.rightTrigger();
 
@@ -905,6 +905,13 @@ public void useAutoDriveCurrentLimits() {
    */
   public Command intakeCommand() {
     return Commands.parallel(intake.deploy(), hopper.runBeltWhileIntaking());
+  }
+
+  private Command barfCommand() {
+    return Commands.parallel(
+        intake.barfRollers(),
+        hopper.barfBeltMotors(),
+        kicker.barfKickerMotor());
   }
 
   /**

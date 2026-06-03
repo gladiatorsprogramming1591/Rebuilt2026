@@ -122,12 +122,14 @@ public final class IntakeConstants {
   // Roller speeds
   public static final double ROLLER_PICKUP_SPEED = 0.40;
   public static final double ROLLER_REVERSE_SPEED = -0.40;
+  public static final double ROLLER_BARF_SPEED = -0.70;
+
 
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SPEED = ROLLER_REVERSE_SPEED;
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS = 0.18;
   private static final double DEFAULT_AUTO_PREPARE_ROLLER_DUTY_CYCLE = ROLLER_PICKUP_SPEED;
-  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VOLTAGE = 13.0;
-  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS = 35.0;
+  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VOLTAGE = 9.0;
+  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS = 90.0;
 
   // Manual slapdown speeds
   public static final double DEPLOYING_SPEED = 0.5;

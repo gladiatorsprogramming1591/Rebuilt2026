@@ -21,6 +21,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.Bounds;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.GeomUtil;
+import frc.robot.util.LoggedTunableBoolean;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.experimental.ExtensionMethod;
@@ -77,6 +78,21 @@ public class ShooterCalculation {
    */
   private static final LoggedTunableNumber distanceAccelerationCompensationScalar =
       shooterCalcTunable(TABLE_KEY + "DistanceAccelerationCompensationScalar", 0.0);
+
+
+  /** Optional simple SOTM model that shifts the aim target by field velocity * time of flight. */
+  private static final LoggedTunableBoolean simpleTargetShiftEnabled =
+      new LoggedTunableBoolean(
+          TABLE_KEY + "SimpleTargetShift/Enabled",
+          false,
+          Constants.Tuning.SOTM);
+
+  /** Scalar applied to the simple velocity target shift. Start small if testing. */
+  private static final LoggedTunableNumber simpleTargetShiftScalar =
+      new LoggedTunableNumber(
+          TABLE_KEY + "SimpleTargetShift/Scalar",
+          1.0,
+          Constants.Tuning.SOTM);
 
   /** Weight for acceleration derived from change in measured field-relative velocity. */
   private static final LoggedTunableNumber velocityDerivedAccelerationWeight =
@@ -145,6 +161,11 @@ public class ShooterCalculation {
 
   // Cache parameters so multiple subsystem calls during one loop reuse the same calculation.
   private LaunchingParameters latestParameters = null;
+  private LaunchingParameters frozenParameters = null;
+  private boolean passingModeLatched = false;
+  private boolean passingYawTargetUseLeft = true;
+  private boolean controllerPassingYawOnlyTargetEnabled = false;
+  private int detailedLogCounter = 0;
 
   private static final double minDistance;
   private static final double maxDistance;
@@ -198,6 +219,47 @@ public class ShooterCalculation {
 
   // Passing target
   private static final double xPassTarget = Units.inchesToMeters(37);
+
+  private static final LoggedTunableNumber passingModeXLineMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/ModeXLineMeters", FieldConstants.LinesVertical.hubCenter);
+
+  private static final LoggedTunableNumber passingModeHysteresisMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/ModeHysteresisMeters", Units.inchesToMeters(12.0));
+
+  private static final LoggedTunableNumber passingTargetXMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/TargetXMeters", xPassTarget);
+
+  private static final LoggedTunableNumber passingTargetYOffsetMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/TargetYOffsetMeters", 0.0);
+
+  private static final LoggedTunableNumber passingTargetMinYMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/TargetMinYMeters", Units.inchesToMeters(36.0));
+
+  private static final LoggedTunableNumber passingTargetMaxYMeters =
+      shooterCalcTunable(
+          TABLE_KEY + "Passing/TargetMaxYMeters", FieldConstants.fieldWidth - Units.inchesToMeters(36.0));
+
+  /** Enables the fixed left/right passing target for yaw aiming only. */
+  private static final LoggedTunableBoolean passingYawOnlyFixedTargetEnabled =
+      new LoggedTunableBoolean(
+          TABLE_KEY + "Passing/YawOnlyFixedTargetEnabled",
+          false,
+          Constants.Tuning.SHOOTER_CALCULATION);
+
+  /** X position of the blue-side fixed passing yaw target. */
+  private static final LoggedTunableNumber passingYawTargetXMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/YawOnlyTargetXMeters", 5.5);
+
+  /** Left-side blue-field Y position. The right-side target mirrors this across field center. */
+  private static final LoggedTunableNumber passingYawTargetLeftYMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/YawOnlyTargetLeftYMeters", Units.feetToMeters(18.0));
+
+  /** Hysteresis around field center when auto-selecting left vs. right passing yaw target. */
+  private static final LoggedTunableNumber passingYawTargetSideHysteresisMeters =
+      shooterCalcTunable(TABLE_KEY + "Passing/YawOnlyTargetSideHysteresisMeters", 0.25);
+
+  private static final LoggedTunableNumber detailedLogPeriodLoops =
+      shooterCalcTunable(TABLE_KEY + "Logging/DetailedPeriodLoops", 5.0);
 
   // Boxes of bad
   private static final Bounds towerBound =
@@ -411,6 +473,10 @@ public class ShooterCalculation {
    * @return current launch parameters
    */
   public LaunchingParameters getParameters() {
+    if (frozenParameters != null) {
+      return frozenParameters;
+    }
+
     if (Constants.tuningMode) {
       updateMaps();
     }
@@ -419,18 +485,16 @@ public class ShooterCalculation {
       return latestParameters;
     }
 
-    boolean passing =
-        AllianceFlipUtil.applyX(RobotState.getInstance().getRobotPoseField().getX())
-            > FieldConstants.LinesVertical.hubCenter;
-
     Pose2d estimatedPose = getPhaseDelayedRobotPose();
-    Translation2d target =
+    boolean passing = shouldUsePassingMode(estimatedPose);
+    Translation2d distanceTarget =
         passing
-            ? getPassingTarget()
+            ? getPassingTarget(estimatedPose)
             : AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+    Translation2d aimTarget = passing ? getPassingAimTarget(estimatedPose, distanceTarget) : distanceTarget;
 
     Pose2d launcherPosition = estimatedPose.transformBy(robotToLauncher.toTransform2d());
-    double rawLauncherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+    double rawLauncherToTargetDistance = distanceTarget.getDistance(launcherPosition.getTranslation());
 
     ChassisSpeeds robotVelocity = RobotState.getInstance().getDesiredFieldRelativeSpeeds();
     Rotation2d robotAngle = RobotState.getInstance().getYawForVision();
@@ -456,17 +520,19 @@ public class ShooterCalculation {
         getFieldRelativeLauncherAcceleration(blendedRobotAcceleration, robotVelocity, robotAngle);
 
     double rawTimeOfFlight = getTimeOfFlight(rawLauncherToTargetDistance, passing);
+    Rotation2d currentPoseDriveAngle = getDriveAngleWithLauncherOffset(estimatedPose, aimTarget);
+
     Pose2d distanceLookaheadPose =
         getMotionCompensatedPose(
             launcherPosition,
             launcherVelocity,
             launcherAcceleration,
-            target,
+            distanceTarget,
             passing,
             distanceVelocityCompensationScalar.get(),
             distanceAccelerationCompensationScalar.get());
 
-    double compensatedDistance = target.getDistance(distanceLookaheadPose.getTranslation());
+    double compensatedDistance = distanceTarget.getDistance(distanceLookaheadPose.getTranslation());
     double compensatedTimeOfFlight = getTimeOfFlight(compensatedDistance, passing);
 
     Pose2d aimLookaheadPose =
@@ -480,7 +546,20 @@ public class ShooterCalculation {
 
     Pose2d aimLookaheadRobotPose =
         aimLookaheadPose.transformBy(robotToLauncher.toTransform2d().inverse());
-    Rotation2d driveAngle = getDriveAngleWithLauncherOffset(aimLookaheadRobotPose, target);
+
+    boolean simpleTargetShiftActive = simpleTargetShiftEnabled.getAsBoolean();
+    Translation2d simpleTargetShift =
+        new Translation2d(
+            launcherVelocity.vxMetersPerSecond
+                * compensatedTimeOfFlight
+                * simpleTargetShiftScalar.getAsDouble(),
+            launcherVelocity.vyMetersPerSecond
+                * compensatedTimeOfFlight
+                * simpleTargetShiftScalar.getAsDouble());
+    Translation2d activeAimTarget =
+        simpleTargetShiftActive ? aimTarget.plus(simpleTargetShift) : aimTarget;
+    Pose2d activeAimRobotPose = simpleTargetShiftActive ? estimatedPose : aimLookaheadRobotPose;
+    Rotation2d driveAngle = getDriveAngleWithLauncherOffset(activeAimRobotPose, activeAimTarget);
 
     double hoodAngle =
         passing ? passingHoodAngleMap.get(compensatedDistance) : hoodAngleMap.get(compensatedDistance);
@@ -525,7 +604,8 @@ public class ShooterCalculation {
 
     logCalculation(
         passing,
-        target,
+        distanceTarget,
+        activeAimTarget,
         launcherPosition,
         launcherVelocity,
         launcherAcceleration,
@@ -541,7 +621,9 @@ public class ShooterCalculation {
         distanceLookaheadPose,
         hoodAngleWithOffset,
         hoodVelocity,
-        flywheelVelocity);
+        flywheelVelocity,
+        currentPoseDriveAngle,
+        true);
 
     return latestParameters;
   }
@@ -556,23 +638,103 @@ public class ShooterCalculation {
     return timeOfFlightMap.get(distance);
   }
 
+  /** Freezes the current calculated launch parameters until {@link #unfreezeLaunchingParameters()} is called. */
+  public void freezeLaunchingParameters() {
+    frozenParameters = getParameters();
+    Logger.recordOutput(TABLE_KEY + "Freeze/Active", true);
+  }
+
+  /** Allows launch parameters to update normally again. */
+  public void unfreezeLaunchingParameters() {
+    frozenParameters = null;
+    Logger.recordOutput(TABLE_KEY + "Freeze/Active", false);
+  }
+
   /** Clears the cached launch parameters so they are recalculated on the next request. */
   public void clearLaunchingParameters() {
-    latestParameters = null;
+    if (frozenParameters == null) {
+      latestParameters = null;
+    }
   }
 
   /**
-   * Returns the passing target used by the shooter calculation.
+   * Returns the passing target used for hood/RPM distance tracking.
    *
-   * <p>The X target is fixed, and the Y target follows the robot's current flipped field Y.
+   * <p>This target intentionally keeps the old dynamic-Y behavior so passing hood and flywheel maps
+   * keep using the same distance basis they were tuned against.
    *
-   * @return passing target translation
+   * @return passing distance target translation
    */
   public Translation2d getPassingTarget() {
-    double flippedY = AllianceFlipUtil.apply(RobotState.getInstance().getRobotPoseField()).getY();
-
-    return AllianceFlipUtil.apply(new Translation2d(xPassTarget, flippedY));
+    return getPassingTarget(RobotState.getInstance().getRobotPoseField());
   }
+
+  private Translation2d getPassingTarget(Pose2d robotPose) {
+    double flippedY = AllianceFlipUtil.apply(robotPose).getY();
+    double targetY =
+        MathUtil.clamp(
+            flippedY + passingTargetYOffsetMeters.get(),
+            passingTargetMinYMeters.get(),
+            passingTargetMaxYMeters.get());
+
+    return AllianceFlipUtil.apply(new Translation2d(passingTargetXMeters.get(), targetY));
+  }
+
+  private Translation2d getPassingAimTarget(Pose2d robotPose, Translation2d distanceTarget) {
+    if (!isPassingYawOnlyFixedTargetEnabled()) {
+      return distanceTarget;
+    }
+
+    return getAutoLeftRightPassingYawTarget(robotPose);
+  }
+
+  private Translation2d getAutoLeftRightPassingYawTarget(Pose2d robotPose) {
+    double flippedY = AllianceFlipUtil.apply(robotPose).getY();
+    double fieldCenterY = FieldConstants.fieldWidth / 2.0;
+    double sideHysteresis = Math.max(0.0, passingYawTargetSideHysteresisMeters.get());
+
+    if (passingYawTargetUseLeft) {
+      passingYawTargetUseLeft = flippedY >= fieldCenterY - sideHysteresis;
+    } else {
+      passingYawTargetUseLeft = flippedY >= fieldCenterY + sideHysteresis;
+    }
+
+    double leftTargetY =
+        MathUtil.clamp(passingYawTargetLeftYMeters.get(), 0.0, FieldConstants.fieldWidth);
+    double rightTargetY = FieldConstants.fieldWidth - leftTargetY;
+    double targetY = passingYawTargetUseLeft ? leftTargetY : rightTargetY;
+
+    return AllianceFlipUtil.apply(new Translation2d(passingYawTargetXMeters.get(), targetY));
+  }
+
+  public void togglePassingYawOnlyFixedTarget() {
+    setPassingYawOnlyFixedTargetEnabled(!controllerPassingYawOnlyTargetEnabled);
+  }
+
+  public void setPassingYawOnlyFixedTargetEnabled(boolean enabled) {
+    controllerPassingYawOnlyTargetEnabled = enabled;
+    Logger.recordOutput(TABLE_KEY + "Passing/YawOnlyControllerEnabled", enabled);
+  }
+
+  public boolean isPassingYawOnlyFixedTargetEnabled() {
+    return passingYawOnlyFixedTargetEnabled.getAsBoolean() || controllerPassingYawOnlyTargetEnabled;
+  }
+
+  /** Returns whether the current pose should use passing maps, with hysteresis around the X line. */
+  private boolean shouldUsePassingMode(Pose2d estimatedPose) {
+    double flippedX = AllianceFlipUtil.applyX(estimatedPose.getX());
+    double threshold = passingModeXLineMeters.get();
+    double hysteresis = Math.max(0.0, passingModeHysteresisMeters.get());
+
+    if (passingModeLatched) {
+      passingModeLatched = flippedX > threshold - hysteresis;
+    } else {
+      passingModeLatched = flippedX > threshold + hysteresis;
+    }
+
+    return passingModeLatched;
+  }
+
 
   /**
    * Returns the Pose2d that correctly aims the robot at the goal for a given robot translation.
@@ -741,6 +903,7 @@ public class ShooterCalculation {
   private void logCalculation(
       boolean passing,
       Translation2d target,
+      Translation2d aimTarget,
       Pose2d launcherPosition,
       ChassisSpeeds launcherVelocity,
       ChassisSpeeds launcherAcceleration,
@@ -756,7 +919,9 @@ public class ShooterCalculation {
       Pose2d distanceLookaheadPose,
       double hoodAngle,
       double hoodVelocity,
-      double flywheelVelocity) {
+      double flywheelVelocity,
+      Rotation2d currentPoseDriveAngle,
+      boolean lookaheadAllowed) {
     Translation2d launcherToTarget = target.minus(launcherPosition.getTranslation());
     Translation2d unitToTarget = launcherToTarget.div(launcherToTarget.getNorm());
 
@@ -790,9 +955,38 @@ public class ShooterCalculation {
             distanceVelocityCompensationScalar.get(),
             distanceAccelerationCompensationScalar.get());
 
+    int detailedPeriodLoops = Math.max(1, (int) Math.round(detailedLogPeriodLoops.get()));
+    boolean logDetailed = detailedLogCounter++ % detailedPeriodLoops == 0;
+
+    if (!logDetailed) {
+      return;
+    }
+
     Logger.recordOutput(TABLE_KEY + "Passing", passing);
-    Logger.recordOutput(TABLE_KEY + "Target", target);
-    Logger.recordOutput(TABLE_KEY + "TargetPose", new Pose2d(target, Rotation2d.kZero));
+    Logger.recordOutput(TABLE_KEY + "Passing/ModeLatched", passingModeLatched);
+    Logger.recordOutput(TABLE_KEY + "Passing/YawOnlyFixedTargetEnabled", isPassingYawOnlyFixedTargetEnabled());
+    Logger.recordOutput(TABLE_KEY + "Passing/YawOnlyDashboardEnabled", passingYawOnlyFixedTargetEnabled.getAsBoolean());
+    Logger.recordOutput(TABLE_KEY + "Passing/YawOnlyControllerEnabled", controllerPassingYawOnlyTargetEnabled);
+    Logger.recordOutput(TABLE_KEY + "Passing/YawOnlyUsingLeft", passingYawTargetUseLeft);
+    Logger.recordOutput(TABLE_KEY + "SOTM/LookaheadAllowedCached", lookaheadAllowed);
+    Logger.recordOutput(
+        TABLE_KEY + "SOTM/TranslationSpeedMetersPerSec",
+        Math.hypot(launcherVelocity.vxMetersPerSecond, launcherVelocity.vyMetersPerSecond));
+    Logger.recordOutput(TABLE_KEY + "SOTM/LauncherOmegaRadPerSec", launcherVelocity.omegaRadiansPerSecond);
+    Logger.recordOutput(
+        TABLE_KEY + "SOTM/CurrentAngleErrorDeg",
+        currentPoseDriveAngle.minus(RobotState.getInstance().getYawForVision()).getDegrees());
+    Logger.recordOutput(TABLE_KEY + "DriveAngle/CurrentPose", currentPoseDriveAngle);
+    Logger.recordOutput(TABLE_KEY + "SimpleTargetShift/Enabled", simpleTargetShiftEnabled.getAsBoolean());
+    Logger.recordOutput(TABLE_KEY + "SimpleTargetShift/Scalar", simpleTargetShiftScalar.getAsDouble());
+    Logger.recordOutput(
+        TABLE_KEY + "SimpleTargetShift/Applied", simpleTargetShiftEnabled.getAsBoolean());
+    Logger.recordOutput(TABLE_KEY + "Logging/DetailedPeriodLoopsActive", detailedPeriodLoops);
+
+    Logger.recordOutput(TABLE_KEY + "Target/Distance", target);
+    Logger.recordOutput(TABLE_KEY + "Target/Aim", aimTarget);
+    Logger.recordOutput(TABLE_KEY + "Target/DistancePose", new Pose2d(target, Rotation2d.kZero));
+    Logger.recordOutput(TABLE_KEY + "Target/AimPose", new Pose2d(aimTarget, Rotation2d.kZero));
 
     Logger.recordOutput(TABLE_KEY + "HoodAngle", hoodAngle);
     Logger.recordOutput(TABLE_KEY + "HoodVelocity", hoodVelocity);

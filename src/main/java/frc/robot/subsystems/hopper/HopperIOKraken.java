@@ -24,6 +24,10 @@ import org.littletonrobotics.junction.Logger;
  * empty so shooting logic does not stop early because of missing sensor data.
  */
 public class HopperIOKraken implements HopperIO {
+  private static final int SLOW_LOG_PERIOD_LOOPS = 10;
+
+  private int slowLogCounter = 0;
+
   private final TalonFX beltMotor = new TalonFX(HopperConstants.BELT_CAN_ID);
   private final CANrange hopperEmptySensor =
       new CANrange(HopperConstants.HOPPER_EMPTY_CANRANGE_CAN_ID);
@@ -64,8 +68,7 @@ public class HopperIOKraken implements HopperIO {
 
   /** Sets status signal update rates and reduces unnecessary CAN bus traffic. */
   private void configureStatusSignals() {
-    BaseStatusSignal.setUpdateFrequencyForAll(50, beltCurrent, beltVelocity, hopperEmptyDistance);
-
+    BaseStatusSignal.setUpdateFrequencyForAll(20, beltCurrent, beltVelocity, hopperEmptyDistance);
     beltMotor.optimizeBusUtilization();
     hopperEmptySensor.optimizeBusUtilization();
   }
@@ -91,9 +94,22 @@ public class HopperIOKraken implements HopperIO {
     inputs.hopperEmpty =
         inputs.hopperEmptySensorConnected && isHopperEmptyDistance(inputs.hopperEmptyDistance);
 
-    Logger.recordOutput(
-        HOPPER_TABLE_KEY + "Sensor/EmptyThreshold",
-        HopperConstants.HOPPER_EMPTY_DISTANCE_LIMIT.getAsDouble());
+    if (shouldLogSlowOutputs()) {
+      Logger.recordOutput(
+          HOPPER_TABLE_KEY + "Sensor/EmptyThreshold",
+          HopperConstants.HOPPER_EMPTY_DISTANCE_LIMIT.getAsDouble());
+    }
+  }
+
+  /** Returns true when slow-changing hopper IO logs should publish this loop. */
+  private boolean shouldLogSlowOutputs() {
+    slowLogCounter++;
+    if (slowLogCounter < SLOW_LOG_PERIOD_LOOPS) {
+      return false;
+    }
+
+    slowLogCounter = 0;
+    return true;
   }
 
   /**
@@ -135,7 +151,6 @@ public class HopperIOKraken implements HopperIO {
     }
 
     usingIntakeCurrentLimit = useIntakeCurrentLimit;
-
     double requestedCurrentLimit =
         usingIntakeCurrentLimit
             ? HopperConstants.BELT_INTAKE_CURRENT_LIMIT

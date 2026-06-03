@@ -21,11 +21,10 @@ import org.littletonrobotics.junction.Logger;
 
 /**
  * Real kicker IO implementation using one primary Kraken/TalonFX and an optional follower motor.
- *
- * <p>The subsystem commands only the primary motor. When enabled, the secondary kicker motor
- * follows the primary motor through CTRE follower control.
  */
 public class KickerIOKraken implements KickerIO {
+  private static final int APPLIED_OUTPUT_LOG_PERIOD_LOOPS = 10;
+
   private final TalonFX kickerMotor = new TalonFX(KickerConstants.KICKER_CAN_ID);
   private final TalonFX secondKickerMotor =
       KickerConstants.HAS_SECOND_KICKER_MOTOR ? new TalonFX(KickerConstants.KICKER_2_CAN_ID) : null;
@@ -50,12 +49,9 @@ public class KickerIOKraken implements KickerIO {
   private final StatusSignal<Temperature> secondaryTemperature =
       KickerConstants.HAS_SECOND_KICKER_MOTOR ? secondKickerMotor.getDeviceTemp() : null;
 
-  /**
-   * Creates the real kicker IO layer and configures the primary and optional secondary motor.
-   *
-   * <p>This constructor only configures hardware. The subsystem still controls when the kicker
-   * runs.
-   */
+  private int appliedOutputLogCounter = 0;
+
+  /** Creates the real kicker IO layer and configures the primary and optional secondary motor. */
   public KickerIOKraken() {
     configurePrimaryMotor();
 
@@ -71,7 +67,6 @@ public class KickerIOKraken implements KickerIO {
     var kickerConfig = createKickerConfig();
 
     PhoenixUtil.tryUntilOk(5, () -> kickerMotor.getConfigurator().apply(kickerConfig, 0.25));
-
     kickerMotor
         .getConfigurator()
         .apply(
@@ -84,13 +79,11 @@ public class KickerIOKraken implements KickerIO {
     var kickerConfig = createKickerConfig();
 
     PhoenixUtil.tryUntilOk(5, () -> secondKickerMotor.getConfigurator().apply(kickerConfig, 0.25));
-
     secondKickerMotor
         .getConfigurator()
         .apply(
             new ClosedLoopRampsConfigs()
                 .withDutyCycleClosedLoopRampPeriod(KickerConstants.KICKER_DUTY_CYCLE_RAMP_PERIOD));
-
     secondKickerMotor.setControl(
         new Follower(kickerMotor.getDeviceID(), MotorAlignmentValue.Aligned));
   }
@@ -114,27 +107,26 @@ public class KickerIOKraken implements KickerIO {
   /** Sets status signal update rates and reduces unnecessary CAN bus traffic. */
   private void configureStatusSignals() {
     BaseStatusSignal.setUpdateFrequencyForAll(
-        KickerConstants.STATUS_SIGNAL_UPDATE_FREQUENCY,
+        20,
         primaryVelocity,
         primaryAppliedVolts,
         primarySupplyCurrent,
         primaryStatorCurrent,
-        primaryTorqueCurrent,
-        primaryTemperature);
+        primaryTorqueCurrent);
+    BaseStatusSignal.setUpdateFrequencyForAll(2, primaryTemperature);
 
     if (KickerConstants.HAS_SECOND_KICKER_MOTOR) {
       BaseStatusSignal.setUpdateFrequencyForAll(
-          KickerConstants.STATUS_SIGNAL_UPDATE_FREQUENCY,
+          20,
           secondaryVelocity,
           secondaryAppliedVolts,
           secondarySupplyCurrent,
           secondaryStatorCurrent,
-          secondaryTorqueCurrent,
-          secondaryTemperature);
+          secondaryTorqueCurrent);
+      BaseStatusSignal.setUpdateFrequencyForAll(2, secondaryTemperature);
     }
 
     kickerMotor.optimizeBusUtilization();
-
     if (KickerConstants.HAS_SECOND_KICKER_MOTOR) {
       secondKickerMotor.optimizeBusUtilization();
     }
@@ -206,6 +198,19 @@ public class KickerIOKraken implements KickerIO {
     double speed = MathUtil.clamp(outputs.desiredKickerSpeed, -1.0, 1.0);
     kickerMotor.set(speed);
 
-    Logger.recordOutput(KICKER_TABLE_KEY + "AppliedSpeed", speed);
+    if (shouldLogAppliedOutput()) {
+      Logger.recordOutput(KICKER_TABLE_KEY + "AppliedSpeed", speed);
+    }
+  }
+
+  /** Returns true when the applied output debug log should publish this loop. */
+  private boolean shouldLogAppliedOutput() {
+    appliedOutputLogCounter++;
+    if (appliedOutputLogCounter < APPLIED_OUTPUT_LOG_PERIOD_LOOPS) {
+      return false;
+    }
+
+    appliedOutputLogCounter = 0;
+    return true;
   }
 }

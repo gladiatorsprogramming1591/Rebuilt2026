@@ -8,6 +8,8 @@ import org.littletonrobotics.junction.Logger;
 
 /** Controls the kicker motor that feeds fuel from the hopper into the shooter. */
 public class Kicker extends SubsystemBase {
+  private static final double BARF_KICKER_SPEED = 0.25;
+
   private final KickerIO io;
   private final KickerIOInputsAutoLogged inputs = new KickerIOInputsAutoLogged();
   private final KickerIOOutputsAutoLogged outputs = new KickerIOOutputsAutoLogged();
@@ -26,9 +28,7 @@ public class Kicker extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Kicker", inputs);
-
     Logger.recordOutput(KICKER_TABLE_KEY + "DesiredSpeed", outputs.desiredKickerSpeed);
-
     io.applyOutputs(outputs);
   }
 
@@ -39,6 +39,15 @@ public class Kicker extends SubsystemBase {
    */
   public Command runKickerMotor() {
     return runEnd(this::runKicker, this::stopKicker);
+  }
+
+  /**
+   * Runs the kicker slowly in reverse for barf/clear mode.
+   *
+   * @return command that barfs the kicker until interrupted
+   */
+  public Command barfKickerMotor() {
+    return runEnd(this::runKickerBarf, this::stopKicker);
   }
 
   /**
@@ -55,6 +64,11 @@ public class Kicker extends SubsystemBase {
   /** Requests kicker motor output at the configured tunable speed. */
   private void runKicker() {
     outputs.desiredKickerSpeed = KickerConstants.getKickerMotorSpeed();
+  }
+
+  /** Requests kicker motor output in the reverse barf direction. */
+  private void runKickerBarf() {
+    outputs.desiredKickerSpeed = BARF_KICKER_SPEED;
   }
 
   /** Requests zero kicker motor output. */

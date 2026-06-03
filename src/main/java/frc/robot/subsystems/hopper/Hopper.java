@@ -15,11 +15,13 @@ import org.littletonrobotics.junction.Logger;
  * fuel into the hopper.
  */
 public class Hopper extends SubsystemBase {
+  private static final double BARF_BELT_SPEED = 0.70;
+
   private final HopperIO io;
   private final HopperIOInputsAutoLogged inputs = new HopperIOInputsAutoLogged();
   private final HopperIOOutputsAutoLogged outputs = new HopperIOOutputsAutoLogged();
-
   private final Timer hopperEmptyTimer = new Timer();
+
   private boolean isHopperEmptyOverTime = false;
 
   /**
@@ -85,6 +87,18 @@ public class Hopper extends SubsystemBase {
   }
 
   /**
+   * Runs the hopper belt in the barf/clear direction.
+   *
+   * <p>This uses the same direction convention as {@link #reverseBeltMotors()}, but with a fixed
+   * 0.70 output so it is independent from the normal hopper feed tuning.
+   *
+   * @return command that barfs the hopper belt until interrupted
+   */
+  public Command barfBeltMotors() {
+    return runEnd(this::runBeltBarf, this::stopBelt);
+  }
+
+  /**
    * Keeps the hopper belt stopped.
    *
    * <p>This is intended to be the hopper default command.
@@ -142,6 +156,12 @@ public class Hopper extends SubsystemBase {
   private void runBeltReverse() {
     outputs.useBeltWhileIntakeCurrent = false;
     outputs.beltSpeed = HopperConstants.getBeltMotorSpeed();
+  }
+
+  /** Runs the belt in the barf/clear direction. */
+  private void runBeltBarf() {
+    outputs.useBeltWhileIntakeCurrent = false;
+    outputs.beltSpeed = BARF_BELT_SPEED;
   }
 
   /** Stops the belt and restores the normal current limit mode. */

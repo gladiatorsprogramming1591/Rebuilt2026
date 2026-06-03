@@ -9,6 +9,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.LoopProfiler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -50,6 +52,12 @@ public class Intake extends SubsystemBase {
   private final SendableChooser<AutoPrepareRollerMode> autoPrepareRollerModeChooser =
       new SendableChooser<>();
   private final LoggedDashboardChooser<AutoPrepareRollerMode> loggedAutoPrepareRollerModeChooser;
+
+  private static final LoggedTunableNumber slowLogPeriodLoops =
+      new LoggedTunableNumber(
+          kintakeTableKey + "Logging/SlowPeriodLoops", 10.0, Constants.Tuning.INTAKE);
+
+  private int slowLogCounter = 0;
 
   private boolean stopSlapdownOnCurrentSpike = false;
   private boolean isSlapdownStopped = true;
@@ -117,18 +125,33 @@ public class Intake extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    LoopProfiler.run("Intake/UpdateInputs", () -> io.updateInputs(inputs));
     Logger.processInputs("Intake", inputs);
 
-    updateTunableOutputs();
+    boolean logSlowOutputs = shouldLogSlowIntakeOutputs();
+
+    LoopProfiler.run("Intake/UpdateTunableOutputs", this::updateTunableOutputs);
     handleAutoPrepareIntakeRequest();
-    updateRollerOutput();
-    updateDeployHoldDownAssist();
-    logOutputs();
+    LoopProfiler.run("Intake/UpdateRollerOutput", this::updateRollerOutput);
+    LoopProfiler.run("Intake/UpdateDeployHoldDownAssist", this::updateDeployHoldDownAssist);
+    logOutputs(logSlowOutputs);
 
-    io.applyOutputs(outputs);
+    LoopProfiler.run("Intake/ApplyOutputs", () -> io.applyOutputs(outputs));
 
-    stopSlapdownIfNeeded();
+    LoopProfiler.run("Intake/StopSlapdownIfNeeded", this::stopSlapdownIfNeeded);
+  }
+
+  /** Returns true when slow-changing intake outputs should be logged this loop. */
+  private boolean shouldLogSlowIntakeOutputs() {
+    int periodLoops = Math.max(1, (int) Math.round(slowLogPeriodLoops.getAsDouble()));
+
+    slowLogCounter++;
+    if (slowLogCounter < periodLoops) {
+      return false;
+    }
+
+    slowLogCounter = 0;
+    return true;
   }
 
   /**
@@ -911,7 +934,7 @@ public class Intake extends SubsystemBase {
   }
 
   /** Logs commanded intake state, tunables, and command helper state for debugging. */
-  private void logOutputs() {
+  private void logOutputs(boolean logSlowOutputs) {
     Logger.recordOutput(kintakeTableKey + "SlapdownMode", RobotState.getSlapdownMode().toString());
     Logger.recordOutput(kintakeTableKey + "RollerMode", RobotState.getRollerMode().toString());
     Logger.recordOutput(kintakeTableKey + "RequestedRollerSpeed", requestedRollerSpeed);
@@ -942,6 +965,10 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(
         kintakeTableKey + "SlapdownLowerSupplyCurrentTime",
         IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME);
+
+    if (!logSlowOutputs) {
+      return;
+    }
 
     Logger.recordOutput(
         kintakeTableKey + "RollerNormalTorqueCurrent",
@@ -1103,5 +1130,15 @@ public class Intake extends SubsystemBase {
     return Commands.startEnd(
         () -> rollerReverseOverride = true,
         () -> rollerReverseOverride = false);
+  }
+
+  public Command barfRollers() {
+    return runEnd(
+        () -> {
+          driverIntakeHeld = false;
+          clearAutoPrepareIntakeLatch();
+          setRequestedRollerSpeed(IntakeConstants.ROLLER_BARF_SPEED);
+        },
+        () -> setRequestedRollerSpeed(0.0));
   }
 }

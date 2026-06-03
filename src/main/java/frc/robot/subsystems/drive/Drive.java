@@ -48,6 +48,8 @@ import frc.robot.Constants.robotInitConstants;
 import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.LoopProfiler;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -70,6 +72,9 @@ public class Drive extends SubsystemBase {
 
   public static final Field2d m_field = new Field2d();
 
+  private static final LoggedTunableNumber dashboardUpdatePeriodLoops =
+      new LoggedTunableNumber("Drive/Logging/Dashboard Period Loops", 10.0, Constants.Tuning.DRIVE);
+
   // PathPlanner config constants TODO*: Investigate if these override app settings. Still
   // match/tune this.
   private static final double ROBOT_MASS_KG =
@@ -79,7 +84,6 @@ public class Drive extends SubsystemBase {
   private static final double NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
       TunerConstants.FrontLeft.SlipCurrent;
   private static final double NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 50.0;
-
   private static final double AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
       TunerConstants.FrontLeft.SlipCurrent;
   private static final double AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 80.0;
@@ -104,10 +108,10 @@ public class Drive extends SubsystemBase {
   private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
-
   private double appliedDriveStatorCurrentLimitAmps = Double.NaN;
   private double appliedDriveSupplyCurrentLimitAmps = Double.NaN;
   private Boolean appliedDriveBrakeMode = null;
+  private int dashboardUpdateCounter = 0;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = Rotation2d.kZero;
@@ -150,7 +154,7 @@ public class Drive extends SubsystemBase {
         this::runVelocity,
         new PPHolonomicDriveController(
             // TODO: Break out PIDs into constants. Investigate PP_CONFIG
-            new PIDConstants(7.5, 0.0, 0), new PIDConstants(4, 0.0, 0.0)),
+            new PIDConstants(7.5, 0.0, 0.0), new PIDConstants(4.0, 0.0, 0.0)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -178,13 +182,20 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
-    odometryLock.lock(); // Prevents odometry updates while reading data
-    gyroIO.updateInputs(gyroInputs);
-    Logger.processInputs("Drive/Gyro", gyroInputs);
-    for (var module : modules) {
-      module.periodic();
-    }
-    odometryLock.unlock();
+    LoopProfiler.run(
+        "Drive/InputsAndModules",
+        () -> {
+          odometryLock.lock(); // Prevents odometry updates while reading data
+          try {
+            gyroIO.updateInputs(gyroInputs);
+            Logger.processInputs("Drive/Gyro", gyroInputs);
+            for (var module : modules) {
+              module.periodic();
+            }
+          } finally {
+            odometryLock.unlock();
+          }
+        });
 
     Logger.recordOutput(
         "Drive/Config/AppliedStatorCurrentLimitAmps", appliedDriveStatorCurrentLimitAmps);
@@ -211,58 +222,66 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
 
-    // Update odometry
-    double[] sampleTimestamps =
-        modules[0].getOdometryTimestamps(); // All signals are sampled together
-    int sampleCount = sampleTimestamps.length;
-    for (int i = 0; i < sampleCount; i++) {
-      // Read wheel positions and deltas from each module
-      SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
-      SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
-      for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-        modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
-        moduleDeltas[moduleIndex] =
-            new SwerveModulePosition(
-                modulePositions[moduleIndex].distanceMeters
-                    - lastModulePositions[moduleIndex].distanceMeters,
-                modulePositions[moduleIndex].angle);
-        lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
-      }
+    LoopProfiler.run(
+        "Drive/OdometryUpdate",
+        () -> {
+          // Update odometry
+          double[] sampleTimestamps =
+              modules[0].getOdometryTimestamps(); // All signals are sampled together
+          int sampleCount = sampleTimestamps.length;
+          for (int i = 0; i < sampleCount; i++) {
+            // Read wheel positions and deltas from each module
+            SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+            SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
+            for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
+              modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
+              moduleDeltas[moduleIndex] =
+                  new SwerveModulePosition(
+                      modulePositions[moduleIndex].distanceMeters
+                          - lastModulePositions[moduleIndex].distanceMeters,
+                      modulePositions[moduleIndex].angle);
+              lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
+            }
 
-      // Update gyro angle
-      if (gyroInputs.connected) {
-        // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
-      } else {
-        // Use the angle delta from the kinematics and module deltas
-        Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-      }
+            // Update gyro angle
+            if (gyroInputs.connected) {
+              // Use the real gyro angle
+              rawGyroRotation = gyroInputs.odometryYawPositions[i];
+            } else {
+              // Use the angle delta from the kinematics and module deltas
+              Twist2d twist = kinematics.toTwist2d(moduleDeltas);
+              rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+            }
 
-      // Apply update
-      RobotState.getInstance()
-          .addOdometryObservation(
-              sampleTimestamps[i], modulePositions, Optional.ofNullable(rawGyroRotation));
-    }
+            // Apply update
+            RobotState.getInstance()
+                .addOdometryObservation(
+                    sampleTimestamps[i], modulePositions, Optional.ofNullable(rawGyroRotation));
+          }
+        });
 
     Pose2d robotPose = RobotState.getInstance().getRobotPoseField();
-    SmartDashboard.putNumber("RobotPoseRot", robotPose.getRotation().getDegrees());
-    SmartDashboard.putNumber("RobotPoseX", robotPose.getX());
-    SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
-    m_field.setRobotPose(robotPose);
-
-    ChassisSpeeds measuredRobotRelativeSpeeds = kinematics.toChassisSpeeds(getModuleStates());
-
-    RobotState.getInstance().setRobotVelocity(measuredRobotRelativeSpeeds);
-    RobotState.getInstance().setMeasuredRobotRelativeSpeeds(measuredRobotRelativeSpeeds);
-
-    Logger.recordOutput("SwerveChassisSpeeds/MeasuredRobotRelative", measuredRobotRelativeSpeeds);
-    Logger.recordOutput(
-        "SwerveChassisSpeeds/MeasuredFieldRelative",
-        RobotState.getInstance().getMeasuredFieldRelativeSpeeds());
+    if (shouldUpdateDashboardPose()) {
+      SmartDashboard.putNumber("RobotPoseRot", robotPose.getRotation().getDegrees());
+      SmartDashboard.putNumber("RobotPoseX", robotPose.getX());
+      SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
+      m_field.setRobotPose(robotPose);
+    }
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+  }
+
+  private boolean shouldUpdateDashboardPose() {
+    int periodLoops = Math.max(1, (int) Math.round(dashboardUpdatePeriodLoops.getAsDouble()));
+
+    dashboardUpdateCounter++;
+    if (dashboardUpdateCounter < periodLoops) {
+      return false;
+    }
+
+    dashboardUpdateCounter = 0;
+    return true;
   }
 
   /**
@@ -329,6 +348,7 @@ public class Drive extends SubsystemBase {
 
     appliedDriveStatorCurrentLimitAmps = statorAmps;
     appliedDriveSupplyCurrentLimitAmps = supplyAmps;
+
     Logger.recordOutput("Drive/CurrentLimits/StatorAmps", statorAmps);
     Logger.recordOutput("Drive/CurrentLimits/SupplyAmps", supplyAmps);
   }

@@ -20,6 +20,7 @@ import frc.robot.Constants.robotInitConstants;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.HubShiftUtil.ShiftInfo;
+import frc.robot.util.LoopProfiler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -151,24 +152,31 @@ public class Robot extends LoggedRobot {
     }
 
     // Update RobotContainer dashboard outputs
-    robotContainer.updateDashboardOutputs();
+    LoopProfiler.run("Robot/UpdateDashboardOutputs", robotContainer::updateDashboardOutputs);
 
     // Clear launching parameters immediately before the scheduler so commands get fresh values.
-    shooterCalculation.clearLaunchingParameters();
+    LoopProfiler.run(
+        "Robot/ClearLaunchingParameters", shooterCalculation::clearLaunchingParameters);
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
-    CommandScheduler.getInstance().run();
+    LoopProfiler.run("Robot/CommandScheduler", () -> CommandScheduler.getInstance().run());
 
     // Log the same launching parameters used by commands this loop. Avoid calculating and
     // publishing the full shooter solution while disabled, which is noisy during boot and NT
     // reconnects.
     if (DriverStation.isEnabled()) {
-      Logger.recordOutput("ShooterCalculation/Parameters", shooterCalculation.getParameters());
+      LoopProfiler.run(
+          "Robot/LogLaunchingParameters",
+          () ->
+              Logger.recordOutput(
+                  "ShooterCalculation/Parameters", shooterCalculation.getParameters()));
     }
+
+    LoopProfiler.periodic();
 
     // Print auto duration
     if (autonomousCommand != null) {

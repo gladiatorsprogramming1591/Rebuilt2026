@@ -35,6 +35,10 @@ import org.littletonrobotics.junction.Logger;
  * "tripped" value where true means the sensor is active.
  */
 public class HoodIOKraken implements HoodIO {
+  private static final int SLOW_INPUT_PERIOD_LOOPS = 10;
+  private int slowInputCounter = 0;
+
+
   private final TalonFX hoodMotor = new TalonFX(HoodConstants.HOOD_CAN_ID);
   private final DigitalInput bottomLimitSensor = new DigitalInput(HoodConstants.HOOD_DIO_PORT);
 
@@ -121,17 +125,24 @@ public class HoodIOKraken implements HoodIO {
 
   /** Sets status signal update rates and reduces unnecessary CAN bus traffic. */
   private void configureStatusSignals() {
+    BaseStatusSignal.setUpdateFrequencyForAll(50, hoodAngle, hoodAngularVelocity);
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50,
-        hoodAppliedVolts,
-        hoodAngle,
-        hoodAngularVelocity,
-        hoodSupplyCurrent,
-        hoodStatorCurrent,
-        hoodTorqueCurrent,
-        hoodTemperature);
+        20, hoodAppliedVolts, hoodSupplyCurrent, hoodStatorCurrent, hoodTorqueCurrent);
+    BaseStatusSignal.setUpdateFrequencyForAll(2, hoodTemperature);
 
     hoodMotor.optimizeBusUtilization();
+  }
+
+
+  /** Returns true when slow-changing hood inputs and logs should refresh this loop. */
+  private boolean shouldRefreshSlowInputs() {
+    slowInputCounter++;
+    if (slowInputCounter < SLOW_INPUT_PERIOD_LOOPS) {
+      return false;
+    }
+
+    slowInputCounter = 0;
+    return true;
   }
 
   /**
@@ -175,8 +186,10 @@ public class HoodIOKraken implements HoodIO {
    */
   @Override
   public void applyOutputs(HoodIOOutputs outputs) {
-    Logger.recordOutput(HOOD_TABLE_KEY + "DesiredAngle", outputs.desiredHoodAngle);
-    Logger.recordOutput(HOOD_TABLE_KEY + "DesiredSpeed", outputs.desiredHoodSpeed);
+    if (shouldRefreshSlowInputs()) {
+      Logger.recordOutput(HOOD_TABLE_KEY + "DesiredAngle", outputs.desiredHoodAngle);
+      Logger.recordOutput(HOOD_TABLE_KEY + "DesiredSpeed", outputs.desiredHoodSpeed);
+    }
 
     if (outputs.mode == HoodMode.POSITION) {
       applyPositionOutput(outputs);

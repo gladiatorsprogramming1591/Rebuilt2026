@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
+import frc.robot.util.LoopProfiler;
 import frc.robot.RobotState.ShooterModeState;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -42,6 +43,7 @@ public class Shooter extends SubsystemBase {
   private boolean defaultIdleEnabled = true;
   private double rampedIdleRPM = 0.0;
   private double requestedIdleRPM = 0.0;
+  private int slowLogCounter = 0;
 
   /**
    * Creates a shooter subsystem using the provided hardware implementation.
@@ -77,19 +79,23 @@ public class Shooter extends SubsystemBase {
   /** Updates shooter inputs, tunables, readiness logs, and applies requested outputs. */
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Shooter", inputs);
+    LoopProfiler.run(
+        "Shooter/UpdateInputs",
+        () -> {
+          io.updateInputs(inputs);
+          Logger.processInputs("Shooter", inputs);
+        });
 
-    updateTunableOutputs();
+    LoopProfiler.run("Shooter/UpdateTunableOutputs", this::updateTunableOutputs);
 
     if (Constants.Tuning.SHOOTER) {
-      io.tuneMotorConfigs(outputs);
+      LoopProfiler.run("Shooter/TuneMotorConfigs", () -> io.tuneMotorConfigs(outputs));
     }
 
     applyLowCeilingLimitIfNeeded();
     logShooterState();
 
-    io.applyOutputs(outputs);
+    LoopProfiler.run("Shooter/ApplyOutputs", () -> io.applyOutputs(outputs));
   }
 
   /**
@@ -123,7 +129,7 @@ public class Shooter extends SubsystemBase {
 
           updateDefaultCoastState(idleRPM);
 
-          if (defaultShouldCoast) {
+          if (defaultShouldCoast || getMeasuredShooterRPM() > idleRPM + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM) {
             requestShooterOff();
           } else {
             requestShooterVelocity(ShooterModeState.IDLE, idleRPM);
@@ -459,14 +465,30 @@ public class Shooter extends SubsystemBase {
         SHOOTER_TABLE_KEY + "BelowCoastRPM", isShooterBelowCoastRPM().getAsBoolean());
     Logger.recordOutput(SHOOTER_TABLE_KEY + "HasSpeedTargetChanged", hasSpeedTargetChanged);
 
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kP", outputs.kP);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kI", outputs.kI);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kD", outputs.kD);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kS", outputs.kS);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kV", outputs.kV);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kA", outputs.kA);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/MMAcceleration", outputs.kMMAcceleration);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/MMJerk", outputs.kMMJerk);
+    if (shouldLogSlowShooterOutputs()) {
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kP", outputs.kP);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kI", outputs.kI);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kD", outputs.kD);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kS", outputs.kS);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kV", outputs.kV);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kA", outputs.kA);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/MMAcceleration", outputs.kMMAcceleration);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/MMJerk", outputs.kMMJerk);
+    }
+  }
+
+  /** Returns true at the slower logging cadence for rarely changing shooter outputs. */
+  private boolean shouldLogSlowShooterOutputs() {
+    int periodLoops =
+        Math.max(1, (int) Math.round(ShooterConstants.slowLogPeriodLoops.getAsDouble()));
+
+    slowLogCounter++;
+    if (slowLogCounter < periodLoops) {
+      return false;
+    }
+
+    slowLogCounter = 0;
+    return true;
   }
 
   /** @return raw IO shooter-at-velocity value for debugging */

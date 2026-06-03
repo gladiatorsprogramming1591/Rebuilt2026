@@ -25,6 +25,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -84,6 +85,8 @@ public class IntakeIOKraken implements IntakeIO {
 
   private final StatusSignal<AngularVelocity> intakeLeftRPS = intakeLeft.getVelocity();
   private final StatusSignal<AngularVelocity> intakeRightRPS = intakeRight.getVelocity();
+  private final StatusSignal<Voltage> intakeLeftVoltage = intakeLeft.getMotorVoltage();
+  private final StatusSignal<Voltage> intakeRightVoltage = intakeRight.getMotorVoltage();
   private final StatusSignal<Current> intakeLeftSupplyCurrent = intakeLeft.getSupplyCurrent();
   private final StatusSignal<Current> intakeRightSupplyCurrent = intakeRight.getSupplyCurrent();
   private final StatusSignal<Current> intakeLeftStatorCurrent = intakeLeft.getStatorCurrent();
@@ -247,6 +250,8 @@ public void useTeleopRollerCurrentLimits() {
         deployTorqueCurrent,
         intakeLeftRPS,
         intakeRightRPS,
+        intakeLeftVoltage,
+        intakeRightVoltage,
         intakeLeftSupplyCurrent,
         intakeRightSupplyCurrent,
         intakeLeftStatorCurrent,
@@ -278,6 +283,8 @@ public void useTeleopRollerCurrentLimits() {
         deployTorqueCurrent,
         intakeLeftRPS,
         intakeRightRPS,
+        intakeLeftVoltage,
+        intakeRightVoltage,
         intakeLeftSupplyCurrent,
         intakeRightSupplyCurrent,
         intakeLeftStatorCurrent,
@@ -298,6 +305,8 @@ public void useTeleopRollerCurrentLimits() {
     inputs.rollerRightTemperature = intakeRightTemp.getValueAsDouble();
     inputs.rollerLeftRPS = intakeLeftRPS.getValueAsDouble();
     inputs.rollerRightRPS = intakeRightRPS.getValueAsDouble();
+    inputs.rollerLeftVoltage = intakeLeftVoltage.getValueAsDouble();
+    inputs.rollerRightVoltage = intakeRightVoltage.getValueAsDouble();
     inputs.rollerLeftSupplyCurrent = intakeLeftSupplyCurrent.getValueAsDouble();
     inputs.rollerRightSupplyCurrent = intakeRightSupplyCurrent.getValueAsDouble();
     inputs.rollerLeftStatorCurrent = intakeLeftStatorCurrent.getValueAsDouble();
