@@ -91,6 +91,8 @@ public class Intake extends SubsystemBase {
   /** Configures the roller control mode chooser used only by autonomous Prepare Intake. */
   private void configureAutoPrepareRollerModeChooser() {
     autoPrepareRollerModeChooser.setDefaultOption(
+        "Velocity Torque Current FOC", AutoPrepareRollerMode.VELOCITY_TORQUE_CURRENT_FOC);
+    autoPrepareRollerModeChooser.addOption(
         "Voltage", AutoPrepareRollerMode.VOLTAGE);
     autoPrepareRollerModeChooser.addOption(
         "Duty Cycle", AutoPrepareRollerMode.DUTY_CYCLE);
@@ -98,8 +100,6 @@ public class Intake extends SubsystemBase {
         "Velocity Duty Cycle", AutoPrepareRollerMode.VELOCITY_DUTY_CYCLE);
     autoPrepareRollerModeChooser.addOption(
         "Velocity Voltage", AutoPrepareRollerMode.VELOCITY_VOLTAGE);
-    autoPrepareRollerModeChooser.addOption(
-        "Velocity Torque Current FOC", AutoPrepareRollerMode.VELOCITY_TORQUE_CURRENT_FOC);
   }
 
   /** Returns the selected autonomous Prepare Intake roller mode. */

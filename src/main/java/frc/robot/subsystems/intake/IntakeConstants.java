@@ -129,7 +129,7 @@ public final class IntakeConstants {
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS = 0.18;
   private static final double DEFAULT_AUTO_PREPARE_ROLLER_DUTY_CYCLE = ROLLER_PICKUP_SPEED;
   private static final double DEFAULT_AUTO_PREPARE_ROLLER_VOLTAGE = 9.0;
-  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS = 90.0;
+  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS = 95.0;
 
   // Manual slapdown speeds
   public static final double DEPLOYING_SPEED = 0.5;
@@ -175,12 +175,12 @@ public final class IntakeConstants {
   private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KV = 0.12;
   private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KA = 0.0;
 
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KP = 1.5;
+  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KP = 3.0;
   private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KI = 0.0;
   private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KD = 0.0;
   private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KS = 0.0;
   private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KV = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KA = 0.0;
+  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KA = 4.0;
 
   // Prepare-intake unjam tuning
   public static final LoggedTunableNumber prepareUnjamReverseSpeed =

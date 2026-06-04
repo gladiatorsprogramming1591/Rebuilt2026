@@ -34,7 +34,7 @@ public final class Constants {
     public static final boolean SHOOTER_CALCULATION = SHOOTER && false;
     public static final boolean SOTM = false;
 
-    public static final boolean INTAKE = ENABLED && false;
+    public static final boolean INTAKE = ENABLED && true;
     public static final boolean HOPPER = ENABLED && false;
     public static final boolean KICKER = ENABLED && false;
     public static final boolean AUTO = ENABLED && false;
