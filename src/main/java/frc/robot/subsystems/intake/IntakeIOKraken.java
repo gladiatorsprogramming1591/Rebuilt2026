@@ -403,7 +403,8 @@ public void useTeleopRollerCurrentLimits() {
 
     boolean changed = false;
     for (int i = 0; i < requestedValues.length; i++) {
-      if (Math.abs(requestedValues[i] - appliedRollerVelocityConfigValues[i]) > 1e-9) {
+      if (Double.isNaN(appliedRollerVelocityConfigValues[i])
+          || Math.abs(requestedValues[i] - appliedRollerVelocityConfigValues[i]) > 1e-9) {
         changed = true;
         break;
       }

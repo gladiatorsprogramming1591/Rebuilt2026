@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -57,9 +58,21 @@ public class Vision extends SubsystemBase {
   private static final LoggedTunableNumber slowLogPeriodLoops =
       new LoggedTunableNumber("Vision/Logging/Slow Period Loops", 10.0, Constants.tuningMode);
 
+  private static final String AUTO_HDR_ENABLED_KEY = "Vision/AutoHDR/Enabled";
+  private static final String AUTO_HDR_NORMAL_PIPELINE_KEY = "Vision/AutoHDR/Normal Pipeline";
+  private static final String AUTO_HDR_SUN_PIPELINE_KEY = "Vision/AutoHDR/Sun Pipeline";
+  private static final String AUTO_HDR_SWITCH_SECONDS_KEY = "Vision/AutoHDR/Switch Seconds";
+  private static final int DEFAULT_AUTO_HDR_NORMAL_PIPELINE = 0;
+  private static final int DEFAULT_AUTO_HDR_SUN_PIPELINE = 1;
+  private static final double DEFAULT_AUTO_HDR_SWITCH_SECONDS = 0.25;
+
   private final Camera[] cameras;
+  private final int[] lastAppliedPipelineByCamera;
   private int slowLogCounter = 0;
   private boolean logSlowThisLoop = false;
+  private boolean autoHdrWasEnabled = false;
+  private int autoHdrPhase = 0;
+  private double lastAutoHdrSwitchTimestamp = 0.0;
 
   /** Per-camera processing mode (matchable at runtime). */
   public enum VisionEstimationMode {
@@ -84,6 +97,13 @@ public class Vision extends SubsystemBase {
 
   public Vision(Camera... cameras) {
     this.cameras = cameras;
+    this.lastAppliedPipelineByCamera = new int[cameras.length];
+    Arrays.fill(this.lastAppliedPipelineByCamera, -1);
+
+    SmartDashboard.putBoolean(AUTO_HDR_ENABLED_KEY, false);
+    SmartDashboard.putNumber(AUTO_HDR_NORMAL_PIPELINE_KEY, DEFAULT_AUTO_HDR_NORMAL_PIPELINE);
+    SmartDashboard.putNumber(AUTO_HDR_SUN_PIPELINE_KEY, DEFAULT_AUTO_HDR_SUN_PIPELINE);
+    SmartDashboard.putNumber(AUTO_HDR_SWITCH_SECONDS_KEY, DEFAULT_AUTO_HDR_SWITCH_SECONDS);
   }
 
   /**
@@ -212,7 +232,95 @@ public class Vision extends SubsystemBase {
           });
     }
 
+    LoopProfiler.run("Vision/AutoHDRPipelineSwitching", this::updateAutoHdrPipelineSwitching);
+
     LoggedTracer.record("Vision");
+  }
+
+
+  /** Switches Limelight pipelines for HDR-style sun handling when enabled from the dashboard. */
+  private void updateAutoHdrPipelineSwitching() {
+    if (cameras.length == 0) {
+      return;
+    }
+
+    boolean enabled = SmartDashboard.getBoolean(AUTO_HDR_ENABLED_KEY, false);
+    int normalPipeline =
+        (int) SmartDashboard.getNumber(AUTO_HDR_NORMAL_PIPELINE_KEY, DEFAULT_AUTO_HDR_NORMAL_PIPELINE);
+    int sunPipeline =
+        (int) SmartDashboard.getNumber(AUTO_HDR_SUN_PIPELINE_KEY, DEFAULT_AUTO_HDR_SUN_PIPELINE);
+
+    if (!enabled) {
+      if (autoHdrWasEnabled) {
+        for (int i = 0; i < Math.min(2, cameras.length); i++) {
+          applyPipelineIfChanged(i, normalPipeline);
+        }
+      }
+
+      autoHdrWasEnabled = false;
+      Logger.recordOutput("Vision/AutoHDR/Enabled", false);
+      return;
+    }
+
+    autoHdrWasEnabled = true;
+
+    double switchSeconds =
+        Math.max(
+            0.05,
+            SmartDashboard.getNumber(AUTO_HDR_SWITCH_SECONDS_KEY, DEFAULT_AUTO_HDR_SWITCH_SECONDS));
+
+    if (Timer.getTimestamp() - lastAutoHdrSwitchTimestamp >= switchSeconds) {
+      lastAutoHdrSwitchTimestamp = Timer.getTimestamp();
+      autoHdrPhase++;
+    }
+
+    int firstPipeline = normalPipeline;
+    int secondPipeline = sunPipeline;
+
+    switch (autoHdrPhase % 4) {
+      case 0:
+        firstPipeline = normalPipeline;
+        secondPipeline = sunPipeline;
+        break;
+      case 1:
+        firstPipeline = normalPipeline;
+        secondPipeline = normalPipeline;
+        break;
+      case 2:
+        firstPipeline = sunPipeline;
+        secondPipeline = normalPipeline;
+        break;
+      default:
+        firstPipeline = sunPipeline;
+        secondPipeline = sunPipeline;
+        break;
+    }
+
+    applyPipelineIfChanged(0, firstPipeline);
+    if (cameras.length > 1) {
+      applyPipelineIfChanged(1, secondPipeline);
+    }
+
+    Logger.recordOutput("Vision/AutoHDR/Enabled", true);
+    Logger.recordOutput("Vision/AutoHDR/Phase", autoHdrPhase % 4);
+    Logger.recordOutput("Vision/AutoHDR/Camera0Pipeline", firstPipeline);
+    if (cameras.length > 1) {
+      Logger.recordOutput("Vision/AutoHDR/Camera1Pipeline", secondPipeline);
+    }
+  }
+
+  /** Applies a camera pipeline only when the requested pipeline has changed. */
+  private void applyPipelineIfChanged(int cameraIndex, int pipeline) {
+    if (cameraIndex < 0 || cameraIndex >= cameras.length) {
+      return;
+    }
+
+    if (lastAppliedPipelineByCamera[cameraIndex] == pipeline) {
+      return;
+    }
+
+    cameras[cameraIndex].getIo().setPipeline(pipeline);
+    lastAppliedPipelineByCamera[cameraIndex] = pipeline;
   }
 
   /**

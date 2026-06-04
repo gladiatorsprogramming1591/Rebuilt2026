@@ -4,6 +4,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.SHOOTER_TABLE_KEY;
 import static frc.robot.subsystems.shooter.ShooterConstants.UPDATE_CONFIG_NAME;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -113,13 +114,13 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           if (!defaultIdleEnabled) {
-            rampedIdleRPM = getMeasuredShooterRPM();
+            rampedIdleRPM = 0.0;
             requestedIdleRPM = 0.0;
             requestShooterOff();
             return;
           }
 
-          requestedIdleRPM = getRequestedIdleRPM(getSelectedIdleMode());
+          requestedIdleRPM = getTeleopIdleRequestRPM();
           double idleRPM = updateRampedIdleRPM(requestedIdleRPM);
 
           if (idleRPM <= ShooterConstants.idleMinCommandRPM.getAsDouble()) {
@@ -129,12 +130,26 @@ public class Shooter extends SubsystemBase {
 
           updateDefaultCoastState(idleRPM);
 
-          if (defaultShouldCoast || getMeasuredShooterRPM() > idleRPM + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM) {
+          if (defaultShouldCoast
+              || getMeasuredShooterRPM()
+                  > idleRPM + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM) {
             requestShooterOff();
           } else {
             requestShooterVelocity(ShooterModeState.IDLE, idleRPM);
           }
         });
+  }
+  
+  private double getTeleopIdleRequestRPM() {
+    if (!DriverStation.isTeleopEnabled()) {
+      return getRequestedIdleRPM(getSelectedIdleMode());
+    }
+
+    if (!ShooterConstants.teleopDistanceIdleRampEnabled.getAsBoolean()) {
+      return ShooterConstants.dynamicIdleMinRPM.getAsDouble();
+    }
+
+    return getRequestedIdleRPM(getSelectedIdleMode());
   }
 
   /**
@@ -324,18 +339,61 @@ public class Shooter extends SubsystemBase {
   }
 
   /** Slews the idle target so idle spin-up is gentle and idle spin-down can coast. */
-  private double updateRampedIdleRPM(double targetRPM) {
+private double updateRampedIdleRPM(double targetRPM) {
     double clampedTargetRPM = MathUtil.clamp(targetRPM, 0.0, ShooterConstants.MAX_FLYWHEEL_RPM);
-    double maxDelta =
-        (clampedTargetRPM > rampedIdleRPM
-                ? ShooterConstants.idleRampUpRPMPerSec.getAsDouble()
-                : ShooterConstants.idleRampDownRPMPerSec.getAsDouble())
-            * Constants.loopPeriodSecs;
+
+    if (clampedTargetRPM <= rampedIdleRPM) {
+      rampedIdleRPM = clampedTargetRPM;
+      return rampedIdleRPM;
+    }
+
+    double rampUpRPMPerSec =
+        DriverStation.isTeleopEnabled()
+                && ShooterConstants.teleopDistanceIdleRampEnabled.getAsBoolean()
+            ? getDistanceScaledIdleRampUpRPMPerSec(getIdleRampDistanceMeters())
+            : ShooterConstants.idleRampUpRPMPerSec.getAsDouble();
+
+    double maxDelta = rampUpRPMPerSec * Constants.loopPeriodSecs;
 
     rampedIdleRPM =
-        MathUtil.clamp(clampedTargetRPM, rampedIdleRPM - maxDelta, rampedIdleRPM + maxDelta);
+        MathUtil.clamp(clampedTargetRPM, rampedIdleRPM, rampedIdleRPM + maxDelta);
+
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Idle/ActiveRampUpRPMPerSec", rampUpRPMPerSec);
+    Logger.recordOutput(
+        SHOOTER_TABLE_KEY + "Idle/DistanceRampEnabled",
+        DriverStation.isTeleopEnabled()
+            && ShooterConstants.teleopDistanceIdleRampEnabled.getAsBoolean());
 
     return rampedIdleRPM;
+  }
+
+  private double getIdleRampDistanceMeters() {
+    return ShooterCalculation.getInstance().getParameters().distanceNoLookahead();
+  }
+
+  private double getDistanceScaledIdleRampUpRPMPerSec(double distanceMeters) {
+    double nearDistance = ShooterConstants.idleNearDistanceMeters.getAsDouble();
+    double farDistance = ShooterConstants.idleFarDistanceMeters.getAsDouble();
+
+    if (farDistance <= nearDistance) {
+      return ShooterConstants.idleRampUpRPMPerSec.getAsDouble();
+    }
+
+    double distanceT =
+        MathUtil.clamp(
+            (distanceMeters - nearDistance) / (farDistance - nearDistance),
+            0.0,
+            1.0);
+
+    double rampUpRPMPerSec =
+        MathUtil.interpolate(
+            ShooterConstants.idleNearRampUpRPMPerSec.getAsDouble(),
+            ShooterConstants.idleFarRampUpRPMPerSec.getAsDouble(),
+            distanceT);
+
+    Logger.recordOutput(SHOOTER_TABLE_KEY + "Idle/RampDistanceMeters", distanceMeters);
+
+    return rampUpRPMPerSec;
   }
 
   /**

@@ -31,8 +31,8 @@ public final class Constants {
     public static final boolean SHOOTER = ENABLED && false;
 
     // This is part of shooter tuning, but separate because it creates a ton of map tunables.
-    public static final boolean SHOOTER_CALCULATION = SHOOTER && false;
-    public static final boolean SOTM = false;
+    public static final boolean SHOOTER_CALCULATION = ENABLED && true;
+    public static final boolean SOTM = ENABLED && false;
 
     public static final boolean INTAKE = ENABLED && true;
     public static final boolean HOPPER = ENABLED && false;

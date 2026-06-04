@@ -45,6 +45,21 @@ public class Robot extends LoggedRobot {
   private int robotDashboardUpdateCounter = 0;
 
   private static final int ROBOT_DASHBOARD_UPDATE_PERIOD_LOOPS = 10;
+  private static final double LIMELIGHT_REWIND_MAX_SECONDS = 165.0;
+  private static final String LIMELIGHT_REWIND_ENABLED_KEY = "Limelight/Rewind/Enabled";
+  private static final String LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY =
+      "Limelight/Rewind/Capture After Auto For Testing";
+
+  private enum LastEnabledMode {
+    NONE,
+    AUTO,
+    TELEOP
+  }
+
+  private LastEnabledMode lastEnabledMode = LastEnabledMode.NONE;
+  private boolean limelightRewindArmed = false;
+  private double limelightRewindStartTimestamp = 0.0;
+  private int limelightRewindCaptureCounter = 0;
 
   private final Timer disabledTimer = new Timer();
   private final Alert lowBatteryAlert =
@@ -97,10 +112,121 @@ public class Robot extends LoggedRobot {
       SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
+    SmartDashboard.putBoolean(LIMELIGHT_REWIND_ENABLED_KEY, false);
+    SmartDashboard.putBoolean(LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY, false);
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
     DriverStation.silenceJoystickConnectionWarning(true);
+  }
+
+  /** Returns the Limelight names for the current robot configuration. */
+  private String[] getLimelightNames() {
+    if (robotInitConstants.isCompBot) {
+      return new String[] {"limelight-two", "limelight-three"};
+    }
+
+    return new String[] {"limelight-one"};
+  }
+
+  /** Applies Limelight CPU throttling to every active Limelight. */
+  private void setLimelightThrottle(double throttle) {
+    for (String name : getLimelightNames()) {
+      NetworkTableInstance.getDefault().getTable(name).getEntry("throttle_set").setNumber(throttle);
+    }
+  }
+
+  /** Enables or disables Limelight Rewind recording on every active Limelight. */
+  private void setLimelightRewindEnabled(boolean enabled) {
+    for (String name : getLimelightNames()) {
+      NetworkTableInstance.getDefault()
+          .getTable(name)
+          .getEntry("rewind_enable_set")
+          .setBoolean(enabled);
+    }
+
+    Logger.recordOutput("Limelight/Rewind/RecordingEnabled", enabled);
+  }
+
+  /** Returns whether robot code should use Limelight Rewind this run. */
+  private boolean shouldUseLimelightRewind() {
+    return SmartDashboard.getBoolean(LIMELIGHT_REWIND_ENABLED_KEY, false);
+  }
+
+  /** Returns whether auto-only testing should save a Rewind capture when auto disables. */
+  private boolean shouldCaptureAutoRewindForTesting() {
+    return SmartDashboard.getBoolean(LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY, false);
+  }
+
+  /**
+   * Arms Limelight Rewind when entering an enabled mode without resetting across auto-to-teleop.
+   */
+  private void armLimelightRewindForEnabledMode() {
+    if (!shouldUseLimelightRewind()) {
+      limelightRewindArmed = false;
+      setLimelightRewindEnabled(false);
+      return;
+    }
+
+    setLimelightRewindEnabled(true);
+
+    if (!limelightRewindArmed) {
+      limelightRewindArmed = true;
+      limelightRewindStartTimestamp = Timer.getTimestamp();
+    }
+
+    Logger.recordOutput("Limelight/Rewind/Armed", limelightRewindArmed);
+    Logger.recordOutput("Limelight/Rewind/StartTimestamp", limelightRewindStartTimestamp);
+  }
+
+  /** Saves the current Rewind buffer on every active Limelight, then disables Rewind. */
+  private void captureLimelightRewindIfArmed() {
+    if (!limelightRewindArmed) {
+      setLimelightRewindEnabled(false);
+      return;
+    }
+
+    limelightRewindArmed = false;
+
+    double captureSeconds =
+        Math.min(
+            LIMELIGHT_REWIND_MAX_SECONDS,
+            Math.max(5.0, Timer.getTimestamp() - limelightRewindStartTimestamp + 2.0));
+
+    limelightRewindCaptureCounter++;
+
+    for (String name : getLimelightNames()) {
+      NetworkTableInstance.getDefault()
+          .getTable(name)
+          .getEntry("capture_rewind")
+          .setDoubleArray(new double[] {limelightRewindCaptureCounter, captureSeconds});
+    }
+
+    Logger.recordOutput("Limelight/Rewind/CaptureSeconds", captureSeconds);
+    Logger.recordOutput("Limelight/Rewind/CaptureCounter", limelightRewindCaptureCounter);
+
+    setLimelightRewindEnabled(false);
+  }
+
+  /** Handles match-aware Rewind saving when the robot transitions into disabled. */
+  private void handleLimelightRewindOnDisable() {
+    if (!shouldUseLimelightRewind()) {
+      limelightRewindArmed = false;
+      setLimelightRewindEnabled(false);
+      lastEnabledMode = LastEnabledMode.NONE;
+      return;
+    }
+
+    boolean shouldCapture =
+        lastEnabledMode == LastEnabledMode.TELEOP
+            || (lastEnabledMode == LastEnabledMode.AUTO && shouldCaptureAutoRewindForTesting());
+
+    if (shouldCapture) {
+      captureLimelightRewindIfArmed();
+    }
+
+    lastEnabledMode = LastEnabledMode.NONE;
   }
 
   /** This function is called periodically during all modes. */
@@ -199,21 +325,8 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    if (robotInitConstants.isCompBot) {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-two")
-          .getEntry("throttle_set")
-          .setNumber(100);
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-three")
-          .getEntry("throttle_set")
-          .setNumber(100);
-    } else {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-one")
-          .getEntry("throttle_set")
-          .setNumber(100);
-    }
+    handleLimelightRewindOnDisable();
+    setLimelightThrottle(100);
   }
 
   /** This function is called periodically when disabled. */
@@ -224,21 +337,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
-    if (robotInitConstants.isCompBot) {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-two")
-          .getEntry("throttle_set")
-          .setNumber(0);
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-three")
-          .getEntry("throttle_set")
-          .setNumber(0);
-    } else {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-one")
-          .getEntry("throttle_set")
-          .setNumber(0);
-    }
+    lastEnabledMode = LastEnabledMode.AUTO;
+    armLimelightRewindForEnabledMode();
+    setLimelightThrottle(0);
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -260,21 +361,10 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    if (robotInitConstants.isCompBot) {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-two")
-          .getEntry("throttle_set")
-          .setNumber(0);
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-three")
-          .getEntry("throttle_set")
-          .setNumber(0);
-    } else {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-one")
-          .getEntry("throttle_set")
-          .setNumber(0);
-    }
+
+    lastEnabledMode = LastEnabledMode.TELEOP;
+    armLimelightRewindForEnabledMode();
+    setLimelightThrottle(0);
   }
 
   /** This function is called periodically during operator control. */
@@ -286,21 +376,8 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-    if (robotInitConstants.isCompBot) {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-two")
-          .getEntry("throttle_set")
-          .setNumber(0);
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-three")
-          .getEntry("throttle_set")
-          .setNumber(0);
-    } else {
-      NetworkTableInstance.getDefault()
-          .getTable("limelight-one")
-          .getEntry("throttle_set")
-          .setNumber(0);
-    }
+    lastEnabledMode = LastEnabledMode.NONE;
+    setLimelightThrottle(0);
   }
 
   /** This function is called periodically during test mode. */

@@ -51,14 +51,22 @@ public final class ShooterConstants {
   // Default tunable values
   private static final double DEFAULT_SHOOT_FIXED_RPM = 2000.0;
   private static final double DEFAULT_COAST_RPM = 1800.0; // TODO optimized for alliance zone, revisit for passing
-  private static final double DEFAULT_PASSING_IDLE_RPM = 2000.0;
-  private static final double DEFAULT_SHOOTING_IDLE_RPM = 2400.0;
+  private static final double DEFAULT_PASSING_IDLE_RPM = 1800.0;
+  private static final double DEFAULT_SHOOTING_IDLE_RPM = 1800.0;
   private static final double DEFAULT_DYNAMIC_IDLE_SCALAR = 0.60;
   private static final double DEFAULT_DYNAMIC_IDLE_MIN_RPM = 1600.0;
-  private static final double DEFAULT_DYNAMIC_IDLE_MAX_RPM = 2400.0;
+  private static final double DEFAULT_DYNAMIC_IDLE_MAX_RPM = 3500.0;
+
+  private static final boolean DEFAULT_TELEOP_DISTANCE_IDLE_RAMP_ENABLED = true;
+  
+  private static final double DEFAULT_IDLE_NEAR_DISTANCE_METERS = 2.0;
+  private static final double DEFAULT_IDLE_FAR_DISTANCE_METERS = 7.0;
+  private static final double DEFAULT_IDLE_NEAR_RAMP_UP_RPM_PER_SEC = 1000.0;
+  private static final double DEFAULT_IDLE_FAR_RAMP_UP_RPM_PER_SEC = 250.0;
   private static final double DEFAULT_IDLE_RAMP_UP_RPM_PER_SEC = 250.0;
   private static final double DEFAULT_IDLE_RAMP_DOWN_RPM_PER_SEC = 250.0;
   private static final double DEFAULT_IDLE_MIN_COMMAND_RPM = 250.0;
+
   private static final double DEFAULT_FLYWHEEL_UNDER_TOLERANCE_RPM = FLYWHEEL_TOLERANCE_RPM;
   private static final double DEFAULT_FLYWHEEL_OVER_TOLERANCE_RPM = FLYWHEEL_TOLERANCE_RPM / 3.0;
   private static final double DEFAULT_SHOOTER_SLOW_LOG_PERIOD_LOOPS = 10.0;
@@ -185,6 +193,36 @@ public final class ShooterConstants {
           SHOOTER_TABLE_KEY + "Idle/Min Command RPM",
           DEFAULT_IDLE_MIN_COMMAND_RPM,
           Constants.Tuning.SHOOTER);
+
+  public static final LoggedTunableBoolean teleopDistanceIdleRampEnabled =
+    new LoggedTunableBoolean(
+        SHOOTER_TABLE_KEY + "Idle/Teleop Distance Ramp Enabled",
+        DEFAULT_TELEOP_DISTANCE_IDLE_RAMP_ENABLED,
+        Constants.Tuning.SHOOTER);
+
+public static final LoggedTunableNumber idleNearDistanceMeters =
+    new LoggedTunableNumber(
+        SHOOTER_TABLE_KEY + "Idle/Near Distance Meters",
+        DEFAULT_IDLE_NEAR_DISTANCE_METERS,
+        Constants.Tuning.SHOOTER);
+
+public static final LoggedTunableNumber idleFarDistanceMeters =
+    new LoggedTunableNumber(
+        SHOOTER_TABLE_KEY + "Idle/Far Distance Meters",
+        DEFAULT_IDLE_FAR_DISTANCE_METERS,
+        Constants.Tuning.SHOOTER);
+
+public static final LoggedTunableNumber idleNearRampUpRPMPerSec =
+    new LoggedTunableNumber(
+        SHOOTER_TABLE_KEY + "Idle/Near Ramp Up RPM Per Sec",
+        DEFAULT_IDLE_NEAR_RAMP_UP_RPM_PER_SEC,
+        Constants.Tuning.SHOOTER);
+
+public static final LoggedTunableNumber idleFarRampUpRPMPerSec =
+    new LoggedTunableNumber(
+        SHOOTER_TABLE_KEY + "Idle/Far Ramp Up RPM Per Sec",
+        DEFAULT_IDLE_FAR_RAMP_UP_RPM_PER_SEC,
+        Constants.Tuning.SHOOTER);
 
   public static final LoggedTunableNumber flywheelUnderToleranceRPM =
       new LoggedTunableNumber(
