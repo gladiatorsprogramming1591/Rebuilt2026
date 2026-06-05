@@ -53,7 +53,7 @@ public final class ShooterConstants {
   private static final double DEFAULT_COAST_RPM = 1800.0; // TODO optimized for alliance zone, revisit for passing
   private static final double DEFAULT_PASSING_IDLE_RPM = 1800.0;
   private static final double DEFAULT_SHOOTING_IDLE_RPM = 1800.0;
-  private static final double DEFAULT_DYNAMIC_IDLE_SCALAR = 0.60;
+  private static final double DEFAULT_DYNAMIC_IDLE_SCALAR = 0.80;
   private static final double DEFAULT_DYNAMIC_IDLE_MIN_RPM = 1600.0;
   private static final double DEFAULT_DYNAMIC_IDLE_MAX_RPM = 3500.0;
 

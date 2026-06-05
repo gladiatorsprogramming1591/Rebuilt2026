@@ -28,7 +28,7 @@ public final class Constants {
     public static final boolean DRIVE_COMMANDS = ENABLED && false;
 
     public static final boolean HOOD = ENABLED && false;
-    public static final boolean SHOOTER = ENABLED && false;
+    public static final boolean SHOOTER = ENABLED && true;
 
     // This is part of shooter tuning, but separate because it creates a ton of map tunables.
     public static final boolean SHOOTER_CALCULATION = ENABLED && true;
