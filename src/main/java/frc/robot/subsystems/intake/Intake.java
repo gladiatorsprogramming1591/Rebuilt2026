@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RollerModeState;
 import frc.robot.RobotState.SlapdownModeState;
@@ -33,6 +34,8 @@ import org.littletonrobotics.junction.Logger;
  * </ul>
  */
 public class Intake extends SubsystemBase {
+  private static final int SLOW_LOG_PERIOD_LOOPS = 10;
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final IntakeIOOutputsAutoLogged outputs = new IntakeIOOutputsAutoLogged();
@@ -50,6 +53,8 @@ public class Intake extends SubsystemBase {
   private double rollerRequestStartTimestamp = 0.0;
   private double rollerHighCurrentStartTimestamp = Double.NaN;
   private double rollerBoostUntilTimestamp = 0.0;
+  private int slowLogCounter = 0;
+  private boolean logSlowThisLoop = false;
 
   @AutoLogOutput private double manualAngle = 0.0;
   @AutoLogOutput private double requestedRollerSpeed = 0.0;
@@ -74,6 +79,7 @@ public class Intake extends SubsystemBase {
 
     updateTunableOutputs();
     handleAutoPrepareIntakeRequest();
+    logSlowThisLoop = shouldLogSlowIntakeOutputs();
     updateRollerOutput();
     updateDeployHoldDownAssist();
     logOutputs();
@@ -713,6 +719,11 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(kintakeTableKey + "RollerMaxStatorCurrent", rollerCurrent);
     Logger.recordOutput(kintakeTableKey + "RollerSpinupComplete", spinupComplete);
     Logger.recordOutput(kintakeTableKey + "RollerWasRequested", rollerWasRequested);
+
+    if (!shouldLogTuningOutputs()) {
+      return;
+    }
+
     Logger.recordOutput(kintakeTableKey + "RollerRequestStartTimestamp", rollerRequestStartTimestamp);
     Logger.recordOutput(
         kintakeTableKey + "RollerHighCurrentStartTimestamp", rollerHighCurrentStartTimestamp);
@@ -775,11 +786,26 @@ public class Intake extends SubsystemBase {
     isSlapdownStopped = true;
   }
 
+  /** Returns true at the slower logging cadence for mostly static intake tuning outputs. */
+  private boolean shouldLogSlowIntakeOutputs() {
+    slowLogCounter++;
+    if (slowLogCounter < SLOW_LOG_PERIOD_LOOPS) {
+      return false;
+    }
+
+    slowLogCounter = 0;
+    return true;
+  }
+
+  /** Returns true when intake tuning/config mirror telemetry should be published. */
+  private boolean shouldLogTuningOutputs() {
+    return Constants.Tuning.INTAKE && logSlowThisLoop;
+  }
+
   /** Logs commanded intake state, tunables, and command helper state for debugging. */
   private void logOutputs() {
     Logger.recordOutput(kintakeTableKey + "SlapdownMode", RobotState.getSlapdownMode().toString());
     Logger.recordOutput(kintakeTableKey + "RollerMode", RobotState.getRollerMode().toString());
-    Logger.recordOutput(kintakeTableKey + "RequestedRollerSpeed", requestedRollerSpeed);
     Logger.recordOutput(kintakeTableKey + "AppliedRollerSpeed", outputs.appliedRollerSpeed);
     Logger.recordOutput(kintakeTableKey + "AppliedSlapdownSpeed", outputs.appliedSlapdownSpeed);
     Logger.recordOutput(
@@ -799,6 +825,10 @@ public class Intake extends SubsystemBase {
         RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeRequested", autoPrepareIntakeRequested);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeLatched", autoPrepareIntakeLatched);
+
+    if (!shouldLogTuningOutputs()) {
+      return;
+    }
     Logger.recordOutput(
         kintakeTableKey + "SlapdownHoldDownTorqueCurrent",
         IntakeConstants.slapdownHoldDownTorqueCurrent.getAsDouble());

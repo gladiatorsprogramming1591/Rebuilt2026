@@ -54,45 +54,70 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
   private static final LoggedTunableNumber driveLaunchKp =
-      new LoggedTunableNumber("DriveCommands/Launching/kP", 4.0);
+      new LoggedTunableNumber("DriveCommands/Launching/kP", 4.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveLaunchKd =
-      new LoggedTunableNumber("DriveCommands/Launching/kD", 0.03);
+      new LoggedTunableNumber("DriveCommands/Launching/kD", 0.03, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveYawLaunchToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Launching/YawToleranceDeg", 10.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/YawToleranceDeg", 10.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber drivePitchLaunchToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Launching/PitchToleranceDeg", 5.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/PitchToleranceDeg", 5.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveRollLaunchToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Launching/RollToleranceDeg", 5.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/RollToleranceDeg", 5.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveYawPassToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Passing/YawToleranceDeg", 15.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Passing/YawToleranceDeg", 15.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber drivePitchPassToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Passing/PitchToleranceDeg", 5.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Passing/PitchToleranceDeg", 5.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveRollPassToleranceDeg =
-      new LoggedTunableNumber("DriveCommands/Passing/RollToleranceDeg", 5.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Passing/RollToleranceDeg", 5.0, Constants.Tuning.DRIVE_COMMANDS);
 
   private static final LoggedTunableNumber lockMetersPerSecondThreshold =
-      new LoggedTunableNumber("DriveCommands/Launching/LockMetersPerSecThreshold", 0.1);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/LockMetersPerSecThreshold",
+          0.1,
+          Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber lockOmegaRadsPerSecThreshold =
-      new LoggedTunableNumber("DriveCommands/Launching/LockOmegaRadsPerSecThreshold", 0.15);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/LockOmegaRadsPerSecThreshold",
+          0.15,
+          Constants.Tuning.DRIVE_COMMANDS);
 
   private static final LoggedTunableNumber driveLaunchMaxPolarVelocityRadPerSec =
-      new LoggedTunableNumber("DriveCommands/Launching/MaxPolarVelocityRadPerSec", 0.6);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/MaxPolarVelocityRadPerSec",
+          0.6,
+          Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveLauncherCORMinErrorDeg =
-      new LoggedTunableNumber("DriveCommands/Launching/DriveLauncherCORMinErrorDeg", 15.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/DriveLauncherCORMinErrorDeg",
+          15.0,
+          Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveLauncherCORMaxErrorDeg =
-      new LoggedTunableNumber("DriveCommands/Launching/DriveLauncherCORMaxErrorDeg", 30.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/DriveLauncherCORMaxErrorDeg",
+          30.0,
+          Constants.Tuning.DRIVE_COMMANDS);
 
   private static final LoggedTunableNumber driveLaunchVelocityFeedforwardScalar =
-      new LoggedTunableNumber("DriveCommands/Launching/VelocityFeedforwardScalar", 1);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/VelocityFeedforwardScalar", 1, Constants.Tuning.DRIVE_COMMANDS);
 
   private static final LoggedTunableNumber driveLaunchTargetJumpRejectRad =
-      new LoggedTunableNumber("DriveCommands/Launching/TargetJumpRejectRad", 0.75);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/TargetJumpRejectRad", 0.75, Constants.Tuning.DRIVE_COMMANDS);
 
   private static final LoggedTunableNumber driveLaunchTargetJumpAcceptCycles =
-      new LoggedTunableNumber("DriveCommands/Launching/TargetJumpAcceptCycles", 10.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/TargetJumpAcceptCycles", 10.0, Constants.Tuning.DRIVE_COMMANDS);
 
   private static final LoggedTunableNumber driveLaunchTargetMaxRateRadPerSec =
-      new LoggedTunableNumber("DriveCommands/Launching/TargetMaxRateRadPerSec", 6.0);
+      new LoggedTunableNumber(
+          "DriveCommands/Launching/TargetMaxRateRadPerSec", 6.0, Constants.Tuning.DRIVE_COMMANDS);
 
   private DriveCommands() {}
 
@@ -114,7 +139,9 @@ public class DriveCommands {
   private static Rotation2d getHubDriveAngle() {
     Rotation2d hubAngle = ShooterCalculation.getInstance().getParameters().driveAngle();
 
-    SmartDashboard.putNumber("Hub Drive Angle", hubAngle.getDegrees());
+    if (Constants.Tuning.DRIVE_COMMANDS) {
+      SmartDashboard.putNumber("Hub Drive Angle", hubAngle.getDegrees());
+    }
     return hubAngle;
   }
 
@@ -341,7 +368,9 @@ public class DriveCommands {
                       < lockMetersPerSecondThreshold.get()
                   && Math.abs(fieldRelativeSpeedsWithOffset.omegaRadiansPerSecond)
                       < lockOmegaRadsPerSecThreshold.get();
-          Logger.recordOutput("DriveCommands/Launching/XLock", xLock);
+          if (Constants.Tuning.DRIVE_COMMANDS) {
+            Logger.recordOutput("DriveCommands/Launching/XLock", xLock);
+          }
           if (xLock) {
             drive.stopWithX();
           } else {
@@ -370,28 +399,31 @@ public class DriveCommands {
                           RobotState.getInstance().getRotation()),
                       Constants.loopPeriodSecs));
 
-          // Log data
-          Logger.recordOutput(
-              "DriveCommands/Launching/SetpointPose",
-              new Pose2d(
-                  RobotState.getInstance().getEstimatedPose().getTranslation(),
-                  parameters.driveAngle()));
-          Logger.recordOutput("DriveCommands/Launching/AtGoalTolerance", atLaunchGoal());
-          Logger.recordOutput(
-              "DriveCommands/Launching/ErrorPosition",
-              parameters.driveAngle().minus(RobotState.getInstance().getRotation()));
-          Logger.recordOutput(
-              "DriveCommands/Launching/ErrorVelocityRadPerSec",
-              parameters.driveVelocity()
-                  - RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
-          Logger.recordOutput(
-              "DriveCommands/Launching/MeasuredPosition", RobotState.getInstance().getRotation());
-          Logger.recordOutput(
-              "DriveCommands/Launching/MeasuredVelocityRadPerSec",
-              RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
-          Logger.recordOutput("DriveCommands/Launching/SetpointPosition", parameters.driveAngle());
-          Logger.recordOutput(
-              "DriveCommands/Launching/SetpointVelocityRadPerSec", parameters.driveVelocity());
+          // Log detailed launch aiming telemetry only while drive command tuning is enabled.
+          if (Constants.Tuning.DRIVE_COMMANDS) {
+            Logger.recordOutput(
+                "DriveCommands/Launching/SetpointPose",
+                new Pose2d(
+                    RobotState.getInstance().getEstimatedPose().getTranslation(),
+                    parameters.driveAngle()));
+            Logger.recordOutput("DriveCommands/Launching/AtGoalTolerance", atLaunchGoal());
+            Logger.recordOutput(
+                "DriveCommands/Launching/ErrorPosition",
+                parameters.driveAngle().minus(RobotState.getInstance().getRotation()));
+            Logger.recordOutput(
+                "DriveCommands/Launching/ErrorVelocityRadPerSec",
+                parameters.driveVelocity()
+                    - RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
+            Logger.recordOutput(
+                "DriveCommands/Launching/MeasuredPosition", RobotState.getInstance().getRotation());
+            Logger.recordOutput(
+                "DriveCommands/Launching/MeasuredVelocityRadPerSec",
+                RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
+            Logger.recordOutput(
+                "DriveCommands/Launching/SetpointPosition", parameters.driveAngle());
+            Logger.recordOutput(
+                "DriveCommands/Launching/SetpointVelocityRadPerSec", parameters.driveVelocity());
+          }
         },
         drive);
   }

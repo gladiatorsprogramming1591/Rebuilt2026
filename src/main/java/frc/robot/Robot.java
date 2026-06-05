@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.robotInitConstants;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shooter.ShooterCalculation;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.HubShiftUtil.ShiftInfo;
-import frc.robot.util.LoopProfiler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -112,8 +112,9 @@ public class Robot extends LoggedRobot {
       SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
-    SmartDashboard.putBoolean(LIMELIGHT_REWIND_ENABLED_KEY, false);
-    SmartDashboard.putBoolean(LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY, false);
+    SmartDashboard.setDefaultBoolean(LIMELIGHT_REWIND_ENABLED_KEY, Constants.calibrationMode);
+    SmartDashboard.setDefaultBoolean(
+        LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY, Constants.calibrationMode);
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
@@ -143,7 +144,7 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault()
           .getTable(name)
           .getEntry("rewind_enable_set")
-          .setBoolean(enabled);
+          .setNumber(enabled ? 1 : 0);
     }
 
     Logger.recordOutput("Limelight/Rewind/RecordingEnabled", enabled);
@@ -151,12 +152,14 @@ public class Robot extends LoggedRobot {
 
   /** Returns whether robot code should use Limelight Rewind this run. */
   private boolean shouldUseLimelightRewind() {
-    return SmartDashboard.getBoolean(LIMELIGHT_REWIND_ENABLED_KEY, false);
+    return Constants.calibrationMode
+        || SmartDashboard.getBoolean(LIMELIGHT_REWIND_ENABLED_KEY, false);
   }
 
   /** Returns whether auto-only testing should save a Rewind capture when auto disables. */
   private boolean shouldCaptureAutoRewindForTesting() {
-    return SmartDashboard.getBoolean(LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY, false);
+    return Constants.calibrationMode
+        || SmartDashboard.getBoolean(LIMELIGHT_REWIND_CAPTURE_AFTER_AUTO_KEY, false);
   }
 
   /**
@@ -278,31 +281,24 @@ public class Robot extends LoggedRobot {
     }
 
     // Update RobotContainer dashboard outputs
-    LoopProfiler.run("Robot/UpdateDashboardOutputs", robotContainer::updateDashboardOutputs);
+    robotContainer.updateDashboardOutputs();
 
     // Clear launching parameters immediately before the scheduler so commands get fresh values.
-    LoopProfiler.run(
-        "Robot/ClearLaunchingParameters", shooterCalculation::clearLaunchingParameters);
+    shooterCalculation.clearLaunchingParameters();
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
-    LoopProfiler.run("Robot/CommandScheduler", () -> CommandScheduler.getInstance().run());
+    CommandScheduler.getInstance().run();
 
     // Log the same launching parameters used by commands this loop. Avoid calculating and
     // publishing the full shooter solution while disabled, which is noisy during boot and NT
     // reconnects.
     if (DriverStation.isEnabled()) {
-      LoopProfiler.run(
-          "Robot/LogLaunchingParameters",
-          () ->
-              Logger.recordOutput(
-                  "ShooterCalculation/Parameters", shooterCalculation.getParameters()));
+      Logger.recordOutput("ShooterCalculation/Parameters", shooterCalculation.getParameters());
     }
-
-    LoopProfiler.periodic();
 
     // Print auto duration
     if (autonomousCommand != null) {
@@ -325,8 +321,14 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    RobotState.setMode(RobotMode.DISABLED);
+
     handleLimelightRewindOnDisable();
-    setLimelightThrottle(100);
+    setLimelightThrottle(Constants.calibrationMode ? 0 : 100);
+
+    if (Constants.calibrationMode) {
+      robotContainer.setDriveCoastMode();
+    }
   }
 
   /** This function is called periodically when disabled. */
@@ -336,6 +338,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotState.setMode(RobotMode.AUTO);
+
     autonomousCommand = robotContainer.getAutonomousCommand();
     lastEnabledMode = LastEnabledMode.AUTO;
     armLimelightRewindForEnabledMode();
@@ -354,6 +358,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    RobotState.setMode(RobotMode.TELEOP);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

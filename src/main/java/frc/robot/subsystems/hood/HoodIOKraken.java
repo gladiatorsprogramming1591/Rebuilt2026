@@ -35,10 +35,6 @@ import org.littletonrobotics.junction.Logger;
  * "tripped" value where true means the sensor is active.
  */
 public class HoodIOKraken implements HoodIO {
-  private static final int SLOW_INPUT_PERIOD_LOOPS = 10;
-  private int slowInputCounter = 0;
-
-
   private final TalonFX hoodMotor = new TalonFX(HoodConstants.HOOD_CAN_ID);
   private final DigitalInput bottomLimitSensor = new DigitalInput(HoodConstants.HOOD_DIO_PORT);
 
@@ -134,15 +130,9 @@ public class HoodIOKraken implements HoodIO {
   }
 
 
-  /** Returns true when slow-changing hood inputs and logs should refresh this loop. */
-  private boolean shouldRefreshSlowInputs() {
-    slowInputCounter++;
-    if (slowInputCounter < SLOW_INPUT_PERIOD_LOOPS) {
-      return false;
-    }
-
-    slowInputCounter = 0;
-    return true;
+  /** Returns true when detailed hood IO debug logs should be published. */
+  private boolean shouldLogHoodDebugOutputs() {
+    return Constants.Tuning.HOOD;
   }
 
   /**
@@ -186,11 +176,6 @@ public class HoodIOKraken implements HoodIO {
    */
   @Override
   public void applyOutputs(HoodIOOutputs outputs) {
-    if (shouldRefreshSlowInputs()) {
-      Logger.recordOutput(HOOD_TABLE_KEY + "DesiredAngle", outputs.desiredHoodAngle);
-      Logger.recordOutput(HOOD_TABLE_KEY + "DesiredSpeed", outputs.desiredHoodSpeed);
-    }
-
     if (outputs.mode == HoodMode.POSITION) {
       applyPositionOutput(outputs);
     } else {
@@ -214,10 +199,12 @@ public class HoodIOKraken implements HoodIO {
     boolean movingDown = outputs.desiredHoodAngle < currentAngle;
     int selectedSlot = movingDown ? 1 : 0;
 
-    Logger.recordOutput(HOOD_TABLE_KEY + "Position/SelectedPidSlot", selectedSlot);
-    Logger.recordOutput(HOOD_TABLE_KEY + "Position/CurrentAngle", currentAngle);
-    Logger.recordOutput(HOOD_TABLE_KEY + "Position/DesiredAngle", outputs.desiredHoodAngle);
-    Logger.recordOutput(HOOD_TABLE_KEY + "Position/MovingDown", movingDown);
+    if (shouldLogHoodDebugOutputs()) {
+      Logger.recordOutput(HOOD_TABLE_KEY + "Position/SelectedPidSlot", selectedSlot);
+      Logger.recordOutput(HOOD_TABLE_KEY + "Position/CurrentAngle", currentAngle);
+      Logger.recordOutput(HOOD_TABLE_KEY + "Position/DesiredAngle", outputs.desiredHoodAngle);
+      Logger.recordOutput(HOOD_TABLE_KEY + "Position/MovingDown", movingDown);
+    }
 
     hoodMotor.setControl(
         positionTorqueControl.withPosition(outputs.desiredHoodAngle).withSlot(selectedSlot));
@@ -281,7 +268,9 @@ public class HoodIOKraken implements HoodIO {
     boolean zeroSensorTripped =
         bottomLimitSensorDebouncer.calculate(isBottomLimitSensorTripped());
 
-    Logger.recordOutput(HOOD_TABLE_KEY + "Zero/LimitSensorTripped", zeroSensorTripped);
+    if (shouldLogHoodDebugOutputs()) {
+      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/LimitSensorTripped", zeroSensorTripped);
+    }
 
     if (zeroSensorTripped) {
       resetHoodTimer();
@@ -303,8 +292,10 @@ public class HoodIOKraken implements HoodIO {
 
     if (!stopped) {
       resetHoodTimer();
-      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedOverTime", false);
-      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedTimer", 0.0);
+      if (shouldLogHoodDebugOutputs()) {
+        Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedOverTime", false);
+        Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedTimer", 0.0);
+      }
       return false;
     }
 
@@ -312,8 +303,10 @@ public class HoodIOKraken implements HoodIO {
 
     boolean stoppedOverTime = stoppedTimer.hasElapsed(minStationaryDuration);
 
-    Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedOverTime", stoppedOverTime);
-    Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedTimer", stoppedTimer.get());
+    if (shouldLogHoodDebugOutputs()) {
+      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedOverTime", stoppedOverTime);
+      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/StoppedTimer", stoppedTimer.get());
+    }
 
     if (stoppedOverTime) {
       resetHoodTimer();
@@ -355,9 +348,11 @@ public class HoodIOKraken implements HoodIO {
 
     boolean stopped = lowVelocity && highCurrent;
 
-    Logger.recordOutput(HOOD_TABLE_KEY + "Zero/LowVelocity", lowVelocity);
-    Logger.recordOutput(HOOD_TABLE_KEY + "Zero/HighCurrent", highCurrent);
-    Logger.recordOutput(HOOD_TABLE_KEY + "Zero/Stopped", stopped);
+    if (shouldLogHoodDebugOutputs()) {
+      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/LowVelocity", lowVelocity);
+      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/HighCurrent", highCurrent);
+      Logger.recordOutput(HOOD_TABLE_KEY + "Zero/Stopped", stopped);
+    }
 
     return stopped;
   }

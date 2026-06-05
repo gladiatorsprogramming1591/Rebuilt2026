@@ -836,6 +836,10 @@ public void useAutoDriveCurrentLimits() {
   }
 
   private boolean shouldLogLaunchReady() {
+    if (!Constants.Tuning.SHOOTER && !Constants.Tuning.AUTO) {
+      return false;
+    }
+
     int periodLoops = Math.max(1, (int) Math.round(launchReadyLogPeriodLoops.get()));
     return launchReadyLogCounter++ % periodLoops == 0;
   }

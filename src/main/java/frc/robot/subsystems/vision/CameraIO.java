@@ -253,6 +253,13 @@ public interface CameraIO {
    */
   public default void setCameraOffset(Transform3d cameraOffset) {}
 
+  /**
+   * Sets the pose-estimation mode that this IO layer should refresh.
+   *
+   * @param mode active vision mode for this camera
+   */
+  public default void setVisionMode(Vision.VisionEstimationMode mode) {}
+
   // NEW: specialized reads to support MT1 / MT2 / tx-ty-ta modes
 
   /**

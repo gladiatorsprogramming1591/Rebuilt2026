@@ -107,7 +107,7 @@ public class ShooterIOSim implements ShooterIO {
   public BooleanSupplier rightShooterBelowCoastRPM() {
     return () ->
         velocityRPM
-            <= ShooterConstants.coastRPM.getAsDouble()
+            <= ShooterConstants.fixedIdleRPM.getAsDouble()
                 + ShooterConstants.IDLE_COAST_EXIT_MARGIN_RPM;
   }
 

@@ -182,7 +182,9 @@ public class Hood extends SubsystemBase {
               && Math.abs(outputs.desiredHoodAngle - inputs.hoodAngle)
                   < HoodConstants.HOOD_ANGLE_TOLERANCE;
 
-      Logger.recordOutput(HOOD_TABLE_KEY + "AtAngle", atAngle);
+      if (Constants.Tuning.HOOD) {
+        Logger.recordOutput(HOOD_TABLE_KEY + "AtAngle", atAngle);
+      }
       return atAngle;
     };
   }

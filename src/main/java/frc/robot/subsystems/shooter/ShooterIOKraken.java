@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.PhoenixUtil;
 import java.util.function.BooleanSupplier;
@@ -116,6 +117,7 @@ public class ShooterIOKraken implements ShooterIO {
   private double desiredVelocityRPM = 0.0;
   private int tuneConfigsCreated = 0;
   private int slowStatusRefreshCounter = 0;
+  private String lastLoggedControlMode = "";
 
   /**
    * Creates the real shooter IO layer and configures all shooter motor controllers.
@@ -129,6 +131,10 @@ public class ShooterIOKraken implements ShooterIO {
 
   /** Initializes dashboard entries used to push shooter tuning configs. */
   private void initializeTuningDashboard() {
+    if (!Constants.Tuning.SHOOTER) {
+      return;
+    }
+
     SmartDashboard.putString(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, "N/A");
     SmartDashboard.putNumber(SHOOTER_TABLE_KEY + "Tune configs created", tuneConfigsCreated);
     SmartDashboard.putString(SHOOTER_TABLE_KEY + "Tune slot0 created", "N/A");
@@ -345,36 +351,44 @@ public class ShooterIOKraken implements ShooterIO {
   private void applyVelocityOutput(ShooterIOOutputs outputs, double motionMagicAcceleration) {
     double desiredRps = rpmToRps(outputs.desiredVelocityRPM);
 
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "DesiredRPSInternal", desiredRps);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + "ActiveMMAcceleration", motionMagicAcceleration);
+    if (Constants.Tuning.SHOOTER) {
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "DesiredRPSInternal", desiredRps);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "ActiveMMAcceleration", motionMagicAcceleration);
+    }
 
     if (outputs.useMotionMagic) {
       rightShooterLeader.setControl(
           motionMagicVelocityControl
               .withVelocity(desiredRps)
               .withAcceleration(motionMagicAcceleration));
-      Logger.recordOutput(
-          SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE,
-          MotionMagicVelocityVoltage.class.getSimpleName());
+      recordControlMode(MotionMagicVelocityVoltage.class.getSimpleName());
       return;
     }
 
     rightShooterLeader.setControl(velocityControl.withVelocity(desiredRps));
-    Logger.recordOutput(
-        SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE,
-        VelocityTorqueCurrentFOC.class.getSimpleName());
+    recordControlMode(VelocityTorqueCurrentFOC.class.getSimpleName());
   }
 
   /** Applies open-loop duty-cycle control to the shooter leader motor. */
   private void applyDutyCycleOutput(ShooterIOOutputs outputs) {
     rightShooterLeader.set(outputs.desiredDutyCycle);
-    Logger.recordOutput(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, "DutyCycle");
+    recordControlMode("DutyCycle");
   }
 
   /** Stops the shooter leader motor. Followers are stopped through follower behavior. */
   private void stopShooter() {
     rightShooterLeader.stopMotor();
-    Logger.recordOutput(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, "Off");
+    recordControlMode("Off");
+  }
+
+  /** Records the active control mode only when it changes to avoid string log spam. */
+  private void recordControlMode(String controlMode) {
+    if (lastLoggedControlMode.equals(controlMode)) {
+      return;
+    }
+
+    lastLoggedControlMode = controlMode;
+    Logger.recordOutput(SHOOTER_TABLE_KEY + CURRENT_CONTROL_MODE, controlMode);
   }
 
   @Override
@@ -400,7 +414,7 @@ public class ShooterIOKraken implements ShooterIO {
   public BooleanSupplier rightShooterBelowCoastRPM() {
     return () ->
         rpsToRpm(rightLeaderVelocity.getValueAsDouble())
-            < ShooterConstants.coastRPM.getAsDouble() + ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
+            < ShooterConstants.fixedIdleRPM.getAsDouble() + ShooterConstants.FLYWHEEL_TOLERANCE_RPM;
   }
 
   /**

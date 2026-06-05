@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
-import frc.robot.util.LoggedTracer;
+import frc.robot.Constants;
 import java.util.List;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -68,6 +68,7 @@ public class Camera {
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
     this.robotHeadingPublisher = robotHeadingPublisher;
     this.cameraDuties = cameraDuties;
+    io.setVisionMode(visionMode);
   }
 
   /**
@@ -103,15 +104,34 @@ public class Camera {
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
     this.robotHeadingPublisher = robotHeadingPublisher;
     this.cameraDuties = cameraDuties;
+    io.setVisionMode(visionMode);
   }
 
   /** Pulls fresh inputs from the IO and logs them. Call once per loop. */
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Vision/Cameras/" + name, inputs);
-    Logger.recordOutput("Vision/Camera/" + name + "/Mode", visionMode.name());
-    LoggedTracer.record("Camera/" + name);
+    if (Constants.Tuning.VISION) {
+      Logger.recordOutput("Vision/Camera/" + name + "/Mode", visionMode.name());
+    }
   }
+
+    private static final double SAME_VISION_TIMESTAMP_EPSILON_SECONDS = 1e-6;
+
+    private double lastProcessedVisionTimestampSeconds = Double.NaN;
+
+    public boolean hasAlreadyProcessedVisionTimestamp(double timestampSeconds) {
+      return Double.isFinite(lastProcessedVisionTimestampSeconds)
+          && Double.isFinite(timestampSeconds)
+          && Math.abs(timestampSeconds - lastProcessedVisionTimestampSeconds)
+              <= SAME_VISION_TIMESTAMP_EPSILON_SECONDS;
+    }
+
+    public void markProcessedVisionTimestamp(double timestampSeconds) {
+      if (Double.isFinite(timestampSeconds)) {
+        lastProcessedVisionTimestampSeconds = timestampSeconds;
+      }
+    }
 
   /**
    * Sets the per-camera processing mode (MT1/MT2/SingleTagGyro/TxTyTa).
@@ -120,7 +140,8 @@ public class Camera {
    */
   // TODO: Determine how we want to set this vision mode
   public void setVisionMode(Vision.VisionEstimationMode mode) {
-    this.visionMode = mode;
+    this.visionMode = mode != null ? mode : Vision.VisionEstimationMode.MT1;
+    io.setVisionMode(this.visionMode);
   }
 
   /**

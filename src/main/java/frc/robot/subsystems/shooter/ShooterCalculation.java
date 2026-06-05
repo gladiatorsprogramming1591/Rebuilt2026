@@ -214,9 +214,6 @@ public class ShooterCalculation {
               TABLE_KEY + "Presets/HoodMax/HoodAngle", Units.radiansToDegrees(900)),
           shooterCalcTunable(TABLE_KEY + "Presets/HoodMax/FlywheelSpeed", 3000));
 
-  public static final LoggedTunableNumber passingIdleSpeed =
-      shooterCalcTunable(TABLE_KEY + "PassingIdleSpeed", 2000);
-
   // Passing target
   private static final double xPassTarget = Units.inchesToMeters(37);
 
@@ -479,12 +476,12 @@ public class ShooterCalculation {
       return frozenParameters;
     }
 
-    if (Constants.tuningMode) {
-      updateMaps();
-    }
-
     if (latestParameters != null) {
       return latestParameters;
+    }
+
+    if (Constants.Tuning.SHOOTER_CALCULATION) {
+      updateMaps();
     }
 
     Pose2d estimatedPose = getPhaseDelayedRobotPose();
@@ -902,6 +899,16 @@ public class ShooterCalculation {
     return fieldToHubAngle.plus(hubAngle).plus(robotToLauncher.getRotation().toRotation2d());
   }
 
+  /** Returns true when the expensive shooter-calculation debug log should publish this loop. */
+  private boolean shouldLogDetailedCalculation() {
+    if (!Constants.Tuning.SHOOTER_CALCULATION && !Constants.Tuning.SOTM) {
+      return false;
+    }
+
+    int detailedPeriodLoops = Math.max(1, (int) Math.round(detailedLogPeriodLoops.get()));
+    return detailedLogCounter++ % detailedPeriodLoops == 0;
+  }
+
   private void logCalculation(
       boolean passing,
       Translation2d target,
@@ -924,6 +931,12 @@ public class ShooterCalculation {
       double flywheelVelocity,
       Rotation2d currentPoseDriveAngle,
       boolean lookaheadAllowed) {
+    if (!shouldLogDetailedCalculation()) {
+      return;
+    }
+
+    int detailedPeriodLoops = Math.max(1, (int) Math.round(detailedLogPeriodLoops.get()));
+
     Translation2d launcherToTarget = target.minus(launcherPosition.getTranslation());
     Translation2d unitToTarget = launcherToTarget.div(launcherToTarget.getNorm());
 
@@ -956,13 +969,6 @@ public class ShooterCalculation {
             compensatedTimeOfFlight,
             distanceVelocityCompensationScalar.get(),
             distanceAccelerationCompensationScalar.get());
-
-    int detailedPeriodLoops = Math.max(1, (int) Math.round(detailedLogPeriodLoops.get()));
-    boolean logDetailed = detailedLogCounter++ % detailedPeriodLoops == 0;
-
-    if (!logDetailed) {
-      return;
-    }
 
     Logger.recordOutput(TABLE_KEY + "Passing", passing);
     Logger.recordOutput(TABLE_KEY + "Passing/ModeLatched", passingModeLatched);

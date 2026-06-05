@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.LoggedTracer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -170,8 +169,6 @@ public class CameraIOSim implements CameraIO {
    */
   @Override
   public void updateInputs(CameraIOInputs inputs) {
-    LoggedTracer.record("VisionInputs");
-
     Pose2d fieldToRobot = fieldToRobotSupplier.get();
     if (fieldToRobot != null) {
       sharedVisionSystem.update(fieldToRobot);

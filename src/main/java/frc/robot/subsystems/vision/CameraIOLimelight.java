@@ -3,7 +3,9 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.LimelightHelpers;
 import java.util.Optional;
 
@@ -21,6 +23,14 @@ public class CameraIOLimelight implements CameraIO {
   private final double verticalFOV;
   private final double primaryXYStandardDeviationCoefficient;
   private final double secondaryXYStandardDeviationCoefficient;
+  private final NetworkTableEntry heartbeatEntry;
+  private double lastHeartbeat = -1.0;
+  private double lastHeartbeatChangeTimestamp = 0.0;
+
+  private LimelightHelpers.PoseEstimate latestMT1Estimate = null;
+  private LimelightHelpers.PoseEstimate latestMT2Estimate = null;
+  private Target2D latestTarget2D = null;
+  private Vision.VisionEstimationMode activeVisionMode = Vision.VisionEstimationMode.MT1;
 
   /**
    * Constructs a Limelight-backed camera IO wrapper.
@@ -38,6 +48,7 @@ public class CameraIOLimelight implements CameraIO {
     this.primaryXYStandardDeviationCoefficient = cameraType.primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient =
         cameraType.secondaryXYStandardDeviationCoefficient;
+    this.heartbeatEntry = NetworkTableInstance.getDefault().getTable(this.name).getEntry("hb");
   }
 
   /**
@@ -47,7 +58,7 @@ public class CameraIOLimelight implements CameraIO {
    */
   @Override
   public void updateInputs(CameraIOInputs inputs) {
-    double hb = NetworkTableInstance.getDefault().getTable(this.name).getEntry("hb").getDouble(-1);
+    double hb = heartbeatEntry.getDouble(-1);
     boolean connected = getIsConnected(hb);
 
     Rotation2d x = new Rotation2d();
@@ -60,30 +71,68 @@ public class CameraIOLimelight implements CameraIO {
     var secondary = new edu.wpi.first.math.geometry.Pose2d();
     double tagId = -1.0;
 
+    latestMT1Estimate = null;
+    latestMT2Estimate = null;
+    latestTarget2D = null;
+
     if (connected) {
-      x = Rotation2d.fromDegrees(LimelightHelpers.getTX(name));
-      y = Rotation2d.fromDegrees(LimelightHelpers.getTY(name));
-      tv = LimelightHelpers.getTV(name);
-      count = LimelightHelpers.getTargetCount(name);
+      double[] t2d = LimelightHelpers.getT2DArray(name);
+      if (t2d.length >= 10) {
+        tv = t2d[0] == 1.0;
+        count = (int) t2d[1];
+        x = Rotation2d.fromDegrees(t2d[4]);
+        y = Rotation2d.fromDegrees(t2d[5]);
+        tagId = t2d[9];
 
-      var mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-      var mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
-
-      if (mt2 != null) {
-        avgDist = mt2.avgTagDist;
-        primary = mt2.pose; // prefer MT2 in primary slot
-        ts = mt2.timestampSeconds;
-      }
-      if (mt1 != null) {
-        secondary = mt1.pose;
-        ts = (ts == 0.0) ? mt1.timestampSeconds : ts;
+        if (tv) {
+          latestTarget2D = new Target2D(x.getDegrees(), y.getDegrees(), t2d[8]);
+        }
       }
 
-      tagId = LimelightHelpers.getFiducialID(name);
+      if (shouldReadMT2()) {
+        latestMT2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+      }
+      if (shouldReadMT1()) {
+        latestMT1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+      }
+
+      if (latestMT2Estimate != null) {
+        avgDist = latestMT2Estimate.avgTagDist;
+        primary = latestMT2Estimate.pose; // prefer MT2 in primary slot
+        ts = latestMT2Estimate.timestampSeconds;
+      }
+      if (latestMT1Estimate != null) {
+        secondary = latestMT1Estimate.pose;
+        if (latestMT2Estimate == null) {
+          avgDist = latestMT1Estimate.avgTagDist;
+          primary = latestMT1Estimate.pose;
+          ts = latestMT1Estimate.timestampSeconds;
+        } else {
+          ts = (ts == 0.0) ? latestMT1Estimate.timestampSeconds : ts;
+        }
+      }
     }
 
     inputs.data =
         new CameraIOData(hb, connected, x, y, tv, count, avgDist, ts, primary, secondary, tagId);
+  }
+
+  /** Updates which Limelight pose arrays are refreshed each loop. */
+  @Override
+  public void setVisionMode(Vision.VisionEstimationMode mode) {
+    activeVisionMode = mode != null ? mode : Vision.VisionEstimationMode.MT1;
+  }
+
+  /** Returns true when the current mode needs the MT1 pose array. */
+  private boolean shouldReadMT1() {
+    return activeVisionMode == Vision.VisionEstimationMode.MT1
+        || activeVisionMode == Vision.VisionEstimationMode.SINGLE_TAG_GYRO;
+  }
+
+  /** Returns true when the current mode needs the MT2 pose array. */
+  private boolean shouldReadMT2() {
+    return activeVisionMode == Vision.VisionEstimationMode.MT2
+        || activeVisionMode == Vision.VisionEstimationMode.SINGLE_TAG_GYRO;
   }
 
   /**
@@ -93,7 +142,14 @@ public class CameraIOLimelight implements CameraIO {
    * @return true if connected and producing heartbeats
    */
   private boolean getIsConnected(double heartbeat) {
-    return heartbeat != -1;
+    double now = Timer.getTimestamp();
+
+    if (heartbeat != lastHeartbeat) {
+      lastHeartbeat = heartbeat;
+      lastHeartbeatChangeTimestamp = now;
+    }
+
+    return heartbeat != -1.0 && now - lastHeartbeatChangeTimestamp < 0.5;
   }
 
   /**
@@ -184,8 +240,7 @@ public class CameraIOLimelight implements CameraIO {
    */
   @Override
   public Optional<LimelightHelpers.PoseEstimate> readMT1() {
-    var pe = LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
-    return Optional.ofNullable(pe);
+    return Optional.ofNullable(latestMT1Estimate);
   }
 
   /**
@@ -195,8 +250,7 @@ public class CameraIOLimelight implements CameraIO {
    */
   @Override
   public Optional<LimelightHelpers.PoseEstimate> readMT2() {
-    var pe = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
-    return Optional.ofNullable(pe);
+    return Optional.ofNullable(latestMT2Estimate);
   }
 
   /**
@@ -207,14 +261,7 @@ public class CameraIOLimelight implements CameraIO {
    */
   @Override
   public Optional<Target2D> readTxTyTa() {
-    if (LimelightHelpers.getTV(name)) {
-      return Optional.of(
-          new Target2D(
-              LimelightHelpers.getTX(name),
-              LimelightHelpers.getTY(name),
-              LimelightHelpers.getTA(name)));
-    }
-    return Optional.empty();
+    return Optional.ofNullable(latestTarget2D);
   }
 
   /**

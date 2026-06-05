@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 import org.littletonrobotics.junction.Logger;
 
@@ -205,6 +206,10 @@ public class KickerIOKraken implements KickerIO {
 
   /** Returns true when the applied output debug log should publish this loop. */
   private boolean shouldLogAppliedOutput() {
+    if (!Constants.Tuning.KICKER) {
+      return false;
+    }
+
     appliedOutputLogCounter++;
     if (appliedOutputLogCounter < APPLIED_OUTPUT_LOG_PERIOD_LOOPS) {
       return false;

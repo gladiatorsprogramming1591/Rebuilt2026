@@ -14,6 +14,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 import org.littletonrobotics.junction.Logger;
 
@@ -94,15 +95,19 @@ public class HopperIOKraken implements HopperIO {
     inputs.hopperEmpty =
         inputs.hopperEmptySensorConnected && isHopperEmptyDistance(inputs.hopperEmptyDistance);
 
-    if (shouldLogSlowOutputs()) {
+    if (shouldLogTuningOutputs()) {
       Logger.recordOutput(
           HOPPER_TABLE_KEY + "Sensor/EmptyThreshold",
           HopperConstants.HOPPER_EMPTY_DISTANCE_LIMIT.getAsDouble());
     }
   }
 
-  /** Returns true when slow-changing hopper IO logs should publish this loop. */
-  private boolean shouldLogSlowOutputs() {
+  /** Returns true when hopper tuning logs should publish this loop. */
+  private boolean shouldLogTuningOutputs() {
+    if (!Constants.Tuning.HOPPER) {
+      return false;
+    }
+
     slowLogCounter++;
     if (slowLogCounter < SLOW_LOG_PERIOD_LOOPS) {
       return false;

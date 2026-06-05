@@ -2,7 +2,6 @@ package frc.robot.subsystems.hopper;
 
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /** Constants for the hopper subsystem. */
 public final class HopperConstants {
@@ -41,8 +40,8 @@ public final class HopperConstants {
    */
   public static final double MIN_EMPTY_DURATION = 0.2;
 
-  private static final LoggedNetworkNumber beltMotorSpeed =
-      new LoggedNetworkNumber("/Tuning/beltMotorSpeed", 0.70);
+  private static final LoggedTunableNumber beltMotorSpeed =
+      new LoggedTunableNumber("Hopper/BeltMotorSpeed", 0.70, Constants.Tuning.HOPPER);
 
   /**
    * Returns the current tunable belt motor speed.

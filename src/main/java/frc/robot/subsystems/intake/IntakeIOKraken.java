@@ -103,15 +103,16 @@ public class IntakeIOKraken implements IntakeIO {
    * boolean is toggled.
    */
   private void initializeTuningDashboard() {
+    if (!Constants.Tuning.INTAKE) {
+      return;
+    }
+
     SmartDashboard.putNumber(kintakeTableKey + "Tune configs created", 0);
     SmartDashboard.putString(kintakeTableKey + "Tune slot0 stow created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune slot1 deploy created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune slot2 stow full created", "N/A");
     SmartDashboard.putString(kintakeTableKey + "Tune MM stow created", "N/A");
-
-    if (Constants.tuningMode) {
-      SmartDashboard.putBoolean(kintakeTableKey + UPDATE_DEPLOY_CONFIG_NAME, false);
-    }
+    SmartDashboard.putBoolean(kintakeTableKey + UPDATE_DEPLOY_CONFIG_NAME, false);
   }
 
 private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean isAuto) {
@@ -300,7 +301,7 @@ public void useTeleopRollerCurrentLimits() {
    */
   @Override
   public void applyOutputs(IntakeIOOutputs outputs) {
-    if (Constants.tuningMode) {
+    if (Constants.Tuning.INTAKE) {
       tuneDeployMotorConfigs(outputs);
     }
 
@@ -440,7 +441,6 @@ public void useTeleopRollerCurrentLimits() {
     inputs.slapdownRawPosition = rawAngle;
     inputs.slapdownPosition = rawAngle + encoderOffset;
 
-    Logger.recordOutput(kintakeTableKey + "RawDeployPosition", rawDeployPosition);
   }
 
   /**

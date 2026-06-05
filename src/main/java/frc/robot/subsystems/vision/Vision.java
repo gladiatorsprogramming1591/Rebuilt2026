@@ -7,16 +7,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.LoggedTracer;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.LoopProfiler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,23 +53,12 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Vision extends SubsystemBase {
   private static final LoggedTunableNumber slowLogPeriodLoops =
-      new LoggedTunableNumber("Vision/Logging/Slow Period Loops", 10.0, Constants.tuningMode);
-
-  private static final String AUTO_HDR_ENABLED_KEY = "Vision/AutoHDR/Enabled";
-  private static final String AUTO_HDR_NORMAL_PIPELINE_KEY = "Vision/AutoHDR/Normal Pipeline";
-  private static final String AUTO_HDR_SUN_PIPELINE_KEY = "Vision/AutoHDR/Sun Pipeline";
-  private static final String AUTO_HDR_SWITCH_SECONDS_KEY = "Vision/AutoHDR/Switch Seconds";
-  private static final int DEFAULT_AUTO_HDR_NORMAL_PIPELINE = 0;
-  private static final int DEFAULT_AUTO_HDR_SUN_PIPELINE = 1;
-  private static final double DEFAULT_AUTO_HDR_SWITCH_SECONDS = 0.25;
+      new LoggedTunableNumber("Vision/Logging/Slow Period Loops", 10.0, Constants.Tuning.VISION);
 
   private final Camera[] cameras;
-  private final int[] lastAppliedPipelineByCamera;
+  private final AutoHDRPipelineSwitcher autoHdrPipelineSwitcher;
   private int slowLogCounter = 0;
   private boolean logSlowThisLoop = false;
-  private boolean autoHdrWasEnabled = false;
-  private int autoHdrPhase = 0;
-  private double lastAutoHdrSwitchTimestamp = 0.0;
 
   /** Per-camera processing mode (matchable at runtime). */
   public enum VisionEstimationMode {
@@ -97,13 +83,7 @@ public class Vision extends SubsystemBase {
 
   public Vision(Camera... cameras) {
     this.cameras = cameras;
-    this.lastAppliedPipelineByCamera = new int[cameras.length];
-    Arrays.fill(this.lastAppliedPipelineByCamera, -1);
-
-    SmartDashboard.putBoolean(AUTO_HDR_ENABLED_KEY, false);
-    SmartDashboard.putNumber(AUTO_HDR_NORMAL_PIPELINE_KEY, DEFAULT_AUTO_HDR_NORMAL_PIPELINE);
-    SmartDashboard.putNumber(AUTO_HDR_SUN_PIPELINE_KEY, DEFAULT_AUTO_HDR_SUN_PIPELINE);
-    SmartDashboard.putNumber(AUTO_HDR_SWITCH_SECONDS_KEY, DEFAULT_AUTO_HDR_SWITCH_SECONDS);
+    this.autoHdrPipelineSwitcher = new AutoHDRPipelineSwitcher(cameras);
   }
 
   /**
@@ -123,47 +103,30 @@ public class Vision extends SubsystemBase {
   /** Main loop: update cameras, build per-camera candidates, then cross-camera fuse & feed. */
   @Override
   public void periodic() {
-    LoggedTracer.record("VisionStart");
     logSlowThisLoop = shouldLogSlowVisionOutputs();
-    List<Rotation2d> mt1Yaws = new ArrayList<>();
-    // If available, push yaw to MT2 cameras before we read (254/63 28 pattern).
+    autoHdrPipelineSwitcher.periodic();
+    // If available, push yaw to MT2 cameras before we read (254/6328 pattern).
     Rotation2d yawNow = (yawSupplier != null) ? yawSupplier.get() : null;
 
     for (Camera cam : cameras) {
-      LoopProfiler.run("Vision/CameraPeriodic/" + cam.getName(), cam::periodic);
-
       if (yawNow != null && cam.getIo() != null) {
         // Limelight robot_orientation_set (required for MT2)
         // 254 VisionIOHardwareLimelight.setLLSettings()/orientation path; 6328 VisionIOLimelight
-        LoopProfiler.run(
-            "Vision/SetRobotYaw/" + cam.getName(),
-            () -> cam.getIo().setRobotYawDegrees(yawNow.getDegrees()));
+        cam.getIo().setRobotYawDegrees(yawNow.getDegrees());
         if (logSlowThisLoop) {
-          if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "Camera Angle", yawNow.getDegrees()); }
+          SmartDashboard.putNumber(cam.getTableKey() + "Camera Angle", yawNow.getDegrees());
         }
       }
 
-      Optional<LimelightHelpers.PoseEstimate> mt1Opt =
-          LoopProfiler.get("Vision/ReadMT1Precheck/" + cam.getName(), () -> cam.getIo().readMT1());
+      cam.periodic();
+
       if (logSlowThisLoop) {
-        if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "mt1Opt", mt1Opt.isPresent()); }
-      }
-      if (mt1Opt.isPresent()) {
-        var pe = mt1Opt.get();
-        if (pe.pose != null && isPoseWithinField(pe.pose)) {
-          if (logSlowThisLoop) {
-            if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "PoseInField", true); }
-          }
-          if (pe.tagCount == 1
-              && pe.rawFiducials != null
-              && pe.rawFiducials.length >= 1
-              && pe.rawFiducials[0].ambiguity < 0.2) {
-            mt1Yaws.add(pe.pose.getRotation());
-          }
-        } else {
-          if (logSlowThisLoop) {
-            if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "PoseInField", false); }
-          }
+        Optional<LimelightHelpers.PoseEstimate> mt1Opt = cam.getIo().readMT1();
+        SmartDashboard.putBoolean(cam.getTableKey() + "mt1Opt", mt1Opt.isPresent());
+        if (mt1Opt.isPresent()) {
+          var pe = mt1Opt.get();
+          SmartDashboard.putBoolean(
+              cam.getTableKey() + "PoseInField", pe.pose != null && isPoseWithinField(pe.pose));
         }
       }
     }
@@ -190,13 +153,13 @@ public class Vision extends SubsystemBase {
             case MT1 ->
                 pickFromPoseEstimate(
                     cam,
-                    LoopProfiler.get("Vision/ReadMT1/" + cam.getName(), () -> cam.getIo().readMT1()),
+                    cam.getIo().readMT1(),
                     true,
                     yawNow);
             case MT2 ->
                 pickFromPoseEstimate(
                     cam,
-                    LoopProfiler.get("Vision/ReadMT2/" + cam.getName(), () -> cam.getIo().readMT2()),
+                    cam.getIo().readMT2(),
                     false,
                     yawNow);
             case SINGLE_TAG_GYRO -> pickSingleTagFallback(cam, yawNow);
@@ -207,121 +170,24 @@ public class Vision extends SubsystemBase {
           };
       cand.ifPresent(candidates::add);
       if (logSlowThisLoop) {
-        if (logSlowThisLoop) { SmartDashboard.putString(cam.getTableKey() + "VisionMode", cam.getVisionMode().toString()); }
+        SmartDashboard.putString(cam.getTableKey() + "VisionMode", cam.getVisionMode().toString());
       }
     }
-    // JT: Removed since yaw is updated in Drive::periodic and is the yaw supplier in RobotContainer
-    // TODO: Not implemented yet, intended to use to update yaw under scenarios where we aren't
-    // moving or disabled
-    // RobotState.getInstance().seedYawFromVisionSamples(mt1Yaws, /* gain */ 0.4);
-
     // Cross-camera fuse (254-style inverse-variance weighting), then feed field estimator.
     boolean injectVision =
         Math.abs(RobotState.getInstance().getRobotPoseField().getX())
             < Integer.MAX_VALUE; // flip this false -> true to test
     if (injectVision) {
-      LoopProfiler.run(
-          "Vision/FuseAndFeed",
-          () -> {
-            if (candidates.size() >= 2) {
-              VisionCandidate fused = fuse(candidates.get(0), candidates.get(1));
-              feedFieldEstimate(fused);
-            } else if (candidates.size() == 1) {
-              feedFieldEstimate(candidates.get(0));
-            }
-          });
-    }
-
-    LoopProfiler.run("Vision/AutoHDRPipelineSwitching", this::updateAutoHdrPipelineSwitching);
-
-    LoggedTracer.record("Vision");
-  }
-
-
-  /** Switches Limelight pipelines for HDR-style sun handling when enabled from the dashboard. */
-  private void updateAutoHdrPipelineSwitching() {
-    if (cameras.length == 0) {
-      return;
-    }
-
-    boolean enabled = SmartDashboard.getBoolean(AUTO_HDR_ENABLED_KEY, false);
-    int normalPipeline =
-        (int) SmartDashboard.getNumber(AUTO_HDR_NORMAL_PIPELINE_KEY, DEFAULT_AUTO_HDR_NORMAL_PIPELINE);
-    int sunPipeline =
-        (int) SmartDashboard.getNumber(AUTO_HDR_SUN_PIPELINE_KEY, DEFAULT_AUTO_HDR_SUN_PIPELINE);
-
-    if (!enabled) {
-      if (autoHdrWasEnabled) {
-        for (int i = 0; i < Math.min(2, cameras.length); i++) {
-          applyPipelineIfChanged(i, normalPipeline);
-        }
+      if (candidates.size() >= 2) {
+        VisionCandidate fused = fuse(candidates.get(0), candidates.get(1));
+        feedFieldEstimate(fused);
+      } else if (candidates.size() == 1) {
+        feedFieldEstimate(candidates.get(0));
       }
-
-      autoHdrWasEnabled = false;
-      Logger.recordOutput("Vision/AutoHDR/Enabled", false);
-      return;
     }
 
-    autoHdrWasEnabled = true;
-
-    double switchSeconds =
-        Math.max(
-            0.05,
-            SmartDashboard.getNumber(AUTO_HDR_SWITCH_SECONDS_KEY, DEFAULT_AUTO_HDR_SWITCH_SECONDS));
-
-    if (Timer.getTimestamp() - lastAutoHdrSwitchTimestamp >= switchSeconds) {
-      lastAutoHdrSwitchTimestamp = Timer.getTimestamp();
-      autoHdrPhase++;
-    }
-
-    int firstPipeline = normalPipeline;
-    int secondPipeline = sunPipeline;
-
-    switch (autoHdrPhase % 4) {
-      case 0:
-        firstPipeline = normalPipeline;
-        secondPipeline = sunPipeline;
-        break;
-      case 1:
-        firstPipeline = normalPipeline;
-        secondPipeline = normalPipeline;
-        break;
-      case 2:
-        firstPipeline = sunPipeline;
-        secondPipeline = normalPipeline;
-        break;
-      default:
-        firstPipeline = sunPipeline;
-        secondPipeline = sunPipeline;
-        break;
-    }
-
-    applyPipelineIfChanged(0, firstPipeline);
-    if (cameras.length > 1) {
-      applyPipelineIfChanged(1, secondPipeline);
-    }
-
-    Logger.recordOutput("Vision/AutoHDR/Enabled", true);
-    Logger.recordOutput("Vision/AutoHDR/Phase", autoHdrPhase % 4);
-    Logger.recordOutput("Vision/AutoHDR/Camera0Pipeline", firstPipeline);
-    if (cameras.length > 1) {
-      Logger.recordOutput("Vision/AutoHDR/Camera1Pipeline", secondPipeline);
-    }
   }
 
-  /** Applies a camera pipeline only when the requested pipeline has changed. */
-  private void applyPipelineIfChanged(int cameraIndex, int pipeline) {
-    if (cameraIndex < 0 || cameraIndex >= cameras.length) {
-      return;
-    }
-
-    if (lastAppliedPipelineByCamera[cameraIndex] == pipeline) {
-      return;
-    }
-
-    cameras[cameraIndex].getIo().setPipeline(pipeline);
-    lastAppliedPipelineByCamera[cameraIndex] = pipeline;
-  }
 
   /**
    * Adds a fused (or single) candidate into the field estimator and logs useful artifacts.
@@ -331,10 +197,10 @@ public class Vision extends SubsystemBase {
   private void feedFieldEstimate(VisionCandidate c) {
     RobotState.getInstance().addFieldVisionMeasurement(c.pose(), c.timestampSec(), c.xyStdDev(), c.rotStdDev());
     if (logSlowThisLoop) {
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/FusedPose", c.pose()); }
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/FusedTimestamp", c.timestampSec()); }
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/FusedXYStd", c.xyStdDev()); }
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/FusedRotStd", c.rotStdDev()); }
+      Logger.recordOutput("Vision/FusedPose", c.pose());
+      Logger.recordOutput("Vision/FusedTimestamp", c.timestampSec());
+      Logger.recordOutput("Vision/FusedXYStd", c.xyStdDev());
+      Logger.recordOutput("Vision/FusedRotStd", c.rotStdDev());
     }
   }
 
@@ -368,6 +234,13 @@ public class Vision extends SubsystemBase {
     if (pe.pose == null) return Optional.empty();
     if (pe.tagCount <= 0) return Optional.empty();
 
+    if (cam.hasAlreadyProcessedVisionTimestamp(pe.timestampSeconds)) {
+      if (logSlowThisLoop) {
+        Logger.recordOutput("Vision/Rejected/DuplicateTimestamp/" + cam.getName(), true);
+      }
+      return Optional.empty();
+    }
+
     // 6328-style field bounds gating
     Pose2d pose = pe.pose;
     if (!isPoseWithinField(pose)) {
@@ -381,21 +254,21 @@ public class Vision extends SubsystemBase {
     if (pe.tagCount == 1 && pe.rawFiducials != null && pe.rawFiducials.length >= 1) {
       double ambiguity = pe.rawFiducials[0].ambiguity;
       if (logSlowThisLoop) {
-        if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "Ambiguity", ambiguity); }
+        SmartDashboard.putNumber(cam.getTableKey() + "Ambiguity", ambiguity);
       }
       if (ambiguity > 0.5) { // conservative default; tune per camera
         if (logSlowThisLoop) {
           Logger.recordOutput("Vision/Rejected/HighAmbiguity", ambiguity);
-          if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", false); }
+          SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", false);
         }
         return Optional.empty();
       } else if (logSlowThisLoop) {
-        if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", true); }
+        SmartDashboard.putBoolean(cam.getTableKey() + "Ambiguity OK", true);
       }
 
       if (logSlowThisLoop) {
-        if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "Avg Tag Area", pe.avgTagArea); }
-        if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "Tag Area Ok", (pe.avgTagArea >= 0.25)); }
+        SmartDashboard.putNumber(cam.getTableKey() + "Avg Tag Area", pe.avgTagArea);
+        SmartDashboard.putBoolean(cam.getTableKey() + "Tag Area Ok", (pe.avgTagArea >= 0.25));
       }
       if (pe.avgTagArea < 0.25) {
         return Optional.empty();
@@ -446,22 +319,23 @@ public class Vision extends SubsystemBase {
     double rotStd = (okToSeedYaw && trustYaw) ? 1 : 9999;
 
     if (logSlowThisLoop) {
-      if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "xyStd", xyStd); }
-      if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "out.x", out.getX()); }
-      if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "out.y", out.getY()); }
-      if (logSlowThisLoop) { SmartDashboard.putNumber(cam.getTableKey() + "out.rot", out.getRotation().getDegrees()); }
-      if (logSlowThisLoop) { SmartDashboard.putBoolean(cam.getTableKey() + "trustYaw", trustYaw); }
+      SmartDashboard.putNumber(cam.getTableKey() + "xyStd", xyStd);
+      SmartDashboard.putNumber(cam.getTableKey() + "out.x", out.getX());
+      SmartDashboard.putNumber(cam.getTableKey() + "out.y", out.getY());
+      SmartDashboard.putNumber(cam.getTableKey() + "out.rot", out.getRotation().getDegrees());
+      SmartDashboard.putBoolean(cam.getTableKey() + "trustYaw", trustYaw);
 
       // Logging (1678/254 style telemetry hygiene)
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out); }
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/CandidateXYStd/" + cam.getName(), xyStd); }
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/CandidateRotStd/" + cam.getName(), rotStd); }
-      if (logSlowThisLoop) { Logger.recordOutput("Vision/CandidateTags/" + cam.getName(), pe.tagCount); }
+      Logger.recordOutput("Vision/CandidatePose/" + cam.getName(), out);
+      Logger.recordOutput("Vision/CandidateXYStd/" + cam.getName(), xyStd);
+      Logger.recordOutput("Vision/CandidateRotStd/" + cam.getName(), rotStd);
+      Logger.recordOutput("Vision/CandidateTags/" + cam.getName(), pe.tagCount);
     }
     int[] ids =
         (pe.rawFiducials == null)
             ? new int[0]
             : Arrays.stream(pe.rawFiducials).filter(f -> f != null).mapToInt(f -> f.id).toArray();
+    cam.markProcessedVisionTimestamp(pe.timestampSeconds);
     return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, trustYaw, rotStd, ids));
   }
 
@@ -477,10 +351,8 @@ public class Vision extends SubsystemBase {
    * @return present if accepted
    */
   private Optional<VisionCandidate> pickSingleTagFallback(Camera cam, Rotation2d yawNow) {
-    Optional<LimelightHelpers.PoseEstimate> mt1 =
-        LoopProfiler.get("Vision/ReadMT1SingleTag/" + cam.getName(), () -> cam.getIo().readMT1());
-    Optional<LimelightHelpers.PoseEstimate> mt2 =
-        LoopProfiler.get("Vision/ReadMT2SingleTag/" + cam.getName(), () -> cam.getIo().readMT2());
+    Optional<LimelightHelpers.PoseEstimate> mt1 = cam.getIo().readMT1();
+    Optional<LimelightHelpers.PoseEstimate> mt2 = cam.getIo().readMT2();
 
     Optional<LimelightHelpers.PoseEstimate> selected =
         mt1.filter(pe -> pe != null && pe.tagCount == 1)
@@ -490,7 +362,12 @@ public class Vision extends SubsystemBase {
     var pe = selected.get();
     if (pe.pose == null) return Optional.empty();
     if (!isPoseWithinField(pe.pose)) return Optional.empty();
-
+    if (cam.hasAlreadyProcessedVisionTimestamp(pe.timestampSeconds)) {
+      if (logSlowThisLoop) {
+        Logger.recordOutput("Vision/Rejected/DuplicateTimestamp/" + cam.getName(), true);
+      }
+      return Optional.empty();
+    }
     // 6328-style std-dev model for one tag
     // TODO: What if selected is an mt2?
     double dist = Math.max(0.01, pe.avgTagDist);
@@ -508,6 +385,7 @@ public class Vision extends SubsystemBase {
                 .filter(f -> f != null)
                 .mapToInt(f -> f.id)
                 .toArray();
+    cam.markProcessedVisionTimestamp(pe.timestampSeconds);
     return Optional.of(new VisionCandidate(out, pe.timestampSeconds, xyStd, false, rotStd, ids));
   }
 
@@ -621,6 +499,10 @@ public class Vision extends SubsystemBase {
 
   /** Returns true at the slower logging cadence for vision dashboard and detailed telemetry. */
   private boolean shouldLogSlowVisionOutputs() {
+    if (!Constants.Tuning.VISION) {
+      return false;
+    }
+
     int periodLoops = Math.max(1, (int) Math.round(slowLogPeriodLoops.getAsDouble()));
 
     slowLogCounter++;
