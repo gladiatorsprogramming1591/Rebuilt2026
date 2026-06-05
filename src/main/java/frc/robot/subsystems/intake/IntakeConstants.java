@@ -127,9 +127,6 @@ public final class IntakeConstants {
 
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SPEED = ROLLER_REVERSE_SPEED;
   private static final double DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS = 0.18;
-  private static final double DEFAULT_AUTO_PREPARE_ROLLER_DUTY_CYCLE = ROLLER_PICKUP_SPEED;
-  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VOLTAGE = 9.0;
-  private static final double DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS = 95.0;
 
   // Manual slapdown speeds
   public static final double DEPLOYING_SPEED = 0.5;
@@ -158,29 +155,7 @@ public final class IntakeConstants {
   private static final double DEFAULT_ROLLER_BOOST_IGNORE_SECONDS = 0.35;
   private static final double DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS = 0.12;
 
-  // Auto Prepare Intake roller velocity tuning.
-  // Duty-cycle velocity outputs are in duty-cycle units, voltage velocity outputs are in volts,
-  // and torque-current velocity outputs are in amps.
-  private static final double DEFAULT_ROLLER_VELOCITY_DUTY_KP = 0.010;
-  private static final double DEFAULT_ROLLER_VELOCITY_DUTY_KI = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_DUTY_KD = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_DUTY_KS = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_DUTY_KV = 0.020;
-  private static final double DEFAULT_ROLLER_VELOCITY_DUTY_KA = 0.0;
-
-  private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KP = 0.15;
-  private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KI = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KD = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KS = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KV = 0.12;
-  private static final double DEFAULT_ROLLER_VELOCITY_VOLTAGE_KA = 0.0;
-
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KP = 3.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KI = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KD = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KS = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KV = 0.0;
-  private static final double DEFAULT_ROLLER_VELOCITY_TORQUE_KA = 4.0;
+  
 
   // Prepare-intake unjam tuning
   public static final LoggedTunableNumber prepareUnjamReverseSpeed =
@@ -193,24 +168,6 @@ public final class IntakeConstants {
       new LoggedTunableNumber(
           kintakeTableKey + "PrepareUnjamReverseSeconds",
           DEFAULT_PREPARE_UNJAM_REVERSE_SECONDS,
-          Constants.Tuning.INTAKE);
-
-  public static final LoggedTunableNumber autoPrepareRollerDutyCycle =
-      new LoggedTunableNumber(
-          kintakeTableKey + "AutoPrepareRollerDutyCycle",
-          DEFAULT_AUTO_PREPARE_ROLLER_DUTY_CYCLE,
-          Constants.Tuning.INTAKE);
-
-  public static final LoggedTunableNumber autoPrepareRollerVoltage =
-      new LoggedTunableNumber(
-          kintakeTableKey + "AutoPrepareRollerVoltage",
-          DEFAULT_AUTO_PREPARE_ROLLER_VOLTAGE,
-          Constants.Tuning.INTAKE);
-
-  public static final LoggedTunableNumber autoPrepareRollerVelocityRPS =
-      new LoggedTunableNumber(
-          kintakeTableKey + "AutoPrepareRollerVelocityRPS",
-          DEFAULT_AUTO_PREPARE_ROLLER_VELOCITY_RPS,
           Constants.Tuning.INTAKE);
 
   public static final LoggedTunableNumber slapdownHoldDownTorqueCurrent =
@@ -260,45 +217,6 @@ public final class IntakeConstants {
           kintakeTableKey + "RollerBoostDebounceSeconds",
           DEFAULT_ROLLER_BOOST_DEBOUNCE_SECONDS,
           Constants.Tuning.INTAKE);
-
-  public static final LoggedTunableNumber rollerVelocityDutyKP =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityDuty/kP", DEFAULT_ROLLER_VELOCITY_DUTY_KP, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityDutyKI =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityDuty/kI", DEFAULT_ROLLER_VELOCITY_DUTY_KI, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityDutyKD =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityDuty/kD", DEFAULT_ROLLER_VELOCITY_DUTY_KD, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityDutyKS =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityDuty/kS", DEFAULT_ROLLER_VELOCITY_DUTY_KS, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityDutyKV =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityDuty/kV", DEFAULT_ROLLER_VELOCITY_DUTY_KV, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityDutyKA =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityDuty/kA", DEFAULT_ROLLER_VELOCITY_DUTY_KA, Constants.Tuning.INTAKE);
-
-  public static final LoggedTunableNumber rollerVelocityVoltageKP =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityVoltage/kP", DEFAULT_ROLLER_VELOCITY_VOLTAGE_KP, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityVoltageKI =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityVoltage/kI", DEFAULT_ROLLER_VELOCITY_VOLTAGE_KI, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityVoltageKD =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityVoltage/kD", DEFAULT_ROLLER_VELOCITY_VOLTAGE_KD, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityVoltageKS =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityVoltage/kS", DEFAULT_ROLLER_VELOCITY_VOLTAGE_KS, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityVoltageKV =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityVoltage/kV", DEFAULT_ROLLER_VELOCITY_VOLTAGE_KV, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityVoltageKA =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityVoltage/kA", DEFAULT_ROLLER_VELOCITY_VOLTAGE_KA, Constants.Tuning.INTAKE);
-
-  public static final LoggedTunableNumber rollerVelocityTorqueKP =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityTorque/kP", DEFAULT_ROLLER_VELOCITY_TORQUE_KP, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityTorqueKI =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityTorque/kI", DEFAULT_ROLLER_VELOCITY_TORQUE_KI, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityTorqueKD =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityTorque/kD", DEFAULT_ROLLER_VELOCITY_TORQUE_KD, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityTorqueKS =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityTorque/kS", DEFAULT_ROLLER_VELOCITY_TORQUE_KS, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityTorqueKV =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityTorque/kV", DEFAULT_ROLLER_VELOCITY_TORQUE_KV, Constants.Tuning.INTAKE);
-  public static final LoggedTunableNumber rollerVelocityTorqueKA =
-      new LoggedTunableNumber(kintakeTableKey + "RollerVelocityTorque/kA", DEFAULT_ROLLER_VELOCITY_TORQUE_KA, Constants.Tuning.INTAKE);
 
   // REFACTOR: Shooting agitation is still experimental. Keep these grouped so they can be removed
   // or moved behind a chooser once the final shooting-stow behavior is selected.

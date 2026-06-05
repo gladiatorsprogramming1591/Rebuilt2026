@@ -52,12 +52,6 @@ public interface IntakeIO {
     /** Right roller RPS output. */
     public double rollerRightRPS = 0.0;
 
-    /** Left roller applied motor voltage in volts. */
-    public double rollerLeftVoltage = 0.0;
-
-    /** Right roller applied motor voltage in volts. */
-    public double rollerRightVoltage = 0.0;
-
     /** Left roller motor temperature in Celsius. */
     public double rollerLeftTemperature = 0.0;
 
@@ -89,15 +83,9 @@ public interface IntakeIO {
     /**
      * Desired roller output.
      *
-     * <p>Forward torque-current commands use amps. Reverse and duty-cycle commands use duty cycle.
+     * <p>Forward torque-current commands use amps. Reverse commands use duty cycle.
      */
     public double appliedRollerSpeed = 0.0;
-
-    /** Desired roller voltage when autonomous Prepare Intake voltage mode is selected. */
-    public double appliedRollerVoltage = 0.0;
-
-    /** Desired roller velocity when an autonomous Prepare Intake velocity mode is selected. */
-    public double appliedRollerVelocityRPS = 0.0;
 
     /** Desired open-loop slapdown output when slapdown mode is SPEED. */
     public double appliedSlapdownSpeed = 0.0;
@@ -134,27 +122,6 @@ public interface IntakeIO {
     public double stowFullKD = 0.0;
     public double stowFullKG = 0.0;
     public double stowFullFF = 0.0;
-
-    public double rollerVelocityDutyKP = 0.0;
-    public double rollerVelocityDutyKI = 0.0;
-    public double rollerVelocityDutyKD = 0.0;
-    public double rollerVelocityDutyKS = 0.0;
-    public double rollerVelocityDutyKV = 0.0;
-    public double rollerVelocityDutyKA = 0.0;
-
-    public double rollerVelocityVoltageKP = 0.0;
-    public double rollerVelocityVoltageKI = 0.0;
-    public double rollerVelocityVoltageKD = 0.0;
-    public double rollerVelocityVoltageKS = 0.0;
-    public double rollerVelocityVoltageKV = 0.0;
-    public double rollerVelocityVoltageKA = 0.0;
-
-    public double rollerVelocityTorqueKP = 0.0;
-    public double rollerVelocityTorqueKI = 0.0;
-    public double rollerVelocityTorqueKD = 0.0;
-    public double rollerVelocityTorqueKS = 0.0;
-    public double rollerVelocityTorqueKV = 0.0;
-    public double rollerVelocityTorqueKA = 0.0;
   }
 
   /**
