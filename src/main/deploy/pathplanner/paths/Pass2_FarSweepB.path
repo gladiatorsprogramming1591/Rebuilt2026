@@ -45,9 +45,9 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "3 - BC Second Pass Sweeps",
   "idealStartingState": {
-    "velocity": 2.5,
+    "velocity": 2.75,
     "rotation": -90.0
   },
   "useDefaultConstraints": true

@@ -78,7 +78,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5502248875562219,
+      "waypointRelativePos": 0.29,
       "rotationDegrees": 180.0
     },
     {
@@ -188,7 +188,7 @@
     "rotation": -145.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "2 - BC First Pass Returns",
   "idealStartingState": {
     "velocity": 3.5,
     "rotation": 77.471

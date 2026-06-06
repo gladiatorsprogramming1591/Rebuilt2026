@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 10.5,
@@ -45,7 +57,7 @@
     "rotation": 65.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "0 - BC Starting Paths",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 90.0

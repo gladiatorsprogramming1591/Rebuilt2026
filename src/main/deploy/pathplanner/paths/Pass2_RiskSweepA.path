@@ -52,7 +52,19 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 10.5,
@@ -62,7 +74,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 4.25,
+    "velocity": 3.0,
     "rotation": 90.0
   },
   "reversed": false,

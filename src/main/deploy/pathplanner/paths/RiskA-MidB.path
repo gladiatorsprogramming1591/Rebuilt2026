@@ -52,7 +52,7 @@
   "reversed": false,
   "folder": "4 - BC Second Pass Connectors",
   "idealStartingState": {
-    "velocity": 4.25,
+    "velocity": 3.0,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

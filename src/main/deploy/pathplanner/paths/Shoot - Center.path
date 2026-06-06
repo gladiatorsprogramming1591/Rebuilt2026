@@ -102,9 +102,9 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Mojo Sweep",
+  "folder": "6 - BC Final Passes",
   "idealStartingState": {
-    "velocity": 1.0,
+    "velocity": 0.0,
     "rotation": -145.0
   },
   "useDefaultConstraints": true

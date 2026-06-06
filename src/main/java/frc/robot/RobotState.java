@@ -410,7 +410,7 @@ public final class RobotState {
     DISABLED,
     TELEOP,
     AUTO;
-    
+
     public static boolean enabled(RobotMode mode) {
       return mode == TELEOP || mode == AUTO;
     }

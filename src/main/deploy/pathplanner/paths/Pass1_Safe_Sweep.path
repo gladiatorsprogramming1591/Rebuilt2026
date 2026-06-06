@@ -35,7 +35,7 @@
       "minWaypointRelativePos": 0.15,
       "maxWaypointRelativePos": 0.7450628366247757,
       "constraints": {
-        "maxVelocity": 3.0,
+        "maxVelocity": 1.5,
         "maxAcceleration": 8.5,
         "maxAngularVelocity": 1000.0,
         "maxAngularAcceleration": 1200.0,
@@ -59,7 +59,7 @@
     "rotation": 65.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 6",
+  "folder": "1 - BC First Pass Sweeps",
   "idealStartingState": {
     "velocity": 3.27,
     "rotation": 65.0

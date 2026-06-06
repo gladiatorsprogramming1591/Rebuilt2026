@@ -51,7 +51,7 @@
     },
     {
       "waypointRelativePos": 1.2513368983957218,
-      "rotationDegrees": 0.0
+      "rotationDegrees": -20.0
     }
   ],
   "constraintZones": [],
@@ -70,9 +70,9 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Mojo Sweep",
+  "folder": "4 - BC Second Pass Connectors",
   "idealStartingState": {
-    "velocity": 5.0,
+    "velocity": 3.0,
     "rotation": 105.00000000000001
   },
   "useDefaultConstraints": true

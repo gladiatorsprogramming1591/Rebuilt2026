@@ -258,6 +258,18 @@ public class ShooterCalculation {
   private static final LoggedTunableNumber detailedLogPeriodLoops =
       shooterCalcTunable(TABLE_KEY + "Logging/DetailedPeriodLoops", 5.0);
 
+  private static final double DEFAULT_NORMAL_SHOT_DISTANCE_FUDGE_METERS = 0.0;
+  private static final double DEFAULT_PASSING_MAX_FLYWHEEL_VELOCITY_RPM = 3750.0;
+
+  private static final LoggedTunableNumber normalShotDistanceFudgeStepMeters =
+      shooterCalcTunable(TABLE_KEY + "Fudge/NormalShotDistanceStepMeters", 0.05);
+
+  private static final LoggedTunableNumber passingMaxFlywheelVelocityStepRPM =
+      shooterCalcTunable(TABLE_KEY + "Fudge/PassingMaxFlywheelVelocityStepRPM", 50.0);
+
+  private double normalShotDistanceFudgeMeters = DEFAULT_NORMAL_SHOT_DISTANCE_FUDGE_METERS;
+  private double passingMaxFlywheelVelocityRPM = DEFAULT_PASSING_MAX_FLYWHEEL_VELOCITY_RPM;
+
   // Boxes of bad
   private static final Bounds towerBound =
       new Bounds(0, Units.inchesToMeters(46), Units.inchesToMeters(129), Units.inchesToMeters(168));
@@ -560,8 +572,11 @@ public class ShooterCalculation {
     Pose2d activeAimRobotPose = simpleTargetShiftActive ? estimatedPose : aimLookaheadRobotPose;
     Rotation2d driveAngle = getDriveAngleWithLauncherOffset(activeAimRobotPose, activeAimTarget);
 
+    double activeMapDistance =
+        passing ? compensatedDistance : compensatedDistance + normalShotDistanceFudgeMeters;
+
     double hoodAngle =
-        passing ? passingHoodAngleMap.get(compensatedDistance) : hoodAngleMap.get(compensatedDistance);
+        passing ? passingHoodAngleMap.get(activeMapDistance) : hoodAngleMap.get(activeMapDistance);
     double hoodAngleWithOffset = hoodAngle + Units.degreesToRotations(hoodAngleOffsetDeg);
 
     if (lastDriveAngle == null) {
@@ -581,10 +596,21 @@ public class ShooterCalculation {
     lastDriveAngle = driveAngle;
 
     boolean outsideOfBadBoxes = isOutsideBadBoxes(estimatedPose);
+    double uncappedFlywheelVelocity =
+        passing
+            ? passingFlywheelSpeedMap.get(activeMapDistance)
+            : flywheelSpeedMap.get(activeMapDistance);
     double flywheelVelocity =
         passing
-            ? passingFlywheelSpeedMap.get(compensatedDistance)
-            : flywheelSpeedMap.get(compensatedDistance);
+            ? Math.min(uncappedFlywheelVelocity, passingMaxFlywheelVelocityRPM)
+            : uncappedFlywheelVelocity;
+
+    Logger.recordOutput(TABLE_KEY + "Fudge/NormalShotDistanceMeters", normalShotDistanceFudgeMeters);
+    Logger.recordOutput(TABLE_KEY + "Fudge/PassingMaxFlywheelVelocityRPM", passingMaxFlywheelVelocityRPM);
+    Logger.recordOutput(TABLE_KEY + "Fudge/ActiveMapDistance", activeMapDistance);
+    Logger.recordOutput(TABLE_KEY + "Fudge/UnfudgedCompensatedDistance", compensatedDistance);
+    Logger.recordOutput(TABLE_KEY + "Fudge/UncappedFlywheelVelocity", uncappedFlywheelVelocity);
+    Logger.recordOutput(TABLE_KEY + "Fudge/ActiveFlywheelVelocity", flywheelVelocity);
 
     latestParameters =
         new LaunchingParameters(
@@ -596,7 +622,7 @@ public class ShooterCalculation {
             hoodAngleWithOffset,
             hoodVelocity,
             flywheelVelocity,
-            compensatedDistance,
+            activeMapDistance,
             rawLauncherToTargetDistance,
             compensatedTimeOfFlight,
             passing);
@@ -759,6 +785,46 @@ public class ShooterCalculation {
    */
   public void incrementHoodAngleOffset(double incrementDegrees) {
     hoodAngleOffsetDeg += incrementDegrees;
+  }
+
+  /** Increases the normal-shot distance fudge used for hood and flywheel map lookup. */
+  public void increaseNormalShotDistanceFudge() {
+    normalShotDistanceFudgeMeters += Math.abs(normalShotDistanceFudgeStepMeters.getAsDouble());
+    Logger.recordOutput(TABLE_KEY + "Fudge/NormalShotDistanceMeters", normalShotDistanceFudgeMeters);
+  }
+
+  /** Decreases the normal-shot distance fudge used for hood and flywheel map lookup. */
+  public void decreaseNormalShotDistanceFudge() {
+    normalShotDistanceFudgeMeters -= Math.abs(normalShotDistanceFudgeStepMeters.getAsDouble());
+    Logger.recordOutput(TABLE_KEY + "Fudge/NormalShotDistanceMeters", normalShotDistanceFudgeMeters);
+  }
+
+  /** Increases the maximum allowed passing flywheel velocity. */
+  public void increasePassingMaxFlywheelVelocity() {
+    passingMaxFlywheelVelocityRPM =
+        MathUtil.clamp(
+            passingMaxFlywheelVelocityRPM + Math.abs(passingMaxFlywheelVelocityStepRPM.getAsDouble()),
+            0.0,
+            MAX_FLYWHEEL_CALCULATED_RPM);
+    Logger.recordOutput(TABLE_KEY + "Fudge/PassingMaxFlywheelVelocityRPM", passingMaxFlywheelVelocityRPM);
+  }
+
+  /** Decreases the maximum allowed passing flywheel velocity. */
+  public void decreasePassingMaxFlywheelVelocity() {
+    passingMaxFlywheelVelocityRPM =
+        MathUtil.clamp(
+            passingMaxFlywheelVelocityRPM - Math.abs(passingMaxFlywheelVelocityStepRPM.getAsDouble()),
+            0.0,
+            MAX_FLYWHEEL_CALCULATED_RPM);
+    Logger.recordOutput(TABLE_KEY + "Fudge/PassingMaxFlywheelVelocityRPM", passingMaxFlywheelVelocityRPM);
+  }
+
+  /** Restores the normal-shot distance fudge and passing flywheel cap to their defaults. */
+  public void resetShotFudgeFactors() {
+    normalShotDistanceFudgeMeters = DEFAULT_NORMAL_SHOT_DISTANCE_FUDGE_METERS;
+    passingMaxFlywheelVelocityRPM = DEFAULT_PASSING_MAX_FLYWHEEL_VELOCITY_RPM;
+    Logger.recordOutput(TABLE_KEY + "Fudge/NormalShotDistanceMeters", normalShotDistanceFudgeMeters);
+    Logger.recordOutput(TABLE_KEY + "Fudge/PassingMaxFlywheelVelocityRPM", passingMaxFlywheelVelocityRPM);
   }
 
   private Pose2d getPhaseDelayedRobotPose() {
@@ -1003,6 +1069,8 @@ public class ShooterCalculation {
     Logger.recordOutput(TABLE_KEY + "Distance/Raw", rawDistance);
     Logger.recordOutput(TABLE_KEY + "Distance/Compensated", compensatedDistance);
     Logger.recordOutput(TABLE_KEY + "Distance/Delta", compensatedDistance - rawDistance);
+    Logger.recordOutput(TABLE_KEY + "Fudge/NormalShotDistanceMeters", normalShotDistanceFudgeMeters);
+    Logger.recordOutput(TABLE_KEY + "Fudge/PassingMaxFlywheelVelocityRPM", passingMaxFlywheelVelocityRPM);
 
     Logger.recordOutput(TABLE_KEY + "TimeOfFlight/Raw", rawTimeOfFlight);
     Logger.recordOutput(TABLE_KEY + "TimeOfFlight/Compensated", compensatedTimeOfFlight);

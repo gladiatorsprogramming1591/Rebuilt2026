@@ -68,7 +68,7 @@
   "reversed": false,
   "folder": "5 - BC Second Pass Returns",
   "idealStartingState": {
-    "velocity": 1.75,
+    "velocity": 2.25,
     "rotation": -40.0
   },
   "useDefaultConstraints": true

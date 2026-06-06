@@ -110,7 +110,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5502248875562219,
+      "waypointRelativePos": 0.2924528301886793,
       "rotationDegrees": 180.0
     },
     {
@@ -228,7 +228,7 @@
     "rotation": -145.0
   },
   "reversed": false,
-  "folder": "New Battlecry Auto 4",
+  "folder": "2 - BC First Pass Returns",
   "idealStartingState": {
     "velocity": 4.5,
     "rotation": 77.471

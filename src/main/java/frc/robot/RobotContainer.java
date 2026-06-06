@@ -493,6 +493,37 @@ public class RobotContainer {
         .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
         .and(DriverStation::isTeleop)
         .onTrue(driverRumbleCommand(1.0).withTimeout(0.5));
+    Trigger shotTuningModifier = operatorController.back();
+
+    shotTuningModifier
+        .and(operatorController.povUp())
+        .onTrue(
+            Commands.runOnce(
+                () -> ShooterCalculation.getInstance().increasePassingMaxFlywheelVelocity()));
+
+    shotTuningModifier
+        .and(operatorController.povDown())
+        .onTrue(
+            Commands.runOnce(
+                () -> ShooterCalculation.getInstance().decreasePassingMaxFlywheelVelocity()));
+
+    shotTuningModifier
+        .and(operatorController.povRight())
+        .onTrue(
+            Commands.runOnce(
+                () -> ShooterCalculation.getInstance().increaseNormalShotDistanceFudge()));
+
+    shotTuningModifier
+        .and(operatorController.povLeft())
+        .onTrue(
+            Commands.runOnce(
+                () -> ShooterCalculation.getInstance().decreaseNormalShotDistanceFudge()));
+
+    shotTuningModifier
+        .and(operatorController.start())
+        .onTrue(
+            Commands.runOnce(
+                () -> ShooterCalculation.getInstance().resetShotFudgeFactors()));
   }
 
   /** Configures operator controller bindings. */
