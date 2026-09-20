@@ -214,11 +214,19 @@ public class Shooter extends SubsystemBase {
   /**
    * Runs the shooter at the calculated target RPM from {@link ShooterCalculation}.
    *
+   * <p>In demo mode this uses a fixed flywheel speed instead, since the calculated speed depends
+   * on AprilTag-based distance-to-target.
+   *
    * @return command that continuously updates the shooter target while scheduled
    */
   public Command runShooterTarget() {
     return run(
         () -> {
+          if (Constants.demoMode) {
+            requestShooterVelocity(ShooterModeState.ON, Constants.Demo.shooterFlywheelRPM);
+            return;
+          }
+
           var params = ShooterCalculation.getInstance().getParameters();
           double flywheelRPM =
               MathUtil.clamp(

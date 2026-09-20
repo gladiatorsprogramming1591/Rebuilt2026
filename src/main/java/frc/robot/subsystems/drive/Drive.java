@@ -488,6 +488,9 @@ public class Drive extends SubsystemBase {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
+    if (Constants.demoMode) {
+      return Constants.Demo.maxLinearSpeedMetersPerSec;
+    }
     return TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   }
 

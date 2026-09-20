@@ -442,7 +442,9 @@ public class RobotContainer {
   /** Configures driver controller bindings. */
   private void configureDriverControls() {
 
-    driverController.a().whileTrue(rotateToHubCommand());
+    if (!Constants.demoMode) {
+      driverController.a().whileTrue(rotateToHubCommand());
+    }
     driverController.x().onTrue(stopWithXCommand());
     driverController.b().onTrue(resetGyroCommand());
     driverController.y().whileTrue(warmUpShooterCommand());
@@ -470,7 +472,9 @@ public class RobotContainer {
 
   private void configureBattlecryOperatorControls() {
 
-    operatorController.a().whileTrue(rotateToHubCommand());
+    if (!Constants.demoMode) {
+      operatorController.a().whileTrue(rotateToHubCommand());
+    }
     operatorController.x().onTrue(stopWithXCommand());
     operatorController.b().onTrue(resetGyroCommand());
     operatorController.y().whileTrue(warmUpShooterCommand());
@@ -585,9 +589,19 @@ public class RobotContainer {
   /**
    * Builds the launch-aware drive command using driver translation input.
    *
+   * <p>In demo mode this falls back to plain manual driving (driver-controlled rotation) instead
+   * of automatically rotating to aim at the hub using AprilTag-corrected pose.
+   *
    * @return launch-aware drive command
    */
   private Command launchingDriveCommand() {
+    if (Constants.demoMode) {
+      return DriveCommands.joystickDrive(
+          drive,
+          () -> -driverController.getLeftY() * driveSpeedMultiplier,
+          () -> -driverController.getLeftX() * driveSpeedMultiplier,
+          () -> -driverController.getRightX() * rotationMultiplier);
+    }
     return DriveCommands.joystickDriveWhileLaunching(
         drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX());
   }
@@ -806,12 +820,19 @@ public void useAutoDriveCurrentLimits() {
     return ready;
   }
 
-  /** Returns whether all launch conditions are satisfied, with an autonomous aim timeout fallback. */
+  /**
+   * Returns whether all launch conditions are satisfied, with an autonomous aim timeout fallback.
+   *
+   * <p>In demo mode the drive-angle and pose-validity checks are skipped, since the drivetrain no
+   * longer automatically rotates to the AprilTag-computed hub angle and the shooter/hood targets
+   * are fixed instead of distance-based, so shooting no longer waits on either.
+   */
   private boolean isReadyToLaunch(Timer launchReadyTimer) {
     boolean shooterReady = shooter.isShooterAtVelocity().getAsBoolean();
     boolean hoodReady = hood.isHoodAtAngle().getAsBoolean();
-    boolean driveAngleReady = DriveCommands.atLaunchGoal();
-    boolean poseValid = ShooterCalculation.getInstance().getParameters().isValid();
+    boolean driveAngleReady = Constants.demoMode || DriveCommands.atLaunchGoal();
+    boolean poseValid =
+        Constants.demoMode || ShooterCalculation.getInstance().getParameters().isValid();
     double yawRateRadPerSec =
         Math.abs(RobotState.getInstance().getMeasuredRobotRelativeSpeeds().omegaRadiansPerSecond);
     boolean yawStable = yawRateRadPerSec <= launchReadyMaxYawRateRadPerSec.get();

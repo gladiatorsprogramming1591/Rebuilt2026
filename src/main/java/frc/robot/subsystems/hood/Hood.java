@@ -150,18 +150,23 @@ public class Hood extends SubsystemBase {
    * Runs the hood to the current shooter-calculated target angle.
    *
    * <p>When hood tuning is enabled, this command uses the tunable dashboard goal instead of the
-   * shooter map. Like all position commands, it will not move the hood until the hood has been
-   * zeroed.
+   * shooter map. In demo mode it uses a fixed angle instead, since the calculated angle depends on
+   * AprilTag-based distance-to-target. Like all position commands, it will not move the hood until
+   * the hood has been zeroed.
    *
    * @return command that continuously updates the hood target while scheduled
    */
   public Command runHoodTarget() {
     return run(
         () -> {
-          double desiredAngle =
-              Constants.Tuning.HOOD
-                  ? goalPosition.getAsDouble()
-                  : ShooterCalculation.getInstance().getParameters().hoodAngle();
+          double desiredAngle;
+          if (Constants.Tuning.HOOD) {
+            desiredAngle = goalPosition.getAsDouble();
+          } else if (Constants.demoMode) {
+            desiredAngle = Constants.Demo.hoodAngle;
+          } else {
+            desiredAngle = ShooterCalculation.getInstance().getParameters().hoodAngle();
+          }
 
           setHoodPositionIfZeroed(desiredAngle);
         });
