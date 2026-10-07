@@ -665,7 +665,8 @@ public class RobotContainer {
    * @return shooter default command
    */
   private Command shooterDefaultCommand() {
-    return shooter.coastShooterDefaultCommand();
+    return shooter.disableDefaultIdleCommand();
+    // return shooter.coastShooterDefaultCommand();
   }
 
   /**

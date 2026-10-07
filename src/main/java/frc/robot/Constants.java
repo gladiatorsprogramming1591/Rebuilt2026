@@ -26,13 +26,13 @@ public final class Constants {
    * Set to true for school/open-house demos. Caps drivetrain speed and disables automatic
    * AprilTag-based aiming so the robot is safer and simpler to operate around a crowd.
    */
-  public static final boolean demoMode = false;
+  public static final boolean demoMode = true;
 
   public static final class Demo {
     public static final double maxLinearSpeedMetersPerSec = 1.5;
 
     /** Fixed flywheel speed used instead of the AprilTag-distance-based shot calculation. */
-    public static final double shooterFlywheelRPM = 2000.0;
+    public static final double shooterFlywheelRPM = 1200.0;
 
     /** Fixed hood angle (legacy hood units) used instead of the distance-based shot calculation. */
     public static final double hoodAngle = 500.0;
