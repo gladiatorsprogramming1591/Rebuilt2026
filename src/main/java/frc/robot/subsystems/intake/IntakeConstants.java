@@ -120,7 +120,7 @@ public final class IntakeConstants {
   public static final double MAX_ANGLE = DOWN;
 
   // Roller speeds
-  public static final double ROLLER_PICKUP_SPEED = 0.40;
+  public static final double ROLLER_PICKUP_SPEED = 0.30;
   public static final double ROLLER_REVERSE_SPEED = -0.40;
   public static final double ROLLER_BARF_SPEED = -0.70;
 

@@ -32,7 +32,7 @@ public final class Constants {
     public static final double maxLinearSpeedMetersPerSec = 1.5;
 
     /** Fixed flywheel speed used instead of the AprilTag-distance-based shot calculation. */
-    public static final double shooterFlywheelRPM = 1200.0;
+    public static final double shooterFlywheelRPM = 800.0;
 
     /** Fixed hood angle (legacy hood units) used instead of the distance-based shot calculation. */
     public static final double hoodAngle = 500.0;
