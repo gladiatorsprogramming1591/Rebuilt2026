@@ -28,7 +28,7 @@ public final class IntakeConstants {
 
   // Current limits
   public static final double ROLLER_AUTO_SUPPLY_CURRENT_LIMIT = 80.0;
-  public static final double ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT = 60.0;
+  public static final double ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT = 80.0;
   public static final double ROLLER_SUPPLY_CURRENT_LIMIT = ROLLER_AUTO_SUPPLY_CURRENT_LIMIT;
   public static final double ROLLER_STATOR_CURRENT_LIMIT = 120.0;
 

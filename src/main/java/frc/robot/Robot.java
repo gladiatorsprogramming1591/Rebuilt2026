@@ -42,6 +42,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
   private double autoStart;
   private boolean autoMessagePrinted;
+  private Boolean configuredSelectedAutoMode;
   private int robotDashboardUpdateCounter = 0;
 
   private static final int ROBOT_DASHBOARD_UPDATE_PERIOD_LOOPS = 10;
@@ -119,6 +120,8 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    robotContainer.setDriveBrakeMode();
+    robotContainer.disableShooterDefaultIdle();
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -325,6 +328,7 @@ public class Robot extends LoggedRobot {
 
     handleLimelightRewindOnDisable();
     setLimelightThrottle(Constants.calibrationMode ? 0 : 100);
+    configureForSelectedMode();
 
     if (Constants.calibrationMode) {
       robotContainer.setDriveCoastMode();
@@ -333,7 +337,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    configureForSelectedMode();
+
+    if (Constants.calibrationMode) {
+      robotContainer.setDriveCoastMode();
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -341,9 +351,16 @@ public class Robot extends LoggedRobot {
     RobotState.setMode(RobotMode.AUTO);
 
     autonomousCommand = robotContainer.getAutonomousCommand();
+    robotContainer.setDriveBrakeMode();
+    robotContainer.useAutoDriveCurrentLimits();
+    robotContainer.disableShooterDefaultIdle();
+
     lastEnabledMode = LastEnabledMode.AUTO;
     armLimelightRewindForEnabledMode();
     setLimelightThrottle(0);
+
+    autoStart = Timer.getTimestamp();
+    autoMessagePrinted = false;
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -367,6 +384,10 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
 
+    robotContainer.setDriveBrakeMode();
+    robotContainer.useNormalDriveCurrentLimits();
+    robotContainer.enableShooterDefaultIdle();
+
     lastEnabledMode = LastEnabledMode.TELEOP;
     armLimelightRewindForEnabledMode();
     setLimelightThrottle(0);
@@ -381,6 +402,10 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    robotContainer.setDriveBrakeMode();
+    robotContainer.useNormalDriveCurrentLimits();
+    robotContainer.enableShooterDefaultIdle();
+
     lastEnabledMode = LastEnabledMode.NONE;
     setLimelightThrottle(0);
   }
@@ -388,6 +413,30 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  private void configureForSelectedMode() {
+    boolean selectedAutoMode = DriverStation.isAutonomous();
+
+    if (configuredSelectedAutoMode != null && configuredSelectedAutoMode == selectedAutoMode) {
+      return;
+    }
+
+    if (Constants.calibrationMode) {
+      robotContainer.setDriveCoastMode();
+    } else {
+      robotContainer.setDriveBrakeMode();
+    }
+
+    if (selectedAutoMode) {
+      robotContainer.useAutoDriveCurrentLimits();
+      robotContainer.disableShooterDefaultIdle();
+    } else {
+      robotContainer.useNormalDriveCurrentLimits();
+      robotContainer.enableShooterDefaultIdle();
+    }
+
+    configuredSelectedAutoMode = selectedAutoMode;
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override

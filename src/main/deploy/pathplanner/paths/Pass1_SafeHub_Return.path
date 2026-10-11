@@ -193,7 +193,7 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 10.5,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 1000.0,
     "maxAngularAcceleration": 1200.0,
     "nominalVoltage": 12.0,
@@ -206,7 +206,7 @@
   "reversed": false,
   "folder": "2 - BC First Pass Returns",
   "idealStartingState": {
-    "velocity": 3.5,
+    "velocity": 2.5,
     "rotation": 65.0
   },
   "useDefaultConstraints": true

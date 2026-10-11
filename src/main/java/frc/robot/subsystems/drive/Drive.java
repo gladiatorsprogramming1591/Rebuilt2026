@@ -82,10 +82,10 @@ public class Drive extends SubsystemBase {
   private static final double WHEEL_COF = 1.2;
   private static final double NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
       TunerConstants.FrontLeft.SlipCurrent;
-  private static final double NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 40.0;
+  private static final double NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 30.0;
   private static final double AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
       TunerConstants.FrontLeft.SlipCurrent;
-  private static final double AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 80.0;
+  private static final double AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 50.0;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
