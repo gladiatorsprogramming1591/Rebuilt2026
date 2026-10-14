@@ -95,8 +95,13 @@ public class Module {
   }
 
   /** Sets sticky drive motor current limits. */
-  public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
-    io.setDriveCurrentLimits(statorAmps, supplyAmps);
+  public void setDriveCurrentLimits(
+      double statorAmps,
+      double supplyAmps,
+      double lowerSupplyAmps,
+      double lowerSupplyTimeSeconds) {
+    io.setDriveCurrentLimits(
+        statorAmps, supplyAmps, lowerSupplyAmps, lowerSupplyTimeSeconds);
   }
 
   /** Sets drive motor neutral mode. */

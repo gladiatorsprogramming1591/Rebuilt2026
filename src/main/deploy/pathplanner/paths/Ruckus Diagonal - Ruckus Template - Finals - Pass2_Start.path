@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.750285087719298,
+        "y": 2.5553956717783
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.6348903508771926,
+        "y": 1.9495733033572478
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Diagonal_Ruckus Template - Finals - Pass1_Start_Ruckus Template_Finals_Battlecry Tilted Hub Shot"
+    },
+    {
+      "anchor": {
+        "x": 3.6830592105263156,
+        "y": 0.7558662280701753
+      },
+      "prevControl": {
+        "x": 2.894032684303302,
+        "y": 0.9452325943637
+      },
+      "nextControl": {
+        "x": 3.9261560360214447,
+        "y": 0.6975229899513439
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.6,
+        "y": 0.6
+      },
+      "prevControl": {
+        "x": 4.220936447783056,
+        "y": 0.6656750825473199
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Pass Start"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Prepare Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Lower Hood And Stop Shooting"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 3.75,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Ruckus Diagonal",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -145.0
+  },
+  "useDefaultConstraints": true
+}

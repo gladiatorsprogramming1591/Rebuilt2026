@@ -82,7 +82,9 @@ public class Drive extends SubsystemBase {
   private static final double WHEEL_COF = 1.2;
   private static final double NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
       TunerConstants.FrontLeft.SlipCurrent;
-  private static final double NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 30.0;
+  private static final double NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 40.0;
+  private static final double NORMAL_DRIVE_LOWER_SUPPLY_CURRENT_LIMIT_AMPS = 30.0;
+  private static final double NORMAL_DRIVE_LOWER_SUPPLY_CURRENT_TIME_SECONDS = 0.75;
   private static final double AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS =
       TunerConstants.FrontLeft.SlipCurrent;
   private static final double AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS = 50.0;
@@ -109,6 +111,8 @@ public class Drive extends SubsystemBase {
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
   private double appliedDriveStatorCurrentLimitAmps = Double.NaN;
   private double appliedDriveSupplyCurrentLimitAmps = Double.NaN;
+  private double appliedDriveLowerSupplyCurrentLimitAmps = Double.NaN;
+  private double appliedDriveLowerSupplyCurrentTimeSeconds = Double.NaN;
   private Boolean appliedDriveBrakeMode = null;
   private int dashboardUpdateCounter = 0;
 
@@ -199,12 +203,20 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput(
           "Drive/Config/AppliedSupplyCurrentLimitAmps", appliedDriveSupplyCurrentLimitAmps);
       Logger.recordOutput(
+          "Drive/Config/AppliedLowerSupplyCurrentLimitAmps",
+          appliedDriveLowerSupplyCurrentLimitAmps);
+      Logger.recordOutput(
+          "Drive/Config/AppliedLowerSupplyCurrentTimeSeconds",
+          appliedDriveLowerSupplyCurrentTimeSeconds);
+      Logger.recordOutput(
           "Drive/Config/AppliedBrakeMode", appliedDriveBrakeMode != null && appliedDriveBrakeMode);
       Logger.recordOutput(
           "Drive/Config/AppliedConfigValid",
           appliedDriveBrakeMode != null
               && !Double.isNaN(appliedDriveStatorCurrentLimitAmps)
-              && !Double.isNaN(appliedDriveSupplyCurrentLimitAmps));
+              && !Double.isNaN(appliedDriveSupplyCurrentLimitAmps)
+              && !Double.isNaN(appliedDriveLowerSupplyCurrentLimitAmps)
+              && !Double.isNaN(appliedDriveLowerSupplyCurrentTimeSeconds));
     }
 
     // Stop moving when disabled
@@ -330,33 +342,50 @@ public class Drive extends SubsystemBase {
   }
 
   /** Sets sticky current limits on all drive motors. */
-  public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
+  public void setDriveCurrentLimits(
+      double statorAmps,
+      double supplyAmps,
+      double lowerSupplyAmps,
+      double lowerSupplyTimeSeconds) {
     if (Double.compare(appliedDriveStatorCurrentLimitAmps, statorAmps) == 0
-        && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0) {
+        && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0
+        && Double.compare(appliedDriveLowerSupplyCurrentLimitAmps, lowerSupplyAmps) == 0
+        && Double.compare(appliedDriveLowerSupplyCurrentTimeSeconds, lowerSupplyTimeSeconds) == 0) {
       return;
     }
 
     for (var module : modules) {
-      module.setDriveCurrentLimits(statorAmps, supplyAmps);
+      module.setDriveCurrentLimits(
+          statorAmps, supplyAmps, lowerSupplyAmps, lowerSupplyTimeSeconds);
     }
 
     appliedDriveStatorCurrentLimitAmps = statorAmps;
     appliedDriveSupplyCurrentLimitAmps = supplyAmps;
+    appliedDriveLowerSupplyCurrentLimitAmps = lowerSupplyAmps;
+    appliedDriveLowerSupplyCurrentTimeSeconds = lowerSupplyTimeSeconds;
 
     Logger.recordOutput("Drive/CurrentLimits/StatorAmps", statorAmps);
     Logger.recordOutput("Drive/CurrentLimits/SupplyAmps", supplyAmps);
+    Logger.recordOutput("Drive/CurrentLimits/LowerSupplyAmps", lowerSupplyAmps);
+    Logger.recordOutput("Drive/CurrentLimits/LowerSupplyTimeSeconds", lowerSupplyTimeSeconds);
   }
 
   /** Uses normal teleop drive current limits. */
   public void useNormalDriveCurrentLimits() {
     setDriveCurrentLimits(
-        NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS, NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS);
+        NORMAL_DRIVE_STATOR_CURRENT_LIMIT_AMPS,
+        NORMAL_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS,
+        NORMAL_DRIVE_LOWER_SUPPLY_CURRENT_LIMIT_AMPS,
+        NORMAL_DRIVE_LOWER_SUPPLY_CURRENT_TIME_SECONDS);
   }
 
-  /** Uses higher autonomous drive current limits. */
+  /** Uses the autonomous drive current limit without a timed lower limit. */
   public void useAutoDriveCurrentLimits() {
     setDriveCurrentLimits(
-        AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS, AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS);
+        AUTO_DRIVE_STATOR_CURRENT_LIMIT_AMPS,
+        AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS,
+        AUTO_DRIVE_SUPPLY_CURRENT_LIMIT_AMPS,
+        0.0);
   }
 
   /** Sets all drive motors to brake mode. */

@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.606041666666667,
+        "y": 2.3810087719298245
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0099232456140355,
+        "y": 1.9001973684210531
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Pass2_Shot"
+    },
+    {
+      "anchor": {
+        "x": 3.692675438596492,
+        "y": 0.8231798245614028
+      },
+      "prevControl": {
+        "x": 3.2599451754385966,
+        "y": 0.996271929824561
+      },
+      "nextControl": {
+        "x": 3.9247946113178047,
+        "y": 0.7303321554728777
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.6,
+        "y": 0.6
+      },
+      "prevControl": {
+        "x": 4.275703946701892,
+        "y": 0.656186277856474
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Ruckus Template_Finals_Pass Start"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Prepare Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Lower Hood And Stop Shooting"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 3.25,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Ruckus Template",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -138.46822925891715
+  },
+  "useDefaultConstraints": true
+}

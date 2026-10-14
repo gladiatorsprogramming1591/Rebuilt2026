@@ -83,6 +83,8 @@ public class ModuleIOTalonFXS implements ModuleIO {
 
   private double appliedDriveStatorCurrentLimitAmps = Double.NaN;
   private double appliedDriveSupplyCurrentLimitAmps = Double.NaN;
+  private double appliedDriveLowerSupplyCurrentLimitAmps = Double.NaN;
+  private double appliedDriveLowerSupplyCurrentTimeSeconds = Double.NaN;
   private Boolean appliedDriveBrakeMode = null;
 
   public ModuleIOTalonFXS(
@@ -212,11 +214,15 @@ public class ModuleIOTalonFXS implements ModuleIO {
     inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
     inputs.driveStatorCurrentLimitAmps = appliedDriveStatorCurrentLimitAmps;
     inputs.driveSupplyCurrentLimitAmps = appliedDriveSupplyCurrentLimitAmps;
+    inputs.driveLowerSupplyCurrentLimitAmps = appliedDriveLowerSupplyCurrentLimitAmps;
+    inputs.driveLowerSupplyCurrentTimeSeconds = appliedDriveLowerSupplyCurrentTimeSeconds;
     inputs.driveBrakeMode = appliedDriveBrakeMode != null && appliedDriveBrakeMode;
     inputs.driveConfigApplied =
         appliedDriveBrakeMode != null
             && !Double.isNaN(appliedDriveStatorCurrentLimitAmps)
-            && !Double.isNaN(appliedDriveSupplyCurrentLimitAmps);
+            && !Double.isNaN(appliedDriveSupplyCurrentLimitAmps)
+            && !Double.isNaN(appliedDriveLowerSupplyCurrentLimitAmps)
+            && !Double.isNaN(appliedDriveLowerSupplyCurrentTimeSeconds);
 
     // Update turn inputs
     inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
@@ -260,9 +266,15 @@ public class ModuleIOTalonFXS implements ModuleIO {
   }
 
   @Override
-  public void setDriveCurrentLimits(double statorAmps, double supplyAmps) {
+  public void setDriveCurrentLimits(
+      double statorAmps,
+      double supplyAmps,
+      double lowerSupplyAmps,
+      double lowerSupplyTimeSeconds) {
     if (Double.compare(appliedDriveStatorCurrentLimitAmps, statorAmps) == 0
-        && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0) {
+        && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0
+        && Double.compare(appliedDriveLowerSupplyCurrentLimitAmps, lowerSupplyAmps) == 0
+        && Double.compare(appliedDriveLowerSupplyCurrentTimeSeconds, lowerSupplyTimeSeconds) == 0) {
       return;
     }
 
@@ -271,10 +283,14 @@ public class ModuleIOTalonFXS implements ModuleIO {
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.SupplyCurrentLimit = supplyAmps;
     currentLimits.SupplyCurrentLimitEnable = true;
+    currentLimits.SupplyCurrentLowerLimit = lowerSupplyAmps;
+    currentLimits.SupplyCurrentLowerTime = lowerSupplyTimeSeconds;
     tryUntilOk(5, () -> driveTalon.getConfigurator().apply(currentLimits, 0.25));
 
     appliedDriveStatorCurrentLimitAmps = statorAmps;
     appliedDriveSupplyCurrentLimitAmps = supplyAmps;
+    appliedDriveLowerSupplyCurrentLimitAmps = lowerSupplyAmps;
+    appliedDriveLowerSupplyCurrentTimeSeconds = lowerSupplyTimeSeconds;
   }
 
   @Override
@@ -303,6 +319,12 @@ public class ModuleIOTalonFXS implements ModuleIO {
         logKey + "/Verified/SupplyCurrentLimitAmps", currentLimits.SupplyCurrentLimit);
     Logger.recordOutput(
         logKey + "/Verified/SupplyCurrentLimitEnabled", currentLimits.SupplyCurrentLimitEnable);
+    Logger.recordOutput(
+        logKey + "/Verified/LowerSupplyCurrentLimitAmps",
+        currentLimits.SupplyCurrentLowerLimit);
+    Logger.recordOutput(
+        logKey + "/Verified/LowerSupplyCurrentTimeSeconds",
+        currentLimits.SupplyCurrentLowerTime);
     Logger.recordOutput(
         logKey + "/Verified/BrakeMode", motorOutput.NeutralMode == NeutralModeValue.Brake);
     Logger.recordOutput(logKey + "/Verified/CurrentLimitsReadOk", currentLimitStatus.isOK());

@@ -1,0 +1,97 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.702554824561404,
+        "y": 2.852203947368421
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.911035000052395,
+        "y": 2.7145455780380967
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template Pass 2 Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 2.606041666666667,
+        "y": 2.3810087719298245
+      },
+      "prevControl": {
+        "x": 4.058092105263158,
+        "y": 2.554100877192982
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Pass2_Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "name": "Rotation Target 1",
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -138.468
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 8.0,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.2764811490125674,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.31777378815080826,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -138.468
+  },
+  "reversed": false,
+  "folder": "Ruckus Template",
+  "idealStartingState": {
+    "velocity": 4.0,
+    "rotation": -138.468
+  },
+  "useDefaultConstraints": true
+}

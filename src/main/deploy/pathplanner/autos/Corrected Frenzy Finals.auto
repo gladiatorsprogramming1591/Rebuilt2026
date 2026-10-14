@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass1_Safe_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass1_Safe_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass1_SafeNoHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass2_FarSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - FarA-CloseB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass2_CloseSweepB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - CloseB-NoLocalize"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass2_CloseB_NoLocalize_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass_Start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Coast"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass2_FarSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - FarA-CloseB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Corrected Frenzy Finals - Finals - Pass2_CloseSweepB"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

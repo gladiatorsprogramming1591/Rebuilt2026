@@ -1,0 +1,85 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass1_Safe_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass1_Safe_Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass1_SafeNoHub_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass2_Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass2_FarSweepA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - FarA-CloseB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass2_CloseB_NoLocalize_Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Hub"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass3_Start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Coast"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ruckus Template - Finals - Pass2_FarSweepA"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,116 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.423859649122807,
+        "y": 2.746425438596491
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.750811403508772,
+        "y": 4.188859649122807
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Pass2_FarSweepA"
+    },
+    {
+      "anchor": {
+        "x": 6.4525328947368426,
+        "y": 4.025383771929824
+      },
+      "prevControl": {
+        "x": 6.893641514828136,
+        "y": 4.285524753009756
+      },
+      "nextControl": {
+        "x": 6.077499999998546,
+        "y": 3.804210526314547
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.942872807017544,
+        "y": 2.246381578947368
+      },
+      "prevControl": {
+        "x": 5.678162657572057,
+        "y": 2.444914191031483
+      },
+      "nextControl": {
+        "x": 6.289057017543859,
+        "y": 1.9867434210526311
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.789100877192983,
+        "y": 2.6021820175438597
+      },
+      "prevControl": {
+        "x": 6.721787280701754,
+        "y": 2.169451754385965
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Diagonal_Ruckus Template Pass 2 Sweep End"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "name": "Rotation Target 2",
+      "waypointRelativePos": 0.18867924528301885,
+      "rotationDegrees": 120.81902642251644
+    },
+    {
+      "name": "Rotation Target 3",
+      "waypointRelativePos": 0.5880503144654091,
+      "rotationDegrees": 171.468
+    },
+    {
+      "name": "Rotation Target 4",
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -102.653
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.4,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -138.468
+  },
+  "reversed": false,
+  "folder": "Ruckus Diagonal",
+  "idealStartingState": {
+    "velocity": 3.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

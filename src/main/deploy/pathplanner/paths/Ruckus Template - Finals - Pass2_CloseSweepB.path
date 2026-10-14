@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.317905701754386,
+        "y": 3.0060635964912272
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.23645753588236,
+        "y": 2.358245614035087
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Pass2_StartCloseSweepB"
+    },
+    {
+      "anchor": {
+        "x": 6.654473684210526,
+        "y": 2.554100877192982
+      },
+      "prevControl": {
+        "x": 7.1227810656529735,
+        "y": 2.5892226705179984
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Pass2_CloseSweepB"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": -136.6
+  },
+  "reversed": false,
+  "folder": "Ruckus Template",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,77 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.654473684210526,
+        "y": 2.554100877192982
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.2698244842031325,
+        "y": 2.52525322233928
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Pass2_CloseSweepB"
+    },
+    {
+      "anchor": {
+        "x": 5.664002192982456,
+        "y": 2.554100877192982
+      },
+      "prevControl": {
+        "x": 5.981337719298246,
+        "y": 2.525252192982456
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Pass2_StartNoLocalize_Return"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.2,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 0.22,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 3.5,
+    "rotation": -136.6
+  },
+  "reversed": false,
+  "folder": "Ruckus Template",
+  "idealStartingState": {
+    "velocity": 5.0,
+    "rotation": -136.6
+  },
+  "useDefaultConstraints": true
+}

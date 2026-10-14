@@ -1,0 +1,68 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.539166666666667,
+        "y": 1.784802631578947
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.70344870203826,
+        "y": 2.0556495750928447
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_BC Close End"
+    },
+    {
+      "anchor": {
+        "x": 8.46232456140351,
+        "y": 3.246469298245613
+      },
+      "prevControl": {
+        "x": 8.410475402262561,
+        "y": 2.7068850290127715
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_BC Safe Sweep End"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Initial fuel contact",
+      "minWaypointRelativePos": 0.15,
+      "maxWaypointRelativePos": 0.7450628366247757,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 8.5,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.5,
+    "rotation": 80.75388725443672
+  },
+  "reversed": false,
+  "folder": "Ruckus Diagonal",
+  "idealStartingState": {
+    "velocity": 4.75,
+    "rotation": 57.267653128133496
+  },
+  "useDefaultConstraints": true
+}

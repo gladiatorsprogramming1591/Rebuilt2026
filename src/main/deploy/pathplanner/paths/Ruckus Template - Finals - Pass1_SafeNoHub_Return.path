@@ -1,0 +1,203 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.5,
+        "y": 3.0170795454545445
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.490189746300211,
+        "y": 3.3472159090909086
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_BC Safe Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 7.288761363636363,
+        "y": 3.6131590909090905
+      },
+      "prevControl": {
+        "x": 7.538655357747147,
+        "y": 3.6058795505829857
+      },
+      "nextControl": {
+        "x": 5.5943931657042585,
+        "y": 3.662516906281991
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.98809907584102,
+        "y": 2.5553956717783
+      },
+      "prevControl": {
+        "x": 6.903273309027956,
+        "y": 2.5406196405759647
+      },
+      "nextControl": {
+        "x": 5.569399447979397,
+        "y": 2.5621558257919737
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Battlecry Bump Start"
+    },
+    {
+      "anchor": {
+        "x": 3.2719267483422185,
+        "y": 2.5553956717783
+      },
+      "prevControl": {
+        "x": 4.113662519922029,
+        "y": 2.5321752036594805
+      },
+      "nextControl": {
+        "x": 3.0060847015168637,
+        "y": 2.562729299481165
+      },
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Battlecry Bump End"
+    },
+    {
+      "anchor": {
+        "x": 2.750285087719298,
+        "y": 2.5553956717783
+      },
+      "prevControl": {
+        "x": 3.0002712493425068,
+        "y": 2.5527652731592703
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Template_Finals_Battlecry Tilted Hub Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7593582887700528,
+      "rotationDegrees": 0.3442827432797333
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -44.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Bump Zone",
+      "minWaypointRelativePos": 1.4434470377019748,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 5.0,
+        "maxAcceleration": 8.5,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Localizing",
+      "minWaypointRelativePos": 1.0033898305084743,
+      "maxWaypointRelativePos": 1.393177737881509,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.62,
+        "y": 3.3
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 1.8499999999999996,
+      "maxWaypointRelativePos": 2.26,
+      "name": "Side Tags"
+    },
+    {
+      "fieldPosition": {
+        "x": 4.62,
+        "y": 4.02
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 4.0,
+      "name": "Goal"
+    },
+    {
+      "fieldPosition": {
+        "x": 5.269736842105264,
+        "y": 4.034999999999999
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 0.9982046678635558,
+      "maxWaypointRelativePos": 1.400359066427289,
+      "name": "Front Tags"
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Idle Shooter",
+      "waypointRelativePos": 1.1389830508474572,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Idle Shooter"
+        }
+      }
+    },
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 1.98,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intake"
+        }
+      }
+    },
+    {
+      "name": "Stow For Bump",
+      "waypointRelativePos": 2.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stow For Bump"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -145.0
+  },
+  "reversed": false,
+  "folder": "Ruckus Template",
+  "idealStartingState": {
+    "velocity": 2.5,
+    "rotation": 65.0
+  },
+  "useDefaultConstraints": true
+}

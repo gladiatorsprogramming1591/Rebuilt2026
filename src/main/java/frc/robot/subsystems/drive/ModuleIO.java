@@ -20,6 +20,8 @@ public interface ModuleIO {
     public double driveCurrentAmps = 0.0;
     public double driveStatorCurrentLimitAmps = Double.NaN;
     public double driveSupplyCurrentLimitAmps = Double.NaN;
+    public double driveLowerSupplyCurrentLimitAmps = Double.NaN;
+    public double driveLowerSupplyCurrentTimeSeconds = Double.NaN;
     public boolean driveBrakeMode = false;
     public boolean driveConfigApplied = false;
 
@@ -49,7 +51,11 @@ public interface ModuleIO {
   public default void setDriveVelocity(double velocityRadPerSec) {}
 
   /** Sets sticky drive motor current limits. */
-  public default void setDriveCurrentLimits(double statorAmps, double supplyAmps) {}
+  public default void setDriveCurrentLimits(
+      double statorAmps,
+      double supplyAmps,
+      double lowerSupplyAmps,
+      double lowerSupplyTimeSeconds) {}
 
   /** Sets drive motor neutral mode. */
   public default void setDriveBrakeMode(boolean brake) {}

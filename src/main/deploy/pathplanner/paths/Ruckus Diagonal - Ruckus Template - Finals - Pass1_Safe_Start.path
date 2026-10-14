@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.421,
+        "y": 0.454
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.21613402595619,
+        "y": 0.38745047678182865
+      },
+      "isLocked": true,
+      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Battlecry bottom start rush"
+    },
+    {
+      "anchor": {
+        "x": 7.087203947368421,
+        "y": 1.2078289473684207
+      },
+      "prevControl": {
+        "x": 6.904793130801535,
+        "y": 1.036871952777963
+      },
+      "nextControl": {
+        "x": 7.269614763935308,
+        "y": 1.378785941958878
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.539166666666667,
+        "y": 1.784802631578947
+      },
+      "prevControl": {
+        "x": 7.410952826703854,
+        "y": 1.570183873680225
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_BC Close End"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Prepare Intake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 1000.0,
+    "maxAngularAcceleration": 1200.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 5.0,
+    "rotation": 57.267653128133496
+  },
+  "reversed": false,
+  "folder": "Ruckus Diagonal",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}
