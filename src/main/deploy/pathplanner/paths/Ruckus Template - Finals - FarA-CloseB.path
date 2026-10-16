@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.423859649122807,
-        "y": 2.746425438596491
+        "x": 8.500789473684211,
+        "y": 2.3329276315789467
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.423859649122807,
-        "y": 5.538279945419374
+        "x": 8.500789473684211,
+        "y": 4.582927631578947
       },
       "isLocked": false,
       "linkedName": "Ruckus Template_Finals_Pass2_FarSweepA"
     },
     {
       "anchor": {
-        "x": 6.702554824561404,
-        "y": 2.852203947368421
+        "x": 6.298673245614035,
+        "y": 2.6791118421052627
       },
       "prevControl": {
-        "x": 8.180371590786837,
-        "y": 3.1092206889690477
+        "x": 7.295069053799136,
+        "y": 2.76393750703729
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,13 +31,13 @@
   "rotationTargets": [
     {
       "name": "Rotation Target 2",
-      "waypointRelativePos": 0.2672955974842767,
-      "rotationDegrees": 89.62726912385143
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": 102.55508010394861
     },
     {
       "name": "Rotation Target 3",
-      "waypointRelativePos": 0.564465408805032,
-      "rotationDegrees": -147.69529911478958
+      "waypointRelativePos": 0.45,
+      "rotationDegrees": -152.81024098328152
     }
   ],
   "constraintZones": [],
@@ -52,13 +52,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 4.0,
-    "rotation": -138.468
+    "velocity": 3.75,
+    "rotation": -145.0
   },
   "reversed": false,
   "folder": "Ruckus Template",
   "idealStartingState": {
-    "velocity": 3.0,
+    "velocity": 3.25,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

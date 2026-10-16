@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.606041666666667,
-        "y": 2.3810087719298245
+        "x": 2.5,
+        "y": 2.5553956717783
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1204143214752373,
-        "y": 2.7411763822757265
+        "x": 3.0143726548085703,
+        "y": 2.915563282124202
       },
       "isLocked": false,
-      "linkedName": "Ruckus Template_Finals_Pass2_Shot"
+      "linkedName": "Ruckus Template - Pass2_Start"
     },
     {
       "anchor": {
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 4.6,
-        "y": 0.6
+        "x": 4.623332158146243,
+        "y": 0.5277209583239255
       },
       "prevControl": {
-        "x": 4.275703946701892,
-        "y": 0.656186277856474
+        "x": 4.299036104848136,
+        "y": 0.5839072361803995
       },
       "nextControl": null,
       "isLocked": true,
@@ -89,7 +89,7 @@
   "folder": "Ruckus Template",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -138.46822925891715
+    "rotation": -145.0
   },
   "useDefaultConstraints": true
 }

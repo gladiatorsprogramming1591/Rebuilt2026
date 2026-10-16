@@ -8,40 +8,56 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.750811403508772,
-        "y": 4.188859649122807
+        "x": 8.673881578947368,
+        "y": 3.515723684210526
       },
       "isLocked": false,
       "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Pass2_FarSweepA"
     },
     {
       "anchor": {
-        "x": 6.4525328947368426,
-        "y": 4.025383771929824
+        "x": 6.679389512784335,
+        "y": 3.554455581698683
       },
       "prevControl": {
-        "x": 6.893641514828136,
-        "y": 4.285524753009756
+        "x": 6.942663445436558,
+        "y": 3.5341921792634174
       },
       "nextControl": {
-        "x": 6.077499999998546,
-        "y": 3.804210526314547
+        "x": 6.08272811035723,
+        "y": 3.6003788145579776
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.942872807017544,
-        "y": 2.246381578947368
+        "x": 5.956154905520854,
+        "y": 3.0926096491228066
       },
       "prevControl": {
-        "x": 5.678162657572057,
-        "y": 2.444914191031483
+        "x": 6.00341186165474,
+        "y": 3.354163160653575
       },
       "nextControl": {
-        "x": 6.289057017543859,
-        "y": 1.9867434210526311
+        "x": 5.902116522984199,
+        "y": 2.7935229142543765
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.956154905520854,
+        "y": 2.6021820175438597
+      },
+      "prevControl": {
+        "x": 5.794041654562457,
+        "y": 2.7924956898422546
+      },
+      "nextControl": {
+        "x": 6.11826815647925,
+        "y": 2.4118683452454666
       },
       "isLocked": false,
       "linkedName": null
@@ -52,8 +68,8 @@
         "y": 2.6021820175438597
       },
       "prevControl": {
-        "x": 6.721787280701754,
-        "y": 2.169451754385965
+        "x": 6.553429328401855,
+        "y": 2.51876186955555
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,28 +79,41 @@
   "rotationTargets": [
     {
       "name": "Rotation Target 2",
-      "waypointRelativePos": 0.18867924528301885,
-      "rotationDegrees": 120.81902642251644
+      "waypointRelativePos": 0.3962264150943396,
+      "rotationDegrees": 152.3767879725751
     },
     {
       "name": "Rotation Target 3",
-      "waypointRelativePos": 0.5880503144654091,
-      "rotationDegrees": 171.468
+      "waypointRelativePos": 0.7735849056603774,
+      "rotationDegrees": 178.7911614470729
     },
     {
       "name": "Rotation Target 4",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 3.0,
       "rotationDegrees": -102.653
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.4,
-      "maxWaypointRelativePos": 3.0,
+      "minWaypointRelativePos": 1.6813559322033897,
+      "maxWaypointRelativePos": 3.518850987432678,
       "constraints": {
-        "maxVelocity": 5.0,
-        "maxAcceleration": 7.5,
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 1000.0,
+        "maxAngularAcceleration": 1200.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.005385996409337,
+      "maxWaypointRelativePos": 1.7666068222621174,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
         "maxAngularVelocity": 1000.0,
         "maxAngularAcceleration": 1200.0,
         "nominalVoltage": 12.0,
@@ -93,7 +122,19 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Stop Intake",
+      "waypointRelativePos": 3.3627118644067733,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 6.0,
@@ -104,12 +145,12 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -138.468
+    "rotation": -145.0
   },
   "reversed": false,
   "folder": "Ruckus Diagonal",
   "idealStartingState": {
-    "velocity": 3.0,
+    "velocity": 4.75,
     "rotation": 90.0
   },
   "useDefaultConstraints": true

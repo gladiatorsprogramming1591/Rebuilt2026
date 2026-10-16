@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.46232456140351,
-        "y": 3.246469298245613
+        "x": 8.443092105263158,
+        "y": 2.9483662280701752
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.45251430770372,
-        "y": 3.576605661881977
+        "x": 8.433281851563368,
+        "y": 3.2785025917065393
       },
       "isLocked": false,
       "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_BC Safe Sweep End"
@@ -60,25 +60,25 @@
         "y": 2.562729299481165
       },
       "isLocked": false,
-      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Battlecry Bump End"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.750285087719298,
+        "x": 2.5,
         "y": 2.5553956717783
       },
       "prevControl": {
-        "x": 3.0002712493425068,
+        "x": 2.749986161623209,
         "y": 2.5527652731592703
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Battlecry Tilted Hub Shot"
+      "linkedName": "Ruckus Diagonal - Finals - Pass2_Start_Ruckus Template - Pass2_Start"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7593582887700528,
+      "waypointRelativePos": 0.610062893081761,
       "rotationDegrees": -8.085598035330294
     },
     {
@@ -102,10 +102,10 @@
     },
     {
       "name": "Localizing",
-      "minWaypointRelativePos": 1.0033898305084743,
+      "minWaypointRelativePos": 0.804308797127468,
       "maxWaypointRelativePos": 1.393177737881509,
       "constraints": {
-        "maxVelocity": 0.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 1000.0,
         "maxAngularAcceleration": 1200.0,

@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
-import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class AutoManager {
   private static final String AUTO_FILE_EXTENSION = ".auto";
@@ -36,7 +34,7 @@ public class AutoManager {
     for (String autoName : getDeployedAutoNames()) {
       try {
         PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-        autos.addOption(autoName, wrapAuto(new PathPlannerAuto(autoName)));
+        autos.addOption("Right " + autoName, wrapAuto(new PathPlannerAuto(autoName)));
         autos.addOption("Left " + autoName, wrapAuto(new PathPlannerAuto(autoName, true)));
         loadedAutoCount++;
       } catch (Exception exception) {

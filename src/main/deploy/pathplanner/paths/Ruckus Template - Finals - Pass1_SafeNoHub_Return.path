@@ -20,12 +20,12 @@
         "y": 3.6131590909090905
       },
       "prevControl": {
-        "x": 7.538655357747147,
-        "y": 3.6058795505829857
+        "x": 7.885350877192984,
+        "y": 3.6022697368421044
       },
       "nextControl": {
-        "x": 5.5943931657042585,
-        "y": 3.662516906281991
+        "x": 5.593956706053965,
+        "y": 3.6440938082841394
       },
       "isLocked": false,
       "linkedName": null
@@ -64,16 +64,16 @@
     },
     {
       "anchor": {
-        "x": 2.750285087719298,
+        "x": 2.5,
         "y": 2.5553956717783
       },
       "prevControl": {
-        "x": 3.0002712493425068,
+        "x": 2.749986161623209,
         "y": 2.5527652731592703
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Ruckus Template_Finals_Battlecry Tilted Hub Shot"
+      "linkedName": "Ruckus Template - Pass2_Start"
     }
   ],
   "rotationTargets": [
@@ -102,10 +102,10 @@
     },
     {
       "name": "Localizing",
-      "minWaypointRelativePos": 1.0033898305084743,
+      "minWaypointRelativePos": 0.7540394973070018,
       "maxWaypointRelativePos": 1.393177737881509,
       "constraints": {
-        "maxVelocity": 0.5,
+        "maxVelocity": 1.0,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 1000.0,
         "maxAngularAcceleration": 1200.0,
@@ -148,6 +148,17 @@
   ],
   "eventMarkers": [
     {
+      "name": "Stop Intake",
+      "waypointRelativePos": 0.9982046678635556,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Stop Intake"
+        }
+      }
+    },
+    {
       "name": "Idle Shooter",
       "waypointRelativePos": 1.1389830508474572,
       "endWaypointRelativePos": null,
@@ -159,19 +170,8 @@
       }
     },
     {
-      "name": "Stop Intake",
-      "waypointRelativePos": 1.98,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Stop Intake"
-        }
-      }
-    },
-    {
       "name": "Stow For Bump",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.7091561938958681,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

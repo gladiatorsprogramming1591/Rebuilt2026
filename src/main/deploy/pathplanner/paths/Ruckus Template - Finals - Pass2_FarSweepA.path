@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.6,
-        "y": 0.6
+        "x": 4.623332158146243,
+        "y": 0.5277209583239255
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.635241228070175,
-        "y": 0.5154605263157885
+        "x": 6.6585733862164185,
+        "y": 0.4431814846397141
       },
       "isLocked": false,
       "linkedName": "Ruckus Template_Finals_Pass Start"
     },
     {
       "anchor": {
-        "x": 7.80842105263158,
-        "y": 1.352072368421052
+        "x": 7.74110745614035,
+        "y": 1.0347368421052625
       },
       "prevControl": {
-        "x": 7.611389556684145,
-        "y": 1.101203841981307
+        "x": 7.544075960192915,
+        "y": 0.7838683156655175
       },
       "nextControl": {
-        "x": 8.070374811604484,
-        "y": 1.6856025646614357
+        "x": 8.003061215113254,
+        "y": 1.3682670383456461
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.423859649122807,
-        "y": 2.746425438596491
+        "x": 8.500789473684211,
+        "y": 2.3329276315789467
       },
       "prevControl": {
-        "x": 8.423859649122807,
-        "y": 2.003848091909795
+        "x": 8.500789473684211,
+        "y": 1.5903502848922506
       },
       "nextControl": null,
       "isLocked": false,
@@ -51,8 +51,8 @@
       "rotationDegrees": 10.704381460442473
     },
     {
-      "waypointRelativePos": 1.3805031446540983,
-      "rotationDegrees": 89.48811489793094
+      "waypointRelativePos": 1.2264150943396193,
+      "rotationDegrees": 59.86412562045092
     }
   ],
   "constraintZones": [],
@@ -67,7 +67,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.0,
+    "velocity": 3.25,
     "rotation": 90.0
   },
   "reversed": false,

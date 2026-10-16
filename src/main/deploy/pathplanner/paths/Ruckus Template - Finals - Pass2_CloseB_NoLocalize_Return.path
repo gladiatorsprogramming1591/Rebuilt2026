@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.702554824561404,
-        "y": 2.852203947368421
+        "x": 6.298673245614035,
+        "y": 2.6791118421052627
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.911035000052395,
-        "y": 2.7145455780380967
+        "x": 5.5293748455992455,
+        "y": 2.621416532397859
       },
       "isLocked": false,
       "linkedName": "Ruckus Template Pass 2 Sweep End"
     },
     {
       "anchor": {
-        "x": 2.606041666666667,
-        "y": 2.3810087719298245
+        "x": 2.5,
+        "y": 2.5553956717783
       },
       "prevControl": {
-        "x": 4.058092105263158,
-        "y": 2.554100877192982
+        "x": 3.9138486842105262,
+        "y": 2.6021820175438597
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Ruckus Template_Finals_Pass2_Shot"
+      "linkedName": "Ruckus Template - Pass2_Start"
     }
   ],
   "rotationTargets": [
@@ -85,13 +85,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -138.468
+    "rotation": -145.0
   },
   "reversed": false,
   "folder": "Ruckus Template",
   "idealStartingState": {
-    "velocity": 4.0,
-    "rotation": -138.468
+    "velocity": 3.75,
+    "rotation": -145.0
   },
   "useDefaultConstraints": true
 }

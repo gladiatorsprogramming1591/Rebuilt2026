@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass1_Safe_Start"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass1_Safe_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass1_Safe_Sweep"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass1_Safe_Sweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass1_SafeNoHub_Return"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass1_SafeNoHub_Return"
           }
         },
         {
@@ -31,25 +31,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass2_Start"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass2_Start"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass2_FarSweepA"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass2_FarSweepA"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - FarA-CloseB"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - FarA-CloseB"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass2_CloseB_NoLocalize_Return"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass2_CloseB_NoLocalize_Return"
           }
         },
         {
@@ -61,7 +61,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass3_Start"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass2_Start"
           }
         },
         {
@@ -73,7 +73,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Ruckus Template No Localize - Ruckus Template - Finals - Pass2_FarSweepA"
+            "pathName": "No Localize Ruckus Template - Ruckus Template - Finals - Pass2_FarSweepA"
           }
         }
       ]

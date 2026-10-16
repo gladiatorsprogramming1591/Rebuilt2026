@@ -8,50 +8,39 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.577456140350878,
-        "y": 2.5444846491228064
+        "x": 5.548607456140351,
+        "y": 2.611798245614035
       },
       "isLocked": false,
-      "linkedName": "Ruckus Diagonal_Ruckus Template Pass 2 Sweep End"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.606041666666667,
-        "y": 2.3810087719298245
+        "x": 2.5,
+        "y": 2.5553956717783
       },
       "prevControl": {
-        "x": 4.125405701754386,
-        "y": 2.4867872807017544
+        "x": 4.019364035087719,
+        "y": 2.66117418055023
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Ruckus Diagonal_Ruckus Template_Finals_Pass2_Shot"
+      "linkedName": "Ruckus Diagonal - Finals - Pass2_Start_Ruckus Template - Pass2_Start"
     }
   ],
   "rotationTargets": [
     {
       "name": "Rotation Target 1",
       "waypointRelativePos": 0.5,
-      "rotationDegrees": -138.468
+      "rotationDegrees": -145.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Stop Intake",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Stop Intake"
-        }
-      }
-    },
-    {
       "name": "Stow For Bump",
-      "waypointRelativePos": 0.061041292639138184,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -71,13 +60,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -138.468
+    "rotation": -145.0
   },
   "reversed": false,
   "folder": "Ruckus Diagonal",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -138.468
+    "rotation": -145.0
   },
   "useDefaultConstraints": true
 }

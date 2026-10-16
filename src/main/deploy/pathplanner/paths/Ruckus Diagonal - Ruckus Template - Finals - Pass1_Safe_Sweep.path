@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 8.46232456140351,
-        "y": 3.246469298245613
+        "x": 8.443092105263158,
+        "y": 2.9483662280701752
       },
       "prevControl": {
-        "x": 8.410475402262561,
-        "y": 2.7068850290127715
+        "x": 8.39124294612221,
+        "y": 2.408781958837334
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
   "folder": "Ruckus Diagonal",
   "idealStartingState": {
     "velocity": 4.75,
-    "rotation": 57.267653128133496
+    "rotation": 57.2676531281335
   },
   "useDefaultConstraints": true
 }
