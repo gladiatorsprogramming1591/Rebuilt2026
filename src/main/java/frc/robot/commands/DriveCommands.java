@@ -53,10 +53,18 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
+  // Slow translation during Shoot Hub only; ordinary driving/aiming uses its existing limits.
+  private static final double AUTO_SHOT_POSITION_KP = 2.0;
+  private static final double AUTO_SHOT_MAX_SPEED = 0.35; // Meters/sec
+  private static final double AUTO_SHOT_MAX_ACCELERATION = 0.60; // Meters/sec^2
+  private static final double AUTO_SHOT_POSITION_TOLERANCE = 0.03; // Meters
+
   private static final LoggedTunableNumber driveLaunchKp =
       new LoggedTunableNumber("DriveCommands/Launching/kP", 4.0, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveLaunchKd =
       new LoggedTunableNumber("DriveCommands/Launching/kD", 0.03, Constants.Tuning.DRIVE_COMMANDS);
+  private static final LoggedTunableNumber driveHubAimKd =
+      new LoggedTunableNumber("DriveCommands/Launching/HubkD", 0.5, Constants.Tuning.DRIVE_COMMANDS);
   private static final LoggedTunableNumber driveYawLaunchToleranceDeg =
       new LoggedTunableNumber(
           "DriveCommands/Launching/YawToleranceDeg", 10.0, Constants.Tuning.DRIVE_COMMANDS);
@@ -273,32 +281,50 @@ public class DriveCommands {
 
   public static Command joystickDriveWhileLaunching(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveWhileLaunching(drive, xSupplier, ySupplier, null);
+  }
+
+  /** Aims normally while gently returning the robot center to the previous path's endpoint. */
+  public static Command aimWhileSettlingAtPathEnd(Drive drive) {
+    AutoShotPositionCorrection correction = new AutoShotPositionCorrection(drive);
+    return joystickDriveWhileLaunching(drive, () -> 0.0, () -> 0.0, correction)
+        .beforeStarting(correction::reset)
+        .finallyDo(() -> {
+          correction.finish();
+          drive.stop();
+        });
+  }
+
+  private static Command joystickDriveWhileLaunching(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier,
+      AutoShotPositionCorrection positionCorrection) {
     // Create command
     return Commands.run(
         () -> {
+          if (positionCorrection != null && !positionCorrection.canDrive()) {
+            drive.stop();
+            return;
+          }
           // Run PID controller
           final var parameters = ShooterCalculation.getInstance().getParameters();
-          double omegaOutput =
-              parameters.driveVelocity() * driveLaunchVelocityFeedforwardScalar.get()
-                  + (parameters
-                          .driveAngle()
-                          .minus(RobotState.getInstance().getRotation())
-                          .getRadians()
-                      * driveLaunchKp.get())
-                  + ((parameters.driveVelocity()
-                          - RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond)
-                      * driveLaunchKd.get());
+          Rotation2d robotRotation = RobotState.getInstance().getRotation();
+          double headingError = parameters.driveAngle().minus(robotRotation).getRadians();
+          double measuredOmega = parameters.passing()
+              ? RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond
+              : drive.getYawVelocityRadPerSec();
 
           // Calculate speeds
-          Translation2d fieldRelativeLinearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble())
+          boolean correctPosition = positionCorrection != null;
+          Translation2d fieldRelativeLinearVelocity = correctPosition
+              ? positionCorrection.calculate()
+              : getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble())
                   .times(DriveConstants.maxLinearSpeed);
-          if (AllianceFlipUtil.shouldFlip()) {
+          if (!correctPosition && AllianceFlipUtil.shouldFlip()) {
             fieldRelativeLinearVelocity = fieldRelativeLinearVelocity.times(-1.0);
           }
 
           // Only limit if launching, not passing
-          if (!ShooterCalculation.getInstance().getParameters().passing()) {
+          if (!correctPosition && !ShooterCalculation.getInstance().getParameters().passing()) {
             // Calculate max linear velocity magnitude based on the max polar velocity
             double maxLinearVelocityMagnitude = Double.POSITIVE_INFINITY;
             boolean isNullVector =
@@ -337,8 +363,21 @@ public class DriveCommands {
             }
           }
 
+          // Track hub motion from translation, not the derivative of our own aiming correction.
+          double targetVelocity = parameters.passing()
+              ? parameters.driveVelocity()
+              : getHubHeadingVelocity(
+                  AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d())
+                      .minus(RobotState.getInstance().getEstimatedPose().getTranslation()),
+                  fieldRelativeLinearVelocity);
+          double omegaOutput = parameters.passing()
+              ? targetVelocity * driveLaunchVelocityFeedforwardScalar.get()
+                  + headingError * driveLaunchKp.get()
+                  + (targetVelocity - measuredOmega) * driveLaunchKd.get()
+              : calculateHubTurnOutput(headingError, targetVelocity, measuredOmega);
+
           // Apply chassis speeds
-          double corScalar =
+          double corScalar = correctPosition ? 1.0 :
               MathUtil.clamp(
                   (Math.abs(
                               parameters
@@ -351,14 +390,15 @@ public class DriveCommands {
                   1.0);
           Translation2d launcherToRobot =
               ShooterConstants.robotToLauncher.getTranslation().toTranslation2d().unaryMinus();
-          ChassisSpeeds fieldRelativeSpeedsWithOffset =
-              GeomUtil.transformVelocity(
+          ChassisSpeeds fieldRelativeSpeedsWithOffset = parameters.passing()
+              ? GeomUtil.transformVelocity(
                   new ChassisSpeeds(
-                      fieldRelativeLinearVelocity.getX(),
-                      fieldRelativeLinearVelocity.getY(),
+                      fieldRelativeLinearVelocity.getX(), fieldRelativeLinearVelocity.getY(),
                       omegaOutput),
-                  launcherToRobot.times(1.0 - corScalar),
-                  RobotState.getInstance().getRotation());
+                  launcherToRobot.times(1.0 - corScalar), robotRotation)
+              : getHubChassisSpeeds(
+                  fieldRelativeLinearVelocity, omegaOutput,
+                  launcherToRobot.times(1.0 - corScalar), robotRotation);
 
           // Apply X-lock
           boolean xLock =
@@ -367,7 +407,12 @@ public class DriveCommands {
                           fieldRelativeSpeedsWithOffset.vyMetersPerSecond)
                       < lockMetersPerSecondThreshold.get()
                   && Math.abs(fieldRelativeSpeedsWithOffset.omegaRadiansPerSecond)
-                      < lockOmegaRadsPerSecThreshold.get();
+                      < lockOmegaRadsPerSecThreshold.get()
+                  && (!correctPosition || positionCorrection.atPosition())
+                  && (parameters.passing()
+                      || (Math.abs(measuredOmega) < lockOmegaRadsPerSecThreshold.get()
+                          && Math.abs(headingError) * driveLaunchKp.get()
+                              < lockOmegaRadsPerSecThreshold.get()));
           if (Constants.Tuning.DRIVE_COMMANDS) {
             Logger.recordOutput("DriveCommands/Launching/XLock", xLock);
           }
@@ -383,8 +428,9 @@ public class DriveCommands {
           // speeds that will ultimately be applied once we are using the full robot-to-launcher
           // transform. This prevents the setpoint from changing due to the shifting COR of the
           // robot.
-          ChassisSpeeds fieldRelativeSpeedsWithFullOffset =
-              GeomUtil.transformVelocity(
+          ChassisSpeeds fieldRelativeSpeedsWithFullOffset = correctPosition
+              ? fieldRelativeSpeedsWithOffset
+              : GeomUtil.transformVelocity(
                   new ChassisSpeeds(
                       fieldRelativeLinearVelocity.getX(),
                       fieldRelativeLinearVelocity.getY(),
@@ -412,20 +458,133 @@ public class DriveCommands {
                 parameters.driveAngle().minus(RobotState.getInstance().getRotation()));
             Logger.recordOutput(
                 "DriveCommands/Launching/ErrorVelocityRadPerSec",
-                parameters.driveVelocity()
-                    - RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
+                targetVelocity - measuredOmega);
             Logger.recordOutput(
                 "DriveCommands/Launching/MeasuredPosition", RobotState.getInstance().getRotation());
             Logger.recordOutput(
                 "DriveCommands/Launching/MeasuredVelocityRadPerSec",
-                RobotState.getInstance().getRobotVelocity().omegaRadiansPerSecond);
+                measuredOmega);
             Logger.recordOutput(
                 "DriveCommands/Launching/SetpointPosition", parameters.driveAngle());
             Logger.recordOutput(
-                "DriveCommands/Launching/SetpointVelocityRadPerSec", parameters.driveVelocity());
+                "DriveCommands/Launching/SetpointVelocityRadPerSec", targetVelocity);
           }
         },
         drive);
+  }
+
+  /** Position correction owned by one Shoot Hub command, never by the following path. */
+  private static final class AutoShotPositionCorrection {
+    private final Drive drive;
+    private Translation2d target = Translation2d.kZero;
+    private Translation2d velocity = Translation2d.kZero;
+    private double lastTimestamp;
+    private double errorMeters;
+    private boolean targetAvailable;
+
+    AutoShotPositionCorrection(Drive drive) {
+      this.drive = drive;
+    }
+
+    void reset() {
+      var endpoint = drive.getAutoShotPosition();
+      targetAvailable = DriverStation.isAutonomousEnabled() && endpoint.isPresent();
+      target = endpoint.orElse(drive.getPose().getTranslation());
+      velocity = Translation2d.kZero;
+      lastTimestamp = Timer.getTimestamp();
+      errorMeters = target.getDistance(drive.getPose().getTranslation());
+      Logger.recordOutput("AutoShotPosition/Active", true);
+      Logger.recordOutput("AutoShotPosition/TargetAvailable", targetAvailable);
+      Logger.recordOutput("AutoShotPosition/TargetX", target.getX());
+      Logger.recordOutput("AutoShotPosition/TargetY", target.getY());
+    }
+
+    boolean canDrive() {
+      Pose2d pose = drive.getPose();
+      return DriverStation.isAutonomousEnabled()
+          && Double.isFinite(pose.getTranslation().getX())
+          && Double.isFinite(pose.getTranslation().getY())
+          && Double.isFinite(pose.getRotation().getRadians())
+          && Double.isFinite(target.getX()) && Double.isFinite(target.getY());
+    }
+
+    Translation2d calculate() {
+      double now = Timer.getTimestamp();
+      double dt = MathUtil.clamp(now - lastTimestamp, 0.0, 0.10);
+      lastTimestamp = now;
+      Translation2d error = target.minus(drive.getPose().getTranslation());
+      errorMeters = error.getNorm();
+      if (!DriverStation.isAutonomousEnabled() || !targetAvailable
+          || !Double.isFinite(errorMeters)) {
+        velocity = Translation2d.kZero;
+        return velocity;
+      }
+
+      Translation2d requested = errorMeters <= AUTO_SHOT_POSITION_TOLERANCE
+          ? Translation2d.kZero : error.times(AUTO_SHOT_POSITION_KP);
+      double requestedSpeed = requested.getNorm();
+      if (requestedSpeed > AUTO_SHOT_MAX_SPEED) {
+        requested = requested.times(AUTO_SHOT_MAX_SPEED / requestedSpeed);
+      }
+      Translation2d change = requested.minus(velocity);
+      double maximumChange = AUTO_SHOT_MAX_ACCELERATION * dt;
+      if (change.getNorm() > maximumChange) {
+        change = change.times(maximumChange / change.getNorm());
+      }
+      velocity = velocity.plus(change);
+      Logger.recordOutput("AutoShotPosition/ErrorMeters", errorMeters);
+      Logger.recordOutput("AutoShotPosition/VxMetersPerSecond", velocity.getX());
+      Logger.recordOutput("AutoShotPosition/VyMetersPerSecond", velocity.getY());
+      Logger.recordOutput("AutoShotPosition/AtPosition", atPosition());
+      return velocity;
+    }
+
+    boolean atPosition() {
+      return !targetAvailable || (errorMeters <= AUTO_SHOT_POSITION_TOLERANCE
+          && velocity.getNorm() < 1e-6);
+    }
+
+    void finish() {
+      Logger.recordOutput("AutoShotPosition/Active", false);
+      Logger.recordOutput("AutoShotPosition/FinalErrorMeters",
+          target.getDistance(drive.getPose().getTranslation()));
+      velocity = Translation2d.kZero;
+    }
+  }
+
+  /** Hub heading rate from intended field translation; stationary aiming has no rate feedforward. */
+  private static double getHubHeadingVelocity(
+      Translation2d robotToHub, Translation2d fieldVelocity) {
+    double distanceSquared = robotToHub.getX() * robotToHub.getX()
+        + robotToHub.getY() * robotToHub.getY();
+    double lateralOffset = ShooterConstants.robotToLauncher.getY();
+    if (distanceSquared <= lateralOffset * lateralOffset + 1e-6) {
+      return 0.0;
+    }
+    double tangential = robotToHub.getY() * fieldVelocity.getX()
+        - robotToHub.getX() * fieldVelocity.getY();
+    double radial = robotToHub.getX() * fieldVelocity.getX()
+        + robotToHub.getY() * fieldVelocity.getY();
+    return (tangential + lateralOffset * radial
+        / Math.sqrt(distanceSquared - lateralOffset * lateralOffset)) / distanceSquared;
+  }
+
+  /** Calculates hub turn speed from heading error and measured yaw-rate damping. */
+  private static double calculateHubTurnOutput(
+      double headingError, double targetVelocity, double measuredOmega) {
+    return headingError * driveLaunchKp.get()
+        + targetVelocity * driveLaunchVelocityFeedforwardScalar.get()
+        + (targetVelocity - measuredOmega) * driveHubAimKd.get();
+  }
+
+  /** Converts launcher-centered rotation to chassis speeds using the field-rotated offset. */
+  private static ChassisSpeeds getHubChassisSpeeds(
+      Translation2d fieldVelocity, double omega, Translation2d launcherToRobot,
+      Rotation2d robotRotation) {
+    Translation2d offset = launcherToRobot.rotateBy(robotRotation);
+    return new ChassisSpeeds(
+        fieldVelocity.getX() - omega * offset.getY(),
+        fieldVelocity.getY() + omega * offset.getX(), omega);
   }
 
   /**

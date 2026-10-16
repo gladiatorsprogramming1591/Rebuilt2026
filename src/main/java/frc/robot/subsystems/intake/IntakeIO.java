@@ -93,6 +93,9 @@ public interface IntakeIO {
     /** Desired slapdown torque-current output when slapdown mode is TORQUE_CURRENT. */
     public double appliedSlapdownTorqueCurrent = 0.0;
 
+    /** Requests the assisted torque output within the preconfigured auto current limits. */
+    public boolean slapdownDeployAssist = false;
+
     /** Desired slapdown position in current legacy slapdown units. */
     public double desiredSlapdownPosition = 0.0;
 

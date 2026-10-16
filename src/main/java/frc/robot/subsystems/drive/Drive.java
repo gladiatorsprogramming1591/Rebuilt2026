@@ -49,6 +49,7 @@ import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -115,6 +116,7 @@ public class Drive extends SubsystemBase {
   private double appliedDriveLowerSupplyCurrentTimeSeconds = Double.NaN;
   private Boolean appliedDriveBrakeMode = null;
   private int dashboardUpdateCounter = 0;
+  private Translation2d autoShotPosition;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Rotation2d rawGyroRotation = Rotation2d.kZero;
@@ -162,10 +164,7 @@ public class Drive extends SubsystemBase {
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
-    PathPlannerLogging.setLogActivePathCallback(
-        (activePath) -> {
-          Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
-        });
+    PathPlannerLogging.setLogActivePathCallback(this::recordActivePath);
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
@@ -185,6 +184,9 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (!DriverStation.isAutonomousEnabled()) {
+      autoShotPosition = null;
+    }
     odometryLock.lock(); // Prevents odometry updates while reading data
     try {
       gyroIO.updateInputs(gyroInputs);
@@ -276,6 +278,20 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+  }
+
+  /** Retains the actual field-coordinate endpoint when PathPlanner starts an auto path. */
+  private void recordActivePath(List<Pose2d> activePath) {
+    Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
+    if (DriverStation.isAutonomousEnabled() && !activePath.isEmpty()) {
+      autoShotPosition = activePath.get(activePath.size() - 1).getTranslation();
+    }
+    // PathPlanner sends an empty list on completion; keep the endpoint for Shoot Hub.
+  }
+
+  /** Returns the previous auto path's endpoint, already alliance-flipped and mirrored. */
+  public Optional<Translation2d> getAutoShotPosition() {
+    return Optional.ofNullable(autoShotPosition);
   }
 
   private boolean shouldLogSlowDriveOutputs() {
@@ -530,6 +546,13 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
   }
+  /** Returns measured yaw rate, using module kinematics when the gyro is unavailable. */
+  public double getYawVelocityRadPerSec() {
+    return gyroInputs.connected && Double.isFinite(gyroInputs.yawVelocityRadPerSec)
+        ? gyroInputs.yawVelocityRadPerSec
+        : getChassisSpeeds().omegaRadiansPerSecond;
+  }
+
   /** Returns the raw gyro rotation read by the IMU */
   public Rotation2d getGyroRotation() {
     return gyroInputs.yawPosition;

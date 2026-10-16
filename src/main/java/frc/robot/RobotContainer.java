@@ -1018,6 +1018,8 @@ public void useAutoDriveCurrentLimits() {
   public void registerNamedCommands() {
     NamedCommands.registerCommand("Shoot Hub", autoShootHubCommand());
     NamedCommands.registerCommand("Prepare Intake", intake.prepareIntakeInstant());
+    NamedCommands.registerCommand(
+        "Prepare Intake With Assist", intake.prepareIntakeWithAssistInstant());
     NamedCommands.registerCommand("Stop Intake", intake.stopIntakeInstant());
 
     NamedCommands.registerCommand("Intake", intakeCommand());
@@ -1038,7 +1040,13 @@ public void useAutoDriveCurrentLimits() {
    * @return autonomous shoot-hub command
    */
   private Command autoShootHubCommand() {
-    return shootWithAim().until(hopper::isHopperEmpty).withTimeout(3.0);
+    return Commands.parallel(
+            shooter.runShooterTarget(),
+            hood.runHoodTarget(),
+            DriveCommands.aimWhileSettlingAtPathEnd(drive),
+            waitUntilReadyToLaunch().andThen(feedShooterWithDriverIntakeStow()))
+        .until(hopper::isHopperEmpty)
+        .withTimeout(3.0);
   }
 
   /**

@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import static frc.robot.subsystems.intake.IntakeConstants.kintakeTableKey;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -22,6 +24,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState;
@@ -81,7 +84,10 @@ public class IntakeIOKraken implements IntakeIO {
   private int tuneConfigsCreated = 0;
   private double rawDeployPosition = 0.0;
   private double encoderOffset = 0.0;
-  private double appliedSlapdownStatorCurrentLimit = IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
+  private double appliedSlapdownStatorCurrentLimit = Double.NaN;
+  private TorqueCurrentConfigs normalSlapdownTorqueConfig = new TorqueCurrentConfigs();
+  private boolean autoSlapdownCurrentLimits = false;
+  private boolean slapdownCurrentLimitsConfigured = false;
 
   /**
    * Creates the real intake IO layer and configures all motor controllers and status signals.
@@ -137,12 +143,56 @@ private void applyRollerSupplyCurrentLimit(double supplyCurrentLimit, boolean is
 @Override
 public void useAutoRollerCurrentLimits() {
   applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_AUTO_SUPPLY_CURRENT_LIMIT, true);
+  applySlapdownModeCurrentLimits(true);
 }
 
 @Override
 public void useTeleopRollerCurrentLimits() {
   applyRollerSupplyCurrentLimit(IntakeConstants.ROLLER_TELEOP_SUPPLY_CURRENT_LIMIT, false);
+  applySlapdownModeCurrentLimits(false);
 }
+
+  /** Selects the slapdown allowance in the existing disabled/auto/teleop setup hooks. */
+  private void applySlapdownModeCurrentLimits(boolean auto) {
+    double statorCurrentLimit =
+        auto
+            ? Math.max(
+                IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT,
+                IntakeConstants.SLAPDOWN_DEPLOY_ASSIST_CURRENT)
+            : IntakeConstants.SLAPDOWN_STATOR_CURRENT_LIMIT;
+    if (slapdownCurrentLimitsConfigured
+        && autoSlapdownCurrentLimits == auto
+        && appliedSlapdownStatorCurrentLimit == statorCurrentLimit) {
+      return;
+    }
+
+    autoSlapdownCurrentLimits = auto;
+    slapdownCurrentLimitsConfigured = false;
+    deployMotor.stopMotor();
+    TorqueCurrentConfigs torqueConfig = normalSlapdownTorqueConfig.clone();
+    if (auto) {
+      torqueConfig.PeakForwardTorqueCurrent =
+          Math.max(
+              torqueConfig.PeakForwardTorqueCurrent, IntakeConstants.SLAPDOWN_DEPLOY_ASSIST_CURRENT);
+    }
+    StatusCode torqueStatus = StatusCode.OK;
+    for (int attempt = 0; attempt < TUNED_CONFIG_MAX_ATTEMPTS; attempt++) {
+      torqueStatus = deployMotor.getConfigurator().apply(torqueConfig, TUNED_CONFIG_TIMEOUT);
+      if (torqueStatus.isOK()) {
+        break;
+      }
+    }
+    boolean currentLimitApplied = applySlapdownCurrentLimit(statorCurrentLimit);
+    slapdownCurrentLimitsConfigured = torqueStatus.isOK() && currentLimitApplied;
+    Logger.recordOutput(kintakeTableKey + "SlapdownCurrentLimit/Auto", auto);
+    Logger.recordOutput(kintakeTableKey + "SlapdownCurrentLimit/TorqueStatus", torqueStatus.toString());
+    Logger.recordOutput(
+        kintakeTableKey + "SlapdownCurrentLimit/Configured", slapdownCurrentLimitsConfigured);
+    if (!slapdownCurrentLimitsConfigured) {
+      DriverStation.reportError(
+          "Slapdown mode current limits failed; disable to retry before operating", false);
+    }
+  }
 
   /**
    * Applies base configuration to the left and right roller motors.
@@ -207,6 +257,8 @@ public void useTeleopRollerCurrentLimits() {
         IntakeConstants.PEAK_FORWARD_STATOR_CURRENT_LIMIT;
     deployConfig.TorqueCurrent.PeakReverseTorqueCurrent =
         IntakeConstants.PEAK_REVERSE_STATOR_CURRENT_LIMIT;
+
+    normalSlapdownTorqueConfig = deployConfig.TorqueCurrent.clone();
 
     configureStowSlot(deployConfig.Slot0);
     configureDeploySlot(deployConfig.Slot1);
@@ -305,8 +357,21 @@ public void useTeleopRollerCurrentLimits() {
       tuneDeployMotorConfigs(outputs);
     }
 
-    applySlapdownCurrentLimit(outputs.slapdownStatorCurrentLimit);
+    if (!slapdownCurrentLimitsConfigured) {
+      applySlapdownModeCurrentLimits(autoSlapdownCurrentLimits);
+    }
     applyRollerOutput(outputs.appliedRollerSpeed);
+    double statorCurrentLimit =
+        autoSlapdownCurrentLimits
+            ? Math.max(
+                outputs.slapdownStatorCurrentLimit, IntakeConstants.SLAPDOWN_DEPLOY_ASSIST_CURRENT)
+            : outputs.slapdownStatorCurrentLimit;
+    if (!slapdownCurrentLimitsConfigured || !applySlapdownCurrentLimit(statorCurrentLimit)) {
+      slapdownCurrentLimitsConfigured = false;
+      Logger.recordOutput(kintakeTableKey + "SlapdownCurrentLimit/Configured", false);
+      deployMotor.stopMotor();
+      return;
+    }
     applySlapdownOutput(outputs);
   }
 
@@ -351,8 +416,19 @@ public void useTeleopRollerCurrentLimits() {
         break;
 
       case TORQUE_CURRENT:
-        deployMotor.setControl(
-            torqueSlapdownControl.withOutput(outputs.appliedSlapdownTorqueCurrent));
+        double torqueCurrent = outputs.appliedSlapdownTorqueCurrent;
+        if (autoSlapdownCurrentLimits || outputs.slapdownDeployAssist) {
+          // Only an active auto assist may use the higher auto hardware allowance.
+          double forwardLimit =
+              outputs.slapdownDeployAssist
+                      && autoSlapdownCurrentLimits
+                      && DriverStation.isAutonomousEnabled()
+                  ? IntakeConstants.SLAPDOWN_DEPLOY_ASSIST_CURRENT
+                  : normalSlapdownTorqueConfig.PeakForwardTorqueCurrent;
+          torqueCurrent = Math.min(torqueCurrent, forwardLimit);
+        }
+        Logger.recordOutput(kintakeTableKey + "SlapdownTorqueCurrentRequest", torqueCurrent);
+        deployMotor.setControl(torqueSlapdownControl.withOutput(torqueCurrent));
         break;
 
       case OFF:
@@ -370,17 +446,16 @@ public void useTeleopRollerCurrentLimits() {
   /**
    * Applies a slapdown stator current limit when the requested value changes.
    *
-   * <p>This allows slow shooting stow to use a lower current limit without repeatedly reconfiguring
-   * the motor controller every loop.
+   * <p>This preserves the existing shooting-curl limit changes. Assisted deployment itself does
+   * not change the limit; the auto allowance is selected before the command runs.
    *
    * @param statorCurrentLimit requested slapdown stator current limit in amps
+   * @return true when the requested current limit is applied
    */
-  private void applySlapdownCurrentLimit(double statorCurrentLimit) {
+  private boolean applySlapdownCurrentLimit(double statorCurrentLimit) {
     if (Math.abs(statorCurrentLimit - appliedSlapdownStatorCurrentLimit) < 1e-6) {
-      return;
+      return true;
     }
-
-    appliedSlapdownStatorCurrentLimit = statorCurrentLimit;
 
     var currentLimits =
         new CurrentLimitsConfigs()
@@ -388,14 +463,16 @@ public void useTeleopRollerCurrentLimits() {
             .withSupplyCurrentLimitEnable(true)
             .withSupplyCurrentLowerLimit(IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_LIMIT)
             .withSupplyCurrentLowerTime(IntakeConstants.SLAPDOWN_LOWER_SUPPLY_CURRENT_TIME)
-            .withStatorCurrentLimit(appliedSlapdownStatorCurrentLimit)
+            .withStatorCurrentLimit(statorCurrentLimit)
             .withStatorCurrentLimitEnable(true);
 
     var status = deployMotor.getConfigurator().apply(currentLimits);
+    appliedSlapdownStatorCurrentLimit = status.isOK() ? statorCurrentLimit : Double.NaN;
 
     Logger.recordOutput(kintakeTableKey + "SlapdownCurrentLimit/ApplyStatus", status.toString());
     Logger.recordOutput(
         kintakeTableKey + "SlapdownCurrentLimit/Stator", appliedSlapdownStatorCurrentLimit);
+    return status.isOK();
   }
 
   /**
@@ -490,9 +567,9 @@ public void useTeleopRollerCurrentLimits() {
     PhoenixUtil.tryUntilOk(
         TUNED_CONFIG_MAX_ATTEMPTS,
         () -> deployMotor.getConfigurator().apply(tunedConfigs.MotionMagic, TUNED_CONFIG_TIMEOUT));
-    PhoenixUtil.tryUntilOk(
-        TUNED_CONFIG_MAX_ATTEMPTS,
-        () -> deployMotor.getConfigurator().apply(tunedConfigs.TorqueCurrent, TUNED_CONFIG_TIMEOUT));
+    normalSlapdownTorqueConfig = tunedConfigs.TorqueCurrent.clone();
+    slapdownCurrentLimitsConfigured = false;
+    applySlapdownModeCurrentLimits(autoSlapdownCurrentLimits);
   }
 
   /**

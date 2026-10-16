@@ -41,6 +41,12 @@ public final class IntakeConstants {
   public static final double PEAK_FORWARD_STATOR_CURRENT_LIMIT = 40.0;
   public static final double PEAK_REVERSE_STATOR_CURRENT_LIMIT = -38.0;
 
+  /** Temporary downforce for an explicitly requested assisted deployment. */
+  public static final double SLAPDOWN_DEPLOY_ASSIST_CURRENT = 60.0;
+
+  /** Maximum assisted deployment time before returning to normal downforce. */
+  public static final double SLAPDOWN_DEPLOY_ASSIST_SECONDS = 1.0;
+
   /** Supply current threshold used to stop the slapdown after it hits a hard stop. */
   public static final double SLAPDOWN_CURRENT_STOP_THRESHOLD = SLAPDOWN_SUPPLY_CURRENT_LIMIT;
 

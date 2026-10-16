@@ -49,13 +49,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Prepare Intake",
+      "name": "Prepare Intake With Assist",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Prepare Intake"
+          "name": "Prepare Intake With Assist"
         }
       }
     }

@@ -49,6 +49,10 @@ public class Intake extends SubsystemBase {
   private boolean rollerBoostActive = false;
   private boolean autoPrepareIntakeRequested = false;
   private boolean autoPrepareIntakeLatched = false;
+  private boolean autoPrepareIntakeAssistRequested = false;
+  private boolean deployAssistAutoOnly = false;
+  private double deployAssistStartTime = 0.0;
+  private String deployAssistResult = "IDLE";
   private boolean rollerWasRequested = false;
   private double rollerRequestStartTimestamp = 0.0;
   private double rollerHighCurrentStartTimestamp = Double.NaN;
@@ -81,6 +85,7 @@ public class Intake extends SubsystemBase {
     handleAutoPrepareIntakeRequest();
     logSlowThisLoop = shouldLogSlowIntakeOutputs();
     updateRollerOutput();
+    updateDeployAssist();
     updateDeployHoldDownAssist();
     logOutputs();
 
@@ -361,7 +366,40 @@ public class Intake extends SubsystemBase {
 
   /** Requests autonomous intake preparation and finishes immediately. */
   public Command prepareIntakeInstant() {
-    return runOnce(() -> autoPrepareIntakeRequested = true);
+    return runOnce(
+        () -> {
+          autoPrepareIntakeRequested = true;
+          autoPrepareIntakeAssistRequested = false;
+        });
+  }
+
+  /** Requests one assisted auto deployment without waiting for the arm or delaying the path. */
+  public Command prepareIntakeWithAssistInstant() {
+    return runOnce(
+        () -> {
+          autoPrepareIntakeRequested = true;
+          autoPrepareIntakeAssistRequested = true;
+        });
+  }
+
+  /**
+   * Applies bounded deploy assistance without changing roller requests.
+   *
+   * <p>This command is available for a future operator binding. Releasing or interrupting it stops
+   * the slapdown. It does not change motor limits; teleop retains the normal current allowance.
+   * No new operator binding is installed by the auto deployment change.
+   *
+   * @return command that assists deployment until the down sensor, timeout, or interruption
+   */
+  public Command deployWithAssist() {
+    return Commands.startEnd(
+            () -> {
+              requestDeployWithHoldDownAssist();
+              startDeployAssist(false);
+            },
+            this::stopSlapdown,
+            this)
+        .until(() -> !outputs.slapdownDeployAssist);
   }
 
   /**
@@ -386,6 +424,8 @@ public class Intake extends SubsystemBase {
 
   /** Clears autonomous intake request state. */
   private void clearAutoPrepareIntakeLatch() {
+    finishDeployAssist("CANCELED");
+    autoPrepareIntakeAssistRequested = false;
     autoPrepareIntakeRequested = false;
     autoPrepareIntakeLatched = false;
   }
@@ -414,14 +454,24 @@ public class Intake extends SubsystemBase {
       return;
     }
 
+    boolean assistRequested = autoPrepareIntakeAssistRequested;
     autoPrepareIntakeRequested = false;
+    autoPrepareIntakeAssistRequested = false;
 
     if (!DriverStation.isAutonomousEnabled()) {
       return;
     }
 
     autoPrepareIntakeLatched = true;
+    if (assistRequested && outputs.slapdownDeployAssist) {
+      // A repeated marker must not restart the assist timer.
+      setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
+      return;
+    }
     requestDeployWithHoldDownAssist();
+    if (assistRequested) {
+      startDeployAssist(true);
+    }
     setRequestedRollerSpeed(IntakeConstants.ROLLER_PICKUP_SPEED);
   }
 
@@ -494,9 +544,49 @@ public class Intake extends SubsystemBase {
     stopSlapdownOnCurrentSpike = false;
   }
 
+  /** Starts one timed deployment assist; repeated requests do not extend an active attempt. */
+  private void startDeployAssist(boolean autoOnly) {
+    if (outputs.slapdownDeployAssist) {
+      return;
+    }
+    deployAssistAutoOnly = autoOnly;
+    deployAssistStartTime = Timer.getTimestamp();
+    deployAssistResult = "RUNNING";
+    outputs.slapdownDeployAssist = true;
+  }
+
+  /** Ends only the extra force. A timeout is not reported as successful deployment. */
+  private void finishDeployAssist(String result) {
+    if (outputs.slapdownDeployAssist) {
+      outputs.slapdownDeployAssist = false;
+      deployAssistResult = result;
+    }
+  }
+
+  /** Handles assisted deployment before normal hold-down can select the slapdown output. */
+  private void updateDeployAssist() {
+    if (!outputs.slapdownDeployAssist) {
+      return;
+    }
+    if (!DriverStation.isEnabled()
+        || (deployAssistAutoOnly && !DriverStation.isAutonomousEnabled())) {
+      finishDeployAssist("CANCELED");
+      clearAutoPrepareIntakeLatch();
+      stopSlapdown();
+    } else if (inputs.slapdownDown) {
+      // The down sensor ends the extra force; normal holding still seats the mechanism.
+      finishDeployAssist("DOWN_SENSOR");
+    } else if (Timer.getTimestamp() - deployAssistStartTime
+        >= IntakeConstants.SLAPDOWN_DEPLOY_ASSIST_SECONDS) {
+      finishDeployAssist("TIMED_OUT");
+    } else {
+      requestSlapdownTorqueCurrent(IntakeConstants.SLAPDOWN_DEPLOY_ASSIST_CURRENT);
+    }
+  }
+
   /** Applies constant downforce while the driver is holding intake or auto intake is latched. */
   private void updateDeployHoldDownAssist() {
-    if (!deployHoldDownAssistEnabled) {
+    if (outputs.slapdownDeployAssist || !deployHoldDownAssistEnabled) {
       return;
     }
 
@@ -521,6 +611,11 @@ public class Intake extends SubsystemBase {
 
   /** Stops hold-down torque without disabling future hold-down assist. */
   private void stopSlapdownHoldDownTorque() {
+    finishDeployAssist("CANCELED");
+    if (autoPrepareIntakeAssistRequested) {
+      autoPrepareIntakeAssistRequested = false;
+      autoPrepareIntakeRequested = false;
+    }
     outputs.appliedSlapdownTorqueCurrent = 0.0;
 
     if (RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT) {
@@ -825,6 +920,8 @@ public class Intake extends SubsystemBase {
         RobotState.getSlapdownMode() == SlapdownModeState.TORQUE_CURRENT);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeRequested", autoPrepareIntakeRequested);
     Logger.recordOutput(kintakeTableKey + "AutoPrepareIntakeLatched", autoPrepareIntakeLatched);
+    Logger.recordOutput(kintakeTableKey + "DeployAssist/Active", outputs.slapdownDeployAssist);
+    Logger.recordOutput(kintakeTableKey + "DeployAssist/Result", deployAssistResult);
 
     if (!shouldLogTuningOutputs()) {
       return;
