@@ -7,6 +7,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
@@ -57,8 +58,10 @@ public class ShooterIOKraken implements ShooterIO {
 
   private final VelocityTorqueCurrentFOC velocityControl =
       new VelocityTorqueCurrentFOC(0.0).withSlot(0);
-  private final MotionMagicVelocityVoltage motionMagicVelocityControl =
+  private final MotionMagicVelocityVoltage idleMotionMagicVelocityControl =
       new MotionMagicVelocityVoltage(0.0).withSlot(0);
+      private final MotionMagicVelocityVoltage shotMotionMagicVelocityControl =
+      new MotionMagicVelocityVoltage(0.0).withSlot(1);
 
   private final StatusSignal<AngularVelocity> rightLeaderVelocity =
       rightShooterLeader.getVelocity();
@@ -175,6 +178,7 @@ public class ShooterIOKraken implements ShooterIO {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     configureSlot0(config.Slot0);
+    configureSlot1(config.Slot1);
     configureMotionMagic(config.MotionMagic);
 
     return config;
@@ -324,11 +328,11 @@ public class ShooterIOKraken implements ShooterIO {
 
     switch (RobotState.getShooterMode()) {
       case ON:
-        applyVelocityOutput(outputs, outputs.kMMShootAcceleration);
+        applyVelocityOutput(outputs, outputs.kMMShootAcceleration, true);
         break;
 
       case IDLE:
-        applyVelocityOutput(outputs, outputs.kMMAcceleration);
+        applyVelocityOutput(outputs, outputs.kMMAcceleration, false);
         break;
 
       case DUTYCYCLE:
@@ -348,7 +352,7 @@ public class ShooterIOKraken implements ShooterIO {
   }
 
   /** Applies closed-loop velocity control to the shooter leader motor. */
-  private void applyVelocityOutput(ShooterIOOutputs outputs, double motionMagicAcceleration) {
+  private void applyVelocityOutput(ShooterIOOutputs outputs, double motionMagicAcceleration, boolean isShoot) {
     double desiredRps = rpmToRps(outputs.desiredVelocityRPM);
 
     if (Constants.Tuning.SHOOTER) {
@@ -357,12 +361,24 @@ public class ShooterIOKraken implements ShooterIO {
     }
 
     if (outputs.useMotionMagic) {
-      rightShooterLeader.setControl(
-          motionMagicVelocityControl
-              .withVelocity(desiredRps)
-              .withAcceleration(motionMagicAcceleration));
-      recordControlMode(MotionMagicVelocityVoltage.class.getSimpleName());
-      return;
+      if(isShoot)
+      {
+        rightShooterLeader.setControl(
+            shotMotionMagicVelocityControl
+                .withVelocity(desiredRps)
+                .withAcceleration(motionMagicAcceleration));
+        recordControlMode(MotionMagicVelocityVoltage.class.getSimpleName());
+        return;
+      }
+      else
+      {
+        rightShooterLeader.setControl(
+            idleMotionMagicVelocityControl
+                .withVelocity(desiredRps)
+                .withAcceleration(motionMagicAcceleration));
+        recordControlMode(MotionMagicVelocityVoltage.class.getSimpleName());
+        return;
+      }
     }
 
     rightShooterLeader.setControl(velocityControl.withVelocity(desiredRps));
@@ -432,6 +448,7 @@ public class ShooterIOKraken implements ShooterIO {
 
     TalonFXConfiguration tunedConfigs = createTunedMotorConfig(outputs);
     Slot0Configs slot0 = tunedConfigs.Slot0;
+    Slot1Configs slot1 = tunedConfigs.Slot1;
     MotionMagicConfigs motionMagic = tunedConfigs.MotionMagic;
 
     PhoenixUtil.tryUntilOk(
@@ -446,6 +463,19 @@ public class ShooterIOKraken implements ShooterIO {
     PhoenixUtil.tryUntilOk(
         TUNED_CONFIG_MAX_ATTEMPTS,
         () -> leftShooterFollower.getConfigurator().apply(slot0, TUNED_CONFIG_TIMEOUT));
+
+        PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> rightShooterLeader.getConfigurator().apply(slot1, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> rightShooterFollower.getConfigurator().apply(slot1, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> leftShooterLeader.getConfigurator().apply(slot1, TUNED_CONFIG_TIMEOUT));
+    PhoenixUtil.tryUntilOk(
+        TUNED_CONFIG_MAX_ATTEMPTS,
+        () -> leftShooterFollower.getConfigurator().apply(slot1, TUNED_CONFIG_TIMEOUT));
 
     PhoenixUtil.tryUntilOk(
         TUNED_CONFIG_MAX_ATTEMPTS,
@@ -474,8 +504,15 @@ public class ShooterIOKraken implements ShooterIO {
     configs.Slot0.kI = outputs.kI;
     configs.Slot0.kD = outputs.kD;
     configs.Slot0.kS = outputs.kS;
-    configs.Slot0.kV = outputs.kV;
+    configs.Slot0.kV = outputs.idlekV;
     configs.Slot0.kA = outputs.kA;
+
+    configs.Slot1.kP = outputs.kP;
+    configs.Slot1.kI = outputs.kI;
+    configs.Slot1.kD = outputs.kD;
+    configs.Slot1.kS = outputs.kS;
+    configs.Slot1.kV = outputs.shotkV;
+    configs.Slot1.kA = outputs.kA;
 
     configs.MotionMagic.MotionMagicAcceleration = outputs.kMMAcceleration;
     configs.MotionMagic.MotionMagicJerk = outputs.kMMJerk;
@@ -491,8 +528,17 @@ public class ShooterIOKraken implements ShooterIO {
     slot0.kI = ShooterConstants.kI.getAsDouble();
     slot0.kD = ShooterConstants.kD.getAsDouble();
     slot0.kS = ShooterConstants.kS.getAsDouble();
-    slot0.kV = ShooterConstants.kV.getAsDouble();
+    slot0.kV = ShooterConstants.idlekV.getAsDouble();
     slot0.kA = ShooterConstants.kA.getAsDouble();
+  }
+
+  private void configureSlot1(Slot1Configs slot1) {
+    slot1.kP = ShooterConstants.kP.getAsDouble();
+    slot1.kI = ShooterConstants.kI.getAsDouble();
+    slot1.kD = ShooterConstants.kD.getAsDouble();
+    slot1.kS = ShooterConstants.kS.getAsDouble();
+    slot1.kV = ShooterConstants.shotkV.getAsDouble();
+    slot1.kA = ShooterConstants.kA.getAsDouble();
   }
 
   /** Applies default Motion Magic velocity values to a shooter motor config. */

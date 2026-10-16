@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8651226575182633,
-        "y": 2.0981615392886517
+        "x": 2.865825464127531,
+        "y": 2.7988611879840746
       },
       "isLocked": false,
       "linkedName": "Corrected Frenzy Finals_Finals_Battlecry Tilted Hub Shot"
@@ -59,13 +59,13 @@
             {
               "type": "named",
               "data": {
-                "name": "Prepare Intake"
+                "name": "Lower Hood And Stop Shooting"
               }
             },
             {
               "type": "named",
               "data": {
-                "name": "Lower Hood And Stop Shooting"
+                "name": "Prepare Intake"
               }
             }
           ]

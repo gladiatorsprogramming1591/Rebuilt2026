@@ -79,11 +79,12 @@ public final class ShooterConstants {
     private static final double DEFAULT_STALL_SHUTOFF_SECONDS = 1.0;
     private static final double DEFAULT_STALL_STARTUP_GRACE_SECONDS = 0.60;
 
-    private static final double DEFAULT_KP = 0.45;
+    private static final double DEFAULT_KP = 0.50;
     private static final double DEFAULT_KI = 0.0;
     private static final double DEFAULT_KD = 0.0;
     private static final double DEFAULT_KS = 0.0;
-    private static final double DEFAULT_KV = 0.125;
+    private static final double DEFAULT_IDLEKV = 0.125;
+    private static final double DEFAULT_SHOTKV = 0.145;
     private static final double DEFAULT_KA = 0.0;
 
     /**
@@ -123,8 +124,11 @@ public final class ShooterConstants {
     public static final LoggedTunableNumber kS = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kS", DEFAULT_KS,
             Constants.Tuning.SHOOTER);
 
-    public static final LoggedTunableNumber kV = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kV", DEFAULT_KV,
+    public static final LoggedTunableNumber idlekV = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "idlekV", DEFAULT_IDLEKV,
             Constants.Tuning.SHOOTER);
+
+        public static final LoggedTunableNumber shotkV = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "shotkV", DEFAULT_SHOTKV,
+                Constants.Tuning.SHOOTER);
 
     public static final LoggedTunableNumber kA = new LoggedTunableNumber(SHOOTER_TABLE_KEY + "kA", DEFAULT_KA,
             Constants.Tuning.SHOOTER);

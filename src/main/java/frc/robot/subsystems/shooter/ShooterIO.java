@@ -64,7 +64,8 @@ public interface ShooterIO {
     public double kI = 0.0;
     public double kD = 0.0;
     public double kS = 0.0;
-    public double kV = 0.0;
+    public double idlekV = 0.0;
+    public double shotkV = 0.0;
     public double kA = 0.0;
     public double kMMAcceleration = 0.0;
     public double kMMShootAcceleration = 0.0;

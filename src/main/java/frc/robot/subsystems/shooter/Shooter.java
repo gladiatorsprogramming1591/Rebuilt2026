@@ -464,7 +464,8 @@ public class Shooter extends SubsystemBase {
     outputs.kI = ShooterConstants.kI.getAsDouble();
     outputs.kD = ShooterConstants.kD.getAsDouble();
     outputs.kS = ShooterConstants.kS.getAsDouble();
-    outputs.kV = ShooterConstants.kV.getAsDouble();
+    outputs.idlekV = ShooterConstants.idlekV.getAsDouble();
+    outputs.shotkV = ShooterConstants.shotkV.getAsDouble();
     outputs.kA = ShooterConstants.kA.getAsDouble();
     outputs.kMMAcceleration = ShooterConstants.kMMAcceleration.getAsDouble();
     outputs.kMMShootAcceleration = ShooterConstants.kMMShootAcceleration.getAsDouble();
@@ -588,7 +589,8 @@ public class Shooter extends SubsystemBase {
       Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kI", outputs.kI);
       Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kD", outputs.kD);
       Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kS", outputs.kS);
-      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kV", outputs.kV);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/idlekV", outputs.idlekV);
+      Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/shotkV", outputs.shotkV);
       Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/kA", outputs.kA);
       Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/MMAcceleration", outputs.kMMAcceleration);
       Logger.recordOutput(SHOOTER_TABLE_KEY + "Tuning/MMJerk", outputs.kMMJerk);

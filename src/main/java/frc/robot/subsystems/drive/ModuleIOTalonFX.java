@@ -276,10 +276,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveCurrentLimits(
-      double statorAmps,
-      double supplyAmps,
-      double lowerSupplyAmps,
-      double lowerSupplyTimeSeconds) {
+      double statorAmps, double supplyAmps, double lowerSupplyAmps, double lowerSupplyTimeSeconds) {
     if (Double.compare(appliedDriveStatorCurrentLimitAmps, statorAmps) == 0
         && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0
         && Double.compare(appliedDriveLowerSupplyCurrentLimitAmps, lowerSupplyAmps) == 0
@@ -329,11 +326,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     Logger.recordOutput(
         logKey + "/Verified/SupplyCurrentLimitEnabled", currentLimits.SupplyCurrentLimitEnable);
     Logger.recordOutput(
-        logKey + "/Verified/LowerSupplyCurrentLimitAmps",
-        currentLimits.SupplyCurrentLowerLimit);
+        logKey + "/Verified/LowerSupplyCurrentLimitAmps", currentLimits.SupplyCurrentLowerLimit);
     Logger.recordOutput(
-        logKey + "/Verified/LowerSupplyCurrentTimeSeconds",
-        currentLimits.SupplyCurrentLowerTime);
+        logKey + "/Verified/LowerSupplyCurrentTimeSeconds", currentLimits.SupplyCurrentLowerTime);
     Logger.recordOutput(
         logKey + "/Verified/BrakeMode", motorOutput.NeutralMode == NeutralModeValue.Brake);
     Logger.recordOutput(logKey + "/Verified/CurrentLimitsReadOk", currentLimitStatus.isOK());

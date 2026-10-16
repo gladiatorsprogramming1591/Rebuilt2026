@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.REPLAY;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
   public static final boolean calibrationMode = false;
   public static final boolean disableHAL = false;
 
@@ -29,10 +29,10 @@ public final class Constants {
     public static final boolean DRIVE_COMMANDS = ENABLED && false;
 
     public static final boolean HOOD = ENABLED && false;
-    public static final boolean SHOOTER = ENABLED && false;
+    public static final boolean SHOOTER = ENABLED && true;
 
     // This is part of shooter tuning, but separate because it creates a ton of map tunables.
-    public static final boolean SHOOTER_CALCULATION = ENABLED && false;
+    public static final boolean SHOOTER_CALCULATION = ENABLED && true;
     public static final boolean SOTM = ENABLED && false;
 
     public static final boolean INTAKE = ENABLED && false;

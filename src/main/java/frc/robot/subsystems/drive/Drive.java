@@ -343,10 +343,7 @@ public class Drive extends SubsystemBase {
 
   /** Sets sticky current limits on all drive motors. */
   public void setDriveCurrentLimits(
-      double statorAmps,
-      double supplyAmps,
-      double lowerSupplyAmps,
-      double lowerSupplyTimeSeconds) {
+      double statorAmps, double supplyAmps, double lowerSupplyAmps, double lowerSupplyTimeSeconds) {
     if (Double.compare(appliedDriveStatorCurrentLimitAmps, statorAmps) == 0
         && Double.compare(appliedDriveSupplyCurrentLimitAmps, supplyAmps) == 0
         && Double.compare(appliedDriveLowerSupplyCurrentLimitAmps, lowerSupplyAmps) == 0
@@ -355,8 +352,7 @@ public class Drive extends SubsystemBase {
     }
 
     for (var module : modules) {
-      module.setDriveCurrentLimits(
-          statorAmps, supplyAmps, lowerSupplyAmps, lowerSupplyTimeSeconds);
+      module.setDriveCurrentLimits(statorAmps, supplyAmps, lowerSupplyAmps, lowerSupplyTimeSeconds);
     }
 
     appliedDriveStatorCurrentLimitAmps = statorAmps;
