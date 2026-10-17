@@ -65,12 +65,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Set Coast"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Ruckus Template - Finals - Pass2_FarSweepA"
