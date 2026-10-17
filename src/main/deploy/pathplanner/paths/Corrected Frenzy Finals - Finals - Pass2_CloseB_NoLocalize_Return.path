@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.730964912280701,
-        "y": 2.448511363636363
+        "x": 5.731,
+        "y": 2.525
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.057796732524059,
-        "y": 2.6935245437229414
+        "x": 5.057831820243358,
+        "y": 2.770013180086578
       },
       "isLocked": false,
       "linkedName": "Corrected Frenzy Finals_Finals_Pass2_StartNoLocalize_Return"

@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 7.9,
-        "y": 4.0
+        "y": 3.75
       },
       "isLocked": false,
       "linkedName": "Corrected Frenzy Finals_Finals_Pass2_FarSweepA"
@@ -20,8 +20,8 @@
         "y": 3.25
       },
       "prevControl": {
-        "x": 5.7788673611595796,
-        "y": 4.499764163280927
+        "x": 5.793435580829152,
+        "y": 3.7499056653123706
       },
       "nextControl": null,
       "isLocked": false,
