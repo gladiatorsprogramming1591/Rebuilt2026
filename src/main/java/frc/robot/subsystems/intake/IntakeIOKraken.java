@@ -357,7 +357,7 @@ public void useTeleopRollerCurrentLimits() {
       tuneDeployMotorConfigs(outputs);
     }
 
-    if (!slapdownCurrentLimitsConfigured) {
+    if (!slapdownCurrentLimitsConfigured && DriverStation.isDisabled()) {
       applySlapdownModeCurrentLimits(autoSlapdownCurrentLimits);
     }
     applyRollerOutput(outputs.appliedRollerSpeed);
@@ -547,7 +547,8 @@ public void useTeleopRollerCurrentLimits() {
    * @param outputs latest requested intake outputs containing tunable gains
    */
   private void tuneDeployMotorConfigs(IntakeIOOutputs outputs) {
-    if (!SmartDashboard.getBoolean(kintakeTableKey + UPDATE_DEPLOY_CONFIG_NAME, true)) {
+    if (!DriverStation.isDisabled()
+        || !SmartDashboard.getBoolean(kintakeTableKey + UPDATE_DEPLOY_CONFIG_NAME, true)) {
       return;
     }
 

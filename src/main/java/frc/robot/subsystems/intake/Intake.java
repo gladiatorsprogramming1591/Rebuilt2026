@@ -82,6 +82,11 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
 
     updateTunableOutputs();
+    if (DriverStation.isDisabled()) {
+      clearAutoPrepareIntakeLatch();
+      setRequestedRollerSpeed(0.0);
+      stopSlapdown();
+    }
     handleAutoPrepareIntakeRequest();
     logSlowThisLoop = shouldLogSlowIntakeOutputs();
     updateRollerOutput();

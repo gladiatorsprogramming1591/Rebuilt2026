@@ -469,6 +469,7 @@ public class RobotContainer {
   }
 
   private void configureBattlecryOperatorControls() {
+    Trigger shotTuningModifier = operatorController.back();
 
     operatorController.a().whileTrue(rotateToHubCommand());
     operatorController.x().onTrue(stopWithXCommand());
@@ -478,10 +479,10 @@ public class RobotContainer {
     operatorController.leftTrigger().whileTrue(prepareIntake());
     operatorController.leftBumper().onTrue(intake.stow());
     operatorController.rightBumper().onTrue(intake.deploy());
-    operatorController.povLeft().whileTrue(intake.reverseRoller());
-    operatorController.povRight().whileTrue(barfCommand());
+    operatorController.povLeft().and(shotTuningModifier.negate()).whileTrue(intake.reverseRoller());
+    operatorController.povRight().and(shotTuningModifier.negate()).whileTrue(barfCommand());
 
-    operatorController.povDown().whileTrue(hood.runHoodDown());
+    operatorController.povDown().and(shotTuningModifier.negate()).whileTrue(hood.runHoodDown());
 
 
     Trigger shootTrigger = operatorController.rightTrigger();
@@ -493,7 +494,6 @@ public class RobotContainer {
         .and(() -> !HubShiftUtil.getOfficialShiftInfo().active())
         .and(DriverStation::isTeleop)
         .onTrue(driverRumbleCommand(1.0).withTimeout(0.5));
-    Trigger shotTuningModifier = operatorController.back();
 
     shotTuningModifier
         .and(operatorController.povUp())
@@ -813,7 +813,7 @@ public void useAutoDriveCurrentLimits() {
     boolean driveAngleReady = DriveCommands.atLaunchGoal();
     boolean poseValid = ShooterCalculation.getInstance().getParameters().isValid();
     double yawRateRadPerSec =
-        Math.abs(RobotState.getInstance().getMeasuredRobotRelativeSpeeds().omegaRadiansPerSecond);
+        Math.abs(drive.getYawVelocityRadPerSec());
     boolean yawStable = yawRateRadPerSec <= launchReadyMaxYawRateRadPerSec.get();
 
     boolean autoAimTimedOut =
