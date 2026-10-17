@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 3.358555851808888,
-        "y": 0.9185226260124342
+        "x": 3.107475035663337,
+        "y": 0.8973751783166914
       },
       "prevControl": {
-        "x": 2.7120947712579704,
-        "y": 1.4089413767751984
+        "x": 2.4610139551124197,
+        "y": 1.3877939290794556
       },
       "nextControl": {
-        "x": 3.5646149129537372,
-        "y": 0.7622019589370315
+        "x": 3.3135340968081866,
+        "y": 0.7410545112412887
       },
       "isLocked": false,
       "linkedName": null
@@ -44,7 +44,12 @@
       "linkedName": "Ruckus Template_Finals_Pass Start"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.667262969588553,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [

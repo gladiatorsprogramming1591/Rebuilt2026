@@ -58,10 +58,10 @@ public final class ShooterConstants {
 
     // Default tunable values
     private static final double DEFAULT_SHOOT_FIXED_RPM = 2000.0;
-    private static final double DEFAULT_FIXED_IDLE_RPM = 1800.0;
-    private static final double DEFAULT_DYNAMIC_OWN_ALLIANCE_ZONE_IDLE_RPM = 1800.0;
-    private static final double DEFAULT_DYNAMIC_NEUTRAL_ZONE_IDLE_RPM = 2300.0;
-    private static final double DEFAULT_DYNAMIC_OPPONENT_ALLIANCE_ZONE_IDLE_RPM = 3000.0;
+    private static final double DEFAULT_FIXED_IDLE_RPM = 1650.0;
+    private static final double DEFAULT_DYNAMIC_OWN_ALLIANCE_ZONE_IDLE_RPM = 1650.0;
+    private static final double DEFAULT_DYNAMIC_NEUTRAL_ZONE_IDLE_RPM = 1650.0;
+    private static final double DEFAULT_DYNAMIC_OPPONENT_ALLIANCE_ZONE_IDLE_RPM = 1650.0;
     private static final double DEFAULT_IDLE_RAMP_UP_RPM_PER_SEC = 250.0;
     private static final double DEFAULT_IDLE_MIN_COMMAND_RPM = 250.0;
 
