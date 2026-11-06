@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 /** Controls the kicker motor that feeds fuel from the hopper into the shooter. */
 public class Kicker extends SubsystemBase {
-  private static final double BARF_KICKER_SPEED = 0.25;
+  private static final double BARF_KICKER_SPEED = 0.30;
 
   private final KickerIO io;
   private final KickerIOInputsAutoLogged inputs = new KickerIOInputsAutoLogged();

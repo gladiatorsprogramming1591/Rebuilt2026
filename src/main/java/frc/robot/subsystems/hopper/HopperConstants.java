@@ -40,6 +40,7 @@ public final class HopperConstants {
    */
   public static final double MIN_EMPTY_DURATION = 0.2;
 
+  /** Speed of belts. Positive moves towards intake, negative moves towards kicker. */
   private static final LoggedTunableNumber beltMotorSpeed =
       new LoggedTunableNumber("Hopper/BeltMotorSpeed", 0.70, Constants.Tuning.HOPPER);
 
